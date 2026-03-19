@@ -16,39 +16,39 @@ docker-compose up
 
 jeewms存在非常老版本的mysql版本
 
-![图片1-1](.\img\图片1-1.png) 
+![图片1-1](./img/图片1-1.png) 
 
 后台存在配置jdbc的模块
 
-![图片1-2](.\img\图片1-2.png) 
+![图片1-2](./img/图片1-2.png) 
 
 该模块对传入的jdbc参数没有任何过滤，可以通过配置恶意mysql jdbc参数实现命令执行
 
-![图片1-3](.\img\图片1-3.png) 
+![图片1-3](./img/图片1-3.png) 
 
 依赖中存在fastjson，可以利用mysql jdbc打fastjson反序列化实现命令执行
 
-![图片1-4](.\img\图片1-4.png) 
+![图片1-4](./img/图片1-4.png) 
 
 利用java-chains配置恶意mysql 服务器
 
-![图片1-5](.\img\图片1-5.png) 
+![图片1-5](./img/图片1-5.png) 
 
 但想要进后台必须要Cookie，在JeeWMS的鉴权这里存在一个判断，如果访问的URL里包含excludeContainUrls 就直接用return true放行 ：
 
-![图片1-6](.\img\图片1-6.png) 
+![图片1-6](./img/图片1-6.png) 
 
 excludeContainUrls 的值包括下面两个：
 
-![图片1-7](.\img\图片1-7.png) 
+![图片1-7](./img/图片1-7.png) 
 
 所以只要我们的url含这两个路径，访问的时候就无需鉴权直接放行，比如接口/jeewms/rest/cgformTemplateController.do ，正常访问的时候会被拦截：
 
-![QQ20260301-215847-8](.\img\QQ20260301-215847-8.png)
+![QQ20260301-215847-8](./img/QQ20260301-215847-8.png)
 
 但是把URL换成 /jeewms/systemController/showOrDownByurl.do/../../rest/cgformTemplateController.do即可在未授权的情况下访问接口：
 
-![QQ20260301-220025-9](.\img\QQ20260301-220025-9.png) 
+![QQ20260301-220025-9](./img/QQ20260301-220025-9.png) 
 
 结合鉴权绕过的漏洞，配合JDBC配置，即可实现在未授权情况下任意命令执行
 
@@ -80,4 +80,4 @@ id=&dbKey=aaa&description=aaa&dbType=mysql&driverClass=com.mysql.jdbc.Driver&url
 
 弹shell，拿flag
 
-![QQ20260301-220307-1-8](.\img\QQ20260301-220307-1-8.png)
+![QQ20260301-220307-1-8](./img/QQ20260301-220307-1-8.png)
