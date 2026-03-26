@@ -2,13 +2,13 @@
 
 首先给出的镜像为AD1文件，经过简答搜索可以得知这个是FTK imager生成的镜像文件，使用FTK进行取证
 
-![image-20260306220811626](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260306220811626.png)
+![image-20260306220811626](./img/image-20260306220811626.png)
 
 ### 1.设备上次关闭时间是什么时候？请以 UTC+8 时区提供您的答案。（YYYY/MM/DDTHH:MM:SS） 
 
 第一个题目是设备上次的关闭时间，导出C:\Windows\System32\config\SYSTEM查看SYSTEM注册表文件即可（使用工具或者010手动查看都可）
 
-![image-20260306221337601](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260306221337601.png)
+![image-20260306221337601](./img/image-20260306221337601.png)
 
 ```
 2026/03/05T17:23:06
@@ -38,9 +38,9 @@
 
 找到%localappdata%\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState对应的文件
 
-![image-20260306222543277](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260306222543277.png)
+![image-20260306222543277](./img/image-20260306222543277.png)
 
-![image-20260306222706752](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260306222706752.png)
+![image-20260306222706752](./img/image-20260306222706752.png)
 
 根据这个跑出来的缓冲区块的文件，可以恢复出文件内容
 
@@ -55,7 +55,7 @@ complete
 
 md5得到(需要注意换行符为0d)
 
-![image-20260306223656440](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260315125024716.png)
+![image-20260306223656440](./img/image-20260315125024716.png)
 
 ```
 c1c4c50f51afc97a58385457af43e169
@@ -65,39 +65,39 @@ c1c4c50f51afc97a58385457af43e169
 
 可以分析得知该电脑一共有utools，ollama，cherrystudio这三款额外下载的应用，做题时可以对其进行一一分析，对utools分析时，可以得知其有粘贴板，可能会藏有信息
 
-![image-20260307141158490](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307141158490.png)
+![image-20260307141158490](./img/image-20260307141158490.png)
 
 参考[uTools剪贴板取证思路 - WXjzc - 博客园](https://www.cnblogs.com/WXjzc/p/18129696)及[分析 uTools v6.1.0 完整性校验 - 吾爱破解 - 52pojie.cn](https://www.52pojie.cn/thread-2003165-1-1.html)
 
-![image-20260306232635773](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260306232635773.png)
+![image-20260306232635773](./img/image-20260306232635773.png)
 
 得知这是一个aes解密函数，模式是AES-252-CBC，IV是UTOOLS0123456789，密钥由W().getLocalSecretKey()生成
 
-![image-20260306232748520](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260306232748520.png)
+![image-20260306232748520](./img/image-20260306232748520.png)
 
 
 
 W又是通过引入addon来创建的，通过`app/node_modules/addon/index.js`得知会加载`app.asar.unpacked/node_modules/addon/win32-x64.node`文件
 
-![image-20260307131722261](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307131722261.png)
+![image-20260307131722261](./img/image-20260307131722261.png)
 
 我们可以对win32-x64.node进行逆向分析
 
 对字符串进行搜索找到getLocalSecretKey
 
-![image-20260307132246425](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307132246425.png)
+![image-20260307132246425](./img/image-20260307132246425.png)
 
 找到对应函数
 
-![image-20260307133640791](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307133640791.png)
+![image-20260307133640791](./img/image-20260307133640791.png)
 
 在该函数中 N-API 导出属性被注册，`getLocalSecretKey` 对应回调为:`sub_180006850`
 
-![image-20260307134538804](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307134538804.png)
+![image-20260307134538804](./img/image-20260307134538804.png)
 
 在6850中调用napi_create_string_utf8(...)，参数为v3=qword_1800B1DD0，寻找其初始化
 
-![image-20260307134631777](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307134631777.png)sub_180005510调用qword_1800B1DD0，
+![image-20260307134631777](./img/image-20260307134631777.png)sub_180005510调用qword_1800B1DD0，
 
 ````
 __int64 *sub_180005510()
@@ -240,7 +240,7 @@ raw_string = prefix + pbInput + suffix
 
 探寻pbInput，`sub_180001000` -> `sub_180004C30`
 
-![image-20260307135414953](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307135414953.png)
+![image-20260307135414953](./img/image-20260307135414953.png)
 
 读取注册表:
 
@@ -257,27 +257,27 @@ suffix = "|Wea6ywQQ`1q>_QyY2f1"
 
 所以需要得到注册表值，接第一题
 
-![image-20260307140155566](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307140155566.png)
+![image-20260307140155566](./img/image-20260307140155566.png)
 
 `dfa96070-797f-4b50-bb3e-d478d5c44179`
 
-![image-20260307140313291](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307140313291.png)
+![image-20260307140313291](./img/image-20260307140313291.png)
 
 成功得到AESkey：5a569f2670ad9d9765df113e1417083f，AESiv：UTOOLS0123456789
 
 接下来就可以对这三个文件夹下的文件进行分析了
 
-![image-20260307141238445](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307141238445.png)
+![image-20260307141238445](./img/image-20260307141238445.png)
 
 先对最新的文件夹下的文件（1772701170720）进行分析
 
-![image-20260307141718285](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307141718285.png)
+![image-20260307141718285](./img/image-20260307141718285.png)
 
 得到一个关键信息：`第三密钥为第二密钥生成时间的时间戳`
 
 但是没有找到第一密钥，那继续对1772700955558这个文件夹进行分析，解密后搜索key等关键词并没有找到，可能嫌疑人对文件进行了修改，
 
-![image-20260307144123500](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307144123500.png)
+![image-20260307144123500](./img/image-20260307144123500.png)
 
 这个的时间戳不太正常，是修改过的，可以猜测这个字符串是第一密钥，
 
@@ -293,15 +293,15 @@ zQt$d3!GIS9l.aR@7ELN
 
 cherry studio的聊天记录储存在000003.log文件中
 
-![image-20260307144732968](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307144732968.png)
+![image-20260307144732968](./img/image-20260307144732968.png)
 
 ollama的聊天记录在sqlite数据库中,参考：
 
-![image-20260307150310293](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307150310293.png)
+![image-20260307150310293](./img/image-20260307150310293.png)
 
-![image-20260307151208010](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307151208010.png)
+![image-20260307151208010](./img/image-20260307151208010.png)
 
-![image-20260307151120510](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307151120510.png)
+![image-20260307151120510](./img/image-20260307151120510.png)
 
 ```
 019cbe60-6803-70fe-8ab5-e0035399980f_2026/03/05T22:25:24
@@ -311,7 +311,7 @@ ollama的聊天记录在sqlite数据库中,参考：
 
 根据之前的”第三密钥为第二密钥生成时间的时间戳“得到第三密钥
 
-![image-20260307154428360](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307154428360.png)
+![image-20260307154428360](./img/image-20260307154428360.png)
 
 由“2.The key has four parts
 
@@ -321,11 +321,11 @@ ollama的聊天记录在sqlite数据库中,参考：
 
 AppData\Roaming\uTools\database\
 
-![image-20260307162310390](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307162310390.png)
+![image-20260307162310390](./img/image-20260307162310390.png)
 
 [SuperMarcus/LevelDBViewer: 一个 Java 程序提供访问和编辑 LevelDB 数据库的功能 --- SuperMarcus/LevelDBViewer: A Java program provides ablities to access & edit leveldb database](https://github.com/SuperMarcus/LevelDBViewer)
 
-![image-20260307162754021](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307162754021.png)
+![image-20260307162754021](./img/image-20260307162754021.png)
 
 ```
 key4:A9!fK2@pL4#tM6$wN8%yR1^uD3&hJ5*Z
@@ -343,7 +343,7 @@ zQt$d3!GIS9l.aR@7ELNA9!fK2@pL4#tM6$wN8%yR1^uD3&hJ5*Z17727207244dE23eFgH7kLmNpOqR
 
 在其app.log中
 
-![image-20260307170555587](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260307170555587.png)
+![image-20260307170555587](./img/image-20260307170555587.png)
 
 ```
 2026/03/05T21:58:17
@@ -359,11 +359,11 @@ zQt$d3!GIS9l.aR@7ELNA9!fK2@pL4#tM6$wN8%yR1^uD3&hJ5*Z17727207244dE23eFgH7kLmNpOqR
 
 然后使用AI对这附件的上下文进行重构
 
-![image-20260309213340746](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260309213340746.png)
+![image-20260309213340746](./img/image-20260309213340746.png)
 
 
 
-![image-20260309212856739](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260309212856739.png)
+![image-20260309212856739](./img/image-20260309212856739.png)
 
 ```json
 blocks": [
@@ -391,6 +391,6 @@ blocks": [
 
 ### FLAG
 
-![image-20260309214023059](F:\CTF出题\2025-解题赛赛题模板\解题赛模板\writeup\img\image-20260315130707834.png)
+![image-20260309214023059](./img/image-20260315130707834.png)
 
 flag:SUCTF{39e850db5d740c54df4281e39fb3866d}
