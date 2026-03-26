@@ -6,6 +6,24 @@
 - 尽量压缩仓库体积
 - 保持长期归档可维护
 
+## 📑 目录导航
+
+- [归档约定](#归档约定) — 各类目录的含义
+- [复现规则](#复现规则) — 不同类型题目的启动方式
+- [题目索引](#题目索引) — 按分类查看题目列表
+  - [AI 系列](#ai-系列-5-题)
+  - [密码学 (Crypto) 系列](#密码学-crypto-系列-6-题)
+  - [杂项 (Misc) 系列](#杂项-misc-系列-7-题)
+  - [二进制漏洞 (Pwn) 系列](#二进制漏洞-pwn-系列-7-题)
+  - [逆向工程 (RE) 系列](#逆向工程-re-系列-8-题)
+  - [Web 安全系列](#web-安全系列-8-题)
+- [大文件处理](#大文件处理) — 已移除或转换的大文件说明
+- [部署与依赖](#部署与依赖) — 外部依赖与特殊配置
+
+**题目总计：41 道**
+
+---
+
 ## 归档约定
 
 - `attachments/`：选手附件或公开附件
@@ -18,70 +36,128 @@
 
 ## 复现规则
 
-- `docker-compose`：进入表中给出的目录后执行 `docker compose up -d --build`
-- `dockerfile`：以表中给出的目录为 build context 手动执行 `docker build` 和 `docker run`
-- `archive`：无独立服务环境，直接使用附件和 writeup 复现解题流程
-- `metadata-only`：当前只保留题目信息，未保存完整运行环境
+各题目按以下方式复现：
+
+| 类型 | 说明 | 启动方式 |
+| :-- | :-- | :-- |
+| **docker-compose** | 题目服务已容器化，提供 Docker Compose 编排 | 进入表中目录后执行 `docker compose up -d --build` |
+| **dockerfile** | 虽有 Dockerfile 但需手动构建和运行 | 以表中目录为 build context，执行 `docker build` 和 `docker run` |
+| **archive** | 无独立服务，仅需附件和 writeup | 下载附件，按 writeup 流程手工复现 |
+| **metadata-only** | 仅保留题目元数据，未汇总运行环境 | 参考题目 README 页面获取更多信息 |
+
+---
 
 ## 题目索引
 
-| 分类 | 题目 | 类型 | 复现入口 |
+### AI 系列 — 5 题
+
+| 题目 | 类型 | 复现入口 |
+| :-- | :-- | :-- |
+| SU_babyAI | archive | `AI/SU_babyAI/解题赛模板/` |
+| SU_easyLLM | archive | `AI/SU_easyLLM/解题赛模板/` |
+| SU_thief | dockerfile | `AI/SU_thief/docker/` |
+| SU_我不是神偷 | dockerfile | `AI/SU_我不是神偷/docker/` |
+| SU_谁是小偷 | dockerfile | `AI/SU_谁是小偷/docker/` |
+
+### 密码学 (Crypto) 系列 — 6 题
+
+| 题目 | 类型 | 复现入口 |
+| :-- | :-- | :-- |
+| SU_AES | docker-compose | `crypto/SU_AES/` |
+| SU_Isogeny | docker-compose | `crypto/SU_Isogeny/解题赛模板/env/deploy/docker/` |
+| SU_Lattice | docker-compose | `crypto/SU_Lattice/解题赛模板/env/deploy/docker/` |
+| SU_Prng | docker-compose | `crypto/SU_Prng/` |
+| SU_Restaurant | docker-compose | `crypto/SU_Restaurant/解题赛模板/env/deploy/docker/` |
+| SU_RSA | archive | `crypto/SU_RSA/attachments/` + `crypto/SU_RSA/writeup/` |
+
+### 杂项 (Misc) 系列 — 7 题
+
+| 题目 | 类型 | 复现入口 |
+| :-- | :-- | :-- |
+| SU_Artifact_Online | docker-compose | `misc/SU_Artifact_Online/env/` |
+| SU_CyberTrack | archive | `misc/SU_CyberTrack/attachments/website.zip` |
+| SU_LightNovel | archive | `misc/SU_LightNovel/attachments/` |
+| SU_MirrorBus-9 | docker-compose | `misc/SU_MirrorBus-9/env/pwn_deploy/` |
+| SU_chaos | archive | `misc/SU_chaos/attachments/` |
+| SU_forensics | archive | `misc/SU_forensics/解题赛模板/` |
+| SU_signin | metadata-only | `misc/SU_signin/README.md` |
+
+### 二进制漏洞 (Pwn) 系列 — 7 题
+
+| 题目 | 类型 | 复现入口 |
+| :-- | :-- | :-- |
+| SU_Box | docker-compose | `pwn/SU_Box/env/pwn_deploy/` |
+| SU_Chronos_Ring | docker-compose | `pwn/SU_Chronos_Ring/env/pwn_deploy/` |
+| SU_Chronos_Ring1 | docker-compose | `pwn/SU_Chronos_Ring1/env/pwn_deploy/` |
+| SU_EzRouter | dockerfile | `pwn/SU_EzRouter/firmware/` |
+| SU_evbuffer | dockerfile | `pwn/SU_evbuffer/env/` |
+| SU_fullchian | metadata-only | `pwn/SU_fullchian/README.md` |
+| SU_minivfs | dockerfile | `pwn/SU_minivfs/env/` |
+
+### 逆向工程 (RE) 系列 — 8 题
+
+| 题目 | 类型 | 复现入口 |
+| :-- | :-- | :-- |
+| SU_Protocol | archive | `re/SU_Protocol/attachments/` + `re/SU_Protocol/env/` |
+| SU_West | archive | `re/SU_West/attachments/SU_West.zip` |
+| SU_easygal | archive | `re/SU_easygal/attachments/` + `re/SU_easygal/env/` |
+| SU_flumel | archive | `re/SU_flumel/attachments/attachment.zip` + `re/SU_flumel/sourcecode/sourcecode.zip` |
+| SU_Lock | archive | `re/SU_Lock/attachments/` |
+| SU_MvsicPlayer | archive | `re/SU_MvsicPlayer/attachments/restore_attachment.sh` |
+| SU_revird | archive | `re/SU_revird/attachments/SU_Revird.zip` |
+| SU_老年固件 | archive | `re/SU_老年固件/attachment.zip` |
+
+### Web 安全系列 — 8 题
+
+| 题目 | 类型 | 复现入口 |
+| :-- | :-- | :-- |
+| SU_Note | docker-compose | `web/SU_Note/env/` |
+| SU_Note-rev | docker-compose | `web/SU_Note-rev/env/` |
+| SU_Thief | dockerfile | `web/SU_Thief/env/` |
+| SU_cmsAgain | docker-compose | `web/SU_cmsAgain/env/` |
+| SU_jdbc-master | docker-compose | `web/SU_jdbc-master/env/web_deploy/` |
+| SU_sqli | docker-compose | `web/SU_sqli/env/web_deploy/` |
+| SU_uri | docker-compose | `web/SU_uri/env/web_deploy/` |
+| SU_wms | docker-compose | `web/SU_wms/env/` |
+
+---
+
+## 大文件处理
+
+> 为适应 GitHub 单文件 100MB 限制，部分题目的大文件已移除、分片或转换。下表列出处理方式及恢复说明。
+
+| 题目 | 已移除或转换 | 保留内容 | 恢复或重新打包 |
 | :-- | :-- | :-- | :-- |
-| AI | SU_babyAI | archive | `AI/SU_babyAI/解题赛模板/` |
-| AI | SU_easyLLM | archive | `AI/SU_easyLLM/解题赛模板/` |
-| crypto | SU_AES | docker-compose | `crypto/SU_AES/` |
-| crypto | SU_Isogeny | docker-compose | `crypto/SU_Isogeny/解题赛模板/env/deploy/docker/` |
-| crypto | SU_Lattice | docker-compose | `crypto/SU_Lattice/解题赛模板/env/deploy/docker/` |
-| crypto | SU_Prng | docker-compose | `crypto/SU_Prng/` |
-| crypto | SU_Restaurant | docker-compose | `crypto/SU_Restaurant/解题赛模板/env/deploy/docker/` |
-| crypto | SU_RSA | archive | `crypto/SU_RSA/attachments/` + `crypto/SU_RSA/writeup/` |
-| misc | SU_Artifact_Online | docker-compose | `misc/SU_Artifact_Online/env/` |
-| misc | SU_chaos | archive | `misc/SU_chaos/attachments/` |
-| misc | SU_CyberTrack | archive | `misc/SU_CyberTrack/attachments/website.zip` |
-| misc | SU_forensics | archive | `misc/SU_forensics/解题赛模板/` |
-| misc | SU_LightNovel | archive | `misc/SU_LightNovel/attachments/` |
-| misc | SU_MirrorBus-9 | docker-compose | `misc/SU_MirrorBus-9/env/pwn_deploy/` |
-| pwn | SU_Box | docker-compose | `pwn/SU_Box/env/pwn_deploy/` |
-| pwn | SU_Chronos_Ring | docker-compose | `pwn/SU_Chronos_Ring/env/pwn_deploy/` |
-| pwn | SU_Chronos_Ring1 | docker-compose | `pwn/SU_Chronos_Ring1/env/pwn_deploy/` |
-| pwn | SU_EzRouter | dockerfile | `pwn/SU_EzRouter/firmware/` |
-| pwn | SU_evbuffer | dockerfile | `pwn/SU_evbuffer/env/` |
-| pwn | SU_fullchian | metadata-only | `pwn/SU_fullchian/README.md` |
-| pwn | SU_minivfs | dockerfile | `pwn/SU_minivfs/env/` |
-| re | SU_Protocol | archive | `re/SU_Protocol/attachments/` + `re/SU_Protocol/env/` |
-| re | SU_West | archive | `re/SU_West/attachments/SU_West.zip` |
-| re | SU_easygal | archive | `re/SU_easygal/attachments/` + `re/SU_easygal/env/` |
-| re | SU_flumel | archive | `re/SU_flumel/attachments/attachment.zip` + `re/SU_flumel/sourcecode/sourcecode.zip` |
-| re | SU_Lock | archive | `re/SU_Lock/attachments/` |
-| re | SU_MvsicPlayer | archive | `re/SU_MvsicPlayer/attachments/restore_attachment.sh` |
-| re | SU_revird | archive | `re/SU_revird/attachments/SU_Revird.zip` |
-| re | SU_老年固件 | archive | `re/SU_老年固件/attachment.zip` |
-| web | SU_jdbc-master | docker-compose | `web/SU_jdbc-master/env/web_deploy/` |
-| web | SU_sqli | docker-compose | `web/SU_sqli/env/web_deploy/` |
-| web | SU_Thief | dockerfile | `web/SU_Thief/env/` |
-| web | SU_uri | docker-compose | `web/SU_uri/env/web_deploy/` |
-| web | SU_wms | docker-compose | `web/SU_wms/env/` |
+| misc/SU_Artifact_Online | `env/artifact.tar` | `sourcecode/server/` + `env/docker-compose.yml` | 直接 `docker compose up -d --build`，无需手工恢复 |
+| pwn/SU_Box | `env/su_box.tar`、`attachments/pwn_deploy.zip` | `env/pwn_deploy/`、`sourcecode/sourcecode.zip` | 改包：在 `env/pwn_deploy/` 下执行 `zip -rq ../../attachments/pwn_deploy.zip .` |
+| pwn/SU_Chronos_Ring* | `env/*.tar`、附件 zip | `env/pwn_deploy/` | 改包：在对应 `env/pwn_deploy/` 下重新 `zip -rq` |
+| re/SU_easygal | `env/env.tar` | `env/pwn_deploy/`、`env/web_deploy/`、`attachments/` | 含有多个子环境，已可继续维护 |
+| re/SU_flumel | 原始 `1.69G` 源码包 | 瘦身后的 `sourcecode/sourcecode.zip` | 重新编译时按 Flutter/Android 工具链恢复依赖并本地构建 |
+| re/SU_MvsicPlayer | `attachments/SU_MusicPlayer.zip` | `attachments/SU_MusicPlayer.zip.part-*` 分片 | 运行 `re/SU_MvsicPlayer/attachments/restore_attachment.sh` 合并 |
+| re/SU_Protocol | `env/env.tar` | `env/pwn_deploy/`、`env/web_deploy/`、`attachments/` | 含有多个子环境，已可继续维护 |
+| web/SU_jdbc-master | `env/jdbc-master.tar`、`attachments/web_deploy.zip` | `env/web_deploy/` | 改包：在 `env/web_deploy/` 下执行 `zip -rq ../../attachments/web_deploy.zip .` |
+| web/SU_sqli | `env/su_sqli.tar`、`attachments/application.zip` | `env/web_deploy/`、`application/` | 改包：在 `application/` 下重新打包成 zip |
+| web/SU_uri | `env/su_uri.tar` | `env/web_deploy/` | 直接从保留的构建目录启动，无需恢复 |
+| web/SU_wms | 单文件 `env/jeewms.war` | GitHub 友好的 `env/jeewms/` 展开目录 | 运行 `web/SU_wms/env/repack_jeewms.sh` 可重新生成 `jeewms.war` |
 
-## 大文件替代说明
+---
 
-| 题目 | 已移除或转换 | 保留内容 | 恢复方式 |
-| :-- | :-- | :-- | :-- |
-| misc/SU_Artifact_Online | `env/artifact.tar` | `sourcecode/server/` + `env/docker-compose.yml` | 直接 `docker compose up -d --build`，无需恢复镜像导出包 |
-| pwn/SU_Box | `env/su_box.tar`、`attachments/pwn_deploy.zip` | `env/pwn_deploy/`、`sourcecode/sourcecode.zip` | 如需重新打附件，在 `env/pwn_deploy/` 下执行 `zip -rq ../../attachments/pwn_deploy.zip .` |
-| pwn/SU_Chronos_Ring* | `env/*.tar`、附件 zip | `env/pwn_deploy/` | 如需恢复附件，在对应 `env/pwn_deploy/` 下重新 `zip -rq` |
-| re/SU_easygal | `env/env.tar` | `env/pwn_deploy/`、`env/web_deploy/`、`attachments/` | 当前保留目录已可继续归档维护，无需镜像导出包 |
-| re/SU_flumel | 原始 `1.69G` `sourcecode/sourcecode.zip` | 去掉 `.dart_tool/.gradle/build` 和大体积产物后的瘦身源码包 | 重新编译时按 Flutter/Android 工具链恢复依赖并本地构建 |
-| re/SU_MvsicPlayer | `attachments/SU_MusicPlayer.zip` | GitHub 友好的 `SU_MusicPlayer.zip.part-*` 分片 | 运行 `re/SU_MvsicPlayer/attachments/restore_attachment.sh` |
-| re/SU_Protocol | `env/env.tar` | `env/pwn_deploy/`、`env/web_deploy/`、`attachments/` | 当前保留目录已可继续归档维护，无需镜像导出包 |
-| web/SU_jdbc-master | `env/jdbc-master.tar`、`attachments/web_deploy.zip` | `env/web_deploy/` | 如需恢复附件，在 `env/web_deploy/` 下重新 `zip -rq ../../attachments/web_deploy.zip .` |
-| web/SU_sqli | `env/su_sqli.tar`、`attachments/application.zip` | `env/web_deploy/`、`application/` | 如需恢复附件，在 `application/` 下重新打包 |
-| web/SU_uri | `env/su_uri.tar` | `env/web_deploy/` | 直接从保留的构建目录启动 |
-| web/SU_wms | `attachments/jeewms_580e924.zip`、单文件 `env/jeewms.war` | GitHub 友好的 `env/jeewms/` 展开目录 | 运行 `web/SU_wms/env/repack_jeewms.sh` 可重新生成 `jeewms.war` |
+## 部署与依赖
 
-## 外部依赖与注意事项
+### 系统环境要求
 
-- 大部分服务题只依赖 Docker / Docker Compose；构建镜像时可能需要联网拉取基础镜像和系统包
-- `pwn/SU_Chronos_Ring` 与 `pwn/SU_Chronos_Ring1` 需要宿主机提供 `/dev/kvm`
-- `pwn/SU_EzRouter` 的 Dockerfile 在构建时会从 GitHub 拉取 `pwndbg`
-- `re/SU_flumel` 若要重新编译 APK，需要本地 Flutter / Android toolchain
-- `re/SU_Lock` 建议在开启测试模式的 Windows 10/11 虚拟机中复现
+- **Docker & Docker Compose** — 大部分题目依赖容器化环境，构建时通常需联网拉取基础镜像和系统包
+- **/dev/kvm** — `pwn/SU_Chronos_Ring` 和 `pwn/SU_Chronos_Ring1` 需要宿主机提供 KVM 虚拟化支持
+- **pwndbg** — `pwn/SU_EzRouter` 的 Dockerfile 构建时会从 GitHub 拉取 pwndbg
+- **本地工具链** — `re/SU_flumel` 若要重新编译 APK，需要本地 Flutter / Android toolchain
+- **Windows 虚拟机** — `re/SU_Lock` 建议在开启测试模式的 Windows 10/11 虚拟机中复现
+
+### 构建提示
+
+- 首次构建可能耗时较长，因需拉取大量依赖镜像
+- 如网络受限，可预先准备离线镜像或修改 Dockerfile 使用本地镜像源
+- 部分题目支持从已保存的构建目录快速启动，无需重新编译
+
+---
+
+## 大文件处理
