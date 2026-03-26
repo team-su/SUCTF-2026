@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header"  id="c7"><h4>语言设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th class="w120">是否启用多语言</th>
+                        <td>
+                        <label><input type="radio" name="LANG_AUTO_DETECT" value="1" <eq name="LangAutoDetect" value="1">checked="checked"</eq> />启用多语言</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="LANG_AUTO_DETECT" value="0" <eq name="LangAutoDetect" value="0">checked="checked"</eq> />启用单语言</label>
+    <span class='Caution'>启用多语言，前台和后台会显示语言切换按钮</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">前台默认语言</th>
+                        <td>
+                        <label><input type="radio" name="DEFAULT_LANG" value="cn" <eq name="DefaultLang" value="cn">checked="checked"</eq> />简体中文</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="DEFAULT_LANG" value="en" <eq name="DefaultLang" value="en">checked="checked"</eq> />英语</label>
+    <span class='Caution'>对多语言和单语言网站均有效，通过本选项可以设置启前台为英文网站、中文网站、中英文网站</span>
+                        </td>
+                    </tr>
+               </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+});
+</script>

@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+        <div class="box-header"  id="c7"><h4>基本设置</h4></div>
+        <div class="box-content">
+           <table class="boxtable">
+                <tr>
+                        <th>是否审核</th>
+                        <td>
+                        <label><input type="radio" name="FEEDBACK_CHECK" value="1"  />审核</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="FEEDBACK_CHECK" value="0"  />不审核</label>
+                        </td>
+                    </tr>
+                 <tr>
+                     <th>是否启用验证码</th>
+                     <td>
+                    <label><input type="radio" name="FEEDBACK_VERIFYCODE" value="1"  />启用</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" name="FEEDBACK_VERIFYCODE" value="0" />关闭</label>
+                    </td>
+                  </tr>
+           </table>
+        </div>
+        
+        <div class="box-header"  id="c7"><h4>邮件通知设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+              <tr>
+                    <th nowrap="nowrap">是否邮件通知</th>
+                    <td>
+                    <label><input type="radio" name="FEEDBACK_SENDEMAIL" value="1"  onclick="ChangeMail(1)"  />是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" name="FEEDBACK_SENDEMAIL" value="0"   onclick="ChangeMail(0)" />否</label>
+                    </td>
+                </tr>
+               <tr class="mail">
+                     <th class="w120">接收邮件帐号</th>
+                    <td><input type="text" class="textinput" style="width:350px" name="FEEDBACK_EMAIL" value="{$c.FEEDBACK_EMAIL}" />
+                    	<span class='Caution'>多个邮箱以英文逗号隔开，留空为[管理首页]->[联系方式]设置的电子邮件</span>
+                    </td>
+                </tr>
+                <tr class="mail">
+                     <th class="w120">通知邮件标题</th>
+                    <td><input type="text" class="textinput"  style="width:350px"  name="FEEDBACK_EMAIL_TITLE" value="{$c.FEEDBACK_EMAIL_TITLE}" /></td>
+                </tr> 
+            </table>
+        </div>
+        
+        <div class="box-header"  id="c7"><h4>反馈短信通知设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+                    <tr>
+                        <th class="w120">是否短信通知</th>
+                        <td>
+                            <label><input type="radio" name="FEEDBACK_SMS" value="1" onclick="ChangeSms(1)"  />是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="FEEDBACK_SMS" value="0" onclick="ChangeSms(0)" checked="checked" />否</label>
+                            <span class='Caution'>启用后，客户提交反馈后，会发送短信通知。</span>
+                        </td>
+                    </tr>
+                    <tr class="sms">
+                        <th class="w120">手机号码</th>
+                        <td><input type="text" class="textinput" style="width:130px" name="FEEDBACK_SMS_TO" value="{$c.FEEDBACK_SMS_TO}" />
+                            <span class='Caution'>注意：仅支持一个手机号码</span>
+                        </td>
+                    </tr>
+                    <tr class="sms">
+                         <th class="w120">短信通知模板</th>
+                        <td>
+         <textarea name="FEEDBACK_SMS_TEMPLATE" id="FeedbackSmsTemplate" style="height:70px; width:100%">{$c.FEEDBACK_SMS_TEMPLATE}</textarea>
+                        </td>
+                    </tr>
+                    <tr class="sms">
+                        <th class="w120"></th>
+                        <td>
+                            <span class='Caution'>
+                                <literal>
+                                    模板内容举例：您有新的信息：内容【{$Content}】，时间【{$Time}】，请及时处理！
+                                    <div style="text-indent:23px">设置好模板后，通常需要提交到短信服务商，审核以后才能使用。
+                                        支持模板变量：
+                                        <b onclick="insertAtCursorByID('FeedbackSmsTemplate','{$Content}')" class="tplvar">{$Content}</b>表示反馈恩日弄&nbsp;&nbsp;
+                                        <b onclick="insertAtCursorByID('FeedbackSmsTemplate','{$Time}')"  class="tplvar">{$Time}</b>表示反馈时间&nbsp;&nbsp;
+                                    </div>
+                                </literal>
+                            </span>
+                        </td>
+                    </tr>
+            </table>
+        </div>
+        
+        <div class="box-footer">
+            <div class="box-footer-inner">
+                <input  id="btnSubmit" class="marginright"  type="submit" value="保存设置" />
+                <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	 
+	$('#frmConfig').submit(function(){
+		try{
+			LoadBox();
+			for ( s in CKEDITOR.instances ) {
+			   CKEDITOR.instances[s].updateElement();
+			}
+		}catch(e){
+			;
+		}finally{
+			return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+		}
+	 });
+	 
+	 pageInit();
+	 function pageInit(){
+		  $("input[name='FEEDBACK_CHECK'][value={$c.FEEDBACK_CHECK}]").attr("checked",'checked');
+		  $("input[name='FEEDBACK_VERIFYCODE'][value={$c.FEEDBACK_VERIFYCODE}]").attr("checked",'checked');
+		 
+		  $("input[name='FEEDBACK_SENDEMAIL'][value={$c.FEEDBACK_SENDEMAIL}]").attr("checked",'checked');
+		  ChangeMail("{$c.FEEDBACK_SENDEMAIL}"); 
+		  
+		  $("input[name='FEEDBACK_SMS'][value={$c.FEEDBACK_SMS}]").attr("checked",'checked');
+		  ChangeSms("{$c.FEEDBACK_SMS}"); 
+	 }
+});
+
+function GoBack(){
+	window.location.href = "{$Group}/info/Feedback/ChannelID/{$Think.get.ChannelID}";
+}
+
+function ChangeSms(type){
+	if( type == 1 ){
+		$(".sms").show();
+	}else{
+		$(".sms").hide();
+	}
+}
+
+function ChangeMail(type){
+	if( type == 1 ){
+		$(".mail").show();
+	}else{
+		$(".mail").hide();
+	}
+}
+</script>

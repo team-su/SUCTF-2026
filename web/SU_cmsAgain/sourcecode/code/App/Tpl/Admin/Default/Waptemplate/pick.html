@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		#TplFile{ width:140px; height:45px; } 
+		#datatable .mode1{ background-color:#F3F3F3;}
+		#datatable .mode1 .name{ color:red;font-weight:bold; }
+		#datatable .mode1 .dirname{ color:red; font-weight:bold; }
+		#datatable #btnSave{ background:#5cb85c; border: 1px solid #4cae4c;color:#fff; float:left}
+				/*tab*/
+		.template-tab{ overflow:hidden; display:block; width:300px; margin: 0 auto;}
+		.template-tab li{ float:left; padding: 10px 35px; text-align:center; color:#888; 
+			border-radius: 5px 5px 0 0; color:#999; font-size:16px; }
+		.template-tab li a{ color:#888;  }
+		.template-tab li a:hover{ color:red;  }
+		.template-tab li.current{ background: #f2f4f6; color:#333; border: 1px solid #e3e6eb; border-bottom:0;}
+		.oem1{ display: none !important;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" action="{$Url}uploadTemplate" id="frmTpl" >
+		<input type='hidden' id="NoCtrlEnter" value="1" />
+		<input type="hidden" value="0" name="ishome"  />
+          <div class="table">
+			<ul class="template-tab oem{$IsOem}">
+				<li class="current">我的模板</li>
+				<li><a href="http://www.youdiancms.com/mobile.html" target="_blank">模板中心</a></li>
+			</ul>
+        <table class="datatable" id="datatable">
+        <tr >
+        <th width="180px" >模板名称</th>
+        <th width="150px" >模板目录</th>
+        <th width="170px" >缩略图</th>
+        <th>操作</th>
+        </tr>
+        <notempty name="TplList">
+            <volist name="TplList" id="t">
+				<tr class="mode{$t.IsUse}" id="t{$t.dirname}" >
+                <td>{$t.name}</td>
+                <td>{$t.dirname}</td>
+                <td><img src="{$t.thumbnail}" width="175" height="200"></td>
+                <td class="operator">
+                    <eq name="t.IsUse" value="1">
+                        <span style="font-weight:bold;color:red; display:block;text-align:left;padding-left:7px;">当前模板</span>
+                    <else/>
+                        <a  onclick="setCurrent('{$t.Url}')"  target="_self" id="btnSave" name="btnSave" >设为当前模板</a>
+                    </eq>
+                    <div class="btn-sep"></div>
+                    <a style="float:left" href="{$Url}lang/tname/{$t.dirname}" id="selectall"  title="设置模板语言包">语言包</a>
+                    <div class="btn-sep"></div>
+                    <a style="float:left" onclick="Del('{$t.dirname}')" class="btnDel"  title="删除当前模板">删除</a>
+                    <div class="btn-sep"></div>
+                    <a style="float:left" onclick="Backup('{$t.dirname}')" id="btnBackup" title="备份当前模板到本地">备份</a>
+                </td>
+                </tr>
+                </eq>
+            </volist>
+        <else/>
+        	<tr><td colspan="3" style="color:red;font-weight:bold;text-align:left;padding-left:10px">没有文件或文件夹!</td></tr>
+        </notempty>                               
+        </table>
+         <div class="tfoot">
+            <div id="notice">
+                <b>说明：</b>
+                <span class="notice-item">点击“设置为当前模板”按钮切换系统模板，红色模板名为当前正在使用的模板</span>
+            </div>
+         </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//设置当前模板
+function setCurrent(url){
+	if(checkSafeQuestion()) return;
+	location.href = url;
+}
+
+//删除模板
+function Del(name){
+	var tip = DeleteTip(name);
+	ConfirmBox(tip, function () {
+		url = "{$Url}del/tname/"+name;
+		$.get(url, {}, DelComplete, "json");
+	});
+}
+
+//回调函数
+function DelComplete(data, textStatus){
+	if (data.status == 1){
+		$(data.data).css("display","none");
+		SucceedBox(data.info);
+	}else{
+		//删除失败
+		ErrorBox(data.info);
+	}
+}
+	
+//备份模板
+function Backup(name){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("确定备份模板吗?", function () {
+		url = "{$Url}backup/tname/"+name;
+		location.href = url;
+		//备份不能使用ajax提交
+		//$.get(url, {}, BackupComplete, "json");
+		return true;
+	});
+}
+
+$(document).ready(function(){
+	$('#frmTpl').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			location.href = "{$Url}pick";
+		}else{ //添加频道失败
+			ErrorBox(data.info);
+		}
+	};
+	
+	$('#frmTpl').submit(function(){
+		LoadBox();
+	   return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	});
+	
+	$('#TplFile').change(function(){
+		if( !$(this).val() ) return;
+		$('#frmTpl').submit();
+	 });
+});
+</script>

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data"  method="post" id="frm">
+        <input type="hidden" name="Keywords" id="Keywords" value="{$Keywords}" />
+        <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+        <input type="hidden" name="AppID" id="AppID" value="{$AppID}" />
+        <div class="table">
+            <div class="toolbars">
+                <li class="toolbar"><a id="btnBack" href="{$Url}question/AppID/{$AppID}" title="返回">返回</a></li>  
+                <li class="toolbar"><a id="btnSaveAll" onclick="exportSuggest('{$Url}exportSuggest/AppID/{$AppID}')"  title="导出用户建议" target="_self">导出用户建议</a></li>
+                <li class="toolbar"><a id="btnCache" onclick="ClearResearchData({$AppID})"  title="清空调查数据" target="_self">清空调查数据</a></li>
+                <li class="toolbar"><b style="color:blue; margin-left:20px;">调查标题：{$AppName}</b></li>
+                <li class="toolbar toolbarform">
+                    <label>姓名/手机号码</label>
+                    <input type="text" class='textinput' name="Keywords" style="width:180px" value="{$Keywords}" id="Keywords" placeholder="姓名/手机号码"/>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="75px" nowrap="nowrap">用户姓名</th>
+                    <th  width="110px" >手机号码</th>
+                    <th>建议内容</th>
+                    <th width="125px" >建议时间</th>
+                </tr>  
+                <notempty name="Suggest">                
+                    <volist name="Suggest" id="s">
+                        <tr>
+                            <td><b>{$s.MemberRealName|htmlspecialchars}</b></td>
+                            <td>{$s.MemberMobile|htmlspecialchars}</td>
+                            <td style="text-align:left">{$s.SuggestContent|htmlspecialchars}</td>
+                            <td>{$s.SuggestTime|strtotime|yd_friend_date}</td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="4" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                
+        </table>
+        <div class="tfoot">
+        	<div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+    </div>
+</form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function exportSuggest(url){
+	if(checkSafeQuestion()) return;
+	location.href = url;
+}
+
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/suggest");
+	$('#frm').submit();
+	return true;
+}	
+
+function ClearResearchData(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("确定清除所有用户调查数据吗?", function () {
+		url = "{$Url}clearResearchData/AppID/"+id;
+		location.href = url;
+	});
+}
+
+$(document).ready(function(){
+	$("#Keywords").focus();
+});
+</script>

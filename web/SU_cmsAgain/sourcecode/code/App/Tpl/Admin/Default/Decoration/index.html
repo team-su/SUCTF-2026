@@ -1,0 +1,1861 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>模板装修</title>
+	<include file="Public:meta" />
+	<style>
+		html{height:100%; }
+		body{ height:100%; margin:0; padding:0; background:#e5e5e5; }
+		#main_page .d-state-drag{ opacity:0.9;}
+		#main_page .d-mask{ opacity:0;}
+		#main_page .d-state-lock {box-shadow: 0 5px 15px rgba(0, 50, 0, .4);}
+		iframe{ width: 100%;  height:100%;}
+		
+		.decoration-table{ width:100%; height:100%; color:#fff;  margin:0; padding:0;border:none; }
+		.decoration-table td{ text-align:center; vertical-align:middle;}
+		.decoration-table th{ text-align:center; vertical-align:middle; }
+		.decoration-header{ height: 55px; background:#343a41;}
+		
+		.decoration-table .th-logo{ padding-left:8px; width: 300px; text-align:left;  font-size: 18px; }
+		.decoration-table .switch{ padding: 8px 0px; border-radius: 50px; border: 1px solid #666; font-size:14px;}
+		.decoration-table .switch span{ padding: 8px 17px;text-align: center; color: #FFF; cursor: pointer; font-size: 14px;}
+		.decoration-table .switch .current{ background:#2589ff; border-radius:50px;}
+		.decoration-table .switch img{    width: 16px; vertical-align: middle; margin-right: 5px;}
+		
+		.decoration-table .th-admin{ padding-right:10px; width: 300px; text-align:right; font-size:14px;}
+		.th-admin img{ height:38px; border-radius:50%;vertical-align: middle; }
+		.th-admin .AdminName{ color: #fff;}
+		.btnDecoration{ margin:0 10px; padding: 8px 16px; border-radius:4px;  color:#fff; background:#2589ff; }
+		.btnDecoration:hover{ opacity:0.8; color:#fff; }
+		.btnCode{ background: #ff3366; }
+		.btnBackup{ background: #f0ad4e; }
+		
+		/*参数设置弹框内容设置*/
+		.edit-textarea{ width: 500px; height: 180px; }
+		.edit-text{ width: 400px; margin: 15px 5px; }
+		#dlgCode{ width: 1000px; height: 560px; }
+		#dlgConfig{ width:1024px; max-height:530px; overflow:auto; display:none; background:#f2f2f6;}
+		#dlgConfig .box-content{ padding:5px;}
+		#dlgConfig .boxtable th{ width:15%; padding: 8px 5px;}
+		#dlgConfig .boxtable td{ width:auto;}
+		.decoration .d-buttons .d-button{ padding: 10px 35px; }
+		#dlgConfig .UploadInput{ width: 372px !important;}
+		#dlgConfig textarea{ transition:0s; /*方便拖动*/}
+		.ui-dialog .ui-dialog-statusbar{ padding:0; }
+		#dlgImage{ display:none; padding:15px 5px;}
+		table .ContentDialogFooter{ display:none; }
+		/*tabbar设置*/
+		#config-table .tabbar td{ text-align:center; padding-bottom:16px;}
+		#config-table .tabbar .tabwrap{  background:#f0f0f0; border-radius:5px; padding: 6px 0px; border:1px solid #2588fe;}
+		#config-table .tabbar .tab-item{ padding:6px 18px;  cursor:pointer;}
+		#config-table .tabbar .tab-item.current{ color:#fff; background:#2588fe; }
+		/*组件选择*/
+		#dlgComponent{ width: 1400px; height: 600px;}
+		.component_title { text-align: center; padding: 3px 0; overflow:hidden; background: #fff;}
+		.component_title .name{ padding: 6px 2px; width:83px; cursor:pointer; background: #f0f0f0;color: #666;margin:0 6px 6px 0;border-radius: 5px; float:left;}
+		.component_title .active{ color:#FFF; background: #2589ff;}
+		
+		.component_body{ overflow:auto; height: 524px;}
+		.component_body .picturelist{ overflow:hidden;}
+		.component_body .picturelist li{ width:33.33%; overflow:hidden; float:left; }
+		.component_body .picturelist .wrap{ margin: 5px 5px;overflow: hidden;height: 295px;position: relative; background: #fff;
+		border-radius: 5px; cursor: pointer; border: 1px solid #ddd; }
+		.component_body .picturelist .wrap:hover{ opacity:0.8;}
+		.component_body .picturelist .active{ border-color:#cb1a22;}
+		.component_body .picturelist .name{ text-align:left; padding:8px 5px; background: #fff;position: absolute;bottom: 0;left: 0;width: 100%;font-size: 15px; }
+		.component_body .picturelist .free{ float:right; color:red; font-size:12px; margin-right: 15px;}
+		.component_body .picturelist .active .name{ color:#cb1a22; }
+		.component_body .picturelist .picture{ width: 100%;}
+		.component_body .picturelist i{ display:none; }
+		.component_body .picturelist .active i{ display:block;position:absolute; right:-1px; bottom:0; padding:0; line-height:1; font-size: 24px; font-style:normal; }
+
+		/*表格组件*/
+		#dlgConfig .yd-table{ width:99%;}
+		#dlgConfig .yd-table td{ padding:1px;}
+		#dlgConfig .yd-table td .textinput{ border:1px solid #ccc; cursor:pointer; width:99%;}
+		.tr_show{ display:block;}
+		.tr_hide{display:none;}
+		#contentToCopy{height:0; opacity:0; /*用于拷贝配置变量 必须设置为不可见*/ }
+		/*修改百度编辑器默认背景颜色，防止文字白色时，无法编辑*/
+		 .edui-default .edui-editor-iframeholder {  background-color:#95cf34; }
+		 
+		 /*默认滚动条*/
+		#dlgConfig::-webkit-scrollbar, .component_body::-webkit-scrollba{ width : 5px; }
+		#dlgConfig::-webkit-scrollbar-thumb, .component_body::-webkit-scrollbar-thumb { 
+		border-radius: 5px; box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1); background: #ccc; }
+		#dlgConfig::-webkit-scrollbar-track, .component_body::-webkit-scrollbar-track{ 
+		box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2); background: #f0f0f0; }
+		.jscolor-picker-wrap{ z-index: 30000 !important;}
+	</style>
+</head>
+<body id="main_page" class="decoration" style="overflow:hidden;">
+	<table class="decoration-table" cellpadding="0" cellspacing="0">
+        <tr  class="decoration-header">
+			<th class="th-logo">
+				<span class="switch">
+					<span class="current" onclick="setPreviewMode(this, 1)"><img src="{$Images}icon_pc.png" />PC</span>
+					<span onclick="setPreviewMode(this, 2)"><img src="{$Images}icon_phone.png" />手机</span>
+					<span onclick="setPreviewMode(this, 3)"><img src="{$Images}icon_pad.png" />平板</span>
+				</span>
+			</th>
+			<th class="th-button">
+				<a class="btnDecoration btnBackup" onclick="backupTemplate()" target="_blank">备份当前模板</a>
+				<a class="btnDecoration btnStyle" onclick="config(1)" target="_blank">全局设置</a>
+				<a class="btnDecoration btnCode" onclick="showCode()" target="_blank">自定义代码</a>
+				<a class="btnDecoration btnStyle" onclick="refreshFrame()" target="_blank">刷新</a>
+				<a class="btnDecoration btnPreview" onclick="previewFrame(this)" target="_blank">预览</a>
+			</th>
+			<th class="th-admin">
+				<a href="{$Group}/public/adminIndex" target="_blank" title="返回后台">
+				<notempty name="MemberAvatar">
+					<img class="avatar" src="{$MemberAvatar}" />
+				<else />
+					<img class="avatar" src="{$Images}defaultavatar.png">
+				</notempty>
+				<span class="AdminName">{$AdminName}</span>
+				</a>
+			</th>
+        </tr>
+        <tr><td colspan="3" style="height:100%;"><iframe src="{:HomeUrl()}" name="frmDecoration" id="frmDecoration" target="decoration" scrolling="yes" frameborder="0"></iframe></td></tr>
+	</table>
+</body>
+</html>
+
+<div id="dlgConfig">
+	<input type="text" value="" id="contentToCopy" /><!--用于拷贝配置变量-->
+	<form enctype="multipart/form-data" action="{$SaveConfigAction}" method="post" id="frmSaveConfig">
+		<div class="box-content">
+			<table id="config-table" class="boxtable"></table>
+		</div>
+	</form>
+</div>
+
+<div id="dlgImage">
+	<form id="frmImage" method="post" action="" enctype="multipart/form-data">
+		<input type="text" id="editfileImage" class="textinput w450" value=""  />
+		<span class="UploadWrapper">
+			<input class="btnFileUpload" type="button" value="上传" />
+			<input id="editfile" name ="editfile" type ="file" size="70" class="InputFile" accept="image/*"/>
+		</span>
+		<input id="btnServer" onclick="BrowserImageServer()" name ="btnServer"  type ="button" value="{$Think.lang.SelectPicture}"  class="btnPadding" />
+	</form>
+</div>
+<script type="text/javascript">
+	var gPreviewMode = 1; //默认为1:PC版、2：手机、3：平板
+	var gLanguageMark = ''; //前端模板语言标识：cn、en
+	var gEditImage = '<img  class="yd-btn-edit" src="{$Images}edit.png" />';
+	var gAddImage = '<div  class="yd-btn-slot">+</div>';
+	var gGroupID = 0;
+	var gTabName = ''; //当前Tab的名称
+	var gMetaData = {};
+	function ShowLoading(title){
+		if(!title) title = "拼命加载中...";
+		LoadBox(title);
+	}
+	function CloseLoading(){
+		CloseLoadBox();
+	}
+	function setPreviewMode(obj, type){
+		gPreviewMode = type;
+		$(".th-logo .switch span").removeClass("current");
+		$(obj).addClass("current");
+		var style={};
+		switch(type){
+			case 2: //手机
+				style = {"width": "400px", "height":"100%" };
+				break;
+			case 3: //平板
+				style = {"width": "768px", "height":"100%" };
+				break;
+			default:
+				style = {"width": "100%", "height":"100%" };
+		}
+		//如果手机版存在，就直接跳转到手机版
+		var url = "";
+		var wapExist = "{$WapExist}";
+		if(wapExist==1 && (type==2 || type==3) ){
+			url = "{:WapHomeUrl()}";
+		}else{
+			url = "{:HomeUrl()}";
+		}
+		$.post("{$Url}setPreviewMode", {Type:gPreviewMode}, function(){
+			window.frames['frmDecoration'].location.href = url;
+			$("#frmDecoration").css(style);
+			//refreshFrame();
+		});
+	}
+	
+	//分组配置
+	function config(GroupID, TabName){
+		if(!GroupID){
+			ErrorBox("分组参数不存在！");
+		}
+		if(!TabName) TabName = '';
+		ShowLoading();
+		var url = "{$ConfigContentUrl}";
+		var params = {
+			"GroupID":GroupID,
+			"TabName":TabName,
+			"PageUrl":window.frames['frmDecoration'].location.href
+		};
+		//语言包
+		if(gLanguageMark){
+			params["l"] = gLanguageMark;
+		}
+		$.post(url, params, function(data){
+			CloseLoading();
+			if (data.status == 1){
+				console.log("getConfigContent", data);
+				$("#config-table").html(data.data["Html"]);
+				//不设置高度会自适应高度
+				//$("#dlgConfig").height(data.data["Count"]*49);
+				gMetaData = data.data["MetaData"];
+				showConfigDlg(GroupID, data.data["IsLock"]);
+			}else{
+				ErrorBox(data.info);
+			}
+		}, "json");
+	}
+
+	
+	//分组编辑对话框
+	function showConfigDlg(GroupID, IsLock){
+		initJsColor();
+		gGroupID = GroupID;
+		gTabName = $(".tabbar .tab-item.current").text();
+		mytitle = "区块"+GroupID+"设置";
+		var gDlg = dialog({
+			title: mytitle,
+			id: 'dlgConfig',
+			lock:IsLock, //设置为true解决向上快速拖动时，对话框相应慢的问题，必须把遮罩改成完全透明
+			padding: 0,
+			zIndex:9999,
+			content: document.getElementById('dlgConfig'),
+			onshow:function(){
+				floatListImage(null);
+			},
+			ok: function () {
+				updateListData(); //更新list的数据
+				var PageUrl = window.frames['frmDecoration'].location.href;
+				var action = "{$SaveConfigAction}?PageUrl="+PageUrl+"&GroupID="+GroupID;
+				$('#frmSaveConfig').attr('action', action);
+				ajaxSubmit(function(res){
+					removeAllEditor();
+					gDlg.close().remove();
+				});
+				gGroupID = 0;
+				return false;
+			},
+			cancel:function(){
+				removeAllEditor();
+				resetComponentStyle();
+				gGroupID = 0;
+				gDlg.close().remove();
+			},
+			okValue: '保存',
+			cancelValue: '取消'
+		}).show();
+	}
+	
+	//移除所有ck实例，否则在弹框关闭（取消或确定后）后会报异常：
+	//uncaught exception:The editor instance  is already attached to the provided element.
+	function removeAllEditor(){
+		try{
+			var editorType = "{$TextEditor}";
+			if(1==editorType){ //ck
+				if(CKEDITOR && CKEDITOR.instances){
+					for(var myInstance in CKEDITOR.instances){
+						CKEDITOR.instances[myInstance].destroy(true);
+					}
+				}
+			}else{ //ueditor
+				/*
+				if(UE && UE.instants){
+					for(var myInstance in UE.instants){
+						UE.instants[myInstance].destroy();
+					}
+				}
+				*/
+			}
+		}catch(e){
+			console.log(e);
+		}
+	}
+	
+	//切换tab
+	function changeTab(obj, tabID){
+		console.log("changeTab "+$(obj).text());
+		$(".tabbar .tab-item").removeClass("current");
+		$(obj).addClass("current");
+		
+		$(".trtab").hide();
+		$("."+tabID).show();
+		gTabName = $(obj).text();
+	}
+	
+	//表单提交
+	$('#frmSaveConfig').submit(function(){
+		ajaxSubmit();
+		return false;
+	 });
+	 
+	 var gColorList = [{$ColorList}];
+	function ajaxSubmit(completeCallback){
+		try{
+			ShowLoading();
+			var editorType = "{$TextEditor}";
+			if(editorType==1){
+				for ( s in CKEDITOR.instances ){
+				   CKEDITOR.instances[s].updateElement();
+				}
+			}else{
+				//更新编辑器内容
+				$(".ueditor").each(function(){
+					var editorID = $(this).attr("id");
+					if(editorID){
+						var content = UE.getEditor(editorID+"container").getContent() 
+						$("#"+editorID).val( content);
+					}
+				});
+			}
+		}catch(e){
+			;
+		}finally{
+			$("#frmSaveConfig").ajaxSubmit({success: function(data){
+				CloseLoading();
+				if(completeCallback) completeCallback(data);
+				if (data.status==1){
+					gColorList = data.data.colors;
+					SucceedBox(data.info);
+					updateWebPage();
+				}else if(data.status==0){
+					ErrorBox(data.info);
+				}else if(data.status==2){
+					ErrorBox(data.info); //上传失败
+				}else if(data.status==3){
+					$('#'+data.data.ImageField).val(data.data.Path);
+					$('#'+data.data.ImageField).focus(); //用于触发previewBg函数，实时预览
+					SucceedBox(data.info); //上传成功
+				}
+			},dataType: 'json'});
+		}
+	}
+	
+	  
+	  /**
+	   * 初始化jscolor
+	   */
+	  function initJsColor(){
+			var mypalette = [
+				'#00000000', '#000000', '#333333', '#666666', '#999999', '#cccccc', '#dddddd', '#eeeeee', '#f0f0f0', '#f5f5f5', '#f9f9f9', '#ffffff',
+			 ];
+			 if(gColorList && gColorList.length > 0){
+				mypalette = mypalette.concat(gColorList);
+			 }
+			jscolor.presets.default = {
+			  palette: mypalette,
+			  alphaChannel:true,
+			  required:false,
+			  format:"AUTO",  //如果设置为hexa，会强制转为hexa格式，#000000会变成#000000FF
+			  paletteCols: 12,
+			  //hideOnPaletteClick: true,
+			  width: 220,
+			  height: 120,
+			  //position: 'right',
+			  //previewPosition: 'right',
+			}
+			jscolor.install();
+	  }
+	
+	function getToken(){
+		var token = window.localStorage.getItem("Token") || '';
+		return token;
+	}
+	
+	//通过后台编辑内容
+	function editContent(dataString){
+		//dataString格式：数据模型,主键ID值,字段名称（对当前无效）
+		var iframeHeight = $(document).height()*0.85;
+		var iframeWidth = $(document).width()*0.8;
+		html = '<div id="dlgContent" style="width:[width]px;height:[height]px" >';
+		html += '<iframe name="frmContent" id="frmContent"  scrolling="yes" frameborder="0" height="100%" width="100%" src="';
+		var params = dataString.split(",");
+		var type = params[0];
+		switch(type){
+			case 'channel': //频道列表
+				html += "__GROUP__/Channel/index";
+				if(params[2]){ //父级频道
+					html += "/Parent/"+params[2];
+				}
+				break;
+			case '_channel': //修改频道
+				html += "__GROUP__/Channel/modify/ChannelID/"+params[1];
+				if(params[2]){
+					html += "/TabIndex/"+params[2];
+				}
+				break;
+			case 'info': //信息列表
+				html += "__GROUP__/Info/index/ChannelID/"+params[1];
+				break;
+			case '_info': //单个信息
+				html += "__GROUP__/Info/modify/InfoID/"+params[1];
+				if(params[2]){
+					html += "/TabIndex/"+params[2];
+				}
+				break;
+			case 'banner': //幻灯片列表
+				iframeHeight *= 0.8;
+				iframeWidth *= 0.8;
+				html += "__GROUP__/Banner/index";
+				break;
+			case '_banner': //单个幻灯片
+				iframeHeight *= 0.8;
+				iframeWidth *= 0.8;
+				html += "__GROUP__/Banner/modify/BannerID/"+params[1];
+				break;
+			case 'link': //友情链接
+				html += "__GROUP__/Link/index";
+				break;
+			case 'job': //人才招聘
+				html += "__GROUP__/Job/index";
+				break;
+			case '_job': //单个岗位
+				html += "__GROUP__/Job/modify/JobID/"+params[1];
+				break;
+			case 'guestbook': //在线留言
+				html += "__GROUP__/GuestBook/index";
+				break;
+			case 'basic': //基本设置
+				iframeHeight = 650;
+				iframeWidth = 1100;
+				html += "__GROUP__/Config/basic";
+				break;
+			case 'contact': //联系方式
+				iframeHeight = 600;
+				iframeWidth = 900;
+				html += "__GROUP__/Config/contact";
+				break;
+			case 'support': //在线客服
+				iframeHeight = 730;
+				iframeWidth = 1000;
+				html += "__GROUP__/Support/index";
+				break;
+			case 'gotop': //回顶部
+				iframeHeight = 700;
+				iframeWidth = 980;
+				html += "__GROUP__/Config/gotop";
+				break;
+			case 'wxbasic': //微信基本设置
+				iframeHeight = 650;
+				iframeWidth = 1100;
+				html += "__GROUP__/Wx/basic";
+				break;
+			case 'language': //语言设置
+				iframeHeight = 330;
+				iframeWidth = 800;
+				html += "__GROUP__/Config/language";
+				break;
+			case 'reg': //会员注册设置
+				iframeHeight = 650;
+				iframeWidth = 1150;
+				html += "__GROUP__/Config/reg";
+				break;
+			case 'tag': //修改标签
+				html += "__GROUP__/Tag/modify/TagID/"+params[1];
+				break;
+		}
+		//语言包
+		if(gLanguageMark){
+			html += "?l="+gLanguageMark;
+		}
+		html += '"></iframe></div>';
+		//替换变量======================================
+		html = html.replace(/\[width\]/g, iframeWidth);
+		html = html.replace(/\[height\]/g, iframeHeight);
+		//===========================================
+		console.log(html);
+		//隐藏页脚
+		var contentChanged = false;
+		var gDlg = dialog({ 
+			title: "编辑内容",id: 'dlgContent',padding: 0,content: html, 
+			cancelDisplay: false,
+			cancel:function(){
+				console.log("contentChanged："+contentChanged);
+				if(contentChanged){
+					//只能在关闭窗口时，重置变量
+					contentChanged = false; 
+					refreshFrame();
+				}
+				$("#dlgContent").parents("table.d-dialog").find(".d-footer").removeClass("ContentDialogFooter");
+				gDlg.close().remove(); 
+			},
+			onshow:function(){
+				$("#dlgContent").parents("table.d-dialog").find(".d-footer").addClass("ContentDialogFooter");
+				//每次打开都会运行
+				$("#frmContent").on("load", function(event){
+					console.log("frmContent iframe加载完成"); //对话框弹出后执行的函数
+					var selector = "#btnSubmit, .btnDel, #btnSave, #sortall,#del";
+					$(selector, this.contentDocument).mousedown(function(){
+						console.log("mousedown事件");
+						contentChanged = true;
+					});
+				});
+			} 
+		}).show();
+	}
+	
+	//就地编辑内容（使用无刷新技术）
+	function editInplace(dataString, content, obj){
+		//格式：0数据模型, 1主键ID值, 2字段名称,3编辑类型（text,textarea）
+		var temp = dataString.split(",");  
+		var editType = temp[3] ? temp[3] : 'textarea';
+		var contentHtml = "";
+		var title = "编辑内容";
+		if("text"==editType){ //编辑单行文本
+			contentHtml = '<input class="edit-text textinput" type="text" id="dlgText" value="'+content+'" />';
+		}else{ //默认编辑多行文本
+			contentHtml = '<textarea class="edit-textarea" id="dlgText">'+content+'</textarea>';
+		}
+		var gDlg = dialog({
+			title: title,
+			id: 'dlgText',
+			padding: 0,
+			content: contentHtml,
+			ok: function () {
+				var url = "{$SaveContentAction}";
+				var currentContent = $("#dlgText").val();
+				var params = {Content: currentContent, DataString:dataString};
+				$.post(url, params, function(res){
+					if (res.status == 1){
+						gDlg.close().remove();
+						$(obj).text(params['Content']);
+						SucceedBox(res.info);
+					}else{
+						ErrorBox(res.info);
+					}
+				}, "json");
+				return false;
+			},
+			cancel:function(){ 
+				gDlg.close().remove(); 
+			},
+			okValue: '保存',
+			cancelValue: '取消',
+			cancel: true
+		}).show();
+	}
+	
+	//就地图片
+	function editImageInplace(dataString, content, obj){
+		//格式：0数据模型, 1主键ID值, 2字段名称
+		$("#editfileImage").val(content);
+		var gDlg = dialog({
+			title: "编辑图片",
+			id: 'dlgImage',
+			padding: 0,
+			content: document.getElementById('dlgImage'),
+			ok: function () {
+				var url = "{$SaveContentAction}";
+				var currentContent = $("#editfileImage").val();
+				var params = {Content: currentContent, DataString:dataString};
+				$.post(url, params, function(res){
+					if (res.status == 1){
+						gDlg.close().remove();
+						$(obj).find("img").attr("src", params['Content']);
+						SucceedBox(res.info);
+					}else{
+						ErrorBox(res.info);
+					}
+				}, "json");
+				return false;
+			},
+			cancel:function(){ 
+				gDlg.close().remove();
+			},
+			okValue: '保存',
+			cancelValue: '取消',
+			cancel: true
+		}).show();
+	}
+	
+	//保存设置成功，同步刷新页面
+	function updateWebPage(data){
+		console.log("返回数据：",data);
+		window.frames['frmDecoration'].location.reload();
+	}
+	
+	//刷新当前页
+	function refreshFrame(){
+		window.frames['frmDecoration'].location.reload();
+	}
+	
+	function previewFrame(obj){
+		var pageUrl = window.frames['frmDecoration'].location.href;
+		$(obj).attr("href", pageUrl);
+		return true;
+	}
+	
+	function showCode(){
+		var url = "{$GetCodeAction}";
+		var params = {  
+			"PageUrl":window.frames['frmDecoration'].location.href
+		};
+		$.post(url, params, function(res){
+			if (res.status == 1){
+				showCodeDlg(res.data);
+			}else{
+				ErrorBox(res.info);
+			}
+			return true;
+		}, "json");
+	}
+	
+	//备份当前模板
+	function backupTemplate(){
+		var title = '<div style="font-size:18px;line-height:1.3em;font-weight:bold;">';
+		title += "确定备份当前模板吗？<br/>在【系统】-【一键备份全站】查看已备份模板！</div>";
+		ConfirmBox(title, function () {
+			LoadBox("备份中...");
+			var url = "{$Url}backupTemplate";
+			var params = {
+				"PageUrl":window.frames['frmDecoration'].location.href
+			};
+			$.post(url, params, function(res){
+				CloseLoading();
+				if (res.status == 1){
+					SucceedBox(res.info);
+				}else{
+					ErrorBox(res.info);
+				}
+				return true;
+			}, "json");
+		});
+	}
+	
+	//自定义代码对话框
+	function showCodeDlg(code){
+		var content = '<textarea id="dlgCode">'+code+'</textarea>';
+		var gDlg = dialog({
+			title: "自定义代码（仅支持编写样式和脚本代码）",
+			id: 'dlgCode',
+			padding: 0,
+			lock:true,
+			content: content,
+			ok: function () {
+				var url = "{$SaveCodeAction}";
+				var params = { 
+					"Content": $("#dlgCode").val(), 
+					"PageUrl":window.frames['frmDecoration'].location.href
+				};
+				$.post(url, params, function(res){
+					if (res.status == 1){
+						gDlg.close().remove();
+						refreshFrame();
+						SucceedBox(res.info);
+					}else{
+						ErrorBox(res.info);
+					}
+				}, "json");
+				return false;
+			},
+			cancel:function(){ 
+				gDlg.close().remove(); 
+			},
+			okValue: '保存',
+			cancelValue: '取消',
+			cancel: true
+		}).show();
+	}
+	
+	
+	//获取附加到iframe的样式
+	function getStyle(){
+			var style = '<style>';
+			style += ' body{ padding-bottom: 50px;}';
+			style += ' [yd-group],[yd-content],[yd-order],[yd-add],[yd-delete]{ outline:1px dashed #ccc !important; position:relative; box-sizing:border-box;  min-height:26px; outline-offset:-1px;/*不加会导致部分虚框无法显示*/} ';
+			style += ' .yd-group-on, .yd-content-on{ outline:1px solid red !important;  z-index:2000;} ';
+			//style += ' #banner_main.yd-group-on, #banner_main.yd-text-on{ z-index:2000; } ';
+			//按钮
+			style += ' .yd-toolbar{ text-align:center;  font-size:12px !important ; line-height:normal;}';
+			style += ' .yd-btn{ color:#fff; cursor:pointer; text-align:center; margin-right:1px; display:none; line-height: normal; width:31px; border-radius:0 0 3px 3px; padding:3px 6px; writing-mode: horizontal-tb;}';
+			style += ' .yd-btn-config{ background:#1baadb; }';
+			style += ' .yd-btn-content{ background:#f2a655; margin-right:10px;}';
+			style += ' .yd-group-on .yd-toolbar, .yd-content-on .yd-toolbar, .yd-order-on .yd-toolbar, .yd-add-on .yd-toolbar, .yd-delete-on .yd-toolbar{ display: block; position:absolute; left:0; right:0; top:0; margin:auto !important ; z-index:88892; max-width:290px; width:100%;/*兼容IE11*/}';
+			style += ' .yd-group-on>.yd-toolbar .yd-btn-config, .yd-content-on>.yd-toolbar .yd-btn-content{ display: inline-block;}';
+			style += ' .yd-btn-config:hover, .yd-btn-content:hover{ opacity:0.8; }';
+			//排序按钮
+			style += ' .yd-btn-up{ background:#d9534f; }';
+			style += ' .yd-btn-down{ background:#d9534f; }';
+			style += ' .yd-order-on>.yd-toolbar .yd-btn-up, .yd-order-on>.yd-toolbar .yd-btn-down{ display: inline-block; }';
+			style += ' .yd-btn-up:hover, .yd-btn-down:hover{ opacity:0.8; }';
+			//编辑按钮
+			style += ' .yd-btn-add{ background:#04a07b; }';
+			style += ' .yd-btn-delete{ background:red; }';
+			style += ' .yd-add-on>.yd-toolbar .yd-btn-add, .yd-delete-on>.yd-toolbar .yd-btn-delete{ display: inline-block; }';
+			style += ' .yd-btn-add:hover, .yd-btn-delete:hover{ opacity:0.8; }';
+			//文本修改
+			style += ' [yd-text]{ outline:1px dashed #ccc; outline-offset:-1px;position:relative; box-sizing:border-box; } ';
+			style += ' .yd-text-on{ outline:1px solid #2cc181; box-sizing:border-box;} ';
+			style += ' .yd-btn-edit{  background:#2cc181 !important ; display:none; width:18px !important ; height: 18px !important ; padding:5px; cursor:pointer; border-radius: 50% !important;opacity: 1 !important} ';
+			style += ' .yd-text-on{ z-index:88888; }';
+			style += ' .yd-text-on .yd-btn-edit{ box-shadow:0 5px 5px rgba(0,0,0,0.1); display: block; position:absolute; left:0; right:0; top:0; bottom:0;margin:auto !important ; z-index:88889; opacity: 1 !important; }';
+			style += ' .yd-btn-edit:hover{ background:#25a56e !important; }';
+			//图片修改
+			style += ' [yd-image]{ outline:1px dashed #ccc; outline-offset:-1px;position:relative; box-sizing:border-box;} ';
+			style += ' .yd-image-on{ outline:1px solid #2cc181;  z-index:1999; box-sizing:border-box;} ';
+			style += ' .yd-image-on{ z-index:88888; }';
+			style += ' .yd-image-on .yd-btn-edit{ filter: grayscale(0);display: block; position:absolute; left:0; right:0; top:0; bottom: 0;margin:auto !important ; z-index:88889;}';
+			style += ' body #tool{ display:block; }';
+			
+			//添加子组件
+			style += ' [yd-slot]{ outline:1px dashed #2cc181; position:relative; box-sizing:border-box; min-height:30px; min-width:20px; outline-offset:-1px;} ';
+			style += ' .yd-slot-on{ outline:1px solid #2cc181; box-sizing:border-box;} ';
+			style += ' .yd-btn-slot{  background:#2cc181 !important ; display:none; width:25px !important;height:25px !important;cursor:pointer; border-radius: 50% !important;opacity: 1 !important; font-size:21px; color:#fff; text-align:center; line-height:21px;} ';
+			style += ' .yd-slot-on{ z-index:88888; }';
+			style += ' .yd-slot-on .yd-btn-slot{ box-shadow:0 5px 5px rgba(0,0,0,0.1); display: block; position:absolute; left:0; right:0; top:0; bottom:0;margin:auto !important ; z-index:88889; opacity: 1 !important; }';
+			style += ' .yd-btn-slot:hover{ background:#25a56e !important; color:#f0f0f0;}';
+			style += ' [yd-slot] .yd-btn-add, [yd-slot] .yd-btn-up, [yd-slot] .yd-btn-down{ display:none !important; }';
+			
+			style += '</style>';
+			return style;
+	}
+
+	//绑定分组事件
+	function bindToolbarEvent(context){
+		//设置=============================================
+	　$("[yd-group]", context).hover(function(){
+			var that = this;
+			addToolbar(that);
+			$(that).addClass("yd-group-on");
+			var btnConfig = $(that).find("> .yd-toolbar .yd-btn-config");
+			btnConfig.unbind(); //必须先解绑，否则会导致重复绑定
+			btnConfig.click(function(event){
+				event.stopPropagation();  //阻止事件冒泡
+				var groupid = $(that).attr('yd-group');
+				var tab = $(that).attr('yd-tab');
+				console.log("groupid="+groupid);
+				config(groupid, tab);
+				return false; //防止标签a默认事件
+			});
+	　 }, function(){
+			$(this).removeClass("yd-group-on");
+			$(this).find(".yd-toolbar").remove();
+		});
+		//================================================
+		
+		//判断是否可以修改详情
+		function canEdit(obj){
+			var content = $(obj).attr("yd-content").split(",");
+			var type = (content && content[0]) ? content[0] : "";
+			if("_info"== type){
+				return true;
+			}else if("_channel"== type && $(obj).parents("[yd-order]").length > 0){
+				return true;
+			}
+			return false;
+		}
+		//内容=============================================
+		$("[yd-content]", context).hover(function(){
+			var that = this;
+			if(canEdit(this)){ //文章详情
+				$(that).addClass("yd-text-on");
+				$(that).append(gEditImage);
+				var btnEdit = $(that).find("> .yd-btn-edit");
+				btnEdit.unbind(); //必须先解绑，否则会导致重复绑定
+				btnEdit.click(function(event){
+					event.stopPropagation();    //阻止事件冒泡
+					var data = $(that).attr('yd-content');
+					editContent(data);
+					return false; //防止标签a默认事件
+				});
+			}else{
+				addToolbar(that);
+				$(that).addClass("yd-content-on");
+				//内容
+				var btnContent = $(that).find("> .yd-toolbar .yd-btn-content");
+				btnContent.unbind(); //必须先解绑，否则会导致重复绑定
+				btnContent.click(function(event){
+					event.stopPropagation();  //阻止事件冒泡
+					var data = $(that).attr('yd-content');
+					editContent(data);
+					return false; //防止标签a默认事件
+				});
+			}
+	　 }, function(){
+			if(canEdit(this)){
+				$(this).removeClass("yd-text-on");
+				$(this).find(".yd-btn-edit").remove();
+			}else{
+				$(this).removeClass("yd-content-on");
+				$(this).find(".yd-toolbar").remove();
+			}
+		});
+		//==================================================
+	}
+	
+	//添加工具栏，只有不存在才添加
+	function addToolbar(obj){
+		//必须加上>，否则父级的toolbar可能不显示
+		if( $(obj).find("> .yd-toolbar").length == 0){
+			var html = '<div class="yd-toolbar">';
+			html +='<div class="yd-btn yd-btn-config">设置</div>';
+			html +='<div class="yd-btn yd-btn-content">内容</div>';
+			
+			html +='<div class="yd-btn yd-btn-add">添加</div>';
+			html +='<div class="yd-btn yd-btn-delete">删除</div>';
+			html +='<div class="yd-btn yd-btn-up">上移</div>';
+			html +='<div class="yd-btn yd-btn-down">下移</div>';
+			
+			html +='</div>';
+			$(obj).append(html);
+		}
+	}
+	
+	//绑定文本修改事件
+	function bindTextEvent(context){
+		$("[yd-text]", context).hover(function(){
+			var that = this;
+			$(that).addClass("yd-text-on");
+			$(that).append(gEditImage);
+			var btnEdit = $(that).find(".yd-btn-edit");
+			btnEdit.unbind(); //必须先解绑，否则会导致重复绑定
+			btnEdit.click(function(event){
+				event.stopPropagation();    //阻止事件冒泡
+				var data = $(that).attr('yd-text');
+				var content = $(that).text();
+				editInplace(data, content, that);
+				return false; //防止标签a默认事件
+			});
+	　 }, function(){
+			$(this).removeClass("yd-text-on");
+			$(this).find(".yd-btn-edit").remove();
+		});
+	}
+	
+	//绑定图片修改事件
+	function bindImageEvent(context){
+		$("[yd-image]", context).hover(function(){
+			var that = this;
+			$(this).addClass("yd-image-on");
+			$(this).append(gEditImage);
+			var btnEdit = $(that).find(".yd-btn-edit");
+			btnEdit.unbind(); //必须先解绑，否则会导致重复绑定
+			btnEdit.click(function(event){
+				event.stopPropagation();    //阻止事件冒泡
+				var data = $(that).attr('yd-image');
+				var content = $(that).find("img").attr("src");
+				editImageInplace(data, content, that);
+				return false; //防止标签a默认事件
+			});
+	　 }, function(){
+			$(this).removeClass("yd-image-on");
+			$(this).find(".yd-btn-edit").remove();
+		});
+	}
+	
+		
+	//绑定子组件添价
+	function bindSubEvent(context){
+		$("[yd-slot]", context).hover(function(){
+			var that = this;
+			var objChild = $(that).find("div");
+			if( objChild.length > 0 ) return; //存在元素就不显示+号
+			$(that).addClass("yd-slot-on");
+			$(that).append(gAddImage);
+			var btn = $(that).find(".yd-btn-slot");
+			btn.unbind(); //必须先解绑，否则会导致重复绑定
+			btn.click(function(event){
+				event.stopPropagation();    //阻止事件冒泡
+				var GroupID = $(that).closest("[yd-group]").attr("yd-group");
+				var Slot = $(that).attr("yd-slot");
+				that.GroupID = GroupID;
+				that.Slot = Slot;
+				addComponent( $(that) );
+				return false; //防止标签a默认事件
+			});
+	　 }, function(){
+			$(this).removeClass("yd-slot-on");
+			$(this).find(".yd-btn-slot").remove();
+		});
+	}
+	
+	//绑定排序按钮事件
+	function bindOrderEvent(context){
+		$("[yd-order=1]", context).hover(function(){
+			var that = this;
+			addToolbar(this);
+			$(this).addClass("yd-order-on");
+			//上移按钮
+			var btnUp = $(that).find(".yd-btn-up");
+			btnUp.unbind(); //必须先解绑，否则会导致重复绑定
+			btnUp.click(function(event){
+				event.stopPropagation();    //阻止事件冒泡
+				orderComponent($(that), "moveup");
+				return false; //防止标签a默认事件
+			});
+			//下移按钮
+			var btnDown = $(that).find(".yd-btn-down");
+			btnDown.unbind(); //必须先解绑，否则会导致重复绑定
+			btnDown.click(function(event){
+				event.stopPropagation();    //阻止事件冒泡
+				orderComponent($(that), "movedown");
+				return false; //防止标签a默认事件
+			});
+	　 }, function(){
+			$(this).removeClass("yd-order-on");
+		});
+	}
+	
+	//绑定编辑按钮事件
+	function bindEditEvent(context){
+		//如果没有开启模板装修，则不显示添加和删除组件
+		var EnableDecoration = "{$EnableDecoration}";
+		if(EnableDecoration!=1) return;
+		$("[yd-add=1]", context).hover(function(){
+			var that = this;
+			addToolbar(this);
+			$(this).addClass("yd-add-on");
+			//添加按钮
+			var btnAdd = $(that).find(".yd-btn-add");
+			btnAdd.unbind(); //必须先解绑，否则会导致重复绑定
+			btnAdd.click(function(event){
+				event.stopPropagation();    //阻止事件冒泡
+				addComponent($(that));
+				return false; //防止标签a默认事件
+			});
+	　 }, function(){
+			$(this).removeClass("yd-add-on");
+		});
+		//删除
+		$("[yd-delete=1]", context).hover(function(){
+			var that = this;
+			addToolbar(this);
+			$(this).addClass("yd-delete-on");
+			//删除按钮
+			var btnDelete = $(that).find(".yd-btn-delete");
+			btnDelete.unbind(); //必须先解绑，否则会导致重复绑定
+			btnDelete.click(function(event){
+				event.stopPropagation();    //阻止事件冒泡
+				var objCurrent = $(this).closest("[yd-group]");
+				deleteComponent(objCurrent)
+				//deleteComponent($(that)); //在布局里，删除布局会有问题
+				return false; //防止标签a默认事件
+			});
+	　 }, function(){
+			$(this).removeClass("yd-delete-on");
+		});
+	}
+	
+	//拖动事件
+	function bindDragEvent(context){
+
+	}
+	
+	//添加组件（在当前对象上面添加组件）
+	function addComponent(objCurrent){
+		ShowLoading();
+		gSelectedComponent = null;
+		gComponents = null;
+		var url = "{$GetComponentAction}";
+		var params = {
+			"Slot":objCurrent.get(0).Slot,
+			"Token": getToken(),
+			"GroupID":objCurrent.attr("yd-group")
+		};
+		$.post(url, params,function(res){
+			CloseLoading();
+			if (res.status == 1){
+				gComponents = res.data; //覆盖全局变量
+				showComponentDlg(res.data, objCurrent);
+			}else{
+				ErrorBox(res.info);
+			}
+		}, "json");
+	}
+	
+	var gComponents=null;  //全部组件数据
+	var gSelectedComponent = null;  //当前选中组件
+	//选择组件
+	function selectComponentClass(obj, ComponentClassKey){
+		if(!gComponents) return;
+		var components=null;
+		var n = gComponents.length;
+		for(var i = 0; i < n; i++){
+			if(ComponentClassKey == gComponents[i]['ComponentClassKey']){
+				components = gComponents[i]['Components'];
+				break;
+			}
+		}
+		content = getComponentPictureHtml(components);
+		$(".component_title span").removeClass("active");
+		$(obj).addClass("active");
+		$(".component_body").html(content);
+	}
+	
+	//选择组件
+	function selectComponent(obj, GroupID, ComponentClassKey){
+		$("#dlgComponent li .wrap").removeClass("active");
+		$(obj).addClass("active");
+		var n = gComponents.length;
+		for(var i = 0; i < n; i++){
+			if(ComponentClassKey == gComponents[i]['ComponentClassKey']){
+				var Components = gComponents[i]['Components'];
+				var n1 = Components.length;
+				for(var j = 0; j < n1; j++){
+					if(GroupID==Components[j]['GroupID']){
+						gSelectedComponent = Components[j];
+						getComponentGroupID(Components[j]['ComponentPicture']);
+						return gSelectedComponent;
+					}
+				}
+				return null;
+			}
+		}
+	}
+	
+	//获取组件图片HTML
+	function getComponentPictureHtml(components){
+		var content = ""; 
+		if(components){
+			n =  components.length;
+			var current;
+			content += "<ul class='picturelist'>";
+			for(var i = 0; i < n; i++){
+				current = components[i];
+				content += "<li><div class='wrap' ";
+				content += " onclick=selectComponent(this,"+current['GroupID']+",'"+current['ComponentClassKey']+"')>";
+				content += " <img class='picture' src='"+current['ComponentPicture']+"' />";
+				content += "<div class='name'>"+current['ComponentName']+"（编号："+current['GroupID']+"）<i class='ydicon-selected'></i>";
+				if(1==current['IsFree']){
+					content += "<span class='free'>免费</span>";
+				}
+				content += "</div></div></li>";
+			}
+			content += "</ul>";
+		}
+		return content;
+	}
+	
+	//显示组件对话框
+	function showComponentDlg(data, objCurrent){
+		var content = '<div id="dlgComponent">';
+		content += '<div class="component_title">';
+		var n = data.length;
+		var className = '';
+		var components=null;
+		var totalCount = 0;
+		//显示组件分组
+		for(var i = 0; i < n; i++){
+			className = data[i]['ComponentClassName'];
+			var count = data[i]['Components'].length;
+			totalCount += count;
+			if(i == 0){
+				components = data[i]['Components'];
+				content += '<span class="name active" ';
+			}else{
+				content += '<span class="name" ';
+			}
+			content += " onclick=selectComponentClass(this,'";
+			content += data[i]['ComponentClassKey'];
+			content += "')>";
+			content += (className+count+"</span>");
+		}
+		content += "</div>";
+		content += "<div class='component_body'>";
+		content += getComponentPictureHtml(components);
+		content += "</div>";
+		content += "</div>";
+		var statusBar = '<select id="mygroupid"><option value="">创建默认配置</option></select>';
+		var gDlg = dialog({
+			title: "请选择组件（共"+totalCount+"个组件）",
+			id: 'dlgComponent',
+			padding: 8,
+			lock:true,
+			content: content,
+			statusbar:statusBar,
+			onshow:function(){
+			},
+			ok: function () {
+				if(!gSelectedComponent){
+					ErrorBox("请选择组件！");
+				}
+				ShowLoading();
+				var CurrentGroupID = objCurrent.attr("yd-group");
+				var Slot = 0;
+				if(!CurrentGroupID){ //表示添加子组件
+					CurrentGroupID = objCurrent.get(0).GroupID;
+					Slot = objCurrent.get(0).Slot;
+				}
+				var url = "{$AddComponentAction}";
+				var params = { 
+					ComponentClassKey: gSelectedComponent["ComponentClassKey"], 
+					GroupID: gSelectedComponent["GroupID"],
+					CurrentGroupID:CurrentGroupID,
+					Token: getToken(),
+					Slot:Slot,
+					MaxGroupID:$("#mygroupid").val(),
+					PageUrl: window.frames['frmDecoration'].location.href
+				};
+				$.post(url, params, function(res){
+					CloseLoading();
+					console.log("AddComponentAction参数：",params, res);
+					if (res.status == 1){
+						gDlg.close().remove();
+						//在当前元素的外部上面插入HTML
+						//$(objCurrent).before(res.data["ComponentHtml"]);
+						refreshFrame();
+					}else{
+						ErrorBox(res.info);
+					}
+				}, "json");
+				return false;
+			},
+			cancel:function(){ 
+				gDlg.close().remove(); 
+			},
+			okValue: '确定',
+			cancelValue: '取消',
+			cancel: true
+		}).show();
+	}
+	
+	//根据当前选中组件的GroupID，获取相同组件类型配置
+	function getComponentGroupID(ComponentPicture){
+		if(!ComponentPicture)return;
+		var url = "{$Url}getComponentGroupID";
+		var params = {
+			"ComponentPicture":ComponentPicture,
+			"PageUrl": window.frames['frmDecoration'].location.href
+		};
+		$.post(url, params, function(res){
+			if(res.status==1){
+				var options = "<option value=''>创建默认配置</option>";
+				if(res.data && res.data.length>0){
+					for(var i=0; i< res.data.length; i++){
+						var id = res.data[i];
+						options += "<option value='"+id+"'>使用区块"+id+"配置</option>";
+					}
+					if(options.length>3){
+						$("#mygroupid").html(options);
+					}
+				}else{
+					$("#mygroupid").html(options);
+				}
+			}else{
+				ErrorBox(res.info);
+			}
+		},"json");
+	}
+	
+	//删除组件
+	function deleteComponent(objCurrent){
+		ConfirmBox("<div id='icon_delete'>确定删除吗？</div>", function() {
+			var url = "{$DeleteComponentAction}";
+			var GroupID = objCurrent.attr("yd-group");
+			var params = {
+				"GroupID":GroupID,
+				"Token": getToken(),
+				"PageUrl": window.frames['frmDecoration'].location.href
+			};
+			
+			$.post(url, params,function(res){
+				if (res.status == 1){
+					$("#n"+GroupID, gContentDocument).remove();
+					//objCurrent.remove(); //有bug，不一定在最外层
+				}else{
+					ErrorBox(res.info);
+				}
+			}, "json");
+		});
+	}
+	
+	//排序
+	function orderComponent(objCurrent, type){
+		var CurrentGroup = objCurrent.attr("yd-group");
+		//某些特殊组件的工具栏不是位于最外层，而是位于里面，如按钮组件=========
+		var objTemp = objCurrent.parents(".component");
+		if(objTemp.length==1) {
+			objCurrent = objTemp;
+		}
+		//==================================================
+		if(type == "moveup"){
+			var objTarget = objCurrent.prev();
+			console.log(objTarget);
+			if(objTarget.length == 0) {
+				WarnBox("不能上移了！");
+				return;
+			}
+		}else{
+			var objTarget = objCurrent.next();
+			if(objTarget.length == 0){
+				WarnBox("不能下移了！");
+				return;
+			}
+		}
+		var myTargetGroup = '';
+		var objIn = objTarget.find("[yd-group]");
+		if(objIn.length==1){
+			myTargetGroup = objIn.attr("yd-group");
+		}else{
+			myTargetGroup = objTarget.attr("yd-group");
+		}
+		var url = "{$OrderComponentAction}";
+		var params = { 
+			Order: type, 
+			CurrentGroup:CurrentGroup,
+			TargetGroup:myTargetGroup,
+			PageUrl: window.frames['frmDecoration'].location.href
+		};
+		var effectTime = 140; //单位：毫秒
+		$.post(url, params, function(res){
+			if (res.status == 1){
+				refreshFrame();
+			}else{
+				ErrorBox(res.info);
+			}
+			
+		}, "json");
+	}
+	
+	var gContentDocument = null;
+	//初始化
+	$(document).ready(function(){
+		$("#frmDecoration").on("load", function(event){
+			gContentDocument = this.contentDocument;
+			gLanguageMark = $("meta[name='HomeLanguageMark']", this.contentDocument).attr("content");
+			console.log("iframe加载完成"+gLanguageMark);
+			style = getStyle();
+			$("body", this.contentDocument).append(style);
+			$("body", this.contentDocument).addClass("DecorationMode"); //装修全局类
+			$("a", this.contentDocument).attr("target", "_self"); //防止在新页面打开，不能装修
+			bindToolbarEvent(this.contentDocument);
+			bindTextEvent(this.contentDocument);
+			bindImageEvent(this.contentDocument);
+			bindOrderEvent(this.contentDocument);
+			bindEditEvent(this.contentDocument);
+			bindDragEvent(this.contentDocument);
+			bindSubEvent(this.contentDocument);  //绑定子组件
+		});
+		//后台模板配置不需要加此代码，装修时不加此代码，无法加载编辑器样式代码
+		window.CKEDITOR_BASEPATH='__ROOT__/Public/ckeditor/';
+	});
+	
+	//页面离开事件
+	window.onbeforeunload=function(e){
+		var url = "{$QuitDecorationAction}";
+		$.post(url, null, function(res){
+			console.log("退出装修！");
+		}, "json");
+	} 
+
+	/*===============预览相关函数 开始===============*/
+	//用户点击取消时，恢复默认样式
+	function resetComponentStyle(){
+		//1、恢复style：某些组件存在动画或特效，会自动生成style
+		var obj = $("[previewable]", gContentDocument);
+		obj.removeAttr("style"); //删除内联的预览样式
+		//备份之前的内联样式
+		obj.each(function(){
+			var oldStyle = $(this).attr("previewable");
+			if(oldStyle && oldStyle.length>3){
+				$(this).css("cssText", oldStyle);
+			}
+		});
+		obj.removeAttr("previewable");
+		
+		//2、恢复附加的类
+		var objClass = $("[yd-old-class]", gContentDocument);
+		objClass.each(function(){
+			var oldClass = $(this).attr("yd-old-class");
+			if(oldClass && oldClass.length>1) {
+				$(this).attr("class", oldClass);
+			}
+		});
+		objClass.removeAttr("yd-old-class"); 
+	}
+	
+	function setPreviewable(obj){
+		if(obj && obj.length==0) return;
+		obj.each(function(){
+			var previewable = $(this).attr("previewable");
+			if(previewable) return;
+			//如果样式存在，就备份样式到previewable属性
+			var style = $(this).attr("style");
+			var content = style ? style : "1";
+			$(this).attr("previewable", content);
+		});
+	}
+	
+	//备份旧的类
+	function backupClass(obj){
+		if(obj && obj.length==0) return;
+		obj.each(function(){
+			var ydClass = $(this).attr("yd-old-class");
+			if(ydClass) return;
+			var oldClass = $(this).attr("class");
+			$(this).attr("yd-old-class", oldClass);
+		});
+	}
+	
+	//预览动画
+	function previewAnimation(obj){
+		if(gGroupID==0) return;
+		var objAni = $("#n"+gGroupID+" [yd-animation]", gContentDocument);
+		if(objAni.length==0) return;
+		//swiper animate__animated animate__xx
+		var oldclass = objAni.attr("class").split(" ");
+		var newClass="";
+		for(var i = 0; i<oldclass.length; i++){
+			if(oldclass[i] && oldclass[i]!=" " && -1 == oldclass[i].indexOf("animate__")){
+				newClass += (oldclass[i]+" ");
+			}
+		}
+		console.log("objAni", objAni, oldclass);
+		var type = $(obj).attr("data");
+		newClass += type;
+		objAni.removeAttr("class");
+		objAni.addClass(newClass);
+	}
+	
+	//获取当前预览对象（仅获取第一个）
+	function getPreviewObj(name){
+		var obj = {"length":0};
+		for(var i = 0; i<gMetaData.length;i++){
+			var item = gMetaData[i].Items;
+			for(var j=0; j<item.length;j++){
+				if( -1 != item[j].indexOf(name)){
+					tempName = gMetaData[i].Name;
+					obj = $(tempName, gContentDocument);
+					return obj;
+				}
+			}
+		}
+		return obj;
+	}
+	//获取所有预览对象
+	function getPreviewAllObj(name){
+		var obj = {"Selector":[], "CssKey":[]};
+		var  selector = false; //选择器
+		for(var i = 0; i<gMetaData.length;i++){
+			var item = gMetaData[i].Items;
+			for(var j=0; j<item.length;j++){
+				if( -1 != item[j].indexOf(name)){
+					selector = $(gMetaData[i].Name, gContentDocument);
+					obj.Selector.push(selector);
+					obj.CssKey.push(item[j]);
+				}
+			}
+		}
+		return obj;
+	}
+	
+	//预览字体：name：当前变量的名称；cssKey：要修改的css名称；cssValue：当前css的值，如果为空则自动获取
+	function previewFont(obj, name, cssKey, cssValue){
+		if(gGroupID==0) return;
+		var objCurrent = getPreviewObj(name);
+		if(objCurrent.length==0) return;
+		if(!cssValue){  //如果当前值不存在
+			cssValue = $(obj).val();
+		}
+		var cssParams={};
+		var fontSize = false;
+		if(cssKey=="font-size"){ //电脑端字体大小
+			var mobileSizeSelector = $(obj).attr("name");
+			var mobileSize = $("#"+mobileSizeSelector+"Mobile").val();
+			if(gPreviewMode!=1 && mobileSize!=""){  //size为空表示跟随电脑
+				if(mobileSize!=="" && mobileSize==0){ //不显示
+					fontSize = 0;
+				}else if(mobileSize < 5){ //表示缩放
+					fontSize = (cssValue!=='' && cssValue >= 0) ? mobileSize*cssValue : false;
+				}else{ //固定为像素
+					fontSize = mobileSize;
+				}
+			}else{
+				fontSize = cssValue;
+			}
+		}else if(cssKey=="font-size-mobile"){ //移动端字体大小
+			cssKey="font-size";
+			if(gPreviewMode==1) return;   //如果当前是电脑端，不做任何处理
+			var pcSizeSelector = $(obj).attr("pcid");
+			var pcSize = $("#"+pcSizeSelector).val();
+			if(cssValue!=='' && cssValue < 5){ //缩放倍数
+				fontSize = (pcSize!=='' && pcSize>=0) ? cssValue*pcSize : false;
+			}else if(cssValue > 5){ //像素
+				fontSize = cssValue;
+			}else{ //未设置，表示跟随电脑
+				fontSize = (pcSize!=='' && pcSize>=0) ? pcSize : false;
+			}
+		}else if(cssKey=="padding"){
+			var paddingValue = (cssValue.length==0) ? "" : cssValue+"px";
+			cssParams["padding-left"] = paddingValue;
+			cssParams["padding-right"] = paddingValue;
+		}else{
+			cssParams[cssKey] = cssValue;
+		}
+		
+		if(cssKey=="font-size"){
+			if(fontSize !== '' && fontSize==0){ //字体设置为0，就隐藏
+				cssParams["display"] = "none";
+				cssParams["font-size"] = "";
+			}else{
+				cssParams["display"] = '';  //设为空，表示删除display
+				cssParams[cssKey] = fontSize+"px";
+			}
+		}
+
+		setPreviewable(objCurrent);
+		objCurrent.css(cssParams);
+	}
+	
+	//预览颜色
+	function previewColor(obj, color, params){
+		console.log("previewColor", params);
+		var type = params.type;
+		if('font'==type){ //表示是来自font类型的颜色
+			previewFont(obj, params.name, 'color', color);
+		}else if('bg'==type){ //当前color是bg的子组件
+			previewBg(params.name);
+		}else if('button'==type){
+			previewButton(params.name, "color", color);
+		}else if('border'==type){
+			previewBorder(params.name, "color", color);
+		}else{
+			previewCommon($(obj).attr("name"), color);
+		}
+	}
+	
+	//单选按钮预览
+	function previewRadio(name, value){
+		var obj = {};
+		var gid = (gGroupID<100) ? "" : gGroupID; //内页的变量TProductPadding后面没有分组ID
+		if("区块设置"==gTabName){
+			obj = $("#n"+gGroupID, gContentDocument);
+			if(name.indexOf("FullWidth"+gid)>0){ //设置是否全屏设置
+				obj = $("#n"+gGroupID+" [class*=full-width]", gContentDocument);
+				setPreviewable(obj);
+				//使用类，无法取消
+				//obj.removeClass("full-width0 full-width1");
+				//obj.addClass( "full-width"+(value==1?1:0) );
+				obj.css("max-width", (value==1) ? "100%" : "1440px");
+			}
+		}else{
+			if(name.indexOf("Show"+gid)>0){ //是否显示区块
+				if(value>=0 && value<=3){  //0:不显示，1：显示，2：仅电脑端显示、3：仅移动端显示
+					obj = $("#n"+gGroupID, gContentDocument);
+					setPreviewable(obj);
+					if(gPreviewMode==1){ //PC端
+						display = (value==1 || value==2) ? "" : "none";
+					}else{ //平板端
+						display = (value==1 || value==3) ? "" : "none";
+					}
+					obj.css("display", display);
+				}
+			}else if( name.indexOf("TitleStyle"+gid)>0){ //是否显示标题
+				obj = $("#n"+gGroupID+" .component_title", gContentDocument);
+				setPreviewable(obj);
+				obj.css("display", (value==0) ? "none" : "");
+			}else{
+				previewCommon(name, value);
+			}
+		}
+	}
+	
+	//范围按钮预览
+	function previewRange(name, value){
+		var gid = (gGroupID<100) ? "" : gGroupID; //内页的变量TProductPadding后面没有分组ID
+		if("区块设置"==gTabName){
+			objCurrent = $("#n"+gGroupID, gContentDocument);
+			if(objCurrent.length==0) return;
+			if(name.indexOf("Padding"+gid)>0){ //设置上下边距
+				setPreviewable(objCurrent);
+				objCurrent.css("padding", value+"px 0");
+			}else if(name.indexOf("PaddingTop"+gid)>0){ //设置上边距
+				setPreviewable(objCurrent);
+				objCurrent.css("padding-top", value+"px");
+			}else if(name.indexOf("PaddingBottom"+gid)>0){ //设置下边距
+				setPreviewable(objCurrent);
+				objCurrent.css("padding-bottom", value+"px");
+			}else{
+				previewCommon(name, value);
+			}
+		}else{
+			previewCommon(name, value);
+		}
+	}
+	
+	//预览背景
+	function previewBg(name){
+		if("区块设置" == gTabName){ //背景设置
+			if(-1 != name.indexOf("CenterBg")){ //中间区域背景
+				obj = $("#n"+gGroupID+ " div[class^=floor_]", gContentDocument);
+			}else{
+				obj = $("#n"+gGroupID, gContentDocument);
+			}
+		}else{
+			obj = getPreviewObj(name); //自动获取
+		}
+		if(obj.length==0) return;
+		var way = $("input[name="+name+"Way]:checked").val();
+		var startColor = $("#"+name+"StartColor").val();
+		var endColor = $("#"+name+"EndColor").val();
+		var cssParams = {};
+		if(way==1){ //纯色
+			cssParams["background"] = startColor;
+		}else if(way==2){ //渐变
+			var angle = $("#"+name+"Angle").val();
+			angle = angle%360;
+			cssParams["background-image"] = "linear-gradient("+angle+"deg,"+startColor+", "+endColor+")";
+		}else if(way==3){ //图片
+			var image = $("#"+name+"ImageFileImage").val();
+			var repeat = $("#"+name+"Repeat").val();
+			var size = $("#"+name+"Size").val();
+			var position = $("#"+name+"Position").val();
+			var attachment = $("#"+name+"Attachment").is(':checked') ? "fixed" : "scroll";
+			
+			if(startColor) cssParams["background-color"] = startColor;
+			cssParams["background-image"] = image ? "url("+image+")" : "none";
+			cssParams["background-repeat"] = repeat ? repeat : 'repeat';
+			
+			cssParams["background-size"] = size ? size : 'auto';
+			cssParams["background-position"] = position ? position : '0% 0%';
+			cssParams["background-attachment"] = attachment;
+		}else{ //无
+			cssParams["background"] = 'none';
+		}
+		console.log(cssParams);
+		setPreviewable(obj);
+		obj.css(cssParams);
+	}
+	
+	//预览按钮
+	function previewButton(name, type, value){
+		objCurrent = getPreviewObj(name); //自动获取
+		if(objCurrent.length==0) return;
+		var cssParams = {};
+		var cssText = objCurrent.attr("style");
+		cssText +=";border-style:solid !important;";
+		if("border"==type){ //按钮边框（包含important不能使用css方法赋值）
+			var border = $("#"+name+"Border").val();
+			cssText +=";border-width:"+border+"px !important";
+		}else if("color"==type){  //边框颜色
+			cssText +=";border-color:"+value+" !important";
+		}else if("width"==type){ //按钮宽度
+			var width = $("#"+name+"Width").val();
+			cssText +=";width:"+width+"px";
+		}else if("radius"==type){ //圆角
+			var radius = $("#"+name+"Radius").val();
+			cssText +=";border-radius:"+radius+"px";
+		}else if('show'==type){ //是否显示
+			if(value==0){
+				cssText += ";display:none";
+			}else{
+				cssText = cssText.replace("display:none", "");
+				cssText = cssText.replace("display: none", "");
+			}
+		}
+		setPreviewable(objCurrent);
+		objCurrent.css("cssText", cssText);
+	}
+	
+	//预览边框，value仅用于颜色传递
+	function previewBorder(name, type, value){
+		objCurrent = getPreviewObj(name); //自动获取
+		if(objCurrent.length==0) return;
+		var cssParams = {};
+		//特殊处理
+		var strKey = "";
+		var pos = $("#"+name+"BorderPos").val();
+		if(pos) strKey = "-"+pos;
+
+		if(!value)value = $("#"+name+type).val();
+		if("BorderSize"==type){ //边框大小
+			cssParams["border"+strKey+"-width"] = value+"px";
+		}else if("BorderStyle"==type){  //边框样式
+			cssParams["border"+strKey+"-style"] = value;
+		}else if("BorderRadius"==type){ //边框圆角
+			cssParams["border-radius"] = value+"px";
+		}else if("BorderShadow"==type){ //边框阴影
+			x = value/2;
+			cssParams["box-shadow"] = "0 "+x+"px "+value+"px rgba(0,0,0,.1)";
+		}else if("color"==type){  //边框颜色
+			cssParams["border"+strKey+"-color"] = value;
+		}else if("BorderPos"==type){  //边框位置
+			size = $("#"+name+"BorderSize").val(); 
+			style = $("#"+name+"BorderStyle").val(); 
+			color = $("#"+name+"BorderColor").val(); 
+			if(pos){
+				cssParams["border"] = 0; //重置其他的
+				cssParams["border"+strKey] = size+"px "+style+" "+color;
+			}else{
+				cssParams["border"] = size+"px "+style+" "+color;
+			}
+		}
+		setPreviewable(objCurrent);
+		objCurrent.css(cssParams);
+	}
+	
+	//预览数字
+	function previewNumber(obj){
+		var name = $(obj).attr("name");
+		var value = $(obj).val();
+		previewCommon(name, value);
+	}
+	
+	//预览坐标
+	function previewXY(name){
+		var objCurrent = getPreviewObj(name);
+		if(objCurrent.length==0) return;
+		var cssParams = {};
+		var x = $("#"+name+"X").val();
+		var y = $("#"+name+"Y").val();
+		if(isNaN(x)) x = 0;
+		if(isNaN(y)) y = 0;
+		cssParams["left"] = x+"px";
+		cssParams["top"]  = y+"px";
+		setPreviewable(objCurrent);
+		objCurrent.css(cssParams);
+	}
+	
+	//预览边距
+	function previewMargin(obj, name){
+		var top = $("#"+name+"Top").val();
+		if(isNaN(top)) top = 0;
+		var right = $("#"+name+"Right").val();
+		if(isNaN(right)) top = 0;
+		var bottom = $("#"+name+"Bottom").val();
+		if(isNaN(bottom)) bottom = 0;
+		var left = $("#"+name+"Left").val();
+		if(isNaN(left)) left = 0;
+		var value = top+"px "+right+"px "+bottom+"px "+left+"px";
+		previewCommon(name, value);
+	}
+	
+	//通用预览计算
+	function previewCommon(name, value){
+		var objCurrent = getPreviewAllObj(name);
+		if(objCurrent.Selector.length==0) return;
+		var cssKey = objCurrent.CssKey;
+		var selector = objCurrent.Selector;
+		var fullName = name.replace(gGroupID, "");
+		//按钮：上下偏移 bottom；
+		if(fullName=="TBasic6MarginTop" || fullName=="TBasic4MarginBottom"){
+			setPreviewable(selector[0]);
+			var position = (value==0) ? "static" : "absolute";
+			selector[0].css("position", position);  //默认为static，所以必须加定位
+		}
+		switch(fullName){
+			case "xx":  
+				break;
+			default: //默认通用处理方式
+				var cssValue = "";
+				var cssName = "";
+				var search = "{"+"$"+name+"}";
+				var search2 = "{"+"$"+name+"/2}";
+				for(var i=0;i<cssKey.length;i++){
+					temp = cssKey[i].split(":", 2);
+					if(temp.length==2){
+						//替换值里面的变量 最多替换2次
+						cssValue = temp[1].replace(search2, value/2);
+						cssValue = cssValue.replace(search, value);
+						cssValue = cssValue.replace(search, value);
+						cssValue = $.trim(cssValue);
+						cssName = $.trim(temp[0]);
+						if("yd-previewable-class"==cssName){
+							//1、备份旧的类
+							backupClass(selector[i]);
+							//2、移除指定前缀的类名
+							var t = cssValue.split(" ", 2); //格式：类前缀 类全称
+							removePrefixClass(selector[i], t[0]);
+							//3、添加当前类
+							selector[i].addClass(t[1]);
+						}else if(cssName.indexOf(" ")==-1 && cssName.indexOf("<")==-1){
+							setPreviewable(selector[i]);
+							selector[i].css(cssName, cssValue);
+						}
+					}
+				}
+		}
+	}
+	
+	//移除指定前缀的类
+	function removePrefixClass(obj, classPrefix){
+		if(!classPrefix || (obj && obj.length==0)) return;
+		obj.each(function(){
+			var classes = $(this).attr("class");
+			if(!classes) return false;
+			var classArray = [];
+			classes = classes.split(' ');
+			for(var i=0; i<classes.length; i++){
+				//class="page page1" 这种情况必须判断不相等才能删除
+				if(classes[i]!=classPrefix && -1==classes[i].indexOf(classPrefix)) {
+					classArray.push(classes[i]);
+				}
+			}
+			$(this).attr('class', classArray.join(' '));
+		});
+	}
+	/*===============预览相关函数 结束===============*/
+</script>
+<script type="text/javascript">
+//列表
+function BrowserListServer(obj){
+	if(checkSafeQuestion()) return;
+	var objFile = $(obj).parent().find('.af');
+	if(objFile.length == 0){
+		objFile = $(obj).parent().find('.afSub');
+	}
+	var name = objFile.attr('name');
+	FileManager.selectActionFunction = function(fileUrl, data){
+		$( '#'+name+'Image' ).val(fileUrl);
+	}; 
+	FileManager.popup(); 
+}
+
+function addListItem(name, maxRow){
+	var obj = $('#table-list'+name+' tbody tr');
+	if(obj.length>=maxRow){
+		ErrorBox("最多能添加"+maxRow+"条数据！");
+		return;
+	}
+	var objTemp  = obj.last().clone();
+	var n = obj.length+1;
+	//主图
+	for(var i = 1; i<=2; i++){
+		var key = (i==1) ? '' : 'Sub';
+		//File空间
+		var objFile = objTemp.find('.af'+key);
+		var attrValue=  name+key+'File_'+n;  //格式：name ='{$name}File_{$n}'
+		objFile.attr('name', attrValue);
+		objFile.attr('id', attrValue);
+		objFile.val("");
+		//文本空间
+		var objFileInput = objTemp.find('.ap'+key);
+		objFileInput.attr('id', attrValue + 'Image');
+		objFileInput.val("");
+	}
+	//值初始化
+	objTemp.find('#Title').val('');
+	objTemp.find('#SubTitle').val( '' );
+	objTemp.find('#Description').val( '' );
+	objTemp.find('#Link').val( '' );
+	objTemp.appendTo('#table-list'+name+'  tbody');
+	$('#table-list'+name+'  tbody tr').last().find('#Title').focus();
+	initJsColor(); //必须初始化，否则新添加的无法弹出颜色
+}
+
+function delListItem(obj, name){
+	var trSelector = '#table-list'+name+' tbody tr';
+	if( $(trSelector).length <= 1){
+		ErrorBox('最后一个不能删除！');
+		return;
+	}
+	$(obj).parent().parent().remove();
+}
+
+function startListUpload(obj){
+	if( !$(obj).val() ) return;
+	var name = $(obj).attr("name");
+	$('#frmSaveConfig').attr('action', '__URL__/Upload/currentfile/'+name);
+	ajaxSubmit();
+	//$('#frmSaveConfig').submit(); //关闭窗口后，第二次上传有问题
+}
+
+function floatListImage(obj){
+	var params = {targetMode: 'ajax',targetAttr: 'value',position: '5-7'};
+	if(obj){
+		$(obj).powerFloat(params);
+	}else{
+		//用于初始化，没有初始化，第一次不会显示，第二次才会显示
+		$(".table-list .ap, .table-list .apSub").powerFloat(params);
+	}
+}
+
+//提交表单时调用
+function updateListData(){
+	$(".table-list").each(function() {
+		var objTr = $(this).find("tbody tr");
+		var list = ""; 
+		for(var i=0; i< objTr.length; i++){
+			var objCurrent = objTr.eq(i);
+			//标题
+			var title = objCurrent.find('#Title').val();
+			title = $.trim(title);
+			//副标题
+			var subTitle = objCurrent.find('#SubTitle').val();
+			subTitle = $.trim(subTitle);
+			//主图
+			var picture = objCurrent.find('.ap').val();
+			picture = $.trim(picture);
+			//附图
+			var subPicture = objCurrent.find('.apSub').val();
+			subPicture = $.trim(subPicture);
+			//描述
+			var des = objCurrent.find('#Description').val();
+			des = $.trim(des);
+			//链接
+			var link = objCurrent.find('#Link').val();
+			link = $.trim(link);
+			//自定义链接
+			var linkText = objCurrent.find('#LinkText').val();
+			linkText = $.trim(linkText);
+			if( title || subTitle || picture || subPicture || des){ //去掉link，只有link认为是空
+				if(i>0) list += "{[r]}";
+				list += title+"{[c]}"+subTitle+"{[c]}"+picture+'{[c]}'+subPicture+'{[c]}'+des+'{[c]}'+link+'{[c]}'+linkText;
+			}
+		}
+		$(this).find('tfoot .alllist').val( list );
+	});
+}
+</script>
+<script type='text/javascript'>
+function BrowserImageServer(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = function(fileUrl){
+		document.getElementById('editfileImage').value = fileUrl;
+	};
+	FileManager.popup(); 
+}
+
+$("#editfileImage").powerFloat({targetMode: "ajax",targetAttr: "value",position: "5-7"});
+
+ $('#editfile').change(function(){
+	if( !$(this).val() ) return;
+	$('#frmImage').attr('action','__GROUP__/public/upload/addwater/no/currentfile/editfile');
+	$('#frmImage').submit();
+ });
+	 
+$(document).ready(function(){			
+	$('#frmImage').ajaxForm({
+		success: completeImage,
+		dataType: 'json'
+	});
+	
+	function completeImage(data){
+		CloseLoading();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	 
+	 $('#frmImage').submit(function(){
+		LoadBox();
+		return false;
+	 });
+});
+
+//拷贝配置变量名称
+function copyConfigVar(obj){
+	var content = $(obj).attr("name");
+	$("#contentToCopy").val(content);
+	$("#contentToCopy").select();
+	var hasCopied = document.execCommand('Copy');
+	console.log(hasCopied ? "拷贝成功！" : "拷贝失败！");
+}
+</script>

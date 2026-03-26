@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.btnMakePwd{ margin-left: 3px; padding: 4px 10px }
+		#pwdvalue{ color: red; font-size:12px;}
+	</style>
+</head>
+<body id="main_page">
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmSave">
+        	<input type='hidden' name='Action' value="save" />         
+        	<div class="box-header"><h4>修改密码</h4></div>
+            <div class="box-content">
+            <table class="boxtable">
+                <tr>
+                    <th class="w120">原密码</th>
+                    <td><input type='password' style='width:230px;' class="textinput" name="pwd1"  id="pwd1" /></td>
+                </tr>
+                <tr>
+                    <th class="w120">新密码</th>
+                    <td><input type="password" style='width:230px;'  class="textinput" name="pwd2" id="pwd2" />
+						<span class="btn btnSmall btnDanger btnMakePwd" onclick="makeRandomPwd()">生成随机密码</span>
+						<input id="pwdvalue" type="text" style="opacity:0; background:#f2f2f6;color:#f2f2f6;border:0;" />
+					</td>
+                </tr>
+                <tr>
+                    <th class="w120">新密码确认</th>
+                    <td><input type='password' style='width:230px;'  class='textinput' name="pwd3" id="pwd3" /></td>
+                </tr>
+            </table>
+            </div> 
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function makeRandomPwd(){
+	var randomString = yd.makeRandomString(10);
+	$("#pwd2,#pwd3").val(randomString);
+	//复制密码
+	$("#pwdvalue").val(randomString);
+	$("#pwdvalue").select();
+	var hasCopied = document.execCommand('Copy');
+	if(hasCopied){
+		SucceedBox("生成并复制密码成功，请粘贴！");
+	}else{
+		ErrorBox("复制失败！");
+	}
+}
+
+	$(document).ready(function(){
+		$('#frmSave').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+            }else{ //添加频道失败
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frmSave').submit(function(){
+			LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+	});
+</script>

@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form  enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">              
+            <div class="box-header"  id="c3"><h4>会员功能设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>是否启用会员功能</th>
+                        <td>
+                            <label><input type="radio" name="MEMBER_ENABLE" value="1" <eq name="MemberEnable" value="1">checked="checked"</eq> />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="MEMBER_ENABLE" value="0" <eq name="MemberEnable" value="0">checked="checked"</eq> />禁用</label>
+                            <span class='Caution'>如果禁用，将不能使用所有会员相关功能，如注册、登录、找回密码等</span>
+                        </td>
+                    </tr>
+                    
+                       <tr>
+                        <th>是否允许会员注册</th>
+                        <td>
+                            <label><input type="radio" name="MEMBER_REG_ENABLE" value="1" <eq name="MemberRegEnable" value="1">checked="checked"</eq> />允许</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="MEMBER_REG_ENABLE" value="0" <eq name="MemberRegEnable" value="0">checked="checked"</eq> />不允许</label>
+                        </td>
+                    </tr>
+                   
+                    <tr>
+                        <th>是否审核注册会员</th>
+                        <td>
+                            <label><input type="radio" name="MEMBER_REG_CHECK" value="0" <eq name="MemberRegCheck" value="0">checked="checked"</eq> />不审核</label>					
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="MEMBER_REG_CHECK" value="1" <eq name="MemberRegCheck" value="1">checked="checked"</eq> />管理员审核</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="MEMBER_REG_CHECK" value="2" <eq name="MemberRegCheck" value="2">checked="checked"</eq> />注册邮件激活</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="MEMBER_REG_CHECK" value="3" <eq name="MemberRegCheck" value="3">checked="checked"</eq> />手机短信激活（需要在【系统设置】-【其它设置】开启短信服务）</label>
+                    </td>
+                    </tr>
+                     <tr>
+                        <th>注册激活邮件</th>
+                        <td>
+                            <textarea name="EMAIL_BODY" id="EmailBody" style="height:110px; width:100%">{$EmailBody}</textarea><br />
+                            <span class='Caution'>
+                                <literal>
+                                    选择“注册邮件激活”时有效，内容支持HTML。
+                                    <b onclick="insertAtCursorByID('EmailBody','{$MemberName}')"  class="tplvar">{$MemberName}</b>表示当前会员名称&nbsp;&nbsp;
+                                    <b onclick="insertAtCursorByID('EmailBody','{$WebName}')"  class="tplvar">{$WebName}</b>表示网站名称&nbsp;&nbsp;
+                                    <b onclick="insertAtCursorByID('EmailBody','{$Activate}')"  class="tplvar">{$Activate}</b>表示激活链接&nbsp;&nbsp;
+                                </literal>
+                            </span>
+                        </td>
+                    </tr>    
+                    <tr>
+                        <th>是否启用注册验证码</th>
+                        <td><label><input type="radio" name="MEMBER_REG_VERIFYCODE" value="1" <eq name="MemberRegVerifyCode" value="1">checked="checked"</eq> />启用</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="MEMBER_REG_VERIFYCODE" value="0" <eq name="MemberRegVerifyCode" value="0">checked="checked"</eq> />禁用</label>
+                        <span class='Caution'>启用后，用户注册时必须输入验证码。如果禁用，可能会受攻击，建议开启</span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th  style="vertical-align:top;">是否启用登录验证码</th>
+                        <td><label><input type="radio" name="MEMBER_LOGIN_VERIFYCODE" value="1" <eq name="MemberLoginVerifyCode" value="1">checked="checked"</eq> />启用</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="MEMBER_LOGIN_VERIFYCODE" value="0" <eq name="MemberLoginVerifyCode" value="0">checked="checked"</eq> />禁用</label>
+                        <span class='Caution'>启用后，用户登录时必须输入验证码。如果禁用，可能会受攻击，建议开启</span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th  style="vertical-align:top;">是否审核用户添加的文章</th>
+                        <td><label><input type="radio" name="MEMBER_ADD_CHECK" value="1" <eq name="MemberAddCheck" value="1">checked="checked"</eq> />审核</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="MEMBER_ADD_CHECK" value="0" <eq name="MemberAddCheck" value="0">checked="checked"</eq> />不审核</label>
+                        <span class='Caution'>启用后，用户添加的文章在审核后才能显示</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>          
+            
+           <div class="box-header"  id="c3"><h4>手机验证码短信模板</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>手机验证码短信模板</th>
+                        <td>
+                            <textarea name="MOBILE_REG_TEMPLATE" id="MobileRegTemplate" style="height:50px; width:100%">{$MobileRegTemplate}</textarea>
+                            <br /><span class='Caution'>
+                            <literal>
+                            模板内容举例：您的验证码是：{$Code}。请不要把验证码泄露给其他人。&nbsp;&nbsp;
+                            设置好模板后，通常需要提交到短信服务商，审核以后才能使用。
+                            支持模板变量：<b onclick="insertAtCursorByID('MobileRegTemplate', '{$Code}')"  class="tplvar">{$Code}</b>表示当前手机注册验证码&nbsp;&nbsp;</literal>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		 LoadBox();
+		return false;
+	 });
+});
+</script>

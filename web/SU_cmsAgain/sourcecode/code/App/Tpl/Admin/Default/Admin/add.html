@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmAdd">
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                        <tr>
+                            <th class="w120"><b style="color:red">管理员名称</b></th>
+                            <td><input type="text" style="width:200px;" class="textinput" name="AdminName" id="AdminName" value="">
+                                <span class='Caution'>创建管理员同时会创建一个名称和密码都相同的会员账号</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="w120">所属管理员分组</th>
+                            <td>
+                            <select name="AdminGroupID">
+                                <volist name="AdminGroup" id="a">
+                                    <option value="{$a.AdminGroupID}">{$a.AdminGroupName}</option>
+                                </volist>
+                            </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="w120">性别</th>
+                            <td><label><input type="radio" id="MemberGender" name="MemberGender" value="1">女</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" id="MemberGender" name="MemberGender" value="0" checked="checked">男</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="w120">真实姓名</th>
+                            <td><input type="text" style="width:200px;" class="textinput" name="MemberRealName" id="MemberRealName" value=""></td>
+                        </tr>
+                        <tr>
+                            <th class="w120">电话</th>
+                            <td><input type="text" style="width:200px;" class="textinput" name="MemberTelephone" id="MemberTelephone" value=""></td>
+                        </tr>
+                        <tr>
+                            <th class="w120">移动电话</th>
+                            <td><input type="text" style="width:200px;" class="textinput" name="MemberMobile" id="MemberMobile" value=""></td>
+                        </tr>
+                        <tr>
+                            <th class="w120">电子邮件</th>
+                            <td><input type="text" style="width:200px;" class="textinput" name="MemberEmail" id="MemberEmail" value=""></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class="w120"><b style="color:red">密码</b></th>
+                            <td><input type="password" style="width:200px;" class="textinput" name="pwd1" id="pwd1" value="">
+                            <span class='Caution'>密码建议使用字母、数字等字符的组合</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="w120"><b style="color:red">重复密码</b></th>
+                            <td><input type="password" style="width:200px;" class="textinput" name="pwd2" id="pwd2" value="">
+                            <span class='Caution'>请输入和第一次相同的密码</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="w120">说明：</th>
+                            <td>
+                            [1] 创建管理员同时会创建一个名称和密码都相同的会员账号<br />
+                            [2] 管理员必须关联一个会员账号，管理员不能独立存在<br />
+                            [3] 可以在“会员管理”将指定会员设定为管理员
+                            </td>
+                        </tr>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"  type="submit" value="保存并继续添加" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frmAdd').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				$('#frmAdd').resetForm();
+				$('#AdminName').focus();
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frmAdd').submit(function(){
+			LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 $('#AdminName').focus();
+	});
+</script>

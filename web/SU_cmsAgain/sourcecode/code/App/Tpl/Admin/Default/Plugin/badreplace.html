@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.box-header h4 a{ font-size:12px; font-weight:normal;color:red; margin-left:20px;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header" id="c1">
+                <h4>敏感词过滤
+                    <span class="extra">用于将网站所有页面出现的敏感词替换为自定义词<span>
+                </h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+					<tr>
+                        <th>敏感词列表</th>
+                        <td><textarea style="height:260px;width:50%;" name="WEB_BAD_WORDS">{$WebBadWords}</textarea>
+                        <div class='Caution'>格式：“敏感词=替换词”，一行设置一个词！如：他妈的=***</div>
+                        </td>
+                    </tr>
+					 <tr>
+                        <th>是否启用</th>
+                        <td>
+							<label><input type="radio" name="BadWordsEnable" value="1"  />是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="BadWordsEnable" value="0"  />否</label>
+						</td>
+                    </tr>
+                </table>
+            </div> 
+             
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" class="marginright" type="submit" value="保存" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	function pageInit(){
+		$("input[name='BadWordsEnable'][value={$BadWordsEnable}]").attr("checked",'checked');
+	}
+	pageInit();
+});
+</script>

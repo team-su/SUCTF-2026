@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>.TimeSpanWrap, .TimeWrap{ display: none; }</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+        <form enctype="multipart/form-data" method="post" id="frm" action="{$Url}active">
+                <input type="hidden" name="p"  value="{$NowPage}" />
+                <div class="table">
+                        <div class="toolbars">
+                        	<li class="toolbar toolbarform" id="toolbarleft">                       
+                                    <label class="first">统计项目</label>
+                                    <select name="StatType" id="StatType">
+                                        <option value="1">按天统计</option>
+                                        <option value="2">分年按月统计</option>
+                                    </select>
+                                  	<span class="TimeWrap">
+                                            <select id="Year" name="Year">
+                                                <foreach name="AllYear" item="vo">
+    												<option value="{$key}">{$key}</option>
+                                                </foreach>
+                                            </select>年
+                                            <select id="Month" name="Month"></select>月
+                                  	</span>
+                                	<input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                           			&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <span class='Caution'>活跃度：指所有用户启动APP的次数总和。如：3月8日的活跃度为800，表示当日启动APP的次数总计为800</span>
+                        	</li>
+                        </div>
+						<div id='chartContainer'>暂无数据</div>
+				</div>
+			</form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function pageInit(){
+	$("#Year").val("{$Year}");
+	changeMonth("{$Year}");			
+	$("#Month").val("{$Month}");
+	
+	$("#StatType").val("{$StatType}");
+	changeType("{$StatType}");
+}
+
+function changeMonth(value){
+	var YearList = new Array();
+	<foreach name="AllYear" item="year" key="k">
+		<foreach name="year" item="m">
+			var YearObj = new Object();
+			YearObj.year="{$k}";
+			YearObj.month="{$m}";
+			YearList.push(YearObj);
+		</foreach>
+	</foreach>
+	
+	$("#Month").empty();
+	for(var i=0; i<YearList.length;i++){
+		if(value == YearList[i].year){
+			$("#Month").append("<option value='"+YearList[i].month+"'>"+YearList[i].month+"</option>");
+		}
+	}
+}
+
+function changeType(value){
+	if(value == 2){
+		$(".TimeWrap").hide();
+	}else{
+		$(".TimeWrap").show();
+	}
+}
+
+function Search(){
+	$('#frm').attr("action", "{$Url}active");
+	$('#frm').submit();
+	return true;
+}
+
+$(document).ready(function(){
+	pageInit();
+	
+	$("#StatType").change(function(){
+		changeType($(this).val());
+	});
+	
+	$("#Year").change(function(){
+		changeMonth($(this).val());
+	});
+});
+</script>

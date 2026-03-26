@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page" style="padding-top:3px;">
+<div class="container">
+        <form id="frmConfig" method="post" action="{$Action}" enctype="multipart/form-data" >
+        	<!--box1 start-->
+            <div class="box1">
+            	<ul class="tab_menu">
+                	  <li class="current">基本设置</li>
+                      <li>返利通知设置</li>
+                </ul>
+                
+                <div class="tab_box">
+                	<!--基本设置 开始-->
+                    <div>
+                        <div class="box-header"><h4>基本设置</h4></div>
+                        <div class="box-content">
+                            <table class="boxtable">
+                                <tr>
+                                    <th>是否启用分销功能</th>
+                                    <td>
+                                        <label><input type="radio" name="DistributeEnable" value="1"/>是</label>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <label><input type="radio" name="DistributeEnable" value="0"/>否</label>
+                                    </td>
+                                </tr>
+                                <tr class="trDistribute">
+                                    <th>成为分销商条件</th>
+                                    <td>
+                                        <label><input type="radio" name="DistributeRequirement" value="1"  />无条件成为分销商(注册自动成为分销商)</label>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <label><input type="radio" name="DistributeRequirement" value="2"  />需购买商品后成为分销商</label>
+                                    </td>
+                                </tr>
+                                <tr class="trDistribute" id="trMinMoney">
+                                    <th>最低购买商品金额</th>
+                                    <td><input type="text" class="textinput" style="width:80px;" name="MinMoney" value="{$MinMoney}"/>
+                                    <span class='Caution'>当购买大于此金额时才能成为分销商，如果设置为0，表示购买任意商品即可成为分销商</span>
+                                    </td>
+                                </tr>
+                                <tr class="trDistribute">
+                                    <th>分销模式</th>
+                                    <td>
+                                        <label><input type="radio" name="DistributeMode" value="1"  />按商品设置的分成金额</label>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <label><input type="radio" name="DistributeMode" value="2"  />按订单设置的分成比例</label>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="trDistribute" id="trOrderRate">
+                                    <th>订单默认分成比例</th>
+                                    <td><input type="text" class="textinput" style="width:80px;margin-right:3px;" name="OrderRate" value="{$OrderRate}"/>%
+                                    <span class='Caution'>单位：百分比，如：当前订单总金额为200，分成比例为：20%，那么总佣金为200x20%=40</span>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="trDistribute">
+                                    <th>返佣级数</th>
+                                    <td>
+                                        <select name="ReturnGrade" id="ReturnGrade">
+                                            <option value="1">返一级</option>
+                                            <option value="2">返二级</option>
+                                            <option value="3">返三级</option>
+                                        </select>
+                                    <span class='Caution'>选择"返二级"，表示二级分销</span>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="trDistribute">
+                                    <th>购买者自己获佣比例</th>
+                                    <td><input type="text" class="textinput" style="width:80px;margin-right:3px;" name="BuyerRate" value="{$BuyerRate}" />%
+                                    <span class='Caution'>表示购买者自提点，设为0表示自己不返佣</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--基本设置 结束-->
+                    
+                    <!--邮件通知设置 开始-->
+                    <div class="hide">
+                        <div class="box-header"><h4>邮件通知设置</h4></div>
+                        <div class="box-content">
+                            <table class="boxtable">
+                                <tr>
+                                    <th class="w120">是否邮件通知</th>
+                                    <td>
+                                        <label><input type="radio" name="DistributeEmail" value="1" onclick="ChangeEmail(1)"  />是</label>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <label><input type="radio" name="DistributeEmail" value="0" onclick="ChangeEmail(0)" checked="checked" />否</label>
+                                        <span class='Caution'>启用后，下线确认收货以后，上级会收到返利的邮件通知。</span>
+                                    </td>
+                                </tr>
+                                <tr class="email">
+                                     <th class="w120">邮件标题</th>
+                                    <td><input type="text" class="textinput"  style="width:350px"  name="DistributeEmailTitle" value="{$DistributeEmailTitle}" /></td>
+                                </tr>
+                                <tr class="email">
+                                     <th class="w120">邮件内容</th>
+                                    <td>
+                                    <textarea  class="textinput"  style="width:100%;height:130px;" id="DistributeEmailBody"  name="DistributeEmailBody" >{$DistributeEmailBody}</textarea>
+                                    <span class='Caution'>标题和内容均支持变量：
+                                        <literal>
+                                            <b onclick="insertAtCursorByID('DistributeEmailBody','{$Name}')"  class="tplvar">{$Name}</b>表示获得返佣的会员名称&nbsp;&nbsp;
+                                            <b onclick="insertAtCursorByID('DistributeEmailBody','{$Money}')"  class="tplvar">{$Money}</b>表示返佣金额&nbsp;&nbsp;
+                                            <b onclick="insertAtCursorByID('DistributeEmailBody','{$OrderNumber}')"  class="tplvar">{$OrderNumber}</b>表示订单编号&nbsp;&nbsp;
+                                            <b onclick="insertAtCursorByID('DistributeEmailBody','{$Time}')"  class="tplvar">{$Time}</b>表示返佣时间&nbsp;&nbsp;
+                                        </literal>
+                                    </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="box-header"><h4>订单短信通知设置</h4></div>
+                        <div class="box-content">
+                            <table class="boxtable">
+                                    <tr>
+                                        <th class="w120">是否短信通知</th>
+                                        <td>
+                                            <label><input type="radio" name="DistributeSms" value="1" onclick="ChangeSms(1)"  />是</label>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <label><input type="radio" name="DistributeSms" value="0" onclick="ChangeSms(0)" checked="checked" />否</label>
+                                            <span class='Caution'>启用后，下线确认收货以后，上级会收到返利的短信通知</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="sms">
+                                         <th class="w120">短信通知模板</th>
+                                        <td>
+                                            <textarea name="DistributeSmsBody" id="DistributeSmsBody" style="height:60px; width:100%">{$DistributeSmsBody}</textarea>
+                                        </td>
+                                    </tr>
+                                    <tr class="sms">
+                                        <th class="w120"></th>
+                                        <td>
+                                            <span class='Caution'>
+                                                <literal>
+                                                    模板内容举例：您好，【{$Name}】，订单【{$OrderNumber}】已确认收货，您本次获得佣金{$Money}，【{$Time}】！
+                                                    <div style="text-indent:23px">设置好模板后，通常需要提交到短信服务商，审核以后才能使用。
+                                              支持模板变量：
+                                            <b onclick="insertAtCursorByID('DistributeSmsBody','{$Name}')"  class="tplvar">{$Name}</b>表示获得返佣的会员名称&nbsp;&nbsp;
+                                            <b onclick="insertAtCursorByID('DistributeSmsBody','{$Money}')"  class="tplvar">{$Money}</b>表示返佣金额&nbsp;&nbsp;
+                                            <b onclick="insertAtCursorByID('DistributeSmsBody','{$OrderNumber}')"  class="tplvar">{$OrderNumber}</b>表示订单编号&nbsp;&nbsp;
+                                            <b onclick="insertAtCursorByID('DistributeSmsBody','{$Time}')"  class="tplvar">{$Time}</b>表示返佣时间&nbsp;&nbsp;
+                                                    </div>
+                                                </literal>
+                                            </span>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--邮件通知设置 开始-->
+                </div>
+         
+                <div class="box-footer">
+                    <div class="box-footer-inner"><input id="btnSubmit" type="submit" value="保存设置" /></div>
+                </div>
+            </div>
+            <!--box1 end-->
+        </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function changeDistributeEnable(type){
+   if(type==1){
+	 $(".trDistribute").show();
+   }else{
+	 $(".trDistribute").hide();
+   }
+}
+
+function changeDistributeRequirement(type){
+   if(type==2){
+	 $("#trMinMoney").show();
+   }else{
+	 $("#trMinMoney").hide();
+   }
+}
+
+function changeDistributeMode(type){
+   if(type==2){
+	 $("#trOrderRate").show();
+   }else{
+	 $("#trOrderRate").hide();
+   }
+}
+
+function ChangeEmail(type){
+	if( type == 1 ){
+		$(".email").show();
+	}else{
+		$(".email").hide();
+	}
+}
+
+function ChangeSms(type){
+	if( type == 1 ){
+		$(".sms").show();
+	}else{
+		$(".sms").hide();
+	}
+}
+
+$(document).ready(function(){
+	$('.box1').Tabs({
+		 event:'click'
+	 });
+	 
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+
+	 //保存提交
+	 $('#btnSubmit').click(function(){
+		$('#frmConfig').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	 //是否启用分销功能
+	 $("input[name='DistributeEnable']").click(function(e) {
+		var type = $(this).val();
+		changeDistributeEnable(type);
+	 });
+	 
+	 //成为分销商的条件
+	 $("input[name='DistributeRequirement']").click(function(e) {
+		var type = $(this).val();
+		changeDistributeRequirement(type);
+	 });
+	 
+	 $("input[name='DistributeMode']").click(function(e) {
+		var type = $(this).val();
+		changeDistributeMode(type);
+	 });
+	 
+	 function pageInit(){
+		 //基本设置
+		$("input[name='DistributeEnable'][value={$DistributeEnable}]").attr("checked",'checked');
+		changeDistributeEnable("{$DistributeEnable}");
+		$("input[name='DistributeRequirement'][value={$DistributeRequirement}]").attr("checked",'checked');
+		changeDistributeRequirement("{$DistributeRequirement}");
+		$("input[name='DistributeMode'][value={$DistributeMode}]").attr("checked",'checked');
+		changeDistributeMode("{$DistributeMode}");
+		$("#ReturnGrade").val("{$ReturnGrade}");
+		
+		//通知设置
+		$("input[name='DistributeEmail'][value={$DistributeEmail}]").attr("checked",'checked');
+		ChangeEmail("{$DistributeEmail}");
+		$("input[name='DistributeSms'][value={$DistributeSms}]").attr("checked",'checked');
+		ChangeSms("{$DistributeSms}");
+	}
+	pageInit();
+});
+</script>

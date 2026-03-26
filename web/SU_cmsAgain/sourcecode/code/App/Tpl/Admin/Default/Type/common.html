@@ -1,0 +1,67 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					focusFirstItem();
+				</empty>
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			 LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 var idName = "#{$Think.const.MODULE_NAME}Name";
+			 $(idName).focus();
+		 }
+		 
+		 //设置默认值
+		 function setDefault(){
+			 $("input[name='IsEnable'][value={$Data.IsEnable}]").attr("checked",'checked');
+		 }
+		 
+		 //页面初始化
+		 function pageInit(){
+			focusFirstItem();
+			setDefault();
+		 }
+		 pageInit();
+	});
+</script>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+	<table class="boxtable">
+			<tr>
+				<th class="w120">类型名称</th>
+				<td><input type="text" class="textinput" style="width:200px;" name="TypeName" id="TypeName" value="{$Data.TypeName}" /></td>
+			</tr>
+			<tr>
+				<th class="w120">排序</th>
+				<td><input type="text" class="textinput" style="width:60px;"  name="TypeOrder" id="TypeOrder" value="{$Data.TypeOrder}" />
+				<span class='Caution'>请输入数字，值越小排名越靠前！</span>
+				</td>
+			</tr>
+			<tr>
+				<th>是否启用</th>
+				<td>
+					<label><input type="radio" name="IsEnable" value="1" checked="checked"  />启用</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="IsEnable" value="0" />禁用</label>
+				</td>
+			</tr>
+	</table>
+</div>

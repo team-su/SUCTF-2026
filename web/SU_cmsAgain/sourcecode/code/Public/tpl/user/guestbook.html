@@ -1,0 +1,68 @@
+c<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+	<style>
+		.AnswerContent{ color:#666; border-top:1px dotted #C6C6C6; text-align:left; padding-top:8px;}
+		.AnswerContent b{ font-weight:normal; color:#555;}
+		.check0{ /*未审核*/
+			 background:url("{$Images}unchecked.png") #fff no-repeat right 3px;
+			 background-size: 80px; 
+	    }
+	</style>
+</head>
+<body id="index" class="webapp">
+	<include file="./Public/tpl/user/header.html" />
+    <notempty name="Data">
+        <volist name="Data" id="d">
+            <div class="weui-form-preview check{$d.IsCheck}" id="row{$d.MessageID}" style="margin-bottom:10px;">
+              <div class="weui-form-preview__hd">
+                  <label class="weui-form-preview__label"> {$d.MessageTime|strtotime|yd_friend_date}</label>
+                  <em class="weui-form-preview__value">&nbsp;</em>
+              </div>
+              <div class="weui-form-preview__bd">
+                  <div class="weui-form-preview__item" style="text-align:left;">{$d.AllInfo}</div>
+              	  <notempty name="d.AnswerContent">
+                        <div class="weui-form-preview__item AnswerContent" id="AnswerContent{$d.MessageID}">
+                               <b>[{$d.AnswerTime|strtotime|yd_friend_date} 回复]：</b>{$d.AnswerContent}
+                        </div>
+				  </notempty>
+              </div>
+              <div class="weui-form-preview__ft">
+                  <a class="weui-form-preview__btn weui-form-preview__btn_primary color-danger" href="javascript:" onClick="del({$d.MessageID})">删除</a>
+              </div>
+            </div>
+        </volist>
+    <else/>
+        <div class="weui-msg">
+            <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+            <div class="weui-msg__text-area">
+                <p class="weui-msg__desc">{$Think.lang.NoInformation}</p>
+            </div>
+        </div>
+    </notempty>
+	<include file="./Public/tpl/user/footer.html" />
+</body>
+</html>
+<script>
+	function del(id){
+	  $.confirm("确定删除吗?", function() {
+			LoadBox();
+			var url = "{$Url}delMessage";
+			var p = {"MessageID": id};
+			$.get(url, p, function(data){
+				CloseLoadBox();
+				if (data.status==1){
+					$("#row"+id).remove();
+				}else{
+					ErrorBox(data.info);
+				}	
+			}, "json");
+	  });
+	}
+	
+	function GoBack(){
+		location.href = "{$Url}index";
+	}
+</script>

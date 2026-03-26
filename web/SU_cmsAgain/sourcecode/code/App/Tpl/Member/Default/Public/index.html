@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>会员中心-{$WebName}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    {$XUaCompatible}
+    <style type="text/css">
+        html{ overflow:hidden;}
+        body{ padding:0; margin:0; background:#fff; overflow:hidden; font:12px/1.5 "Microsoft YaHei", Helvetica, sans-serif; }
+        fieldset, img {	border:0; vertical-align:middle;}
+        ul, li, table, div, p{ padding:0; margin:0;}
+        li {list-style:none;}
+        a{ text-decoration:none;}
+        
+        /*框架*/
+        table{ border-spacing:0; width:100%;height:100%;}
+        table,td,th{ margin:0; padding:0; border:none;}
+        table .left, .sidebar{ width:180px;  height:100%; background:#2e3e4e;}
+        table .righttop{ width:100%; vertical-align:middle; height:60px; background:#fff; border-bottom:1px solid #ddd;}
+        table .header{ height:60px; line-height:60px; overflow:hidden;  zoom:1;}
+        table .main, table .main iframe{ width:100%;  height:100%; vertical-align:top;}
+		
+		 /*顶部登录信息*/
+		.MemberAvatar{ float:left;}
+		.MemberAvatar img{ -webkit-border-radius: 50%;-moz-border-radius: 50%;-ms-border-radius: 50%;  -o-border-radius: 50%;  
+		border-radius: 50%; width:46px; height:46px;  margin:0 8px; margin-top: 7px;}
+		/*会员名称*/
+		.Member{  float:left; line-height:60px; height:60px; overflow:hidden; letter-spacing:1px;}
+		.Member .MemberName{ color:green;}
+		.Member .MemberGroupName{ padding:0;}
+		/*操作按钮*/
+		.Operator{ float:left;}
+		.Operator .btnLink{ color:#F30; float:left; padding:0 5px; letter-spacing:1px;}
+		.Operator .btnLink:hover{ color:#F03;  float:left;  }
+		/*语言切换*/
+		#language { line-height:60px; float:right; font-size:14px; font-weight:normal; color:#000; padding-right:15px;}
+		#language ul{overflow:hidden; margin-top:17px;}
+		#language li { float: left; height:25px; }
+		#language a { display:block; color:#666; background:#e0e0e0; height:25px;  text-align:center; padding:0 10px; 
+		line-height:25px; cursor:pointer; border-radius:3px; margin-left:5px;}
+		#language a:hover{ text-decoration:none;  color:#000;}
+		#language a.active{background:#4caf50; text-decoration:none; color:#fff; }
+        
+        /*左侧菜单*/
+        .sidebar .logo img{ width:100%;  border-bottom:1px solid #212d38;}
+        .menu{ }
+        .menulist{ }
+        .menulist li{ text-align:left; }
+        .menulist li a{ display:block; color:#e4e5e7; font-size:14px; line-height:40px; height:40px; text-indent:45px; overflow:hidden; 
+        background-position: 20px center; background-repeat:no-repeat; position:relative;}
+		.menulist li a:focus{ outline:0;}
+		.menulist li a i{ display:none;}
+		.menulist li a:hover i, .menulist li a.current i{ position:absolute; display:block; right:0; top: 13px; 
+		background:url("{$Images}arr.png") right center no-repeat; width:7px; height:15px;}
+        .menulist li a:hover, .menulist li a.current{ color:#3F0; background-color:#212d38;}
+        .menulist li .icon-home{ background-image:url("{$Images}home.png"); }
+        .menulist li .icon-63{ background-image:url("{$Images}user.png"); }
+        .menulist li .icon-65{ background-image:url("{$Images}pwd.png"); }
+        .menulist li .icon-79{ background-image:url("{$Images}order.png"); }
+        .menulist li .icon-69{ background-image:url("{$Images}info.png"); }
+        .menulist li .icon-11{ background-image:url("{$Images}quit.png");}
+        .menulist li .icon-67{ background-image:url("{$Images}guestbook.png");}
+        .menulist li .icon-68{ background-image:url("{$Images}comment.png");}
+        .menulist li .icon-89{ background-image:url("{$Images}job.png");}
+        .menulist li .icon-130{ background-image:url("{$Images}favorite.png");}
+        .menulist li .icon-132{ background-image:url("{$Images}cash.png");}
+        .menulist li .icon-142{ background-image:url("{$Images}coupon.png");}
+        .menulist li .icon-143{ background-image:url("{$Images}point.png");}
+        .menulist li .icon-145{ background-image:url("{$Images}address.png");}
+        
+        .menulist li .icon-502{ background-image:url("{$Images}shouquan.png");}
+        .menulist li .icon-503{ background-image:url("{$Images}yeji.png?v=1");}
+        .menulist li .icon-504{ background-image:url("{$Images}kehu.png");}
+        .menulist li .icon-505{ background-image:url("{$Images}xiaofei.png");}
+		
+		.menulist li .icon-tuiguang{ background-image:url("{$Images}tuiguang.png");}
+		.menulist li .icon-shouyi{ background-image:url("{$Images}shouyi.png");}
+    </style>
+</head>
+<body>
+<table cellpadding="0" cellspacing="0" class="table_left">
+    <tr>
+        <td rowspan="2" class="left" valign="top">
+            <div class="sidebar">
+                <div class="logo"><a href="{$Group}/public/welcome" target="main"><img src="{$Images}logo.jpg" /></a></div>
+                <div class="menu">
+                    <ul class="menulist">
+                        <li><a class="icon-home" href="{$WebInstallDir}" target="_blank">网站首页</a></li>
+                        <volist name="Menu" id="m">
+                        	<notin name="m.MenuID" value="65,63,11">
+                            	<li><a  class="icon-{$m.MenuID}" id="{$m.MenuID}" href='{$Group}/{$m.MenuAction}' target='{$m.MenuTarget}'>{$m.MenuName}<i></i></a></li>
+                            </notin>
+                        </volist>
+                        <eq name="Think.session.MemberID|can_distribute" value="1">
+                        	<li><a class="icon-tuiguang" href="{$Group}/Plugin/downline" target="main">我的推广<i></i></a></li>
+                            <li><a class="icon-shouyi" href="{$Group}/Plugin/income" target="main">我的收益<i></i></a></li>
+                        </eq>
+                    </ul>
+                 </div>
+            </div>
+        </td>
+        <td class="righttop">
+            <div class="header">
+            	<div class="MemberAvatar">
+                    <notempty name="MemberAvatar">
+                        <a href="{$Group}/Member/modify" target="main"><img src="{$MemberAvatar}" align="absmiddle" /></a>
+                    <else/>
+                        <a href="{$Group}/Member/modify" target="main"><img src="{$Images}default.png" align="absmiddle"/></a>
+                    </notempty>
+                </div>
+                <div class="Member">
+                	<a href="{$Group}/Member/modify" target="main"><span class="MemberName">{$MemberName|htmlspecialchars}</span></a>
+                    <span class="MemberGroupName">[{$MemberGroupName|htmlspecialchars}]</span>欢迎登录会员管理中心！
+                </div>
+                <div class="Operator">
+                    <a class="btnLink" href="{$Group}/Public/pwd" target="main">[修改密码]</a>
+                    <a class="btnLink" href="{$Group}/Public/Logout">[退出]</a>
+                </div>
+
+                <notempty name="Language">
+                    <div id="language">
+                            <ul>
+                                <volist name="Language" id="l">
+                                    <li>
+                                        <eq name="l.LanguageMark" value="$MemberLanguageMark">
+                                            <a class="active"  onclick="ChangeLng(this,'{$l.LanguageMark}')" target="main">{$l.LanguageName}</a>
+                                        <else/>
+                                            <a onclick="ChangeLng(this,'{$l.LanguageMark}')" target="main">{$l.LanguageName}</a>
+                                        </eq>
+                                    </li>
+                                </volist>
+                            </ul>
+                    </div>
+                </notempty>
+            </div>
+        </td>
+    </tr>
+    <tr><td class="main"><iframe src="" id="main" name="main"  frameborder="0" scrolling="yes"></iframe></td></tr>
+</table>
+</body>
+</html>
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.min.js"></script>
+<script type='text/javascript'>
+	$(document).ready(function(){
+		$('.menulist li a').bind("click",function(){
+			$('.menulist li a').each(function(){
+				$(this).removeClass("current");
+			});
+			this.blur();
+			$(this).addClass("current");
+			var currentMenuID = $(this).attr("id");
+			setCookie("MemberMenuID",currentMenuID);
+		});
+	
+		pageInit();
+		function pageInit(){
+			//高度初始化，必须动态设置，否则在ie存在bug
+			var widowHeight = $(window).height();
+			$("#main").height(widowHeight-60);
+			
+			//默认选择项
+			var currentMenuID = getCookie("MemberMenuID");
+			var src = "{$Url}welcome";
+			if( !isNaN(currentMenuID) && currentMenuID != 11){
+				var obj = $("#"+currentMenuID);
+				obj.addClass("current");
+				src = obj.attr("href");
+			}
+			if(src) $("#main").attr("src", src);
+		}
+	});
+	
+	function ChangeLng(obj,mark){
+		$("#language a").removeClass("active");
+		$(obj).addClass("active");
+		
+		var t = new Date().getTime();
+		var url = window.frames["main"].location.href;
+		if( url.indexOf("info/add") > 0 || url.indexOf("info/modify") > 0 ){
+			url = "{$Group}/info/index";
+		}
+		var p = url.indexOf("/l/");
+		if( p > 0 ) url = url.substring(0, p);
+		obj.target = "main";
+		obj.href = url+"/l/"+mark+"/random/"+t;
+	}
+	
+	function setCookie(name,value){ 
+		var Days = 30; 
+		var exp = new Date(); 
+		exp.setTime(exp.getTime() + Days*24*60*60*1000); 
+		document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString(); 
+	}
+	
+	//cookie中存储的内容为：name=jack;password=123
+	function getCookie(name){ 
+		var arr;
+		var reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+		if(arr=document.cookie.match(reg)){
+			return unescape(arr[2]); 
+		}else {
+			return undefined; 
+		}
+	}
+</script>

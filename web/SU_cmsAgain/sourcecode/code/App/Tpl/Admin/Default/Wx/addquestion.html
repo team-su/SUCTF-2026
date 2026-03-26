@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frmAdd" enctype="multipart/form-data">
+        <input type="hidden" name="AppID" value="{$AppID}" />
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>题目名称</th>
+                        <td><input type="text" class="textinput w450"  id="QuestionName" name="QuestionName" value="" /></td>
+                    </tr>
+                    <tr>
+                        <th>排序</th>
+                        <td>
+                        <input type="text" class="textinput" style="width:120px"  id="QuestionOrder" name="QuestionOrder" value="99" />
+                        <span class='Caution'>请输入数字，值越小排名越靠前！</span>
+                        </td>
+                    </tr>
+                   <tr>
+                        <th nowrap="nowrap">是否多选</th>
+                        <td>
+                            <label><input type="radio" name="IsMultiple" value="1"   />多选</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="IsMultiple" value="0"  checked="checked" />单选</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap">是否启用</th>
+                        <td>
+                            <label><input type="radio" name="IsEnable" value="1" checked="checked"  />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="IsEnable" value="0"  />禁用</label>
+                        </td>
+                    </tr>
+                  </table>
+            </div>
+            
+            <div class="box-header"><h4>调查选项</h4></div>
+            <div class="box-content">
+                <table class="boxtable" id="allitems">
+                    <tr>
+                        <th>选项1</th>
+                        <td>
+                        <input type="hidden"  name="ItemID[]" value="0" />
+                        <input type="text" class="textinput w450" name="ItemName[]" value="" />
+                        &nbsp;<a onclick="delItem(this)">[-删除选项]</a>
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>选项2</th>
+                        <td>
+                        <input type="hidden"  name="ItemID[]" value="0" />
+                        <input type="text" class="textinput w450" name="ItemName[]" value="" />
+                        &nbsp;<a onclick="delItem(this)">[-删除选项]</a></td>
+                    </tr>
+                   <tr>
+                        <th>选项3</th>
+                        <td>
+                        <input type="hidden"  name="ItemID[]" value="0" />
+                        <input type="text" class="textinput w450" name="ItemName[]" value="" />
+                        &nbsp;<a onclick="delItem(this)">[-删除选项]</a></td>
+                    </tr>
+                </table>
+                <table class="boxtable" id="addItem">
+                    <tr>
+                        <th></th>
+                        <td><a onclick="addItem()">[+添加选项]<a></td>
+                    </tr>
+                </table>
+           </div>
+
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright" type="submit"  value="保存并继续添加" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmAdd').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			$('#frmAdd').resetForm();
+			$('#QuestionName').focus();
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#frmAdd').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 $('#btnUpload').click(function(){
+		$('#frmAdd').attr('action','{$UploadAction}');
+	 });
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmAdd').attr('action','{$Action}');
+	 });
+	 
+	 $('#QuestionName').focus();
+});
+
+function GoBack(){
+	window.location.href = "{$Url}question/AppID/{$AppID}";
+}
+
+//添加一个项目
+function addItem(){
+	var oTh = $("#allitems th");
+	var i = oTh.length + 1;
+	var item="<tr><th>选项"+i+"</th><td>";
+	item += "<input type='text' class='textinput w450' name='ItemName[]' value='' />";
+	item += "<input type='hidden'  name='ItemID[]' value='0' />";
+	item += "&nbsp;<a onclick='delItem(this)'>[-删除选项]</a></td></tr>";
+	$("#allitems").append(item);
+	$("#allitems input[name='ItemName[]']").last().focus();
+}
+
+function delItem(obj){
+	$(obj).parent().parent().remove();
+	var oTh = $("#allitems th");
+	for(var i=0; i< oTh.length; i++){
+		var txt ="选项"+(i+1).toString();
+		$(oTh[i]).text(txt);
+	}
+}
+</script>

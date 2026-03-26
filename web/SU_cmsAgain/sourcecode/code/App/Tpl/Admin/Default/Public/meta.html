@@ -1,0 +1,217 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="generator" content="YoudianCMS" data-variable="http://www.youdiancms.com" />
+<meta name="referrer" content="no-referrer">
+{$XUaCompatible}
+<title></title>
+<link href="{$Css}style.css" rel="stylesheet" type="text/css" />
+<link href="{$Css}font.css" rel="stylesheet" type="text/css" />
+<style>
+	[class*='ydicon']:before{ font-family: 'ydicon'; }
+
+	#btnSubmit{ 
+		background: {$AdminThemeColor}; 
+	}
+	.toolbar a,.toolbar #btnSeek{
+		line-height: 1.42857143em; padding: 6px 12px; border-radius: 4px; color:#FFF; display: inline-block; border: 1px solid #ccc; background: #FFF; color: #212529;
+		vertical-align: top; outline: none;
+	}
+	.toolbar a:hover{ background: #eee; }
+	.toolbar a:active,.toolbar #btnSeek:active{ box-shadow: inset 0 3px 5px rgba(0,0,0,.125); }
+	.toolbar a:before{ padding-right: 3px; font-weight: normal; font-family: "ydicon"; }
+	.toolbar #btnSaveAll,.toolbar #btnSeek{
+		color: #FFF;
+		border: 1px solid {$AdminThemeColor};
+		background: {$AdminThemeColor} !important;
+	}
+	.toolbar #btnSaveAll:hover,.toolbar #btnSeek:hover{ opacity: .9; }
+	.toolbar a#del:hover,.toolbar a#btnCache:hover{ background: #ec0000 !important; }
+	.toolbar a#del,.toolbar a#btnCache{ background: red !important; color: #FFF; border-color: red; }
+	.toolbar a#btnBack:before{ content: "\e655"; }
+	.toolbar a#btnSave:before{ content: "\e678"; }
+	.toolbar a#btnSaveAll:before{ content: "\e612"; }
+	.toolbar a#btnAdd:before{ content: "\e612"; }
+	.toolbar a#del:before { content: "\e651"; }
+	.toolbar a#sortall:before{ content: "\e681"; }
+	.toolbar a#btnConfig:before{ content: "\e67c"; }
+	.toolbar a#btnCheck:before{ content: "\e625"; }
+	.toolbar a#btnUnCheck:before{ content: "\e624"; }
+	.toolbar a#btnCache:before{ content: "\e613"; }
+	.toolbar a#btnLock:before{ content: "\e6a3"; }
+	.toolbar a#btnUnlock:before{ content: "\e6a4"; }
+	.toolbar a#btnPwd:before{ content: "\e63e"; }
+	.toolbar a#btnParent:before{ content: "\e611"; }
+	.toolbar a#refresh:before{ content: "\e682"; }
+	.toolbar a#btnSeek:before{ content: "\e6bc"; }
+	.toolbar a#btnMove:before{ content: "\e774"; }
+	.toolbar a#btnCopy:before{ content: "\e601"; }
+
+	.tab_menu{ 
+		border-bottom:2px solid {$AdminThemeColor}; 
+	}
+	.tab_menu li.current{ 
+		background: {$AdminThemeColor}; 
+	}
+	.submenulist li a:hover, .submenulist li a.current{ 
+		background:{$AdminThemeColor}; 
+	}
+	.ui-dialog-footer button.ui-dialog-autofocus{
+	    background-color: {$AdminThemeColor};
+		border-color: {$AdminThemeColor};
+	}
+
+	/*文件管理器主题响应*/
+	.yd-fm-upload-btn{
+		background: {$AdminThemeColor};
+	}
+	.yd-fm-set-btn.on{
+		background: {$AdminThemeColor};
+	}
+	.yd-fm-set-btn.on:hover{
+		background: {$AdminThemeColor} !important;
+	}
+	.yd-fm-dir-container .diritem .item.on:after{
+		border: 2px solid {$AdminThemeColor};
+	}
+	.yd-fm-dir-container .diritem .item:before{
+		color: {$AdminThemeColor};
+	}
+	.yd-fm-fileitem.on{
+		border-color: {$AdminThemeColor} !important;
+	}
+	.yd-fm-fileitem.on:before{
+		color: {$AdminThemeColor};
+	}
+	.yd-fm-filter-head i:active{
+		border: 2px solid {$AdminThemeColor};
+	}
+	.yd-switch.on{
+		background: {$AdminThemeColor};
+	}
+	.yd-radio.on:before{
+		background: {$AdminThemeColor};
+	}
+</style>
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.min.js"></script>
+
+<script type="text/javascript" src="{$Js}common.js"></script>
+<script type="text/javascript" src="{$Js}manager.js{$NoCache}"></script>
+<script>
+	yd.setOptions({
+		Debug: "{$AppDebug}"
+	});
+	localStorage.setItem("UploadDirType", "{$UploadDirType}");
+	FileManager.setConfig({
+		Group: "__GROUP__",
+		Js: "{$Js}"
+	})
+	
+	function GoBack(url){
+		if( url == undefined ) url = "{$Url}index";
+		window.location.href = url;
+	}
+	
+	function keyHandler(e){
+		//Ctrl+Del清除系统缓存
+		if(e.ctrlKey && e.keyCode == 46){
+			ClearSystemCache( "__GROUP__/public/clearCache/Action/systemcache" );
+		}else if(e.shiftKey && e.keyCode == 46){  //Shift+Del一键清除全部Html静态缓存
+			ClearAllHtmlCache("__GROUP__/public/clearCache/Action/allhtmlcache");
+		}else if(e.ctrlKey && e.keyCode == 13){ //Ctrl+Enter提交
+			console.log("Ctrl+Enter提交");
+			if( $("#btnSubmit").length > 0 && $("#NoCtrlEnter").val() != 1 ){
+				$("#myaction").val("SaveConfig"); //兼容缓存管理
+				$("form:first").attr('action','{$Action}');
+				$("form:first").submit();
+			}
+		}else if(e.ctrlKey && e.keyCode == 37){ //ctrl+<-- 搜狗不支持esc
+			if( $(".GoBack").length > 0 ){  //存在返回按钮才运行
+				GoBack();  //firefox 无效
+			}
+		}
+	}
+	
+	//obj对象
+	function toggleStatus(obj, id, tableName, status0Name, status0Value, status0Color, status1Name, status1Value, status1Color, fieldName){
+		if(checkSafeQuestion()) return;
+		if( status0Name == undefined) status0Name ="禁用";
+		if( status0Value == undefined) status0Value =0;
+		if( status0Color == undefined) status0Color ="#F00";
+		
+		if( status1Name == undefined) status1Name ="启用";
+		if( status1Value == undefined) status1Value =1;
+		if( status1Color == undefined) status1Color ="#000";
+		if( fieldName == undefined) fieldName ="IsEnable";
+		
+		if( $(obj).text() == status1Name ){
+			statusValue = status0Value;  statusName = status0Name;  color = status0Color;
+		}else{
+			statusValue = status1Value;  statusName = status1Name;  color = status1Color;
+		}
+		$(obj).text( statusName );
+		$(obj).css("color", color);
+		var p = {id:id, FieldValue:statusValue, TableName:tableName, FieldName: fieldName};
+		$.get("{$Url}toggleStatus", p, null, 'json');
+	}
+	
+	function DeleteTip(key){
+		if(key){
+			key = '<b>【'+key+'】</b>';
+		}else{
+			key = "";
+		}
+		var des = '<div id="icon_delete">确定删除'+key+'吗？删除后无法恢复！</div>';
+		return des;
+	}
+	
+	function checkSafeQuestion(){
+		var enable = "{$SafeAnswerEnable}";
+		if(enable ==1){
+			//是否正确回答过问题
+			var IsSafeAnswer = window.localStorage.getItem("IsSafeAnswer") || 0;
+			if(IsSafeAnswer == 0) {
+				showSafeQuestion();
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	function showSafeQuestion(){
+		var content = '<div style="overflow:hidden; width:270px; padding: 10px 5px;">';
+		content += '<div class="red" style="padding-bottom:8px; text-align:left;font-weight:bold;">{$SafeQuestion}</div>';
+		content += '<div><input  class="textinput" autocomplete="off" style="width:96%;padding: 8px 6px;" type="text" id="MySafeAnswer" placeholder="请输入问题答案" value="" />';
+		content += '</div></div>';
+		var d = dialog({
+			content: content,
+			title:"二次安全验证", 
+			quickClose: false, 
+			okValue:"确定",
+			ok:function(){
+				//不用用$Group，系统某些地方会覆盖全局Group
+				var url = "__GROUP__/public/answerSafeQuestion";
+				var params = {
+					"SafeAnswer": $("#MySafeAnswer").val()
+				};
+				$.post(url, params, function(res){
+					if(res.status==1){
+						window.localStorage.setItem("IsSafeAnswer", 1);
+						SucceedBox(res.info);
+						d.close().remove();
+					}else{
+						window.localStorage.setItem("IsSafeAnswer", 0);
+						ErrorBox(res.info);
+					}
+				}, "json");
+				return false;
+			}, 
+			cancelValue:"取消",
+			cancel:function(){
+				d.close().remove();
+			},
+			id:'dlgSafeAnswer', 
+			padding:5
+		}).show();
+	}
+</script>

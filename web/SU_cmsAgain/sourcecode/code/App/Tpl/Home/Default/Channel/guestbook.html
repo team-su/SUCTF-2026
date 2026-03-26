@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{$ChannelName}|{$Title}-{$WebName}</title>
+<include file="Public:meta" />
+</head>
+<body class="body_guestbook">
+	<include file="Public:header" />
+    <!--区块5145 开始-->
+<div id="n5145" class="component floor_channel10_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5145">
+    <style type="text/css">
+            #n5145{
+                {$TChannel10Bg5145|ParseBg}
+                padding-top: {$TChannel10PaddingTop5145}px;
+                padding-bottom: {$TChannel10PaddingBottom5145}px;
+            }
+            #n5145 .floor_channel10{
+                animation-duration: {$TChannel10AnimationTime5145}s;
+                animation-fill-mode: both;
+            }
+            #n5145 li{
+                animation-duration: {$TChannel10AnimationTime5145}s;
+                animation-fill-mode: both;
+            }
+
+            #n5145 .sidebar_comtainer{
+                {$TChannel10SideBarBg5145|ParseBg}
+                width: {$TChannel10SideBarWidth5145}px;
+                yd-previewable-class: float_ float_{$TChannel10HasSideBar5145};
+            }
+            #n5145 .sidelist{
+                yd-previewable-class: -sidelist {$TChannel10SideBarStyle5145}-sidelist;
+                border-color: {$TChannel10SideBarBorderColor5145};
+            }
+            #n5145 .sidelist a{
+                border-color: {$TChannel10SideBarBorderColor5145};
+            }
+            #n5145 .sidebar_title h2{
+                {$TChannel10SideBarTitle5145|ParseFont}
+            }
+            #n5145 .sidelist .InfoTitle{
+                {$TChannel10SideBarInfoTitle5145|ParseFont}
+            }
+            #n5145 .sidelist .InfoPrice{
+                {$TChannel10SideBarInfoPrice5145|ParseFont}
+            }
+
+            #n5145>.floor_channel10>.content_container{
+                {$TChannel10ContentBg5145|ParseBg}
+            }
+            #n5145>.floor_channel10>.content_container>.content_title h2{
+                {$TChannel10TitleFont5145|ParseFont}
+            }
+            
+            #n5145 .guestbook_table th{
+                {$TChannel10LabelFont5145|ParseFont}
+            }
+
+            #n5145 .guestbook_table tr.input input,
+            #n5145 .guestbook_table tr.input textarea{
+                {$TChannel10InputBorder5145|ParseBorder}
+                {$TChannel10InputFont5145|ParseFont}
+                background: {$TChannel10InputBg5145};
+            }
+            #n5145 .guestbook_table input,
+            #n5145 .guestbook_table textarea{
+                margin: {$TChannel10InputMargin5145/2}px 0;
+            }
+            #n5145 .guestbook_table tr.input input::-webkit-input-placeholder,
+            #n5145 .guestbook_table tr.input textarea::-webkit-input-placeholder{
+                {$TChannel10InputPlaceholderFont5145|ParseFont}
+            }
+            #n5145 .guestbook_table tr.input input:focus,
+            #n5145 .guestbook_table tr.input textarea:focus{
+                border-color: {$TChannel10InputFocusBorderColor5145};
+            }
+
+            #n5145 .guestbook_table .submit_button{
+                {$TChannel10BtnFont5145|ParseFont}
+                {$TChannel10Btn5145|ParseButton}
+                {$TChannel10BtnBg5145|ParseBg}
+                <eq name="TChannel10BtnFont5145|ParseItem=8" value="justify">width:100%;</eq>
+                text-align: center;
+            }
+            #n5145 .guestbook_table td.operation{
+                {$TChannel10BtnFont5145|ParseFont}
+            }
+        </style>
+        <div class="floor_channel10 full-width{$TChannel10FullWidth5145} floor_channel" yd-animation="{$TChannel10AnimationType5145}">
+            <neq name="TChannel10HasSideBar5145" value="0">
+                <div class="component_title sidebar_comtainer float_{$TChannel10HasSideBar5145}">
+                    <div yd-slot="5145A"></div>
+                    <notempty name="TChannel10SideBarChannel5145">
+                        <div class="sidebar" yd-group="5145" yd-tab="侧边栏设置">
+                            <div class="sidebar_title"><h2>{$TChannel10SideBarChannel5145|ChannelName}</h2></div>  
+                            <div class="sidebar_body">  
+                                <ul class="sidelist {$TChannel10SideBarStyle5145}-sidelist {$TRoundCorner}-round-corner">
+                                    <infolist id="f" channelid="$TChannel10SideBarChannel5145" top="$TChannel10SideBarCount5145" timeformat="Y-m-d" labelid="$TChannel10SideBarLabel5145" empty="$Think.lang.NoInformation">
+                                        <li yd-animation="{$TChannel10AnimationType5145}">
+                                            <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                                <div class="InfoPicture"><img src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                                <div class="InfoTitle">{$f.InfoTitle}</div>
+                                                <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                            </a>
+                                        </li>
+                                    </infolist>
+                               </ul>
+                            </div>
+                            <div class="sidebar_bottom"></div>
+                        </div>
+                    </notempty>
+                    <div yd-slot="5145B"></div>
+                </div>
+            </neq>
+            <div class="component_body content_container" yd-content="guestbook">
+                <div class="content_title">
+                    <include file="Public:location" />
+                    <h2 yd-content="_channel,{$ChannelID}">{$ChannelName}</h2>
+                </div>
+                <div class="content_body">
+                    <div yd-slot="5145C"></div>
+                    <table class="guestbook_table">
+                        <form enctype="multipart/form-data" method="post" id="frmGuestBook" action="{:GuestbookAddAction()}">
+                            <guestbookmodellist id="gm">
+                                <tr class="input">
+                                    <th>{$gm.DisplayName}<eq name="gm.IsRequire" value="1"><span class="required">*</span></eq></th>
+                                    <td>
+                                    <switch name="gm.DisplayType">
+                                        <case value="textarea">
+                                            <textarea id="{$gm.FieldName}" name="{$gm.FieldName}" placeholder="{$gm.DisplayHelpText}" class="form_textarea" style="height: {$gm.DisplayHeight}">{$gm.DisplayValue}</textarea>
+                                        </case>
+                                        <case value="radio">
+                                            <volist name="gm.Item" id="it">
+                                               <input id="{$gm.FieldName}" name="{$gm.FieldName}" type="radio" class="form_radio"  value="{$it.Value}"  {$it.Selected}  />{$it.Text}&nbsp;&nbsp;
+                                            </volist>
+                                        </case>
+                                       <case value="checkbox">
+                                            <volist name="gm.Item" id="it">
+                                               <input id="{$gm.FieldName}" class="form_checkbox" name="{$gm.FieldName}[]" value="{$it.Value}" type="checkbox" {$it.Selected} />{$it.Text}&nbsp;&nbsp;
+                                            </volist>
+                                        </case>
+                                        <case value="select">
+                                            <select  id="{$gm.FieldName}"  name="{$gm.FieldName}" >
+                                                <volist name="gm.Item" id="it">
+                                                    <option  value="{$it.Value}" {$it.Selected} >{$it.Text}</option>
+                                                </volist>
+                                             </select>
+                                        </case>
+                                        <case value="label">{$gm.DisplayValue}</case>
+                                        <case value="password"><input id="{$gm.FieldName}" name="{$gm.FieldName}" type="password" placeholder="{$gm.DisplayHelpText}" class="form_text" value="{$gm.DisplayValue}" /></case>
+                                        <default /><input id="{$gm.FieldName}" name="{$gm.FieldName}" type="text" placeholder="{$gm.DisplayHelpText}" class="form_text" maxlength="100" style="height: {$gm.DisplayHeight}" value="{$gm.DisplayValue}" />
+                                     </switch>
+                                     </td>
+                                 </tr>
+                            </guestbookmodellist>
+                            <eq name="GuestBookVerifycode" value="1">
+                                <tr class="input">
+                                    <th>{$Think.lang.Verifycode}<span class="required">*</span></th>
+                                    <td>
+                                    <input id="verifycode" class="form_text_verifycode" name="verifycode" placeholder="{$Think.lang.Verifycode}" type="text" maxlength="4" />
+                                    <img  src="{$Group}/public/guestbookCode/"  onclick="ChangeGuestbookCode()"  class="code_image" id="gbcode"  align="absMiddle"  alt="{$Think.lang.ChangeVerifycode}"  title="{$Think.lang.ChangeVerifycode}" />
+                                    </td>
+                                </tr>
+                            </eq>
+                            <tr>
+                                <td colspan="2" class="operation" yd-group="5145" yd-tab="按钮设置"><input class="submit_button" type="submit" name="submit8" value="{$TChannel10Btn5145|ParseButtonName}" /></td>
+                            </tr>
+                        </form>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('#frmGuestBook').ajaxForm({
+                    success: complete,
+                    dataType: 'json',
+                    beforeSubmit: check
+                });
+                function check(){
+                    <guestbookmodellist id="gm">
+                            <eq name="gm.IsRequire" value="1">
+                                    if($("#{$gm.FieldName}").val()==""){
+                                        alert("{$gm.DisplayName}{$Think.lang.Required}");
+                                        $("#{$gm.FieldName}").focus();
+                                        return false;
+                                    }
+                            </eq>
+                            <eq name="gm.IsValidate" value="1">
+                                <notempty name="gm.ValidateRule">
+                                        var re = new RegExp("{$gm.ValidateRule}");
+                                        if(!re.test( $("#{$gm.FieldName}").val() )){
+                                            alert("{$gm.DisplayName}{$Think.lang.Invalid}");
+                                            $("#{$gm.FieldName}").focus();
+                                            return false;
+                                        }
+                                </notempty>
+                            </eq>
+                    </guestbookmodellist>
+                    <eq name="OrderVerifyCode" value="1">
+                        if( $("#verifycode").val() == ""){
+                            alert("{$Think.lang.VerifyCodeRequired}");
+                            $("#verifycode").focus();
+                            return false;
+                        }
+                    </eq>
+                    return true;
+                }
+                
+                function complete(data){
+                    if (data.status==1){
+                        alert(data.info);
+                        $('#frmGuestBook').resetForm();
+                    }else if(data.status==0){
+                        alert(data.info);
+                    }
+                    ChangeGuestbookCode();
+                };
+                
+                 $('#frmGuestBook').submit(function(){  // 提交表单
+                    //$('#frmAddBanner').ajaxSubmit();  
+                    return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+                 });
+            });
+
+            function ChangeGuestbookCode(){
+                var timenow = new Date().getTime();
+                var obj = document.getElementById('gbcode');
+                if( obj ) obj.src = "{$Group}/public/guestbookCode/"+timenow;
+            }
+        </script>
+</div>
+<!--区块5145 结束--><include file="Public:footer" />
+</body>
+</html>

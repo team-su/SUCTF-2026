@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>#main_page table td{ padding:5px 8px;}</style>
+</head>
+<body id="main_page">
+<div class="container">
+       <div class="table">
+            <h2 class="th" id="c5">登录成功</h2>                
+            <table>
+                <tr>
+                    <td width="25%">您好，&nbsp;<span class="redTip">{$MemberName|htmlspecialchars}</span>
+                    [&nbsp;<span class="redTip">{$MemberGroupName}</span>&nbsp;]&nbsp;您已成功登录系统！
+                    </td>
+                    <td width="25%">登录次数：<span class="redTip">{$LoginCount}</span>&nbsp;&nbsp;</td>
+                    <td width="25%">登录IP：<span class="redTip">{$LastLoginIP}</span>&nbsp;&nbsp;</td>
+                    <td  width="25%">登录时间：<span class="redTip">{$LastLoginTime}</span> </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="table">
+            <h2 class="th" id="c5">我的统计信息</h2>                
+            <table>
+                <tr>
+                    <td style="width:120px;text-align:right;">我发布的文章数</td>
+                    <td align="left"><span class="redTip">{$InfoCount}</span></td>
+                </tr>
+                <tr style="display:none">
+                    <td style="width:120px;text-align:right;">我的评论数</td>
+                    <td><span class="redTip">{$CommentCount}</span></td>
+                </tr>
+                <tr>
+                    <td style="width:120px;text-align:right;">我的留言数</td>
+                    <td><span class="redTip">{$MessageCount}</span></td>
+                </tr>
+                <tr>
+                    <td style="width:120px;text-align:right;">我的订单数</td>
+                    <td><span class="redTip">{$OrderCount}</span></td>
+                </tr>
+                <tr>
+                    <td style="width:120px;text-align:right;">我的应聘数</td>
+                    <td><span class="redTip">{$ResumeCount}</span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

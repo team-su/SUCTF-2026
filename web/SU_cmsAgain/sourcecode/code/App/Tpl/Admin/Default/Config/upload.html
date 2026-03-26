@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">               
+            <div class="box-header"><h4>文件上传设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                <tr>
+                    <th class="w120">上传目录</th>
+                    <td>{$Upload}</td>
+                </tr>
+                <tr>
+                    <th>允许上传文件类型</th>
+                    <td><input type="text" class="textinput" style="width:100%;" name="UPLOAD_FILE_TYPE" value="{$UploadFileType}"  /><span class='Caution'>文件类型以竖线“|”隔开，如：jpg|png|bmp|gif|rar|zip</span></td>
+                </tr>
+                
+                <tr>
+                   <th class="w120">最大上传文件大小</th>
+                   <td>
+						<input type="number" step="0.1" min="0" class="textinput" style="width:90px;" name="MAX_UPLOAD_SIZE" value="{$MaxUploadSize}" />
+						<span class='Caution'>单位：MB。允许使用1位小数，如：1.2，默认值为5M</span>
+				   </td>
+                </tr>
+				 <tr>
+                        <th  class="w120">自动创建上传目录</th>
+                        <td>
+                            <label><input type="radio" name="UPLOAD_DIR_TYPE" value="0"  />不创建</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="UPLOAD_DIR_TYPE" value="1" />按年月创建</label>
+                        </td>
+                    </tr>
+                </table>
+                <table class="warningtable">
+                    <th>说明</th>
+                    <td> 
+					   【1】您的Web服务器最大上传文件大小为<b style="color:red">{:ini_get('upload_max_filesize')}</b>，如需修改此值，请联系Web服务器提供商；<br />
+                       【2】系统检测到您的上传目录 /Upload <switch name="IsExecutable">
+                            <case value="1">
+                                <b style="color:red;">没有关闭执行权限，能运行木马，十分危险！</b>
+                                强烈建议关闭目录<b style="color:red;">执行权限</b>，可禁止木马的运行
+                            </case>
+                            <case value="0">已经<b style="color:green;">关闭了执行权限</b>，十分安全，黑客无法运行木马哦！</case>
+                            <case value="-1"><b style="color:red;">没有写入权限</b>，无法上传文件哦</case>
+                       </switch>；
+                    </td>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			var dirType = $("input[name='UPLOAD_DIR_TYPE']:checked").val();
+			localStorage.setItem("UploadDirType", dirType);
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	function pageInit(){
+		$("input[name='UPLOAD_DIR_TYPE'][value={$UploadDirType}]").attr("checked",'checked');
+	}
+	pageInit();
+});
+</script>

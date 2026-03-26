@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+	<form enctype="multipart/form-data" action="{$Action}" method="post" id="frm">
+        <include file="./Public/tpl/user/consigneecommon.html" />
+        <div class="weui-btn-area">
+              <input type="submit" id="btnSubmit"  class="weui-btn weui-btn_primary"   value="保存"/>
+        </div>
+	</form>
+</body>
+</html>

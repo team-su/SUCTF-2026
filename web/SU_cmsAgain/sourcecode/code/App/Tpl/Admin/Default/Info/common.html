@@ -1,0 +1,300 @@
+<script type="text/javascript">
+//相关信息
+var gDlg = '';
+var content = '<div id="dlgRelation"><iframe src="__GROUP__/Info/relation?cid={$ChannelID}&iid={$InfoID}" name="frmRelation" id="frmRelation"  scrolling="no" frameborder="0"  height="490px" width="800px;"></iframe></div>';
+function addRelationItem(fieldname){
+	gDlg = dialog({
+		title: "请选择相关信息",
+		id: 'relation',
+		padding: 0,
+		content: content,
+		ok: function () {
+			var obj = window.frames['frmRelation'].document;
+			var objSelected = $(obj).find(".rcb:checked");
+			var str = "";
+			var n = objSelected.length;
+			for(var i=0; i < n; i++){
+				var infoid = objSelected.eq(i).val();
+				if( !hasInfoID(infoid, fieldname) ){
+					var infotitle = objSelected.eq(i).attr('infotitle');
+					var infourl = objSelected.eq(i).attr('infourl');
+					str += "<li>";
+					str += "<a href='"+infourl+"' target='_blank'>"+infotitle+"</a>";
+					str += "<a onclick=\"delRelationItem(this,'"+fieldname+"')\" class='btnDel'>删除</a>";
+					str += "<input type='hidden' name='"+fieldname+"[]' value='"+infoid+"' />";
+					str += "</li>";
+				}
+			}
+			if( n > 0 && str.length > 0){
+				if( $("#relationlist"+fieldname+" li").length == 0 ){
+					$("#relationlist"+fieldname).html("");
+				}
+				$("#relationlist"+fieldname).append(str);
+			}
+			return false;
+		},
+		cancel:function(){
+			this.close();
+		},
+		okValue: '添加并继续',
+		cancelValue: '关闭',
+		cancel: true
+	}).show();
+}
+
+function hasInfoID(id, fieldname){
+	var obj = $("#relationlist"+fieldname+" li input");
+	for(var i = 0; i < obj.length; i++){
+		if( id == obj.eq(i).val() ){
+			return true;	
+		}
+	}
+	return false;
+}
+
+function delRelationItem(obj, fieldname){
+	$(obj).parent().remove();
+	var n = $("#relationlist"+fieldname+" li").length;
+	if( n == 0 ){
+		$("#relationlist"+fieldname).append("<input type='hidden' name='"+fieldname+"[]' value='' />");
+	}
+}
+</script>
+<script type="text/javascript">
+//相册
+function BrowserAlbumServer(obj){
+	if(checkSafeQuestion()) return;
+	var name = $(obj).parent().find('.af').attr('name');
+	FileManager.selectActionFunction = function(fileUrl, data){
+		$( '#'+name+'Image' ).val(fileUrl);
+	}; 
+	FileManager.popup(); 
+}
+
+function addAlbumItem(fieldname){
+	var obj = $('#table-album'+fieldname+' tbody tr');
+	var objTemp  = obj.last().clone();
+	var n = obj.length+1;
+	objTemp.find('.anum').html( obj.length + 1 );
+	//不能使用n，删除前面行，id的值并没有变
+	var maxID = objTemp.find('.af').attr("id").substr(-1);
+	maxID = parseInt(maxID) + 1;
+	
+	objTemp.find('.af').val('');
+	var attrName= objTemp.find('.af').attr('name');
+	attrName = attrName.substr(0, attrName.lastIndexOf('_') + 1);
+	objTemp.find('.af').attr('name', attrName + maxID);
+	objTemp.find('.af').attr('id', attrName + maxID);
+	objTemp.find('.ap').attr('id', attrName + maxID + 'Image');
+	
+	objTemp.find('.ap').val('');
+	objTemp.find('#AlbumTitle').val( '' );
+	objTemp.find('#AlbumDescription').val( '' );
+	objTemp.appendTo('#table-album'+fieldname+'  tbody');
+	$('#table-album'+fieldname+'  tbody tr').last().find('#AlbumTitle').focus();
+}
+
+function delAlbumItem(obj, fieldname){
+	var trSelector = '#table-album'+fieldname+' tbody tr';
+	if( $(trSelector).length <= 1){
+		ErrorBox('最后一个不能删除！');
+		return;
+	}
+	$(obj).parent().parent().remove();
+	var objTr = $(trSelector);
+	for(var i=0; i< objTr.length; i++){
+		objTr.eq(i).find('.anum').html(i+1);
+	}
+}
+
+function startUpload(obj){
+	if( !$(obj).val() ) return;
+	var name = $(obj).parent().find('.af').attr('name');
+	$('form:first').attr('action', '__URL__/Upload/currentfile/'+name);
+	$('form:first').submit();
+}
+
+function imagefloat(obj){
+	$(obj).powerFloat({targetMode: 'ajax',targetAttr: 'value',position: '5-7'});
+}
+
+//提交表单时调用
+function updateInfoAlbum(){
+	$(".table-album").each(function() {
+		var objTr = $(this).find("tbody tr");
+		var album = ""; 
+		for(var i=0; i< objTr.length; i++){
+			var at = objTr.eq(i).find('.at').val();
+			at = $.trim(at);
+			var ap = objTr.eq(i).find('.ap').val();
+			ap = $.trim(ap);
+			var ad = objTr.eq(i).find('.ad').val();
+			ad = $.trim(ad);
+			
+			if( at.length > 0 || ap.length > 0 || ad.length > 0 ){
+				album += at+"###"+ap+"###"+ad+"@@@";
+			}
+		}
+		if( album.length > 8 ) album = album.substr(0, album.length-3);
+		$(this).find('tfoot .ia').val( album );
+	});
+}
+</script>
+<script type="text/javascript">
+//此代码Admin，Member分组相同
+//重置区域选择状态
+function resetArea(){
+	$("#ProvinceID").val(0);
+	$('#CityID').hide();
+	$('#CityID').html("<option value='0'></option>");
+}
+//修改信息类型
+function changeInfoType(typeid){
+		if( typeid == 0 ){
+			$(".trAllAttribute").remove();
+		}else{
+			var url = "{$Url}getTypeAttribute";
+			var InfoID = "{$InfoID}";
+			$.post(url, {TypeID:typeid, InfoID:InfoID}, function(data){
+				var tbody = $("#TypeID").parent().parent().parent();
+				$(".trAllAttribute").remove();
+				if(data.status == 1){
+					if( data.data.length > 0 ){
+						var html = "";
+						for(var i = 0; i < data.data.length; i++){
+								html += "<tr class='trAllAttribute' type_attr_id='"+data.data[i]["TypeAttributeID"]+"'>";
+								html += '<th class="w120">'+data.data[i]["TypeAttributeName"]+"</th>";
+								html += "<td>"+data.data[i]["Html"]+"</td>";
+								html +="</tr>";
+						}
+						tbody.append(html);
+					}
+				}
+			},"json");
+		}
+}
+
+//删除属性
+function delAttribute(obj){
+	var tr = $(obj).parent().parent();
+	var id = tr.attr("type_attr_id");
+	var len = $("tr[type_attr_id="+id+"]").length;
+	if( len <= 1 ){
+		WarnBox("不能删除最后一个");
+	}else{
+		tr.remove();
+	}
+}
+
+//添加属性
+function addAttribute(obj){
+	var tr = $(obj).parent().parent();
+	var id = tr.attr("type_attr_id");
+	var n = parseInt($("tr[type_attr_id="+id+"]").length);  //属性个数
+	var total = parseInt(tr.find("select option").length);  //属性选项个数
+	if( n >= total ){
+		WarnBox("已经超过列表项个数，不能再添加");
+	}else{
+		var newObj = tr.clone();
+		//设置默认值
+		newObj.find("input[name='attr_value_id_list[]']").val(''); //必须重置为空，表示需要新插入的属性
+		newObj.find("select[name='attr_value_list[]']").find("option:selected").next().attr("selected", "selected");
+		newObj.find("input[name='attr_price_list[]']").val('0');
+		
+		//设置上传相关的属性
+		var objPicture = newObj.find("input[name='attr_picture_list[]']");
+		var idstring = "AttributePictureFile"+id+"_"+(n + 1);
+		objPicture.attr("id", idstring+"Image");
+		newObj.find(".InputFile").attr("id", idstring);
+		newObj.find(".InputFile").attr("name", idstring);
+		newObj.find("input[name='attr_picture_list[]']").val(''); 
+		tr.after(newObj);
+	}
+}
+
+//上传图片
+function uploadAttributePicture(obj){
+	if( !$(obj).val() ) return;
+	var name = $(obj).attr('name');
+	$('form:first').attr('action', '__URL__/Upload/currentfile/'+name+'/addwater/no');
+	$('form:first').submit();
+}
+
+//浮动显示图片
+function attributePicturefloat(obj){
+	$(obj).powerFloat({targetMode: 'ajax',targetAttr: 'value',position: '5-7'});
+}
+
+//相册
+function BrowserAttributePictureServer(obj){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = function(fileUrl, data){
+		$(obj).parent().find("input[name='attr_picture_list[]']").val(fileUrl);
+	}; 
+	FileManager.popup(); 
+}
+
+//信息属性
+$(document).ready(function(e) {
+	$("#TypeID").change(function(){
+		var typeid = $(this).val();
+		changeInfoType(typeid);
+	});
+	if(checkSafeQuestion()) return;
+});
+</script>
+
+<script type="text/javascript">
+//这里面的函数被被channel模块调用
+//替换CK编辑器内容（保存文章和频道成功后被调用）
+function replaceCkEditorContent(data){
+	try{
+		//必须使用typeof判断，否则报异常
+		if(typeof CKEDITOR === "undefined") return;
+		if(!data.data || !data.info) return;
+		var len = data.data.length;
+		if(0==len) return;
+		var content = "";
+		for ( s in CKEDITOR.instances ) {
+			   content = CKEDITOR.instances[s].getData();
+			   //保存后前台页面需要替换远程图片地址为本地的
+			   for(i=0;i<len;i++){
+				   content = content.replace(data.data[i],data.info[i]);
+			   }
+			   CKEDITOR.instances[s].setData( content );
+			   //由于setData是异步执行，所以后面不能添加updateElement()
+			   //Updates the <textarea> element that was replaced by the editor 
+			   //with the current data available in the editor.
+			   //CKEDITOR.instances[s].updateElement(); 
+		}
+	}catch(e){
+		console.log("replaceCkEditorContent", e);
+	}
+}
+
+//替换百度编辑器内容（保存文章和频道成功后被调用）
+function replaceUeditorContent(data){
+	try{
+		if(!data.data || !data.info) return;
+		var len = data.data.length;
+		if(0==len) return;
+		var content = "";
+		$(".ueditor").each(function(){
+			var name = $(this).attr('id');
+			content =UE.getEditor(name+'container').getContent();
+			for(i=0; i<len; i++){
+				 content = content.replace(data.data[i], data.info[i]);
+			}
+			UE.getEditor(name+'container').setContent(content);
+			$("#"+name).val(content);
+		});
+	}catch(e){
+		console.log("replaceUeditorContent", e);;
+	}
+}
+</script>
+<php>
+    if(function_exists('AutoTemplateScript')){
+         echo AutoTemplateScript($ChannelID);
+    }
+</php>

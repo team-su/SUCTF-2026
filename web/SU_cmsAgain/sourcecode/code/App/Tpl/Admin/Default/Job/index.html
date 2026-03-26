@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+    <form enctype="multipart/form-data" method="post" id="frm">
+          <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+          <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}Add"  title="发布招聘信息" target="_self">发布招聘信息</a></li>
+				<li class="toolbar"><a id="btnSaveAll" href="{$Url}classIndex"  title="招聘分类管理" target="_self">招聘分类管理</a></li>
+                <li class="toolbar"><a id="btnSaveAll" class="ydicon-chakan" href="{$Url}Resume"  title="查看应聘简历" target="_self">查看应聘简历</a></li>
+				<li class="toolbar"><a id="btnConfig" href="{$Group}/Config/job" title="设置">设置</a></li>
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+                <li class="toolbar"><a id="sortall" onclick="BatchSort()" title="批量排序">排序</a></li>
+				<li class="toolbar toolbarform">
+                        <label>职位分类</label>
+                        <select name="JobClassID" id="JobClassID">
+                            <option value="-1">全部</option>
+                            <JobClassList id="jc">
+								<option value="{$jc.JobClassID}">{$jc.JobClassName}</option>
+                            </JobClassList>
+                        </select>
+                        <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                   </li>
+            </div>
+            <table class="datatable" id="datatable">
+            <tr>
+                <th width="30px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="45px" >职位ID</th>
+                <th>职位名称</th>
+                <th width="65px" >职位排序</th>
+				<th width="120px" >所属分类</th>
+				
+                <th width="95px" >学历要求</th>
+                
+                <th width="60px" >性别要求</th>
+                <th width="90px" >薪水</th>
+                <th width="65px" >招聘人数</th>
+                
+                <th width="125px">发布时间</th>
+                <th width="65px">是否启用</th>
+                <th width="70px" >应聘简历数</th>
+                <th style="text-align:left; width:190px;">操作</th>
+            </tr>  
+            <notempty name="Job">
+                <volist name="Job" id="j">
+                    <tr id="tr{$j.JobID}">
+                        <td><eq name="j.ResumeCount" value="0"><input class="checkrow" type="checkbox" name="JobID[]" value="{$j.JobID}" /></eq></td>
+                        <td>{$j.JobID}</td>
+                        <td class="TipKey"><b>{$j.JobName|htmlspecialchars}</b></td>
+                        <td><input type="number" class='textinput' onclick="this.select()" style="width:50px" name="JobOrder[]" value="{$j.JobOrder}" />
+                            <input type="hidden" class='textinput' name="JobOrderID[]" value="{$j.JobID}" />
+                        </td>
+						<td><b style="color:#00F">{$j.JobClassName|htmlspecialchars}</b></td>
+                        <td>{$j.Education|htmlspecialchars}</td>
+                        
+                        <td>{$j.Gender|htmlspecialchars}</td>
+                        <td>{$j.Salary|htmlspecialchars}</td>
+                        <td>{$j.Number|htmlspecialchars}</td>
+                        
+                        <td>{$j.Time|strtotime|yd_friend_date}</td>
+                        <td>
+                            <eq name="j.IsEnable" value="1">
+                            <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$j.JobID},'job')">启用</span>
+                            <else/>
+                            <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$j.JobID},'job')">禁用</span>
+                            </eq>
+                        </td>
+                        <td><b style="color:#00F">{$j.ResumeCount}</b></td>
+                        <td class="operator">
+                            <a style="float:left" id="btnEdit" name="btnEdit" href="{$Url}Modify/JobID/{$j.JobID}/JobClassID/{$JobClassID}/NowPage/{$NowPage}">修改</a>
+                            <elt name="j.ResumeCount" value="0">
+                                <div class="btn-sep"></div>
+                                <a style="float:left" onclick="Del({$j.JobID})" class="btnDel">删除</a>
+                            </elt>
+                            <gt name="j.ResumeCount" value="0">
+                                <div class="btn-sep"></div>
+                                <a style="float:left" id="btnSaveAll" href="{$Url}Resume/JobID/{$j.JobID}/JobClassID/{$JobClassID}/NowPage/{$NowPage}"  title="查看应聘简历" >查看应聘简历</a></li>
+                            </gt>
+                        </td>
+                    </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="12" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                 
+            </table>
+            <div class="tfoot">
+                 <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='JobID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/batchDel");
+		$('#frm').submit();
+	});
+}
+
+//排序
+function BatchSort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "__URL__/batchSort");
+		$('#frm').submit();
+	});
+}	
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#tr"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}del/JobID/"+id+"/p/{$NowPage}/JobClassID/{$JobClassID}";
+		location.href = url;
+	});
+}
+
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}
+$(document).ready(function(){
+	$("#JobClassID").val('{$JobClassID}');
+});
+</script>

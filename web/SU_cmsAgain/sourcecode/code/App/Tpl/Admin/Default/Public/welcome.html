@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.container{ padding: 12px 10px;}
+		#upgradetip{color:green;font-weight:bold;	}
+		.ImageYes{	font-size: 14px;	color: #339900;	font-weight:bold;	font-family:Verdana;} 
+		.ImageNo{	font-size:14px;	color:red;	font-weight:bold;	font-family:Verdana;}
+		div.table{ border-radius: 5px; }
+		div.table .th { 
+			border-radius: 6px 6px 0 0;
+			color:#2a333c;
+			background-color:#f0f0f0; 
+			border:1px solid #ddd; 
+			height:30px; line-height:30px; padding:5px 10px; 
+			position:relative; margin-left:0px; font-size:14px; 
+		}
+		div.table  td{ padding:8px 8px;}
+		/*网站概况*/
+		.block-container{ overflow:hidden; float:left; width:12.5%; }
+		.block{ background:#e2e2e2; width:90%; padding:18px 0; margin:10px; border-radius:5px;}
+		.block h2{ font-size:20px; text-align:center; margin-top:5px; color: #999;}
+		.block p{ font-size:24px; text-align:center; color:#1fbeec;}
+		.block:hover{ opacity:0.8; transition: all 0.5s !important;}
+		
+		.tip-wrapper{color:red;font-size:16px; width:380px; padding:5px 8px;}
+		.tip-wrapper .tip-item{ border-bottom:1px solid #eee; padding: 3px 0;margin: 5px 0;}
+		.tip-wrapper .tip-foot{color:blue;font-size:14px}
+		.tip-wrapper #cbSafeDlg{margin-right:5px;}
+    </style>
+</head>
+<body id="main_page">
+<div class="container">
+       <div class="table" style="display:none;">
+            <h2 class="th" id="c5">登录成功</h2>                
+            <table>
+                <tr>
+                    <td width="25%">您好，&nbsp;<span class="redTip">{$AdminName|htmlspecialchars}</span>&nbsp;您已成功登录系统！</td>
+                     <td width="25%">登录次数：<span class="redTip">{$LoginCount}</span>&nbsp;&nbsp;</td>
+                    <td width="25%">登录IP：<span class="redTip">{$LastLoginIP}</span>&nbsp;&nbsp;</td>
+                    <td  width="25%">登录时间：<span class="redTip">{$LastLoginTime}</span> </td>
+                </tr>
+            </table>
+        </div>
+		
+		<div class="table">
+            <h2 class="th" id="c5">网站概况
+				<span style="float:right;padding-right:10px;">系统版本：v{$CMSVersion}</span>
+			</h2>                
+            <table>
+                <tr>
+                    <td>
+						<volist name="StatList" id="s">
+							<div class="block-container"><div class="block"><p>{$s.Count}</p><h2>{$s.Name}</h2></div></div>
+						</volist>
+					</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="table">
+            <h2 class="th" id="c3">服务器基本信息
+				<span class="head" style="float:right; padding-right:10px;">
+					当前服务器时间：{$Server.Time}
+					&nbsp;&nbsp;时区：{:date_default_timezone_get()}
+				</span>
+			</h2>                
+            <table>
+                <tr>
+                  <td width="50%" colspan="2">
+						操作系统：{$Server.OS|htmlspecialchars} 编码：{$Server.AcceptLanguage|htmlspecialchars}
+				 </td>
+                  <td width="25%">服务器IP：<span class="redTip">{$Server.IP|htmlspecialchars}</span></td>
+                  <td width="25%">WEB服务器：<span class="redTip">{$Server.WebServerName|htmlspecialchars|default='未知'}</span></td>
+                </tr>
+                <tr>
+                <td width="25%">PHP运行模式：<b>{$Server.PHPSAPI|htmlspecialchars}</b></td>
+                <td width="25%">PHP版本：<span class="redTip">{$Server.PHPVersion|htmlspecialchars}</span>
+				PHP安全模式：{$Server.PHPSafe}
+				</td>
+                <td width="25%">最大INPUT数&nbsp;max_input_vars: <span class="redTip">{$Server.MaxInputVars}</span></td>
+                <td width="25%">POST最大字节数&nbsp;post_max_size: <span class="redTip">{$Server.MaxPostSize}</span></td>
+              </tr>
+              <tr>
+                <td>Session：{$Server.Session}</td>
+                <td>Cookie：{$Server.Cookie}</td>
+                <td>脚本最长执行时间：<span class="redTip">{$Server.MaxExecutionTime}</span>秒</td>
+                <td>最大上传大小：<span class="redTip">{$Server.UploadMaxFileSize}</span></td>
+              </tr>
+            </table>
+        </div>     
+        
+        <div class="table">
+            <h2 class="th" id="c4">组件支持情况&nbsp;&nbsp;
+            <a onclick="return checkPhpinfo()" href="{$Group}/Public/phpinfo" target="_blank" style="float:right;padding-right:10px;">查看更多...</a></h2>    
+            <table>
+                <tr>
+                  <td width="25%">Curl：{$Server.CurlInit}</td>
+                  <td width="25%">iconv编码：{$Server.Iconv}</td>
+                  <td width="25%">图形处理 GD Library：{$Server.GD}</td>
+                  <td width="25%">ZendOptmizer：{$Server.ZendOptimizer}</td>
+                </tr>
+                <tr>                          
+                  <td>自定义全局变量&nbsp;register_globals：{$Server.RegisterGlobals}</td>
+                  <td>最多允许使用内存&nbsp;memory_limit：<span class="redTip">{$Server.MemoryLimit}</span></td>
+                  <td>Socket：{$Server.Socket}</td>
+                  <td>高精度数学运算 BCMath：{$Server.BCMath}</td>
+                </tr>
+                
+                <tr>
+                  <td>历法运算 Calendar：{$Server.Calendar}</td>
+                  <td>magic_quotes_gpc：{$Server.MagicQuotes}</td>
+                  <td>magic_quotes_runtime：{$Server.MagicQuotesRuntime}</td>
+                  <td>MCrypt加密：{$Server.MCrypt}</td>
+                </tr>
+                
+                <tr>
+                  <td>哈稀计算 MHash：{$Server.MHash}</td>
+                  <td>OpenSSL：{$Server.OpenSSL}</td>
+                  <td>流媒体支持：{$Server.StreamMedia}</td>
+                  <td>Tokenizer：{$Server.Tokenizer}</td>
+                </tr>
+                
+                <tr>
+                  <td>文件压缩 Zlib：{$Server.Zlib}</td>
+                  <td>XML解析：{$Server.XML}</td>
+                  <td>目录存取协议 LDAP：{$Server.LDAP}</td>
+                  <td>多字节字符串MbString：{$Server.MbString}</td>
+                </tr>
+            </table>
+        </div>    
+    
+        <div class="table">
+            <h2 class="th" id="c5">网站空间和数据库
+				<notempty name="ShowMysqlTime">
+					<span class="head" style="float:right; padding-right:10px;">
+						当前数据库服务器时间：{$Server.MySqlTime}
+					</span>
+				</notempty>
+			</h2>           
+            <table>
+                <tr>
+                    <td colspan="5">网站总大小：<b id="WebTotalSize" style="color:red"></b>&nbsp;&nbsp;<a onclick="GetTotalSize()">点击查询</a></td>
+                </tr>
+                <tr>
+                    <td width="20%">数据库版本：<b>{$Server.MySqlVersion}</b></td>
+                    <td width="20%">数据库服务器：<b>{$Think.config.DB_HOST}</b></td>
+                    <td width="20%">数据库名称：<b>{$Think.config.DB_NAME}</b>
+					</td>
+                    <td width="20%">数据库编码：<b>{$Server.CharacterSetDatabase}</b></td>
+                    <td width="20%">数据库大小：<span class="redTip">{$Server.DbSize}</span></td>
+                </tr>
+            </table>
+        </div>
+</div>
+</body>
+</html>
+<script>
+function checkPhpinfo(){
+	var b = checkSafeQuestion();
+	return !b;
+}
+
+function GetTotalSize(){
+    var url = "{$Url}getWebTotalSize";
+	sizetip("计算中，请稍后...", true); 
+	$.get(url, {}, TotalComplete, "json");
+	return true;
+}
+
+function TotalComplete(data, textStatus){
+	if (data.status == 1){
+		$("#WebTotalSize").html(data.data);
+	}else{
+		sizetip("系统超时，请重试！", false);	
+	}
+}
+
+function sizetip(str, isanimation){
+	html = "";
+	if( isanimation ){
+		html = "<img src='{$WebPublic}Images/loading/21.gif' border='0' align='absmiddle'/>";
+	}
+	html += str;
+	$("#WebTotalSize").html(html);		
+}
+
+//显示重要提示信息
+function showTip(data){
+	var showSafeAnswerTip = data.ShowSafeAnswerTip;
+	var showDirTip = data.ShowDirTip;
+	if(showSafeAnswerTip==0 && showDirTip==0) return;
+
+	var content = "<div class='tip-wrapper'>";
+	if(showSafeAnswerTip == 1){
+		content += "<div class='tip-item'>▪ 您的网站没有设置【二次安全验证问题】</div>";
+	}
+	if(showDirTip == 1){
+		content += "<div class='tip-item'>▪ 您的网站【目录权限】设置不正确</div>";
+	}
+	okText = "查看安全设置";
+	content += "<div  class='tip-foot'>请务必按要求设置，您的网站将更加安全，可有效抵御病毒木马攻击！<div>";
+	content += "</div>";
+	showTipDlg(content, okText);
+}
+
+function showTipDlg(content, okText){
+	var NoSafeTip = window.localStorage.getItem("NoSafeTip") || 0;
+	if(NoSafeTip==1) return;
+	var d = dialog({
+		title: '安全隐患提醒',
+		content: content,
+		statusbar: '<label><input type="checkbox" id="cbSafeDlg" onclick="noremind()">不再提醒</label>',
+		okValue: okText,
+		padding: 5,
+		ok: function () {
+			d.close().remove();
+			location.href = "__GROUP__/Config/safe";
+		},
+		cancelValue: '取消',
+		cancel: function () {
+			d.close().remove();
+		}
+	});
+	d.show();
+}
+
+//不再提醒
+function noremind(){
+	var isCheck = $("#cbSafeDlg").is(':checked');
+	if(isCheck){
+		window.localStorage.setItem("NoSafeTip", 1);
+	}else{
+		window.localStorage.setItem("NoSafeTip", 0);
+	}
+}
+
+$(document).ready(function(){   
+	//alert($.fn.jquery); 当前版本1.7.2
+	//$("#AuthorizeText").css("visibility","hidden"); 
+	//$("#AuthorizeText").css("display","none"); 
+	setTimeout(function(){
+		var url = "{$Url}getTipInfo";
+		$.post(url, null, function(res){
+			if(res.status==1){
+				showTip(res.data);
+			}else{
+				ErrorBox(data.info);
+			}
+		}, "json");
+	}, 2000);
+});
+</script>

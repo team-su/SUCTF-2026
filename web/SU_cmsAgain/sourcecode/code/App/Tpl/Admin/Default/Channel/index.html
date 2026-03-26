@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.ChannelDepth1{padding-left:2px;}
+		.ChannelDepth1 input{color:#00F;}
+		.ChannelDepth2{padding-left:15px}
+		.ChannelDepth3{padding-left:30px}
+		.ChannelDepth4{padding-left:45px}
+		.ChannelDepth5{padding-left:60px}
+		.ChannelDepth6{padding-left:75px}
+		.ChannelDepth7{padding-left:90px}
+		.ChannelDepth8{padding-left:105px}
+		table .tree{ cursor:pointer;}
+		#datatable .cname{ width: 95%;}
+		@media screen and (max-width: 1500px) {
+			#datatable .cname{ width: 85%;}
+		}
+		
+		#dlgCopy{ width:300px;height:100px;padding:8px; }
+		#dlgCopy th{  width:115px; font-weight:bold;color:blue; text-align:right; padding:5px;}
+		#dlgCopy td{ text-align:left; padding: 2px 0;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+   <form enctype="multipart/form-data" id="frm"  method="post">
+          <div class="table">
+            <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}Add" title="添加频道" target="_self">添加频道信息</a></li>
+				<li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+				<li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除频道及其文章">删除</a></li>
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}batchAdd" title="批量添加频道" target="_self">批量添加频道</a></li>
+                <li class="toolbar"><a id="btnSaveAll" class="ydicon-shuxing" href="{$Group}/label/index" title="频道属性标记管理" target="_self">属性标记管理</a></li>
+                <li class="toolbar"><a id="btnSave" onclick="saveAll()"  title="保存所有修改">保存所有修改</a></li>
+				<notempty name="Language">
+				<li class="toolbar"><a id="btnCopy" onclick="copy()"  title="复制">复制</a></li>
+				</notempty>
+                <li class="toolbar" style="display:none"><a id="btnCache" onclick="clearChannelCache()"  title="当添加、删除、移动频道后，请清除频道缓存">清除频道缓存</a></li>
+				 <li class="toolbar toolbarform">
+                        <label>父级频道</label>
+                        <select name="Parent" id="Parent">
+                            <option value="0">不限</option>
+                            <volist id="p" name="ParentChannel">
+								<eq name="p.HasChild" value="1">
+									<option value="{$p.ChannelID}">{$p.ChannelName}</option>
+								</eq>
+                            </volist>
+                        </select>
+                        <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                    </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+					<th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                    <th width="50" >频道ID</th>
+                    <th>频道名称</th> 
+                    <th width="130">静态页面名称</th>
+                    <th width="65" >频道排序</th>
+                    <th width="65" >分页条数</th>
+                    <th width="60">简短名称</th>  
+                    <th width="80" >频道模型</th>
+                    <th width="225" >频道属性</th>
+                    <th width="150">操作</th>
+                </tr>
+                <notempty name="Channel">
+                <tbody>
+                    <volist name="Channel" id="c">
+                    <notin name="c.ChannelID" value="6,7,10,11">
+                    <tr id="t{$c.ChannelID}" class="parent{$c.Parent}" cid="{$c.ChannelID}" name="{$c.ChannelName}" haschild="{$c.HasChild}">
+                    <td><input class="checkrow" type="checkbox" pid="{$c.Parent}" name="CID[]" value="{$c.ChannelID}" onclick="selectChannel({$c.ChannelID},this)" /></td>
+					<td>{$c.ChannelID}<input type="hidden" name="ChannelID[]" value="{$c.ChannelID}" /></td>
+                    <td  style="text-align:left" nowrap="nowrap">
+                        <div class="ChannelDepth{$c.ChannelDepth}">
+                        <eq name="c.HasChild" value="1">
+                            <img src="{$Images}c{$c.HasChild}_open.gif" align="absmiddle" status="open" class="tree" onclick="ToggleChannel(this, {$c.ChannelID})" title="展开" />
+                        <else/>
+                            <img src="{$Images}c_line.gif" align="absmiddle" />
+                        </eq>
+                        <input type="text" class='textinput cname' name="ChannelName[]" value="{$c.ChannelName|htmlspecialchars}" />
+                        </div>
+                    </td>
+                    <td><input type="text" class='textinput' style="width:120px" name="Html[]" value="{$c.Html}" /></td>
+                    <td><input type="number" class='textinput' onclick="this.select()" style="width:55px" name="ChannelOrder[]" value="{$c.ChannelOrder}" /></td>
+                    <td><input type="number" class='textinput' onclick="this.select()" style="width:55px" name="PageSize[]" value="{$c.PageSize}" />
+                    </td>
+                    <td><input type="text" class='textinput' style="width:60px" name="ChannelSName[]" value="{$c.ChannelSName|htmlspecialchars}" /></td>
+                    <td><b style="color:{$c.ChannelModelID|ChannelModelColor}" title="主页模板：{$c.IndexTemplate} 阅读模板：{$c.ReadTemplate}">{$c.ChannelModelName|htmlspecialchars}</b></td>                 
+                    <td style="text-align:right; padding-right:5px;">
+                        <notempty name="c.ChannelPicture"><b style="color:red" class="cp" value="{$c.ChannelPicture}">图</b>&nbsp;</notempty>
+                        <eq name="c.IsHtml" value="1"><span style="color:#F0F">HTML</span></eq>&nbsp;
+                        <eq name="c.IsSystem" value="1"><span style="color:#90F">系统</span>
+                        <else/><span style="color:green">自定义</span>
+                        </eq>&nbsp;
+                        <eq name="c.IsLock" value="1">
+                            <span style="color:red;cursor:pointer;"  onclick="toggleStatus(this,{$c.ChannelID},'channel','未锁',0,'blue','锁定',1,'red','IsLock')">锁定</span>
+                        <else/>
+                            <span style="color:blue;cursor:pointer;"  onclick="toggleStatus(this,{$c.ChannelID},'channel','未锁',0,'blue','锁定',1,'red','IsLock')">未锁</span>
+                        </eq>&nbsp;
+                        <eq name="c.IsShow" value="1">
+                            <span style="color:#600;cursor:pointer;"  onclick="toggleStatus(this,{$c.ChannelID},'channel','隐藏',0,'#ccc','显示',1,'#600','IsShow')">显示</span>
+                        <else/>
+                            <span style="color:#CCC;cursor:pointer;"  onclick="toggleStatus(this,{$c.ChannelID},'channel','隐藏',0,'#ccc','显示',1,'#600','IsShow')">隐藏</span>
+                        </eq>&nbsp;
+                        <eq name="c.IsEnable" value="1">
+                            <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$c.ChannelID},'channel')">启用</span>
+                        <else/>
+                            <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$c.ChannelID},'channel')">禁用</span>
+                        </eq>
+                    </td>
+                    <td  class="operator">
+                        <if condition="$c.IsSystem eq 0" >
+                            <if condition="$c.IsLock eq 0" >
+                                <a style="float:left" href="{$Url}Modify/ChannelID/{$c.ChannelID}" id="btnEdit">修改</a>
+                                <div class="btn-sep"></div>
+                                <a style="float:left" onclick="DelChannel({$c.ChannelID})" class="btnDel">删除</a>
+                            <else/>
+                                <a style="float:left;" href="{$Url}Modify/ChannelID/{$c.ChannelID}" id="btnEdit">修改</a>
+                            </if>
+                        <else/>
+                            <a style="float:left;" href="{$Url}Modify/ChannelID/{$c.ChannelID}" id="btnEdit">修改</a>        
+                        </if>
+                    </td>
+                    </tr>
+                    </notin>
+                    </volist> 
+                </tbody>
+                <else/>
+                	<tr><td colspan="11" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                               
+            </table>
+             <div class="tfoot">
+                  <div id="notice">
+                        <b>备注：</b>
+                        <span class="notice-item"><i>[1]</i>不能删除锁定频道和系统频道;</span>
+                        <span class="notice-item"><i>[2]</i>当频道存在子频道时，必须先删除所有子频道，才能删除父级频道</span>
+                        <span class="notice-item"><i>[3]</i>当频道存在数据时，必须先删除频道所有数据，才能删除频道</span>
+                  </div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<div class="dialog" id="dlgCopy" title="复制频道">
+    <table>
+	    <tr>
+            <th>源语言</th>
+            <td style="color:red;font-weight:bold;">{:get_language_name()}</td>
+        </tr>
+		<tr>
+            <th>目标语言</th>
+            <td>
+				<select id="TargetLanguage">
+					 <volist name="Language" id="l">
+							<neq name="l.LanguageMark" value="$Think.const.LANG_SET">
+								<option value="{$l.LanguageID}">{$l.LanguageName}</option>
+							</neq>
+					 </volist>
+				 </select>
+			</td>
+        </tr>
+        <tr>
+            <th nowrap="nowrap">复制文章</th>
+            <td align="left">
+                <label style="margin-right: 10px;"><input type="radio" name="DlgCopyData" value="1"/>是</label>
+                <label><input type="radio" name="DlgCopyData" value="0"  checked="checked"/>否</label>
+            </th>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	var arrChk = $("input[name='CID[]']");
+	var n = 0;
+	var ChannelID = '';
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) {
+			ChannelID += ($(arrChk[i]).val()+",");
+			n++;
+		}
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	var url = "{$Url}batchDel";
+	ConfirmBox("<div id='icon_delete'>删除频道的同时，会删除频道下的所有文章，并不可恢复！<br/>确定删除吗？</div>", function () {
+		var params = { ChannelID : ChannelID };
+		LoadBox();
+		$.post(url, params, function(res){
+			CloseLoadBox();
+			if (res.status==1){
+				SucceedBox(res.info);
+				RefreshLeftFrame();
+				location.reload();
+			}else{
+				ErrorBox(res.info);
+			}
+		}, "json");
+	});
+}
+
+
+function DelChannel(id){
+	var key = $("#t"+id).attr("name");
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}del/ChannelID/"+id;
+		$.get(url, {}, DelChannelComplete, "json");
+	});
+}
+
+//回调函数
+function DelChannelComplete(data, textStatus){
+	if (data.status == 1){
+		$(data.data).css("display","none");
+		RefreshLeftFrame();
+	}else{ 
+		//删除失败
+		ErrorBox(data.info);
+	}
+}
+
+//保存所有修改
+function saveAll(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("确定保存所有修改吗?", function () {
+		LoadBox();
+		$('#frm').attr("action", "{$Url}saveAll");
+		$('#frm').submit();
+		RefreshLeftFrame();
+	});
+}	
+
+//复制频道
+function copy(){
+	if(checkSafeQuestion()) return;
+	var arrChk = $("input[name='CID[]']");
+	var n = 0;
+	var ChannelID = '';
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) {
+			n++;
+			ChannelID += ($(arrChk[i]).val()+",");
+		}
+	}
+	if( n == 0 ) {
+		WarnBox("请先选择要复制的频道！");
+		return;
+	}
+	var title = $("#dlgCopy").attr("title")+"（已选择"+n+"个频道）";
+	var d = dialog({
+		title: title, 
+		id: 'dlgCopy', 
+		padding: 0, 
+		content: document.getElementById("dlgCopy"),
+		ok: function () {
+			d.close().remove();
+			startCopy(ChannelID);
+		},
+		okValue: '复制',
+		cancelDisplay: false,
+		cancelValue:"取消",
+		cancel: function () {
+			d.close().remove();
+		}
+	}).show();
+}
+
+function startCopy(ChannelID){
+	var url = "{$Url}copy";
+	var params = { 
+		ChannelID : ChannelID,
+		LanguageID:$("#TargetLanguage").val(),
+		CopyData:$("input[name='DlgCopyData']:checked").val(),
+	};
+	LoadBox();
+	$.post(url, params, function(res){
+		CloseLoadBox();
+		if (res.status==1){
+			SucceedBox(res.info);
+		}else{
+			ErrorBox(res.info);
+		}
+	}, "json");
+}
+
+function clearChannelCache(){
+	url = "{$Url}clearCache/t/{:time()}";
+	$.get(url, {}, ClearCacheComplete, "json");
+	return true;
+}
+	//回调函数
+function ClearCacheComplete(data, textStatus){
+	if (data.status == 1){
+		SucceedBox(data.info);
+	}else{
+		ErrorBox(data.info);
+	}
+}
+
+//展开/收缩子频道
+function ToggleChannel(obj, cid){
+	var status = $(obj).attr("status");
+	if(status == "open"){
+		$(obj).attr("src", "{$Images}c1_close.gif");
+		$(obj).attr("status", "close");
+		$(obj).attr("title", "展开");
+		closeChannel(cid);
+	}else{
+		$(obj).attr("src", "{$Images}c1_open.gif");
+		$(obj).attr("status", "open");
+		$(obj).attr("title", "收缩");
+		openChannel(cid);
+	}
+	saveStatus();
+}
+
+//收缩
+function closeChannel(cid){
+	$(".parent"+cid).each(function() {
+		$(this).hide();
+		if( $(this).attr("haschild") == 1 && $(this).find(".tree").attr("status") == "open"  ){
+			closeChannel( $(this).attr("cid") );
+		}
+	});
+}
+
+//展开
+function openChannel(cid){
+	$(".parent"+cid).each(function() {
+		$(this).show();
+		if( $(this).attr("haschild") == 1 && $(this).find(".tree").attr("status") == "open" ){
+			openChannel( $(this).attr("cid") );
+		}
+	});
+}
+
+//保存树形菜单状态
+function saveStatus(){
+	var list = [];
+	$(".datatable tbody tr").each(function() {
+		if( $(this).attr("haschild") == 1 && $(this).find(".tree").attr("status") == "close"  ){
+			list.push( $(this).attr("cid") );
+		}
+	});
+	var all = ( list.length > 0 ) ? list.join(",") : null;
+	$.cookie("{$Think.config.COOKIE_PREFIX}ChannelStatus", all, {path: '/', expiress:30} );　//expiress 有效日期，单位：天
+}
+
+//同步更新状态
+function updateStatus(){
+	var status = $.cookie("{$Think.config.COOKIE_PREFIX}ChannelStatus");
+	if( status ){
+		status = status.split(",");
+		if( status.length > 0 ){
+			for(var i = 0; i < status.length; i++){
+				var obj = $("#t"+status[i]).find(".tree");
+				obj.attr("src", "{$Images}c1_close.gif");
+				obj.attr("status", "close");
+				obj.attr("title", "展开");
+				closeChannel( status[i] );
+			}
+		}
+	}
+}
+
+
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}
+
+$(document).ready(function(){
+	updateStatus();
+		
+	$(".cp").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	 });
+	 var parent = "{$Parent}";
+	 $("#Parent").val(parent);
+	 if(parent > 0){
+		openChannel(parent);
+	 }
+});
+
+//选择频道及其当前频道的子频道
+function selectChannel(ChannelID, that){
+	var isCheck = $(that).is(':checked');
+	var childs = $(".checkrow[pid="+ChannelID+"]");
+	childs.attr('checked', isCheck);
+	childs.each(function(){
+		var currentTr = $(this).parent().parent();
+		if( $(this).is(':checked') ){
+			currentTr.addClass("checked");
+		}else{
+			currentTr.removeClass("checked");
+		}
+		selectChannel($(this).val(), that);
+	 });
+}
+</script>

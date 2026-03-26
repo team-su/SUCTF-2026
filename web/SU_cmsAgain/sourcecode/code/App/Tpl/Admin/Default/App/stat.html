@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style type="text/css">
+		.iOS{color: red;}
+		.Android{}
+		.TimeSpanWrap{ display: none; }
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+       <form enctype="multipart/form-data" method="post" id="frm">
+                <input type="hidden" name="p"  value="{$NowPage}" />
+                <div class="table">
+                    <div class="toolbars">
+                      <li class="toolbar" style="line-height:35px;">
+                            <b>安装总计：</b><span style="color:red;">{$TotalCount}</span>
+                            <b style="margin-left:20px;">其中Android：</b><span style="color:red;">{$AndroidCount}</span>
+                            <b style="margin-left:20px;">iOS：</b><span style="color:red;">{$iOSCount}</span>
+                        </li>                	
+                   	  <li class="toolbar toolbarform">
+                      		<label>操作系统</label>
+                            <select name="Platform" id="Platform">
+                                <option value="">全部</option>
+                                <option value="Android">Android</option>
+                                <option value="iOS">iOS</option>
+                            </select>
+                            <label>起止时间</label>
+                            <select id="TimeSpan" name="TimeSpan">
+                            	<option value="1">全部</option>
+                                <option value="2">今天</option>
+                                <option value="3">昨天</option>
+                                <option value="4">最近7天</option>
+                                <option value="5">最近1年</option>
+                                <option value="9">自定义时间段</option>
+                            </select>
+                            <span class="TimeSpanWrap">
+								<script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+                                <input name='StartTime' type='text' class='Wdate' id='StartTime'   style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly' value="{$StartTime}"   />
+                                <span style="padding:0px 5px">到</span>
+                                <input name='EndTime' type='text' class='Wdate' id='EndTime'  style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly' value="{$EndTime}"    />                                
+                            </span>
+                            <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                        </li>
+                    </div>
+                    <table class="datatable" id="datatable">
+                    	<tr>
+                            <th style="width:280px">手机唯一标识UUID</th>
+                            <th style="width:120px">操作系统</th>
+                            <th style="width:150px">品牌型号</th>
+                            <th style="width:90px">设备制造商</th>
+                            <th style="width:130px">安装时间</th>
+                            <th></th>
+                      	</tr>  
+                        <notempty name="Data">
+                            <volist name="Data" id="d">
+                                <tr>
+                                  <td>{$d.Uuid|htmlspecialchars}</td>
+                                    <td><span class="{$d.Platform}">{$d.Platform|htmlspecialchars}</span></td>
+                                    <td>{$d.Model|htmlspecialchars}</td>
+                                    <td>{$d.Manufacturer|htmlspecialchars}</td>
+                                    <td>{$d.Time|strtotime|yd_friend_date}</td>
+                                    <td></td>
+                              </tr>
+                            </volist>
+                        <else/>
+                            <tr><td colspan="5" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                        </notempty>
+                        
+                            <tr style="background:#F2F4F6; font-weight:bold;">
+                              	<td></td>
+                                <td style="text-align:right;padding-right:5px;">总计：</td>
+                                <td><span style="color:red;">{$TotalQueryCount}</span></td>                               
+                                <td colspan="3" style="text-align:left;padding-left:8px;">
+                                	Android：<span style="color:red; margin-right:20px;">{$AndroidQueryCount}</span>
+                                    iOS：<span style="color:red; margin-right:20px;">{$iOSQueryCount}</span>
+                                </td>
+                            </tr>                              
+    				</table>
+   				  <div class="tfoot"><div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div></div>
+				</div>
+				</form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function changeTimeSpan(value){
+	if(value == 9){
+		$(".TimeSpanWrap").show();
+	}else{
+		$(".TimeSpanWrap").hide();
+	}
+}
+
+function pageInit(){
+	$("#Platform").val("{$Platform}");			
+	$("#TimeSpan").val("{$TimeSpan}");	
+	changeTimeSpan("{$TimeSpan}");
+	
+	if( $("#StartTime").val() == "" ){
+		$("#StartTime").val("{:date('Y-m-d 00:00:00')}")
+	}
+	if( $("#EndTime").val() == "" ){
+		$("#EndTime").val("{:date('Y-m-d 23:59:59')}")
+	}
+}
+
+function Search(){
+	$('#frm').attr("action", "{$Url}stat");
+	$('#frm').submit();
+	return true;
+}
+
+$(document).ready(function(){
+	pageInit();
+	
+	$("#TimeSpan").click(function(){
+		changeTimeSpan($(this).val());
+	});
+});
+</script>

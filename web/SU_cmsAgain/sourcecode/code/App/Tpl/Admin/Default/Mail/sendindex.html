@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.mytip{display:none; 	background-color:#FFF;	padding:8px; 	line-height:22px;	text-align:left;	border:1px solid #CCC;}
+		.mylog{display:none; 	background-color:#FFF;	padding:0px; 	line-height:22px;	text-align:left;border:1px solid #CCC;}
+		.MailTitle{cursor:pointer;	}
+	</style>
+</head>
+<body id="main_page">
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+      <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="btnSaveAll" onclick="addSend()"  title="添加群发邮件" target="_self">添加群发邮件</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="40px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="45px" >邮件ID</th>
+                <th>邮件主题</th> 
+                <th width="120px" >添加时间</th>
+                <th width="120px" >最后发送时间</th>
+                <th width="90px" >最后发送日志</th>
+                <th width="280px">操作</th>
+            </tr>
+            <notempty name="MailSend">  
+            <volist name="MailSend" id="m">
+                <tr id="tr{$m.MailSendID}">
+                    <td><input class="checkrow" type="checkbox" name="MailSendID[]" value="{$m.MailSendID}" /></td>
+                    <td>{$m.MailSendID}</td>
+                    <td style="text-align:left;">
+                        <span class="MailTitle" rel="mt{$i}">
+                            <eq name="Think.const.LANG_SET" value="cn">{$m.MailTitle|Left=30|htmlspecialchars}<else/> {$m.MailTitle|Left=60|htmlspecialchars}</eq>
+                        </span>
+                        <div class="mytip" id="mt{$i}">
+                            <b style="color:#00F">邮件主题：</b><b class="TipKey">{$m.MailTitle|htmlspecialchars}</b><br />
+                            <b style="color:#00F">邮件内容：</b>{$m.MailContent|htmlspecialchars}
+                        </div>
+                    </td>
+                    <td>{$m.AddTime|strtotime|yd_friend_date}</td>
+                    <td><notempty name="m.SendTime">{$m.SendTime|strtotime|yd_friend_date}<else/><b style="color:#F00">未发送</b></notempty></td>
+                    <td>
+                        <notempty name="m.SendLog">
+                            <span class="sendlog" rel="log{$i}" style="cursor:pointer">查看发送日志</span>
+                            <div class="mylog" id="log{$i}">{$m.SendLog}</div>
+                        </notempty>
+                    </td>
+                    <td class="operator">
+                        <a  style="float:left" id="btnSaveAll" href="{$Url}Send/MailSendID/{$m.MailSendID}" target="_self">群发当前邮件</a>
+                        <div class="btn-sep"></div>
+                        <a style="float:left" onclick="modify({$m.MailSendID})" id="btnEdit">修改</a>
+                        <div class="btn-sep"></div>
+                        <a style="float:left" onclick="Del({$m.MailSendID})" class="btnDel">删除</a>
+                    </td>
+                </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="7" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                 
+        </table>
+        <div class="tfoot">
+            <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+    </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function addSend(){
+	if(checkSafeQuestion()) return;
+	location.href = "{$Url}addSend";
+}
+
+function modify(MailSendID){
+	if(checkSafeQuestion()) return;
+	var url = "{$Url}ModifySend/MailSendID/"+MailSendID;
+	location.href = url;
+}
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#tr"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}delSend/MailSendID/"+id+"/p/{$NowPage}";
+		location.href = url;
+	});
+}
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='MailSendID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "{$Url}batchDelSend");
+		$('#frm').submit();
+	});
+}
+
+//提示信息
+$(document).ready(function(){
+	$(".MailTitle").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+	
+	$(".sendlog").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+});
+</script>

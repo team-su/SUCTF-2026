@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmSave">
+            <input type="hidden" name="FileName" value="{$FileName}" />
+            <div class="box-header"><h4>样式表文件: <span style="color:blue">{$FileName}</span>
+            &nbsp;&nbsp;<eq name="IsWritable" value="0"><b style="color:red;">[文件只读]</b></eq>
+            </h4></div>
+                <div class="box-content">
+                    <table class="boxtable">
+                        <tr>
+                            <td>
+                            	<textarea id="FileContent" style="width:99%;height:510px;font-size:16px;{$BgColorText}" name="FileContent"  {$ReadOnlyText}>{$FileContent}</textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div> 
+                <div class="box-footer">
+                    <div class="box-footer-inner">
+                        <input  id="btnSubmit" class="marginright"  type="submit" value="保存"    {$DisableText}/>
+                        <input  id="btnSubmit"  type="button" value="返回" class="GoBack marginright"  onclick="GoBack()"  />
+                        <eq name="IsWritable" value="0"><b style="color:red;">当前文件只读，不能修改</b></eq>
+                    </div>
+                </div>
+    	</form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else{ //添加频道失败
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmSave').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 //设置编辑器高度
+	 var h = $(window).height();
+	 $("#FileContent").css("height", h-155);
+	 $(window).resize(function() {
+		 var h = $(window).height();
+		 $("#FileContent").css("height", h-155);
+	});
+});
+
+function GoBack(){
+	window.location.href = "{$Url}Style";
+}
+</script>

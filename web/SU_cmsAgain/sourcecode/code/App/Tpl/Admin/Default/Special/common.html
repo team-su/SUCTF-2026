@@ -1,0 +1,109 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					focusFirstItem();
+				</empty>
+            }else if(data.status==0){
+				ErrorBox(data.info);
+			}else if(data.status==2){
+				ErrorBox(data.info); //上传失败
+			}else if(data.status==3){
+				$('#'+data.data.ImageField).val(data.data.Path);
+				SucceedBox(data.info); //上传成功
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 var idName = "#{$Think.const.MODULE_NAME}Name";
+			 $(idName).focus();
+		 }
+		 
+		  //设置默认值
+		 function setDefault(){
+			 $("input[name='IsEnable'][value={$Data.IsEnable}]").attr("checked",'checked');
+		 }
+		 
+		 $('#specialfile').change(function(){
+			 if( !$(this).val() ) return;
+		 	 $('#frm').attr('action','__GROUP__/public/upload/currentfile/specialfile');
+			 $('#frm').submit();
+	     });
+		 
+		 $("#btnSubmit[type=submit]").click(function(){
+		 	$('#frm').attr('action','{$Action}');
+	     });
+		 
+		  //页面初始化
+		 function pageInit(){
+			focusFirstItem();
+			setDefault();
+			$("#specialfileImage").powerFloat({ targetMode: "ajax",	 targetAttr: "value", position: "5-7" });
+		 }
+		 pageInit();
+	});
+
+	function BrowserServer(){
+		if(checkSafeQuestion()) return;
+		FileManager.selectActionFunction = SetFileField;
+		FileManager.popup(); 
+	}
+	
+	function SetFileField(fileUrl){
+		document.getElementById('specialfileImage').value = fileUrl;
+	}
+</script>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+	<table class="boxtable">
+		<tr>
+			<th class="w120"><b style="color:red">专题名称</b></th>
+			<td><input type='text' style='width:270px;' class='textinput' name = 'SpecialName'  id='SpecialName'  value="{$Data.SpecialName}"  /></td>
+		</tr>
+		<tr>
+			<th class="w120">专题排序</th>
+			<td><input type='text'  class='textinput' name = 'SpecialOrder'  id='SpecialOrder'  value="{$Data.SpecialOrder}"  />
+			<span class='Caution'>请输入数字，值越小排名越靠前！</span>
+			</td>
+		</tr>
+		<tr>
+			<th>专题图片</th>
+			<td>
+				<input type="text" id="specialfileImage" class="textinput w450" name="SpecialPicture" value="{$Data.SpecialPicture}"  />
+                <span class='UploadWrapper'>
+                    <input class='btnFileUpload' type='button' value='上传' />
+					<input id='specialfile' name ='specialfile' type ='file'  size='70'   class='InputFile'  accept="image/*" />
+                </span>
+				<input id='btnServer' onclick='BrowserServer()' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'   class="btnPadding" />
+			</td>
+		</tr>
+		<tr>
+			<th class="w120">专题描述</th>
+			<td>
+				<textarea style='width:100%;height:100px;'   name='SpecialDescription'  id='SpecialDescription' >{$Data.SpecialDescription}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<th class="w120">是否启用</th>
+			<td>
+				<input type='radio'  id='IsEnable'  name='IsEnable'    value='1'  checked />启用&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type='radio'  id='IsEnable'  name='IsEnable'    value='0'   />禁用&nbsp;&nbsp;&nbsp;&nbsp;
+			</td>
+		</tr>
+	</table>
+</div>

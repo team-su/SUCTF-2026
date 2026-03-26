@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+    	.dlglog_table{ border: 1px solid #E3E6EB; width:100%; text-align:center;}
+		.dlglog_table tr:hover{ background:#F3F3F3}
+		.dlglog_table th{ font-weight:bold; text-align:center; padding:5px 5px; background: #F2F4F6; border-right-color: #E3E6EB; border: 1px solid #E3E6EB;}
+		.dlglog_table td{ text-align:left; padding:5px 5px; color: #000; border: 1px solid #E3E6EB;}
+		.dlglog_table td.status{ text-align:center; }
+		.dlglog_table td.num{ text-align:center; color:blue;}
+		.dlglog_table td.error{ color:red; background:none;}
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frm" method="post" action="{$Action}"  enctype="multipart/form-data">
+            <input type="hidden" name="SafeCode" value="{$SafeCode}" />
+            <div class="box-header">
+                <h4>批量执行SQL语句
+					<span  class="extra">说明：请在下框填写sql语句，多条sql语句以"英文分号（;）+ 回车"隔开</span>
+				</h4>
+            </div>
+            
+            <div class="box-content">
+                <textarea id="sql" name="sql" style="width:100%; height:550px;"></textarea>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="开始批量执行" />
+                </div>
+            </div>
+        </form>
+    </div>            
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgLog">
+    <div style="overflow-y:auto; height:380px; width:780px;">
+        <table class="dlglog_table">
+            <thead>
+                <tr>
+                    <th style="width:45px;">序号</th>
+                    <th style="width:90px;">状态</th>
+                    <th>详细描述</th>
+                    <th style="width:410px;">当前SQL语句</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			//批量执行成功，显示执行日志
+			var html="";
+			var len = data.data.length;
+			for(var i = 0; i < len; i++){
+				html += "<tr>";
+				html += "<td class='num'>"+(i+1)+"</td>";
+				if( data.data[i]["error"] ){
+					html += "<td class='status'><b style='color:red'>执行失败</b></td>";
+					html += "<td class='error'><div style='width:230px;'>错误信息："+data.data[i]["error"]+"</div></td>";
+				}else{
+					html += "<td  class='status'><b>执行成功</b></td>";
+					if( data.data[i]["n"] != -1){
+						html += "<td>影响行数："+data.data[i]["n"]+"</td>";
+					}else{
+						html += "<td></td>";
+					}
+				}
+				html += "<td>"+data.data[i]["sql"]+"</td>";
+				html += "</tr>";
+			}
+			$(".dlglog_table tbody").html( html );
+			var dlgTitle = "共执行 "+len+" 个SQL语句，执行结果如下：";
+			dialog({
+					title: dlgTitle,
+					id: 'dlgLog',
+					padding: 8,
+					content: document.getElementById('dlgLog'),
+					cancelValue: '关闭',
+					cancel: true
+			}).show();
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frm').submit(function(){ 
+		LoadBox();
+		return false;
+	 });
+	 
+	 pageInit();
+	 function pageInit(){
+		$("#sql").focus();	 
+	 }
+});
+</script>

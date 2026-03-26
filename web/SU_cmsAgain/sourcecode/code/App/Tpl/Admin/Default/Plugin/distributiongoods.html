@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p" id="p" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+           		<li class="toolbar">
+                	<div id="notice" style="line-height:35px;">
+                        <b>说明：</b>
+                        <span class="notice-item">
+                        	当前分销模式为
+                            <eq name="DistributeMode" value="1">
+                                <span style="color:#00F">按商品设置的分成金额</span> ，只有设置了分佣金额的商品才可分销！
+                            <else/>
+                                <span style="color:#00F">按订单设置的分成比例</span>，所有商品都可分销！
+                            </eq>
+                        </span>
+                    </div>
+                </li>
+                <li class="toolbar toolbarform">
+                    <label class="first">关键词</label>
+                    <input type="text" class='textinput' name="Keywords" style="width:130px" value="{$Keywords}" id="Keywords" />
+                    <select name="ChannelID" id="ChannelID">
+                        <option value="-1">所有分类</option>
+                        <volist name="Channel" id="c">
+                            <option value="{$c.ChannelID}" <eq name="ChannelID" value="$c.ChannelID">selected="selected"</eq> >{$c.ChannelName}</option>
+                        </volist>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                     <th width="55px" >ID</th>
+                     <th>商品名称</th>
+                      <th width="90px" >库存</th>
+                     <th width="80px" >销量</th> 
+                     <th width="150px" >分类</th>
+                     
+                     <th width="90px" >价格</th>
+                     <th width="90px" >分成佣金</th>
+                     <th width="120px" >佣金占商品价格比</th>
+                     
+                </tr>  
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td>{$d.InfoID}</td>
+                        <td style="text-align:left; padding-left:5px;"><a href="{$d.InfoID|InfoUrl}" target="_blank">{$d.InfoTitle}</a></td>
+                        <td>{$d.StockCount}</td>
+                        <td>{$d.SalesCount}</td>
+                        <td>{$d.ChannelName}</td>
+                        
+                        <td style="color:red;">{$CurrencySymbol}{$d.InfoPrice}</td>
+                        <td style="color:blue;">{$CurrencySymbol}{$d.Commission}</td>
+                        <td>{$d.CommissionRatio}%</td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="7" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                  <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//查询
+function search(){
+	$('#frm').attr("action", "{$Url}distributionGoods");
+	$('#frm').submit();
+	return true;
+}
+
+$(document).ready(function(){
+	pageInit();
+});
+
+function pageInit(){
+	
+}
+</script>

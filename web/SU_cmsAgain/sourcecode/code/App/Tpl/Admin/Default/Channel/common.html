@@ -1,0 +1,95 @@
+<div class="dialog" id="dlgTemplate" title="">
+    <table>
+        <tr>
+           <th width="80px" nowrap="nowrap" align="right">
+				<span style="font-weight:bold;color:blue;padding-right:3px;">模板名称</span>
+			</th>
+           <th align="left">
+				<input type="text" class="textinput" style="width:160px;" value="" id="dlgTemplateName" />.html
+		   </th>
+        </tr>
+    </table>
+</div>
+<style>
+.btnCreateTemplate{ 
+	border-radius: 4px; CURSOR: pointer; padding: 6px 15px;min-width: 110px; font-size:14px; 
+	background:#fff; border: 1px solid #ccc; color: #212529; margin-left:8px;
+}
+.btnCreateTemplate:hover{ background: #eee; }
+</style>
+<script type="text/javascript">
+function createTempate(type){
+	var mytitle = (type==1) ? "创建频道首页模板" : "创建阅读模板";
+	var d = dialog({
+		title: mytitle,
+		id: "dlgTemplate",
+		padding: 15,
+		content: document.getElementById("dlgTemplate"),
+		ok: function () {
+			LoadBox();
+			var name = $("#dlgTemplateName").val();
+			var params = { 
+				"TemplateName":name,
+				"TemplateType":type,
+				"ChannelModelID":$("#ChannelModelID").val()
+			};
+			var url = "{$Url}createTemplate";
+			$.post(url, params, function(data){
+				CloseLoadBox();
+				if(data.status==1){
+					d.close().remove();
+					refreshTemplateList(type, name);
+					SucceedBox(data.info);
+				}else{
+					ErrorBox(data.info);
+				}
+			}, "json");
+			return false;
+		},
+		okValue: '创建',
+		cancelValue: '取消',
+		cancel: function () {
+			
+		}
+	}).show();
+}
+
+//刷新下拉框，并默认选择
+function refreshTemplateList(type, name){
+	var fileName = name+".html";
+	var html = '<option value="'+fileName+'">'+fileName+'</option>';
+	var obj = (type==1) ? $("#IndexTemplate") : $("#ReadTemplate");
+	obj.append(html);
+	obj.val(fileName);
+}
+
+function changeChannelModelID(modelID){
+	var it = $("#ChannelModelID").children('option:selected').attr('it');
+	var rt = $("#ChannelModelID").children('option:selected').attr('rt');
+	$('#IndexTemplate').val(it);
+	$('#ReadTemplate').val(rt);
+	if(modelID==32 || modelID==33 || modelID==37){
+		$('#ReadTemplate').attr("disabled", 'disabled');
+	}else{
+		$('#ReadTemplate').removeAttr("disabled");
+	}
+}
+
+function UpdateTabIndex(){
+	$(".tab_menu li").each(function(index){
+		if( "current" == $(this).attr("class") ){
+			$("#TabIndex").val(index+1); //从1开始
+		}
+	});
+}
+
+$(document).ready(function(){
+	 $('#ChannelModelID').change(function(){
+		var modelID = $(this).val();
+		changeChannelModelID(modelID);
+	 });
+	 $('.box1').Tabs({event:'click'});
+	 $('#ChannelName').focus();
+	 if(checkSafeQuestion()) return;
+});
+</script>

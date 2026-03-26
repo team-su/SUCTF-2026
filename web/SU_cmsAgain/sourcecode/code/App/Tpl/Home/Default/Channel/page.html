@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$ChannelName}|{$Title}-{$WebName}</title>
+    <include file="Public:meta" />
+</head>
+<body  class="body_single">
+    <include file="Public:header" />
+    <!--区块5138 开始-->
+<div id="n5138" class="component floor_channel3_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5138">
+    <style type="text/css">
+        #n5138{
+            {$TChannel3Bg5138|ParseBg}
+            padding-top:{$TChannel3PaddingTop5138}px;
+            padding-bottom: {$TChannel3PaddingBottom5138}px;
+        }
+        #n5138 li{
+            animation-duration: {$TChannel3AnimationTime5138}s;
+            animation-fill-mode: both;
+        }
+
+        #n5138 .sidebar_comtainer{
+            width: {$TChannel3SideBarWidth5138}px;
+            {$TChannel3SideBarBg5138|ParseBg}
+			yd-previewable-class: float_ float_{$TChannel3HasSideBar5138};
+        }
+        #n5138 .sidebar_title h2{
+            {$TChannel3SideBarTitle5138|ParseFont}
+        }
+        #n5138 .sidelist{
+			yd-previewable-class: -sidelist {$TChannel3SideBarStyle5138}-sidelist;
+            border-color: {$TChannel3SideBarBorderColor5138};
+        }
+        #n5138 .sidelist a{
+            border-color: {$TChannel3SideBarBorderColor5138};
+        }
+        #n5138 .sidelist .InfoTitle{
+            {$TChannel3SideBarInfoTitle5138|ParseFont}
+        }
+        #n5138 .sidelist .InfoPrice{
+            {$TChannel3SideBarInfoPrice5138|ParseFont}
+        }
+
+        #n5138 .content_title h2{
+            {$TChannel3TitleFont5138|ParseFont}
+        }
+        #n5138 .content_container{
+            {$TChannel3ContentBg5138|ParseBg}
+        }
+        #n5138 .content_body .InfoTitle{
+            {$TChannel3InfoTitleFont5138|ParseFont}
+        }
+        #n5138 .content_body .ChannelContent, #n5138 #Map{
+            {$TChannel3ContentFont5138|ParseFont}
+        }
+    </style>
+    <div class="floor_channel3 full-width{$TChannel3FullWidth5138} floor_channel">
+        <neq name="TChannel3HasSideBar5138" value="0">
+            <div class="component_title sidebar_comtainer float_{$TChannel3HasSideBar5138}">
+                <div yd-slot="5138A"></div>
+                <notempty name="TChannel3SideBarChannel5138">
+                    <div class="sidebar" yd-group="5138" yd-tab="侧边栏设置">
+                        <div class="sidebar_title"><h2>{$TChannel3SideBarChannel5138|ChannelName}</h2></div>  
+        			    <div class="sidebar_body">  
+        			        <ul class="sidelist {$TChannel3SideBarStyle5138}-sidelist {$TRoundCorner}-round-corner">
+        			            <infolist id="f" channelid="$TChannel3SideBarChannel5138" top="$TChannel3SideBarCount5138" timeformat="Y-m-d" labelid="$TChannel3SideBarLabel5138" empty="$Think.lang.NoInformation">
+        			                <li yd-animation="{$TChannel3AnimationType5138}">
+        			                    <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+        			                        <div class="InfoPicture"><img src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+        			                        <div class="InfoTitle">{$f.InfoTitle}</div>
+        			                        <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+        			                    </a>
+        			                </li>
+        			            </infolist>
+        			       </ul>
+        			    </div>
+                        <div class="sidebar_bottom"></div>
+                    </div>
+                </notempty>
+                <div yd-slot="5138B"></div>
+            </div>
+        </neq>
+        <div class="component_body content_container">
+            <div class="content_title">
+                <include file="Public:location" />
+                <h2 yd-content="_channel,{$ChannelID}">{$ChannelName}</h2>
+            </div>
+            <div class="content_body">
+                <div class="ChannelContent" yd-content="_channel,{$ChannelID},3">
+                    <eq name="HasReadLevel" value="1">{$ChannelContent}<else/>{$Think.lang.ReadLevelTip}</eq>
+                </div>
+                <notempty name="ChannelAlbum">
+                    <div class="ChannelAlbum swiper-container" yd-content="_channel,{$ChannelID},4">
+                        <ul class="channelalbumlist swiper-wrapper">
+                            <channelalbumlist id="ca" channelid="$ChannelID">
+                                <li yd-animation="{$TChannel3AnimationType5138}" class="n{$i} swiper-slide"><img src="{$ca.AlbumPicture}" title="{$ca.AlbumTitle}" alt="{$ca.AlbumTitle}" /></li>
+                            </channelalbumlist>
+                        </ul>
+                    </div>
+                </notempty>
+                <include file="Public:map" />
+            </div>
+        </div>
+    </div>
+    <script>
+        $(window).load(function(){
+            var ChannelAlbum = new Swiper('#n5138 .ChannelAlbum',{
+                slidesPerView: 'auto',
+                calculateHeight : true
+            });
+        })
+    </script>
+</div>
+<!--区块5138 结束--><include file="Public:footer" />
+</body>
+</html>

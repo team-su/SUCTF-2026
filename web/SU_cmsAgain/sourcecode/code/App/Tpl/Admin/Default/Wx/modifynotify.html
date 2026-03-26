@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frm" enctype="multipart/form-data">
+            <input type="hidden" name="{$HiddenName}" value="{$HiddenValue}" />
+            <input type="hidden" name="NotifyID" value="{$NotifyID}" />
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>通知标题</th>
+                        <td><input type="text" class="textinput w450"  id="NotifyName" name="NotifyName" value="{$n.NotifyName}" /></td>
+                    </tr>
+                    <tr>
+                    <th>页脚信息</th>
+                    <td>
+                        <!-- 编辑器调用开始 -->
+                        <textarea id="NotifyContent" name="NotifyContent">{$n.NotifyContent}</textarea>
+                        {:CkEditor('NotifyContent', 280)}
+                    </tr>
+                   <tr>
+                        <th>发布时间</th>
+                        <td><script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+                        <input name='NotifyTime' type='text' class='Wdate' id='NotifyTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value="{$n.NotifyTime}" />
+                        </td>
+                    </tr>
+                  </table>
+            </div>
+
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright" type="submit"  value="保存" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			//alert(data.data);
+			//$('#GiftPicture').val(data.data);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		try{
+			LoadBox();
+			for ( s in CKEDITOR.instances ) {
+			   CKEDITOR.instances[s].updateElement();
+			}
+		}catch(e){
+			;
+		}finally{
+			$(this).ajaxSubmit( {success: complete,dataType: 'json'} );
+			return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+		}
+	 });
+	 
+	 $('#NotifyName').focus();
+});
+
+function GoBack(){
+	window.location.href = "{$Url}notify";
+}
+</script>

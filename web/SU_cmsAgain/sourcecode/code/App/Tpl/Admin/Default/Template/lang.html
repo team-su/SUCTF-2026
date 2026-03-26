@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.table-lang{ width: 100%;}
+		.table-lang th,.boxtable td{ padding:3px;}
+		.table-lang th{ text-align:center; font-weight:bold; }
+		.table-lang td{ text-align:center; }
+		.table-lang .textinput{ width:92%; margin:3px;}
+		.table-lang .num{ text-align:center; color:#00F;}
+		.table-lang .add{ text-align:left; padding:3px 0px;}
+		.table-lang .del{ text-align:center;}
+		.table-lang .btnDel{ text-align:left; color:#fff; background: red; padding: 3px 8px; border-radius: 3px;}
+		.table-lang .btnDel:hover{  opacity:0.7;  }
+		.table-lang #btnSaveAll{
+			background: #5cb85c;border: 1px solid #4cae4c;color: #fff;float: left;
+			padding: 5px 10px;border-radius: 3px;margin-left: 9px; 
+		}
+		.table-lang #btnSaveAll:hover{ opacity:0.8; }
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmSave">
+            <input type="hidden" name="TemplateDir" value="{$TemplateDir}" />
+            <div class="box-header"><h4>模板语言包设置</h4></div>
+                <div class="box-content">
+                    <table class="table-lang" border="0">
+                        <thead>
+                            <tr>
+                                <th style="width:55px;">序号</th>
+                                <th style="width:200px;">语言包名称</th>
+                                <th>中文语言包值</th>
+                                <th>英文语言包值</th>
+                                <th style=" width:100px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <volist name="LangPack" id="p">
+                            <tr onmouseover="overItem(this)" onmouseout="outItem(this)">
+                                <td class="num">{$i}</td>
+                                <td><input type="text"  class='textinput'  value="{$p.ItemName}" name="ItemName[]" /></td>
+                                <td><input type="text"  class='textinput'  value="{$p.ItemCnValue}" name="ItemCnValue[]" /></td>
+                                <td><input type="text" class='textinput'   value="{$p.ItemEnValue}" name="ItemEnValue[]" /></td>
+                                <td class="del"><a  onclick="delItem(this)" class="btnDel">删除</a></td>
+                            </tr>
+                            </volist>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td class="add"><a onclick="addItem()" id="btnSaveAll">+ 添加模板语言包</a></td>
+                                <td colspan="3" style="text-align:left">
+                                <span style="color:red"><b>注意：</b>语言包名称可以是字母、数字、下划线，并且必须以英文字母开头！</span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div> 
+            <div class="box-footer">
+                <div class="box-footer-inner"><input  id="btnSubmit"  type="submit" value="保存" />
+                &nbsp;&nbsp;<input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+    	</form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else{ //添加频道失败
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmSave').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+});
+
+function GoBack(){
+	history.go(-1);
+}
+
+//添加一个项目
+function addItem(){
+	var oTh = $(".table-lang tbody tr");
+	var i = oTh.length + 1;
+	var item="<tr>";
+	item += "<td class='num'>"+i+"</td>";
+	item += "<td><input type='text' class='textinput' name='ItemName[]' value='' /></td>";
+	item += "<td><input type='text' class='textinput' name='ItemCnValue[]' value='' /></td>";
+	item += "<td><input type='text' class='textinput' name='ItemEnValue[]' value='' /></td>";
+	item += "<td><a onclick='delItem(this)'  class='btnDel'>删除</a></td>";
+	item += "</tr>";
+	$(".table-lang tbody").append(item);
+	$(".table-lang input[name='ItemName[]']").last().focus();
+}
+
+function delItem(obj){
+	$(obj).parent().parent().remove();
+	var objNum = $(".num");
+	for(var i=0; i< objNum.length; i++){
+		$(objNum[i]).text( i+1 );
+	}
+}
+
+function overItem(obj){
+	$(obj).find('.textinput').css('color', "#F00");
+	$(obj).find('.num').css('color', "#F00");
+}
+
+function outItem(obj){
+	$(obj).find('.textinput').css('color', "#000");
+	$(obj).find('.num').css('color', "#00F");
+}
+</script>

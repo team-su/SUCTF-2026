@@ -1,0 +1,83 @@
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+	<table class="boxtable">
+			<tr>
+				<th class="w120">收货人</th>
+				<td><input type="text" class="textinput" style="width:90px" name="ConsigneeRealName" id="ConsigneeRealName" value="{$Data.ConsigneeRealName}" /></td>
+			</tr>
+			<tr>
+				<th>手机</th>
+				<td><input type="text" class="textinput" style="width:200px" name="ConsigneeMobile" id="ConsigneeMobile" value="{$Data.ConsigneeMobile}" /></td>
+			</tr>
+            <tr>
+				<th>座机</th>
+				<td><input type="text" class="textinput" style="width:200px" name="ConsigneeTelephone" id="ConsigneeTelephone" value="{$Data.ConsigneeTelephone}" /></td>
+			</tr>
+            <tr>
+				<th class="w120">Email</th>
+				<td><input type="text" class="textinput" style="width:200px" name="ConsigneeEmail" id="ConsigneeEmail" value="{$Data.ConsigneeEmail}" /></td>
+			</tr>
+            <tr>
+				<th>详细地址</th>
+				<td><input type="text" class="textinput" style="width:500px" name="ConsigneeAddress" id="ConsigneeAddress" value="{$Data.ConsigneeAddress}" /></td>
+			</tr>
+            <tr>
+				<th>邮编</th>
+				<td><input type="text" class="textinput" style="width:90px" name="ConsigneePostcode" id="ConsigneePostcode" value="{$Data.ConsigneePostcode}" /></td>
+			</tr>
+            <tr>
+				<th class="w120">地址别名</th>
+				<td><input type="text" class="textinput" style="width:90px" name="ConsigneeAddressAlias" id="ConsigneeAddressAlias" value="{$Data.ConsigneeAddressAlias}" />
+                <span class='Caution'>如：家里、公司、父母家</span>
+                </td>
+			</tr>
+	</table>
+</div>
+<script type="text/javascript">
+function GoBack(){
+	window.location.href = "{$Url}index";
+}
+
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			<empty name="HiddenName">
+				$('#frm').resetForm();
+				focusFirstItem();
+			</empty>
+		}else{
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		 LoadBox();
+		return false;
+	 });
+	 
+	 //选中表单第一项
+	 function focusFirstItem(){
+		 var idName = "#{$Think.const.MODULE_NAME}RealName";
+		 $(idName).focus();
+	 }
+	 
+	 //设置默认值
+	 function setDefault(){
+		 
+	 }
+	 
+	 //页面初始化
+	 function pageInit(){
+		focusFirstItem();
+		setDefault();
+	 }
+	 pageInit();
+});
+</script>

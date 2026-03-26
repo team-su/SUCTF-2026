@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<link href="{$Css}style.css" rel="stylesheet" type="text/css" />
+    <style>
+		*{ padding:0; margin:0;}
+		body{ font-family:"microsoft yahei"; line-height:1.6em; font-size:14px; padding:0 5px; overflow:hidden;}
+    	p{ padding:0; margin:0;}
+		a{ text-decoration:none;}
+		li{ list-style:none; font-weight:normal;}
+		#container{ overflow-y:scroll; overflow-x:hidden;  border: 1px solid #dcdfe5; border-radius: 4px; background:#fff; margin-top:5px;}
+		#container .dragtip{ font-size:20px; color:#ccc; text-align:center; display:none;}
+		.upload-table{ width:100%; text-align:center; margin:0 auto;}
+		.upload-table th{ vertical-align:top;}
+		.upload-table td{width:300px; vertical-align:top; padding:0 8px;}
+		.upload-table td b{ font-weight:normal; font-size:16px; padding:12px 0 8px 0; display:block; text-align:left;}
+		.upload-table td p{ text-align:left;}
+		.known b{ color:#f44336;}
+		.known p{  padding:5px 0px; border:0px solid #ddd; color:#999;}
+		.path i{ font-style:normal;  color: #fff; background-color:#8F9BB4;}
+		.textinput{width: 100%; height:36px; line-height:36px; border-radius: 5px; text-indent:5px;  border:1px solid #ccc; padding: 0;background: #fff;  color: #555;display: block;}
+		.textinput:focus{ border-color:#9bb055; text-shadow:none; box-shadow:none; outline:none; }
+		#container{}
+		.btnPick{ margin-top:12px; overflow:hidden;}
+		#pickfiles{  font-size:18px;  padding: 10px 16px; color: #fff; border:0px solid #ccc; user-select: none; border-radius: 5px; 
+			display:block; text-align:center;background: #5cb85c; }
+		#pickfiles:hover{ opacity:0.8;color:#fff;}
+		#pickfiles img{ width: 25px; height:25px; margin-right:8px; vertical-align:middle; padding:0;}
+		
+		 ul.filelist{ overflow:hidden; color:#333;}
+		.filelist li{ padding:10px 5px; border-bottom:1px solid #ddd; overflow:hidden;}
+		.filelist li.header{ border-bottom:2px solid #ddd; font-weight:bold;}
+		.filelist li .name{ float:left; text-align:left;}
+		.filelist li .size{ float:right; width:90px; text-align:center; }
+		.filelist li .per{ float:right; width:90px; text-align:center; }
+		.filelist li .speed{ float:right; width:90px; text-align:center; }
+		.filelist li .status{ float:right; width:90px; text-align:center; }
+		.filelist li .operator{ float:right; width:90px; text-align:center; }
+		.filelist li:hover{ background:#f5f5f5;}
+		
+		.filelist li.body .per{ color:#03C;}
+		.filelist li.body .speed{ color:#CC0000;}
+		#container .suc{ color:green; }
+		#container .err{ color: red; }
+		#container .uploading{ color:#FF3300; /*正在上传*/}
+		#container .wait{ color:#999; /*等待上传*/}
+		#container .cancel{ color:#C30; background:#ddd; padding:3px 8px; border-radius:3px; cursor:pointer; /*取消上传*/}
+		#container .cancel:hover{ color:#F00; background:#ccc; }
+		#container .copy{color:#666; background:#ddd; padding:3px 8px; border-radius:3px; cursor:pointer; /*复制链接*/}
+		#container .copy:hover{ color:#333; background:#ccc;}
+    </style>
+</head>
+<body id="main_page">
+<div class="container">
+	<table class="upload-table">
+    	<tr>
+        	<td>
+                <div><b>设置路径前缀：</b></div>
+                <div class="path">
+                	<input type="text" class="textinput" name="Prefix" id="Prefix" placeholder="不设置默认为空" value="" />
+                    <p style="margin-top:8px;">云存储不支持目录，但可在文件名称中使用路径前缀来分类文件，实现类似的目录效果！<br/>例如： <i>image/jpg/</i>your-file-name.jpg</p>
+                </div>
+                <div class="btnPick">
+                	<a id="pickfiles" href="#"><img src="{$Images}qiniuupload.png" align="absmiddle" />上传文件</a>
+                </div>
+            </td>
+            <th>
+            	 <div  id="container">
+                    <ul class="filelist">
+                        <li class="header">
+                        	<div class="name">文件名称</div>
+                            <div class="operator">操作</div>
+                            <div class="status">状态</div>
+                            <div class="speed">上传速度</div>
+                            <div class="per">上传进度</div>
+                            <div class="size">大小</div>
+                        </li>
+                    </ul>
+                    <div class="dragtip">亲，将文件拖到这里也可以上传哦！</div>
+                 </div>
+            </th>
+       </tr>
+    </table>
+</div>
+</body>
+</html>
+<!--ie9+才支持 qiniu.min.js、clipboard.min.js-->
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.min.js"></script>
+<script type="text/javascript" src="{$WebPublic}jquery/clipboard.min.js"></script>
+<script type="text/javascript" src="{$Js}qiniu.min.js"></script>
+<script type="text/javascript" src="{$Js}common.js"></script>
+<script type="text/javascript">
+var gFiles = {};
+//复制链接
+function copyUrl(id){
+	var b = Clipboard.isSupported();
+	if(b){
+		var clipboard = new Clipboard('#'+id+' .copy');
+		clipboard.on('success', function(e) {
+			SucceedBox("复制成功");
+		});
+		
+		clipboard.on('error', function(e) {
+			ErrorBox("复制失败");
+		});
+	}else{
+		ErrorBox("您的浏览器不支持复制");
+	}
+}
+
+//取消上传 id: 就是file.id
+function cancel(id){
+	if(gFiles[id]){
+		var up = gFiles[id].up;
+		var file = gFiles[id].file;
+		$("#"+file.id).remove();
+		up.removeFile(file);
+		showDragdropTip();
+	}
+}
+
+//显示拖动提示文字
+function showDragdropTip(){
+	var supportDragdrop = 1;
+	if(supportDragdrop && $(".filelist li").length <= 1){
+		$(".dragtip").css("margin-top", 270);
+		$(".dragtip").show();	
+	}
+}
+
+//隐藏拖动提示文字
+function hideDragdropTip(){
+	$(".dragtip").hide();	
+}
+
+function initUploader(){
+	var uploader = Qiniu.uploader({
+		disable_statistics_report: false,   // 禁止自动发送上传统计信息到七牛，默认允许发送
+		runtimes: 'html5,flash,html4',      //上传模式，依次退化
+		browse_button: 'pickfiles',         // 上传选择的点选按钮，必需
+		// 在初始化时，uptoken，uptoken_url，uptoken_func三个参数中必须有一个被设置
+		// 切如果提供了多个，其优先级为uptoken > uptoken_url > uptoken_func
+		// 其中uptoken是直接提供上传凭证，uptoken_url是提供了获取上传凭证的地址，如果需要定制获取uptoken的过程则可以设置uptoken_func
+		uptoken : '{$UploadToken}', // uptoken是上传凭证，由其他程序生成
+		// uptoken_url: '/uptoken',         // Ajax请求uptoken的Url，强烈建议设置（服务端提供）
+		// uptoken_func: function(){    // 在需要获取uptoken时，该方法会被调用
+		//    // do something
+		//    return uptoken;
+		// },
+		get_new_uptoken: false,             // 设置上传文件的时候是否每次都重新获取新的uptoken
+		// downtoken_url: '/downtoken',
+		// Ajax请求downToken的Url，私有空间时使用，JS-SDK将向该地址POST文件的key和domain，服务端返回的JSON必须包含url字段，url值为该文件的下载地址
+		// unique_names: true,   // 默认false，key为文件名。若开启该选项，JS-SDK会为每个文件自动生成key（文件名）
+		// save_key: true,             // 默认false。若在服务端生成uptoken的上传策略中指定了sava_key，则开启，SDK在前端将不对key进行任何处理
+		domain: '{$Domain}',     // bucket域名，下载资源时用到，必需
+		container: 'container',             // 上传区域DOM ID，默认是browser_button的父元素
+		max_file_size: '{$MaxUploadSize}mb',             // 最大文件体积限制
+		flash_swf_url: 'path/of/plupload/Moxie.swf',  //引入flash，相对路径
+		//max_retries: 3,                     // 上传失败最大重试次数
+		dragdrop: true,                     // 开启可拖曳上传
+		drop_element: 'container',   // 拖曳上传区域元素的ID，拖曳文件或文件夹后可触发上传
+		chunk_size: '4mb',                // 分块上传时，每块的体积
+		auto_start: true,                    // 选择文件后自动上传，若关闭需要自己绑定事件触发上传
+		init: {
+		  'FilesAdded': function(up, files) {
+			  hideDragdropTip();
+			  plupload.each(files, function(file) {
+					 // 文件添加进队列后，处理相关的事情
+					 var size = plupload.formatSize(file.size).toUpperCase();
+					 var name = $("#Prefix").val()+file.name;
+					 var id = file.id;
+					 var html = '<li class="body" id='+id+'>';
+					 html +='<div class="name">'+name+'</div>';
+					 html +='<div class="operator"><span class="cancel" onclick="cancel('+"'"+id+"'"+')">取消上传</span></div>';
+					 html +='<div class="status"><span class="wait">等待上传</span></div>';
+					 html +='<div class="speed">0</div>';
+					 html +='<div class="per">0%</div>';
+					 html +='<div class="size">'+size+'</div>';
+					 html +='</li>';
+					 gFiles[id] = {"up": up, "file": file};
+					$(".filelist").append(html);
+			  });
+		  },
+		  'BeforeUpload': function(up, file) {
+				 // 每个文件上传前，处理相关的事情
+		  },
+		  'UploadProgress': function(up, file) {
+			  var percent = file.percent + "%";
+			  var speed = plupload.formatSize(file.speed).toUpperCase()+'/s';
+			  $("#"+file.id+" .per").text(percent);
+			  $("#"+file.id+" .speed").text(speed);
+			  $("#"+file.id+" .status").html('<span class="uploading">正在上传</span>');
+		  },
+		  'FileUploaded': function(up, file, info) {
+			    $("#"+file.id+" .status").html('<span class="suc">上传成功</span>');
+			     //设置资源地址
+			  	 var domain = up.getOption('domain'); 
+				 var res = $.parseJSON(info.response);
+				 var url = domain;
+				 if( res.key.charAt(0)!="/"){
+				 	url += "/";
+				 }
+				 url+=res.key;
+				 $("#"+file.id+" .operator").html('<span class="copy" data-clipboard-text="'+url+'"  onclick="copyUrl('+"'"+file.id+"'"+')">复制链接</span>');
+
+				 // 每个文件上传成功后，处理相关的事情
+				 // 其中info.response是文件上传成功后，服务端返回的json，形式如：
+				 // {
+				 //    "hash": "Fh8xVqod2MQ1mocfI4S4KpRL6D98",
+				 //    "key": "gogopher.jpg"
+				 //  }
+				 // 查看简单反馈
+				 // var domain = up.getOption('domain');
+				 // var res = parseJSON(info.response);
+				 // var sourceLink = domain +"/"+ res.key; 获取上传成功后的文件的Url
+		  },
+		  'Error': function(up, err, errTip) {
+			    //经测试：同一个文件(复制多个也是同一个文件)上传多次不会触发Error，同一个文件名不同的2个文件上传才会触发Error事件
+				var id = err.file.id;
+				$("#"+id+" .status").html('<span class="err">上传失败</span>');
+				$("#"+id+" .name").append('<span class="err">&nbsp;&nbsp;&nbsp;'+errTip+'</span>');
+			},
+		   'Key': function(up, file) {
+				// 若想在前端对每个文件的key进行个性化处理，可以配置该函数
+				// 该配置必须要在 unique_names: false , save_key: false 时才生效
+				var key = $("#Prefix").val();
+				key += file.name;
+				return key
+		   },
+		  'UploadComplete': function() {
+				 //队列文件处理完毕后，处理相关的事情
+		  }
+		}
+	});	
+}
+
+$(document).ready(function(e) {
+	var windowHeight = $(window).height(); 
+	$("#container").height(windowHeight-20);
+	var QiniuEnable = "{$QiniuEnable}";
+	if(QiniuEnable==1){
+		showDragdropTip();
+		initUploader();
+	}else{
+		$(".dragtip").css("margin-top", 270);
+		$(".dragtip").show();	
+		$(".dragtip").html("<span style='color:#F03;'>抱歉，您没有开启七牛云存储，请在[基本设置]里启用</span>");	
+		$("#pickfiles").css("cursor", "no-drop");
+	}
+});
+</script>

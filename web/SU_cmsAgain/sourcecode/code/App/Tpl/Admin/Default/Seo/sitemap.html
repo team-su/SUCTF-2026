@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>.tconfig{ display:none; /*防止闪烁*/}</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header"  id="c2">
+                <h4>生成网站地图<span class="extra">生成网站地图后，请向搜索引擎提交</span></h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable" >
+                  <thead>
+                    <tr>
+                        <th>是否生成站点地图</th>
+                        <td>
+                            <label><input type="radio" onclick="EnableSitemap(1)" name="SITEMAP_ENABLE" value="1" <eq name="SitemapEnable" value="1">checked="checked"</eq> />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio"  onclick="EnableSitemap(0)"  name="SITEMAP_ENABLE" value="0" <eq name="SitemapEnable" value="0">checked="checked"</eq> />禁用</label>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody class="tconfig">
+                    <tr>
+                        <th>自动生成站点地图时间</th>
+                        <td>
+                            <select name="SITEMAP_TIME" id="SITEMAP_TIME">
+                                <option value="43200">12小时</option>
+                                <option value="86400">1天</option>
+                                <option value="172800">2天</option>
+                                <option value="259200">3天</option>
+                                <option value="432000">5天</option>
+                                <option value="604800">1周</option>
+                                <option value="1296000">半月</option>
+                                <option value="2592000">1月</option>
+                            </select>
+                            <span class='Caution'>默认值为：1天，表示从上次生成地图1天后，会自动重新生成网站地图</span>
+                        </td>
+                    </tr>
+                    <tr  style="height:40px">
+                        <th>生成xml网站地图</th>
+                        <td><a onclick="makeSiteMap('xml')" class="btnWarning btnSmall">生成xml地图</a>&nbsp;
+                            <span id="xml">
+                            <notempty name="XmlSiteMapTime">
+                            <a href="{$WebInstallDir}Data/map/sitemap.xml" target="_blank">点击查看xml网站地图sitemap.xml</a>
+                            &nbsp;&nbsp;生成时间：<b style="font-weight:bold; color:red">{$XmlSiteMapTime|yd_friend_date}</b>
+                            <else/><b style="font-weight:bold; color:red">没有生成xml地图文件</b>
+                            </notempty>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr style="height:40px">
+                        <th>生成txt网站地图</th>
+                        <td><a onclick="makeSiteMap('txt')" class="btnWarning btnSmall">生成txt地图</a>&nbsp;
+                            <span id="txt">
+                            <notempty name="TxtSiteMapTime">
+                            <a href="{$WebInstallDir}Data/map/sitemap.txt" target="_blank">点击查看txt网站地图sitemap.txt</a>
+                            &nbsp;&nbsp;生成时间：<b style="font-weight:bold; color:red">{$TxtSiteMapTime|yd_friend_date}</b>
+                            <else/><b style="font-weight:bold; color:red">没有生成txt地图文件</b>
+                            </notempty>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr style="height:40px">
+                        <th>生成html网站地图</th>
+                        <td><a onclick="makeSiteMap('html')" class="btnWarning btnSmall" >生成html地图</a>&nbsp;
+                            <span id="html">
+                            <notempty name="HtmlSiteMapTime">
+                            <a href="{$WebInstallDir}Data/map/sitemap.html" target="_blank">点击查看html网站地图sitemap.html</a>
+                            &nbsp;&nbsp;生成时间：<b style="font-weight:bold; color:red">{$HtmlSiteMapTime|yd_friend_date}</b>
+                            <else/><b style="font-weight:bold; color:red">没有生成html地图文件</b>
+                            </notempty>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr  style="height:40px">
+                        <th>一键生成所有网站地图</th>
+                        <td>
+                            <a onclick="makeSiteMap('all')" class="btnWarning btnSmall">生成所有地图</a>&nbsp; 			    <span id="all">
+                            <notempty name="LastSiteMapTime">
+                            &nbsp;&nbsp;最后一次生成网站地图时间：<b style="color:red">{$LastSiteMapTime|yd_friend_date}</b>
+                            ，到目前为止，
+                            <gt name="NewCount" value="0">共有<b style="color:red;">{$NewCount}</b>条新信息发布，请重新生成网站地图！
+                            <else/>暂无新信息发布，无需生成网站地图！
+                            </gt>
+                            </notempty>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr  style="height:40px">
+                        <th style="color:red;">一键删除所有网站地图</th>
+                        <td><a onclick="delSiteMap()" id="btnCache" class="btnDanger btnSmall">删除网站地图</a>&nbsp;
+                            <span id="deltip"></span>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+                <table class="warningtable">
+                    <th>说明：</th>
+                    <td> 
+                        网站地图旨在通知搜索引擎网站上哪些文件需要索引、这些文件的最后修订时间、更改频度、文件位置、相对优先索引权，这些信息将帮助搜索引擎建立索引范围和行为习惯。<br/>
+                        通过网站地图，您可以获得：<br/>
+                        【1】更大的抓取范围，更新的搜索结果 – 帮助网友找到更多您的网页。<br/>
+                        【2】更为智能的抓取 – 因为我们可以得知您网页的最新修改时间或网页的更改频率。<br/>
+                        不同格式的地图适合不同的搜索引擎！
+                        如何提交sitemap.xml? 向百度baidu提交：<b><a href="http://zhanzhang.baidu.com/sitemap/index" target="_blank">http://zhanzhang.baidu.com/sitemap/index</a></b><br/>
+                    </td>
+                </table>
+        </div>
+        <div class="box-footer">
+            <div class="box-footer-inner"><input id="btnSubmit" type="submit"   value="保存设置" /></div>
+        </div>
+  </form>
+</div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function makeSiteMap(type){
+	url = "{$Url}makeSiteMap/type/"+type;
+	msg = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>";
+	if(type!='all'){msg+=type;}
+	msg += "生成地图中，请稍后...";
+	
+	$("#"+type).html(msg);
+	$.get(url, {}, Complete, "json");
+	return true;
+}
+
+function delSiteMap(){
+	url = "{$Url}delSiteMap";
+	msg = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>";
+	msg += "删除网站地图中，请稍后...";
+	$("#deltip").html(msg);
+	$.get(url, {}, DelComplete, "json");
+	return true;
+}
+
+	//回调函数
+function DelComplete(data, textStatus){
+	if (data.status == 1){
+		$("#deltip").html("一键删除所有网站地图成功！");
+		var msg = '<b style="font-weight:bold; color:red">没有生成地图文件</b>';
+		$("#html,#txt,#xml").html(msg);
+	}else{ 
+		//删除失败
+		$("#deltip").html('');
+		ErrorBox(data.info);
+	}
+}
+
+//回调函数
+function Complete(data, textStatus){
+	if (data.status == 1){
+		if( data.data != 'all'){
+			msg = "&nbsp;生成地图成功，";
+			msg += "<a href='{$WebInstallDir}Data/map/sitemap."+data.data+"' ";
+			msg += "target='_blank'>点击查看网站地图sitemap."+data.data+"</a>";
+			$("#"+data.data).html(msg);
+		}else{
+			msg = "&nbsp;生成地图成功";
+			$("#"+data.data).html('');
+			$("#html,#txt,#xml").html(msg);
+		}
+		
+	}else{ 
+		//删除失败
+		$("#"+data.data).html('');
+		ErrorBox(data.info);
+	}
+}
+
+function EnableSitemap(status){
+	if( status == 1 ){
+		$(".tconfig").show();
+	}else{
+		$(".tconfig").hide();
+	}
+}
+
+function SelectSitemapTime(time){
+	$("#SITEMAP_TIME").val(time);
+}
+	
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else{ //添加频道失败
+			ErrorBox(data.info);
+		}
+	};
+	
+	$('#frmConfig').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	});
+	
+	pageInit();
+	function pageInit(){
+		EnableSitemap({$SitemapEnable});
+		SelectSitemapTime({$SitemapTime});
+	}
+});
+</script>

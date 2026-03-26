@@ -1,0 +1,1 @@
+SUCTF{cms_1s_@easy_good}

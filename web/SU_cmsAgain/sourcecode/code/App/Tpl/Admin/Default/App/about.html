@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style type="text/css">
+        .box-content{ text-align: left}
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">    
+            <div class="box-header"  id="c2">
+                <h4>关于我们设置<span class="extra">用于设置APP客户端"关于我们"菜单的内容</span></h4>
+            </div>
+            <div class="box-content">
+				<div style="width:99%;">
+					<textarea id='APP_ABOUT' name='APP_ABOUT' style="display:none;">{$AppAbout}</textarea>
+					{:CkEditor('APP_ABOUT', 450)}
+				</div>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(document).ready(function(){
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+            }else if(data.status==0){
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frmConfig').submit(function(){
+				try{
+					LoadBox();
+                        <eq name="TextEditor" value="1">
+                                for ( s in CKEDITOR.instances ) {
+                                    CKEDITOR.instances[s].updateElement();
+                                }
+                        <else/>
+                                $("#APP_ABOUT").val( UE.getEditor('container').getContent() );
+                        </eq>
+
+				}catch(e){
+					;
+				}finally{
+					$(this).ajaxSubmit( {success: complete,dataType: 'json'} );
+					return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+				}
+	     });
+	});
+</script>

@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.PointType1{ color: green; }
+		.PointType2{ color: red;}
+		.PointType3{ color: #00F; }
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+      <form enctype="multipart/form-data" method="post" id="frm">
+          <input type="hidden" name="p" id="NowPage" value="{$NowPage}" />
+          <div class="table">          
+               <div class="toolbars">
+                    <li class="toolbar toolbarform" id="toolbarleft">
+                    	<label class="first">我的总积分：</label><span style="color:#F30">{$TotalPoint}</span>
+                    </li>
+               </div>
+                <table class="datatable" id="datatable">
+                    <tr>
+                        <th  width="50px">序号</th>
+                        <th  width="100px">积分</th>
+                        <th  width="220px">订单编号</th>
+                        <th  width="120px">积分类型</th>
+                        <th>备注</th>
+                        <th width="140px" >时间</th>
+                    </tr>  
+                    <notempty name="Data">
+                        <volist name="Data" id="d">
+                            <tr>
+                                <td>{$i}</td>
+                                <td>
+                                    <gt name="d.PointValue" value="0">
+                                        <span style="color:red;">+{$d.PointValue}</span>
+                                     <else/>
+                                        <span style="color:green;">{$d.PointValue}</span>
+                                     </gt>
+                                 </td>
+                                <td>{$d.OrderNumber|htmlspecialchars}</td>
+                                <td><span class="PointType{$d.PointType}">{$d.PointTypeName}</span></td>
+                                <td style="text-align:left;">{$d.PointRemark|htmlspecialchars}</td>
+                                <td>{$d.PointTime|strtotime|yd_friend_date}</td>
+                            </tr>
+                        </volist>
+                    <else/>
+                        <tr><td colspan="6"  id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                    </notempty>         
+                </table>
+                <div class="tfoot"><div class="page">{$Page}</div></div>
+          </div>
+    </form>
+</div>
+</body>
+</html>

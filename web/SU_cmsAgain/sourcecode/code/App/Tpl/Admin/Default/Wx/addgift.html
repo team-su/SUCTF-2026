@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frmAdd" enctype="multipart/form-data">
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>礼品名称</th>
+                        <td><input type="text" class="textinput w450"  id="GiftName" name="GiftName" value="" /></td>
+                    </tr>
+                   <tr>
+                        <th>礼品图片</th>
+                        <td><input type="text" id="wxGiftpictureImage" class="textinput w450" name="GiftPicture" value=""  />
+                        <span class='UploadWrapper'>
+                            <input class='btnFileUpload' type='button' value='上传' />
+                            <input id='wxGiftpicture' name='wxGiftpicture' type ='file'  size='70'   class='InputFile'  accept="image/*" />
+                        </span>
+                        <input id='btnServer' onclick='BrowserServer(1)' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'  class='btnUpload' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>兑换礼品所需积分</th>
+                        <td><input type="text" class="textinput" style="width:80px"  id="Score" name="Score" value="100" /></td>
+                    </tr>
+                    <tr>
+                        <th>排序</th>
+                        <td><input type="text" class="textinput" style="width:80px"  id="GiftOrder" name="GiftOrder" value="99" />
+                        <span class='Caution'>请输入数字，值越小排名越靠前！</span></td>
+                    </tr>
+                   <tr>
+                        <th>有效期</th>
+                        <td><script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+                        <input name='StartTime' type='text' class='Wdate' id='StartTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value='{$StartTime}' /><span style="padding:0px 5px">到</span><input name='EndTime' type='text' class='Wdate' id='EndTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value='{$EndTime}' />
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>使用描述</th>
+                        <td><textarea class="w450" style="height:60px; width:100%" name="Remark"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap">是否启用</th>
+                        <td>
+                            <label><input type="radio" name="IsEnable" value="1" checked="checked"  />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="IsEnable" value="0"  />禁用</label>
+                        </td>
+                    </tr>
+                  </table>
+            </div>
+
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright" type="submit"  value="保存并继续添加" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type='text/javascript'>
+function BrowserServer(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SetPictureField;
+	FileManager.popup(); 
+}
+
+function SetPictureField(fileUrl){
+	document.getElementById('wxGiftpictureImage').value = fileUrl;
+}
+
+$(document).ready(function(){
+	$('#frmAdd').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			$('#frmAdd').resetForm();
+			$('#GiftName').focus();
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#frmAdd').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 $('#wxGiftpicture').change(function(){
+		 if( !$(this).val() ) return;
+		$('#frmAdd').attr('action','{$UploadAction}/currentfile/wxGiftpicture');
+		$('#frmAdd').submit();
+	 });
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmAdd').attr('action','{$Action}');
+	 });
+	 
+	 $("#wxGiftpictureImage").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	 });
+	 
+	 $('#GiftName').focus();
+	 
+});
+
+function GoBack(){
+	window.location.href = "{$Url}gift";
+}
+</script>

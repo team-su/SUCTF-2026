@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.table_oauth{ text-align:left; margin:0 auto; width:80%;}
+		.table_oauth th,.table_oauth td{ padding:3px 5px;}
+		.table_oauth th{ text-align:center; font-weight:bold; }
+		.table_oauth td{ text-align:center; }
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frm" enctype="multipart/form-data">
+            <div class="box-header"><h4>第三方登录设置</h4></div>
+            <div class="box-content">
+                <table class="table_oauth" border="0">
+                    <thead>
+                        <tr>
+                            <th style="width:150px;"></th>
+                            <th style="width:220px;">App ID</th>
+                            <th style="width:300px;">App Key</th>
+                            <th style="width:70px;">排序</th>
+                            <th style="width:90px;">是否启用</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <volist id="o" name="Data">
+                            <tr>
+                                <td style="text-align:right;font-weight:bold;">{$o.OauthName}<input type="hidden"  name="OauthID[]" value="{$o.OauthID}" /></td>
+                                <td><input type="text" class="textinput" style="width:97%;" name="OauthAppID[]" value="{$o.OauthAppID}" /></td>
+                                <td><input type="text" class="textinput" style="width:97%;" name="OauthAppKey[]" value="{$o.OauthAppKey}" /></td>
+                                <td><input type="number" class="textinput" style="width:45px" name="OauthOrder[]" value="{$o.OauthOrder}" /></td>
+                                <td>
+                                    <select name="IsEnable[]">
+                                        <option value="1" <eq name="o.IsEnable" value="1">selected="selected"</eq> >启用</option>
+                                        <option value="0" <eq name="o.IsEnable" value="0">selected="selected"</eq> >禁用</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:left; padding-left:5px;">
+                                    <notempty name="o.OauthAppUrl"><a href="{$o.OauthAppUrl}" target="_blank" />立即注册</a></notempty>
+                                </td>
+                            </tr>
+                        </volist>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td colspan="5" id="notice">
+                                <b>说明：</b>
+                                <span class="notice-item">第三方登录平台回调地址应该设置为：</span>
+                                <span class="notice-item" style="color:blue; ">{:OauthCallback('Home')}</span>
+                                <span class="notice-item" style="color:blue;">{:OauthCallback('Wap')}</span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+           </div>
+
+            <div class="box-footer">
+                <div class="box-footer-inner"><input  id="btnSubmit" type="submit"  value="保存" /></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json',
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		 LoadBox();
+		 return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+	 });
+});
+</script>

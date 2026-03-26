@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header" id="c1">
+                <h4>百度分享</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>浮动按钮风格</th>
+                        <td>
+                            <label><input type="radio" name="SHARE_STYLE" value="0" <eq name="ShareStyle" value="0">checked="checked"</eq> />
+                            <img style="vertical-align:middle" src="http://bdimg.share.baidu.com/static/images/r0.gif" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            <label><input type="radio" name="SHARE_STYLE" value="1" <eq name="ShareStyle" value="1">checked="checked"</eq> />
+                            <img style="vertical-align:middle"  src="http://bdimg.share.baidu.com/static/images/r1.gif" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            <label><input type="radio" name="SHARE_STYLE" value="2" <eq name="ShareStyle" value="2">checked="checked"</eq> />
+                            <img style="vertical-align:middle"  src="http://bdimg.share.baidu.com/static/images/r2.gif" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            <label><input type="radio" name="SHARE_STYLE" value="3" <eq name="ShareStyle" value="3">checked="checked"</eq> />
+                            <img style="vertical-align:middle"  src="http://bdimg.share.baidu.com/static/images/r3.gif" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            <label><input type="radio" name="SHARE_STYLE" value="4" <eq name="ShareStyle" value="4">checked="checked"</eq> />
+                            <img style="vertical-align:middle"  src="http://bdimg.share.baidu.com/static/images/r4.gif" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            <label><input type="radio" name="SHARE_STYLE" value="5" <eq name="ShareStyle" value="5">checked="checked"</eq> />
+                            <img style="vertical-align:middle"  src="http://bdimg.share.baidu.com/static/images/r5.gif" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            <label><input type="radio" name="SHARE_STYLE" value="6" <eq name="ShareStyle" value="6">checked="checked"</eq> />
+                            <img style="vertical-align:middle"  src="http://bdimg.share.baidu.com/static/images/r6.gif" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            <label><input type="radio" name="SHARE_STYLE" value="7" <eq name="ShareStyle" value="7">checked="checked"</eq> />
+                            <img style="vertical-align:middle"  src="http://bdimg.share.baidu.com/static/images/r7.gif" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            <label><input type="radio" name="SHARE_STYLE" value="8" <eq name="ShareStyle" value="8">checked="checked"</eq> />
+                            <img style="vertical-align:middle"  src="http://bdimg.share.baidu.com/static/images/r8.gif" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>浮窗上边距</th>
+                        <td>
+                            <input type="text" class="textinput" style="width:150px;" name="SHARE_TOP" value="{$ShareTop}" />
+                            <span class='Caution'>0表示取默认高度！ 最终效果见当前页预览效果！</span>
+                        </td>
+                    </tr>
+                    <tr>
+                    <th>浮窗位置</th>
+                    <td>
+                        <label><input type="radio" name="SHARE_POS" value="left" <eq name="SharePos" value="left">checked="checked"</eq> />左侧</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="SHARE_POS" value="right" <eq name="SharePos" value="right">checked="checked"</eq> />右侧</label>
+                    </td>
+                    </tr>
+                    <tr>
+                        <th>浮窗显示列数</th>
+                        <td>
+                            <label><input type="radio" name="SHARE_SIZE" value="1" <eq name="ShareSize" value="1">checked="checked"</eq> />一列</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="SHARE_SIZE" value="2" <eq name="ShareSize" value="2">checked="checked"</eq> />二列</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="SHARE_SIZE" value="3" <eq name="ShareSize" value="3">checked="checked"</eq> />三列</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>是否启用</th>
+                        <td>
+                            <label><input type="radio" name="SHARE_ENABLE" value="1" <eq name="ShareEnable" value="1">checked="checked"</eq> />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="SHARE_ENABLE" value="0" <eq name="ShareEnable" value="0">checked="checked"</eq> />禁用</label>
+                        </td>
+                    </tr>
+    			</table>
+            </div> 
+                     
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<baidushare />
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			location.href="{$Url}baidushare";
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){ 
+		LoadBox();
+		return false;
+	 });
+});
+</script>

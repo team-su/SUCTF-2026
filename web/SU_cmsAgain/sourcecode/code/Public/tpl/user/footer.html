@@ -1,0 +1,34 @@
+<php>
+	if($Tab==1) { $Tab1Img = "_on"; $Tab1Class = "weui-bar__item--on"; }
+    if($Tab==3) { $Tab3Img = "_on"; $Tab3Class = "weui-bar__item--on"; }
+    if($Tab==2) { $Tab2Img = "_on"; $Tab2Class = "weui-bar__item--on"; }
+    if($Tab==4) { $Tab4Img = "_on"; $Tab4Class = "weui-bar__item--on"; }
+</php>
+<!--工具条 开始-->
+<div class="weui-tabbar">
+    <a href="{$Url}index" class='weui-tabbar__item {$Tab1Class}'>
+        <img src="{$Images}my{$Tab1Img}.png" class="weui-tabbar__icon" />
+        <p class="weui-tabbar__label">我的</p>
+    </a>
+    
+    <a href="{$Url}memberInfo" class='weui-tabbar__item {$Tab3Class}'>
+        <img src="{$Images}about{$Tab3Img}.png" class="weui-tabbar__icon" />
+        <p class="weui-tabbar__label">资料</p>
+    </a>
+    
+    <a href="{$Url}guestbook" class='weui-tabbar__item {$Tab2Class}'>
+        <img src="{$Images}guestbook{$Tab2Img}.png" class="weui-tabbar__icon" />
+        <p class="weui-tabbar__label">留言</p>
+    </a>
+    
+    <a href="{$Url}order" class='weui-tabbar__item  {$Tab4Class}'>
+        <img src="{$Images}order{$Tab4Img}.png" class="weui-tabbar__icon" />
+        <p class="weui-tabbar__label">订单</p>
+    </a>
+    
+    <a href="{$Url}logout" class='weui-tabbar__item'>
+        <img src="{$Images}signout.png"  class="weui-tabbar__icon" />
+        <p class="weui-tabbar__label">退出</p>
+    </a>
+</div>
+<!--工具条 结束-->

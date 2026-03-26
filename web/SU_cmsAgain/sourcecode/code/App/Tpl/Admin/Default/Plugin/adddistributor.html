@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<div class="container"> 
+   <form enctype="multipart/form-data"  method="post" id="frm">
+        <input type="hidden" name="p" value="{$NowPage}" />
+        <div class="table">
+        <div class="toolbars">
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar toolbarform" id="toolbarleft">
+                <label>会员名称/手机/Email</label>
+                <input type="text" class='textinput' name="Keywords" style="width:110px" value="{$Keywords}" id="Keywords" />
+                <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+            </li>
+            <li class="toolbar toolbarform">
+                <label>将选中会员设置为</label>
+                <select id="DistributorLevelID" name="DistributorLevelID">
+                    <distributorlevellist id="dl">
+                        <option value="{$dl.DistributorLevelID}" >{$dl.DistributorLevelName}</option>
+                    </distributorlevellist>
+                </select>
+                <a id="btnCheckDb" class="btnToolbarForm" style="float:right; text-indent:8px;" onclick="set()">设置</a>
+            </li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="55px">会员ID</th>
+                <th>会员名称</th>
+                <th width="66px">真实姓名</th>
+                
+                <th width="95px" >手机</th>
+                <th width="125px">Email</th>
+                <th width="120px">注册时间</th>
+                <th width="100px">所属分组</th>
+            </tr>  
+            <notempty name="Data">                
+                <volist name="Data" id="d">
+                    <tr>
+                        <td><input class="checkrow" type="checkbox" name="id[]" value="{$d.MemberID}" /></td>
+                        <td>{$d.MemberID}</td>
+                        <td>{$d.MemberName|htmlspecialchars}</td>
+                        <td>{$d.MemberRealName|htmlspecialchars}</td>
+                        
+                        <td>{$d.MemberMobile|htmlspecialchars}</td>
+                        <td>{$d.MemberEmail|htmlspecialchars}</td>
+                        <td>{$d.RegisterTime|strtotime|yd_friend_date}</td>
+                        <td>{$d.MemberGroupName|htmlspecialchars}</td>
+                    </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="8" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                
+        </table>
+         <div class="tfoot">
+              <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+         </div>
+       </div>
+   </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/addDistributor");
+	$('#frm').submit();
+	return true;
+}
+
+//发放优惠券
+function set(){
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("请至少选择一个会员");
+		return;
+	}
+	
+	var level = $("#DistributorLevelID").find("option:selected").text();
+	level = "确定设置为<span style='color:red;margin:0 3px;'>"+level+"</span>吗？";
+	ConfirmBox(level, function () {
+		$('#frm').attr("action", "{$Url}saveAddDistributor");
+		LoadBox();
+		$("#frm").ajaxSubmit({
+			success: function(data){
+				CloseLoadBox();
+				if(data.status == 1){
+					SucceedBox(data.info);
+					//window.parent.location.reload();
+					location.href = "{$Url}addDistributor?p={$NowPage}&Keywords={$Keywords}";
+				}else{
+					ErrorBox(data.info);
+					return false;
+				}
+			},
+			dataType: 'json'
+		});
+	});
+}
+</script>

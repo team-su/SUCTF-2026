@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<include file="common" />
+<div class="container box-footer-fixed">
+    <form action="{$Action}" method="post" id="frmAddInfo"   enctype="multipart/form-data">
+        <input type="hidden" name="ChannelID" value="{$ChannelID}" />
+        <div class="box1">
+            <ul class="tab_menu">
+                <volist name="Group" id="g">
+                    <li <eq name="i" value="1">class="current"</eq> >{$g.DisplayName}</li>
+                </volist>
+            </ul>
+            
+            <div class="tab_box">          
+                 <volist name="Group" id="g" key="x">
+                    <div <neq name="x" value="1">class="hide"</neq> >
+                        <table class="boxtable">
+                            <volist name="Attribute" id="a">
+                                <eq name="a.GroupID" value="$g.AttributeID">
+                                        <tr>
+                                            <th class="w120">{$a.DisplayName}</th>
+                                            <td>{$a.html}</td>
+                                        </tr>
+                                </eq>
+                            </volist>
+                        </table>
+                    </div>
+                </volist>
+            </div>  
+    
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"   type="submit" value="保存并继续添加" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			try{
+				SucceedBox(data.info);
+				$('#frmAddInfo').resetForm();
+				$('#InfoTitle').focus();
+				var time = yd.getCurrentTime();
+				$("#InfoTime").val(time); //更新文章时间
+				changeInfoType(0);
+				resetArea();
+				ResetUEditorData();
+				for ( s in CKEDITOR.instances ) {
+				   CKEDITOR.instances[s].setData('');
+				}
+			}catch(e){;}
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#frmAddInfo').submit(function(){
+		try{
+			LoadBox();
+			updateInfoAlbum();
+            UpdateUEditorData();
+			for ( s in CKEDITOR.instances ) {
+			   CKEDITOR.instances[s].updateElement();
+			}
+		}catch(e){
+			;
+		}finally{
+			$(this).ajaxSubmit( {success: complete,dataType: 'json'} );
+			return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+		}  
+	 });
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmAddInfo').attr('action','{$Action}');
+	 });
+	 
+	 $('.box1').Tabs({
+		 event:'click'
+	 });
+	 
+	 $('#InfoTitle').focus();
+});
+
+function GoBack(){
+	<eq name="Think.get.ChannelModelID" value="37">
+		window.location.href = "{$Url}feedback/ChannelID/{$ChannelID}";
+	<else/>
+		window.location.href = "{$Url}Index/ChannelID/{$ChannelID}";
+	</eq>
+}
+</script>

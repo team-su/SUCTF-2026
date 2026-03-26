@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+    	.rank1{ color: red;}
+		.rank2{ color: blue;}
+		.rank3{ color: green;}
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+   <form enctype="multipart/form-data" method="post" id="frm">
+            <input type="hidden" name="p" id="p" value="{$NowPage}" />
+              <div class="table">
+               <div class="toolbars">
+                    <li class="toolbar"><a id="btnConfig" href="{$Group}/config/comment"  title="设置">设置</a></li>
+                    <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                    <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+                    <li class="toolbar"><a id="btnCheck" onclick="BatchCheck(1)" title="批量审核">审核</a></li>
+                    <li class="toolbar"><a id="btnUnCheck" onclick="BatchCheck(0)" title="批量取消审核">取消审核</a></li>
+                    <li class="toolbar toolbarform">
+                        <label>关键词</label>
+                        <input type="text" class='textinput' name="SearchWords"  style="width:240px"  value="{$SearchWords}" placeholder="按评论人/评论内容/评论IP查询" />
+                        <label>是否审核</label>
+						<select name="IsCheck" id="IsCheck">
+							<option value="-1">全部</option>
+							<option value="1">已审核</option>
+							<option value="0">未审核</option>
+						</select>
+						<input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                    </li>
+                </div>
+                <table class="datatable" id="datatable">
+                    <tr>
+                        <th width="40px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                        <th width="50px" >评论ID</th>
+                        <th width="100px" >评论人</th>
+                        <th width="300px" >评论对象</th>
+                        
+                        <th width="70px" >评论等级</th>
+                        <th >评论内容</th>
+                        <th width="90px" >评论IP</th>
+                        <th width="120px" >评论时间</th>
+                        <th width="60px" >是否审核</th>
+                        <th width="150px">操作</th>
+                    </tr>
+                    <notempty name="Data">  
+                        <volist name="Data" id="d">
+                            <tr id="tr{$d.CommentID}">
+                                <td><input class="checkrow" type="checkbox" name="id[]" value="{$d.CommentID}" /></td>
+                                <td>{$d.CommentID}</td>
+                                <td><span style="color:#000;">{$d.GuestName|htmlspecialchars}<neq name="d.GuestID" value="0"><b style="color:red;font-weight:bold">[会员]</b></neq></span></td>
+                                <td><a href="{$d.InfoID|InfoUrl}" target="_blank">{$d.InfoID|InfoTitle}</a></td>
+                                <td>
+                                    <span class="rank{$d.CommentRank}">
+                                        <switch name="d.CommentRank">
+                                            <case value="1">差评</case>
+                                            <case value="2">中评</case>
+                                            <case value="3">好评</case>
+                                        </switch>
+                                    </span>
+                                </td>
+                                <td style="text-align:left">{$d.CommentContent|htmlspecialchars}</td>
+                                <td><b>{$d.GuestIP}</b></td>
+                                <td>{$d.CommentTime|strtotime|yd_friend_date}</td>
+                                <td>
+                                    <eq name="d.IsCheck" value="0">
+                                        <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$d.CommentID},'comment','未审核',0,'#F00','已审核',1,'#000','IsCheck')">未审核</span>
+                                    <else/>
+                                        <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$d.CommentID},'comment','未审核',0,'#F00','已审核',1,'#000','IsCheck')">已审核</span>
+                                    </eq>
+                                </td>
+                                <td class="operator">
+                                    <a style="float:left" onclick="del({$d.CommentID})" class="btnDel">删除</a>
+                                    <eq name="d.Parent" value="0">
+                                        <div class="btn-sep"></div>
+                                        <a style="float:left" id="btnAnswer" name="btnAnswer" href="{$Url}reply/id/{$d.CommentID}/p/{$NowPage}/IsCheck/{$IsCheck}/SearchWords/{$SearchWords}">回复({$d.ReplyCount})</a>
+                                    </eq>
+                                </td>
+                            </tr>
+                        </volist>
+                    <else/>
+                        <tr>
+                            <td colspan="9"  id="NoData">{$Think.lang.NoDataTip}</td>
+                        </tr>
+                    </notempty>                                
+                </table>
+                 <div class="tfoot">
+                    <div class="page" ><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+                 </div>
+        </div>
+   </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function del(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("<div id='icon_delete'>确定删除当前评论及其所有回复吗?</div>", function () {
+		url = "{$Url}del/id/"+id+"/p/{$NowPage}/IsCheck/{$IsCheck}/SearchWords/{$SearchWords}";
+		location.href = url;
+	});
+}
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("<div id='icon_delete'>确定删除当前评论及其所有回复吗?</div>", function () {
+		$('#frm').attr("action", "__URL__/del");
+		$('#frm').submit();
+	});
+}
+
+//批量审核
+function BatchCheck(bCheck){
+	if(checkSafeQuestion()) return;
+	//先必须选中记录==============================================
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	if( n == 0 ) {
+		WarnBox("请先选中记录!");
+		return;
+	}
+	//=========================================================
+	if( bCheck == 1 ){
+		ConfirmBox("确定审核通过吗?", function () {
+			$('#frm').attr("action", "__URL__/batchCheck/Check/1");	
+			$('#frm').submit();
+		});
+	}else{
+		ConfirmBox("确定取消审核吗?", function () {
+			$('#frm').attr("action", "__URL__/batchCheck/Check/0");
+			$('#frm').submit();
+		});
+	}
+}
+
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}
+
+$(document).ready(function(){
+	$("#IsCheck").val('{$IsCheck}');
+});
+</script>

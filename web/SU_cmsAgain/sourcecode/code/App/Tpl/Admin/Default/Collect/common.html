@@ -1,0 +1,538 @@
+<style>
+	.boxtable .h{ font-weight:normal; color:red; padding: 0px 8px;}
+	.table-field { width:100%; }
+	.table-field th{ font-weight:bold; text-align:center;}
+	.table-field td{ width: auto; text-align:center;}
+	.table-field .num{ width:50px; text-align:center;}
+	.table-field .field{ width: 150px; text-align:center;}
+	.table-field .regex{ width: 400px; text-align:center;}
+	.table-field .op{ width:auto; text-align:left;}
+	.table-field .textinput{ width: 97%;}
+	.table-field .add{ text-align:left; padding-left:8px;}
+	.table-field .del{ text-align:center;}
+	.table-field .btnDel{ text-align:left; float:left;}
+	.table-field #btnSave{ text-align:left; float:left; margin-left:8px;}
+	#UrlPreview a{ text-decoration:none; color:blue;}
+	#UrlPreview a:hover{ text-decoration:none; color:#FF3300;}
+	
+	.table-replace { width:100%; }
+	.table-replace th{ font-weight:bold; text-align:center;}
+	.table-replace td{ width: auto; text-align:center;}
+	.table-replace .num{ width:45px; text-align:center;}
+	.table-replace .search{ width: auto; text-align:center;}
+	.table-replace .replace{ width: auto; text-align:center;}
+	.table-replace .op{ width:100px; text-align:center;}
+	.table-replace .textinput{ width: 97%;}
+	.table-replace .add{ text-align:left; padding-left:8px;}
+	.table-replace .del{ text-align:center;}
+	.table-replace .btnDel, { text-align:left;}
+	
+	.table-replace #SearchText, .table-replace #ReplaceText{ width: 98%; height: 80px; }
+	
+	#testListUrlCount{color:blue;}
+	#testDetailUrlCount{ color:#FF3300;}
+	#thumbinfo{ color:blue;}
+	.ar{ width:97%; height:70px;}
+</style>
+
+<script type="text/javascript">
+function ChangePageType(type){
+	if(type == 2){
+		$(".trAllPageUrlRegex").hide();
+		$(".trNextPageUrlRegex").show();
+	}else{
+		$(".trAllPageUrlRegex").show();
+		$(".trNextPageUrlRegex").hide();
+	}
+}
+
+$(document).ready(function(){
+	 //采集列表页Url
+	 $("#ListUrl").keyup(function(){
+		 UpdateUrlPreview();
+	 });
+	 $("#ListUrlStart").keyup(function(){
+		 var v = $("#ListUrlStart").val();
+		 if( isNaN(v) ) $("#ListUrlStart").val(1);
+		 UpdateUrlPreview();
+	 });
+	 $("#ListUrlEnd").keyup(function(){
+		 var v = $("#ListUrlEnd").val();
+		 if( isNaN(v) ) $("#ListUrlEnd").val(10);
+		 UpdateUrlPreview();
+	 });
+	 $("#ListUrlStep").keyup(function(){
+		 var v = $("#ListUrlStep").val();
+		 if( isNaN(v) || v <= 0 ) $("#ListUrlStep").val(1);
+		 UpdateUrlPreview();
+	 });
+	  $("#ListUrlLength").keyup(function(){
+		 var v = $("#ListUrlLength").val();
+		 if( isNaN(v) || v <= 0 ) $("#ListUrlLength").val(1);
+		 UpdateUrlPreview();
+	 });
+	 
+	 //分页
+	 $("input[name='PageType'][value='{$Data.PageType}']").attr("checked",'checked');
+	 ChangePageType("{$Data.PageType}");
+	 $("input[name='PageType']").click(function(){
+		 ChangePageType( $(this).val() );
+	 });
+	 
+	 //更新地址预览
+	 function UpdateUrlPreview(){
+		 var listUrl = $("#ListUrl").val();
+		 if( listUrl.indexOf("{*}") == -1 ){
+			 $("#UrlPreview").html( "<a href='"+listUrl+"' target='_blank'>"+listUrl+ "</a>");
+			 return;
+		 }
+		 var listUrlStart = parseInt( $("#ListUrlStart").val() );
+		 var listUrlEnd = parseInt( $("#ListUrlEnd").val() );
+		 var listUrlStep = parseInt( $("#ListUrlStep").val() );
+		 var len = parseInt( $("#ListUrlLength").val() );
+		 if( isNaN(listUrlStart) ) listUrlStart = 1;
+		 if( isNaN(listUrlEnd) ) listUrlEnd = 1;
+		 if( isNaN(listUrlStep) ) listUrlStep = 1;
+		 if( isNaN(len) ) len = 1;
+		 if ( listUrl.length > 10 ){
+			var url = '';
+			var n = (listUrlEnd-listUrlStart+1) / listUrlStep;
+			if( n <= 4 ){
+				for(var i = listUrlStart; i <=listUrlEnd; i+=listUrlStep){
+						temp = listUrl.replace("{*}", padZero(i, len) );
+						url += "<a href='"+temp+"' target='_blank'>"+temp+ "</a><br/>";
+				}
+			}else{
+					temp = listUrl.replace("{*}", padZero(listUrlStart, len) );
+					url += "<a href='"+temp+"' target='_blank'>"+temp+ "</a><br/>";
+					temp = listUrl.replace("{*}", padZero(listUrlStart+listUrlStep, len) );
+					url += "<a href='"+temp+"' target='_blank'>"+temp+ "</a><br/>";
+					url += "...<br/>";
+					url += "...<br/>";
+					temp = listUrl.replace("{*}", padZero(listUrlStart + (n-2)*listUrlStep, len) );
+					url += "<a href='"+temp+"' target='_blank'>"+temp+ "</a><br/>";
+					
+					temp = listUrl.replace("{*}", padZero(listUrlStart + (n-1)*listUrlStep, len) );
+					url += "<a href='"+temp+"' target='_blank'>"+temp+ "</a>";
+			}
+			$("#UrlPreview").html( url );
+		 }
+	 }
+	 UpdateUrlPreview();
+});
+</script>
+
+<script type="text/javascript">
+var gAllListUrl = Array();  //所有列表页
+var gDetailUrl = Array(); //详细页采集结果
+var gCollectCount = 0;    //列表页总数
+var gCurrentNum = 0;    //当前正在采集的列表页序号
+var gStopTestDetail = 0;  //是否停止详细页的采集
+//测试获取详细页地址
+function testDetailUrl(){
+	gAllListUrl = getAllListUrl();
+	if( gAllListUrl.length <= 0 ){
+		ErrorBox("请先设置列表页");
+		return;
+	}
+	
+	if( $("#DetailUrlRegex").val() == ""){
+		ErrorBox("直接从列表页采集！");
+		return;	
+	}
+	
+	gCollectCount = gAllListUrl.length;
+	gCurrentNum = 0;
+	gStopTestDetail = 0;
+	gDetailUrl = Array();
+	clearTestMsg();
+	
+	if( gCollectCount > 0 ){
+		postTestDetailRequest();
+	}else{
+		$("#testDetailUrlMsg").html("<span style='color:red;'>没有列表页需要采集！</span>");
+	}
+}
+
+function postTestDetailRequest(){
+	var listUrl = gAllListUrl.shift();  //获取第一个元素
+	if(listUrl && 0 == gStopTestDetail){
+		gCurrentNum++;
+		var msg = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>";
+		msg +="正在采集第<b id='testListUrlCount'>"+gCurrentNum+"</b>个列表页，";
+		msg += "总共获取<b id='testDetailUrlCount'>"+gDetailUrl.length+"</b>详细页链接&nbsp;&nbsp;";
+		msg += "<span style='color:blue;cursor:pointer;' onclick='stoptestDetailUrl()'>停止测试</span>&nbsp;&nbsp;";
+		msg += "<span style='color:blue;cursor:pointer' onclick='toggleTestMsg(this)'>";
+		var btnTitle = $("#testDetailUrlResult").is(":visible") ? "点击隐藏采集结果" : "点击显示采集结果";
+		msg += btnTitle;
+		msg += "</span>";
+		$("#testDetailUrlMsg").html(msg);
+		var p = {
+			 ListUrl : listUrl,
+			 ListUrlRegionRegex : $("#ListUrlRegionRegex").val(),
+			 DetailUrlRegex : $("#DetailUrlRegex").val(),
+			 TimeTnterval : $("#TimeTnterval").val(),
+			 UserAgent : $("#UserAgent").val(),
+			 MaxCount : $("#MaxCount").val()
+		};
+		$.post("{$Url}collectList", p, function(data){
+			var msg = "<span style='color:blue;'>"+gCurrentNum+". 采集列表页&nbsp;&nbsp;<a target='_blank' href="+listUrl+">"+listUrl+"</a>";
+			if (data.status==1){
+				//显示测试采集结果
+				msg += "&nbsp;&nbsp;共采集了<b style='color:#FF3300;'>"+data.data.length+"</b>个详细页链接：</span>"
+				showTestMsg(msg);
+				gDetailUrl = gDetailUrl.concat(data.data);
+				msg = '';
+				for(var i = 0; i < data.data.length; i++){
+					 msg += "&nbsp;&nbsp;&nbsp;&nbsp;["+(i+1)+"]&nbsp;&nbsp;";
+					 msg += "<a href='"+data.data[i]+"' target='_blank'>"+data.data[i] + "</a><br/>";
+				}
+				showTestMsg( msg );
+			}else{
+				showTestMsg(msg+"&nbsp;&nbsp;<span style='color:red;'>"+data.info+"</span>");
+			}
+			postTestDetailRequest(); //继续采集
+		}, "json");
+	}else{
+		//采集完成
+		msg ="测试采集结束，采集<b id='testListUrlCount'>"+gCurrentNum+"</b>个列表页，";
+		msg += "总共获取<b id='testDetailUrlCount'>"+gDetailUrl.length+"</b>详细页链接&nbsp;&nbsp;";
+		msg += "<span style='color:blue;cursor:pointer' onclick='toggleTestMsg(this)'>";
+		var btnTitle = $("#testDetailUrlResult").is(":visible") ? "点击隐藏采集结果" : "点击显示采集结果";
+		msg += btnTitle;
+		msg += "</span>";
+		$("#testDetailUrlMsg").html(msg);
+	}
+}
+
+//测试采集字段数据
+function testField(obj){
+	var objTr = $(obj).parent().parent();
+	var regex = objTr.find(".ar").val();
+	var fieldInfo = objTr.find("#AttributeID").val()+"###"+regex;
+	var replacePara = getReplacePara(); 
+	var fieldName = fieldInfo.split("###")[1];
+	if( regex == ""){
+		ErrorBox("请先填写匹配规则");
+		return;
+	}
+	
+	//获取第一个链接
+	var allListUrl = getAllListUrl();
+	if( allListUrl.length <= 0 ){
+		ErrorBox("请先设置列表页");
+		return;
+	}
+	
+	//var firstListUrl = allListUrl.shift();  //获取第一个元素
+	var index = Math.floor( Math.random()*allListUrl.length ); //随机取一个元素
+	var firstListUrl = allListUrl[index];
+	if( firstListUrl == "" ||  firstListUrl == undefined ){
+		ErrorBox("请先设置列表页");
+		return;
+	}
+	var p = {
+		 FieldInfo : fieldInfo,
+		 ListUrl : firstListUrl,
+		 ListUrlRegionRegex : $("#ListUrlRegionRegex").val(),
+		 DetailUrlRegex : $("#DetailUrlRegex").val(),
+		 
+		 PageType : $("input[name='PageType']:checked").val(),
+		 PageRegionRegex : $("#PageRegionRegex").val(),
+		 AllPageUrlRegex : $("#AllPageUrlRegex").val(),
+		 NextPageUrlRegex : $("#NextPageUrlRegex").val(),
+		 
+		 ReplacePara: replacePara,
+		 TestDetailUrl : $("#TestDetailUrl").val(),  //不为空，直接从指定的页面采集
+		 UserAgent : $("#UserAgent").val(),
+		 Charset : $("input[name='Charset']:checked").val(),
+		 TimeTnterval : $("#TimeTnterval").val()
+	};
+	var msg = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>";
+	msg += " 测试采集字段数据中，请稍后...";
+	$("#fieldMsg").html( msg );
+	$.ajax({
+				url: "{$Url}testField", 
+				type: "POST",
+				timeout: 60*1000,
+				data: p,
+				dataType:"json",
+				success: function(data){
+					msg = "测试采集详细页&nbsp;&nbsp;";
+					if( data.info != ""){
+						msg +="<a style='color:blue' target='_blank' href='"+data.info+"'>"+data.info+"</a>";
+					}
+					if (data.status==1){
+						msg += "&nbsp;&nbsp;字段数据完成！请检查采集结果是否正确！";
+						$("#fieldMsg").html(msg);
+						alert( '采集结果："'+data.data[fieldName]+'"' );
+					}else{
+						msg += "&nbsp;&nbsp;<span style='color:red'>"+data.data+"</span>";
+						$("#fieldMsg").html( msg );
+					}
+				},
+				error:function(obj, textStatus, errorThrown){					
+					var errmsg = "请求数据时发生错误";
+					if (textStatus == "timeout") {
+					   	errmsg = "请求数据超时";
+					}
+					$("#fieldMsg").html("<span style='color:red'>"+errmsg+"</span>" );
+				}
+	});
+}
+
+//测试采集分页
+function testPage(){
+	var replacePara = getReplacePara(); 
+	
+	//获取第一个链接
+	var allListUrl = getAllListUrl();
+	if( allListUrl.length <= 0 ){
+		ErrorBox("请先设置列表页");
+		return;
+	}
+	
+	var index = Math.floor( Math.random()*allListUrl.length ); //随机取一个元素
+	var firstListUrl = allListUrl[index];
+	if( firstListUrl == "" ||  firstListUrl == undefined ){
+		ErrorBox("请先设置列表页");
+		return;
+	}
+
+	var p = {
+		 ListUrl : firstListUrl,
+		 ListUrlRegionRegex : $("#ListUrlRegionRegex").val(),
+		 DetailUrlRegex : $("#DetailUrlRegex").val(),
+		 
+		 PageType : $("input[name='PageType']:checked").val(),
+		 PageRegionRegex : $("#PageRegionRegex").val(),
+		 AllPageUrlRegex : $("#AllPageUrlRegex").val(),
+		 NextPageUrlRegex : $("#NextPageUrlRegex").val(),
+		 
+		 ReplacePara: replacePara,
+		 TestDetailUrl : $("#TestDetailUrl").val(),  //不为空，直接从指定的页面采集
+		 UserAgent : $("#UserAgent").val(),
+		 Charset : $("input[name='Charset']:checked").val(),
+		 TimeTnterval : $("#TimeTnterval").val()
+	};
+	var msgTip = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>";
+	msgTip += " 测试采集分页中，请稍后...";
+	$("#testPageMsg").html( msgTip );
+	$("#testPageResult").html( "" );
+	$.ajax({
+				url: "{$Url}testPage", 
+				type: "POST",
+				timeout: 60*1000,
+				data: p,
+				dataType:"json",
+				success: function(data){
+					if (data.status==1){
+						msgTip = "&nbsp;&nbsp;共采集了<b style='color:#FF3300;'>"+data.data.length+"</b>个分页链接：<br/></span>";
+						$("#testPageMsg").html( msgTip );
+						msgResult = '';
+						for(var i = 0; i < data.data.length; i++){
+							 msgResult += "["+(i+1)+"]&nbsp;&nbsp;";
+							 msgResult += "<a href='"+data.data[i]+"' target='_blank'>"+data.data[i] + "</a><br/>";
+						}
+						$("#testPageResult").html( msgResult );
+					}else{
+						msgTip = "&nbsp;&nbsp;<span style='color:red'>没有采集到任何分页数据</span>";
+						$("#testPageMsg").html( msgTip );
+					}
+				},
+				error:function(obj, textStatus, errorThrown){					
+					var errmsg = "请求数据时发生错误";
+					if (textStatus == "timeout") {
+					   	errmsg = "请求数据超时";
+					}
+					$("#testPageMsg").html("<span style='color:red'>"+errmsg+"</span>" );
+				}
+	});
+}
+
+//添加一个项目
+function addItem(){
+	var obj = $(".table-field tbody tr");
+	var objTemp  = obj.last().clone();
+	objTemp.find(".num").html( obj.length + 1 );
+	objTemp.find(".textinput").val( '' );
+	var objNext = objTemp.find("#AttributeID").find("option:selected").next();
+	objNext.attr("selected", "selected");
+	objTemp.appendTo(".table-field tbody");
+	//默认选择文本框
+	$(".table-field tbody tr").last().find(".textinput").focus();
+}
+
+function delItem(obj){
+	if( $(".table-field tbody tr").length <= 1){
+		ErrorBox("最后一个不能删除！");
+		return;
+	}
+	$(obj).parent().parent().remove();
+	var objTr = $(".table-field tbody tr");
+	for(var i=0; i< objTr.length; i++){
+		objTr.eq(i).find(".num").html(i+1);
+	}
+}
+
+//添加替换规则
+function addReplaceItem(){
+	var obj = $(".table-replace tbody tr");
+	var objTemp  = obj.last().clone();
+	objTemp.find(".num").html( obj.length + 1 );
+	objTemp.find("#SearchText").val( '' );
+	objTemp.find("#ReplaceText").val( '' );
+	objTemp.appendTo(".table-replace tbody");
+	$(".table-replace tbody tr").last().find("#SearchText").focus();
+}
+
+function delReplaceItem(obj){
+	if( $(".table-replace tbody tr").length <= 1){
+		ErrorBox("最后一个不能删除！");
+		return;
+	}
+	$(obj).parent().parent().remove();
+	var objTr = $(".table-replace tbody tr");
+	for(var i=0; i< objTr.length; i++){
+		objTr.eq(i).find(".num").html(i+1);
+	}
+}
+
+//获取所有列表页地址（包含附加列表页的地址）
+function getAllListUrl(){
+		var data = new Array();
+		//获取列表Url
+		var url = $("#ListUrl").val();
+		if( url.indexOf("{*}") == -1 ){
+			if( url != ""){
+			 	data.push( url );
+			}
+		 }else{
+			var start =  parseInt( $("#ListUrlStart").val() );
+			var end =  parseInt( $("#ListUrlEnd").val() );
+			var step =  parseInt( $("#ListUrlStep").val() );
+			var len = parseInt( $("#ListUrlLength").val() );
+			for(var i = start; i <= end; i += step){
+				temp = url.replace("{*}", padZero(i, len));
+				data.push( temp );
+			}
+		 }
+
+		var other = $("#ListUrlOther").val();
+		//附加页Url
+		if( other != "" ){
+			other = other.replace(/(^\s*)|(\s*$)/g, "");  //去掉空白字符
+			var text = other.replace(/\r\n|\r|\n/g, "@@@");
+			if( text.length > 12 ){
+				result = text.split("@@@");
+				if( result.length > 0 ){
+					data = data.concat( result );
+				}
+			}
+		}
+		return data;
+}
+
+ //补0操作，pad(100, 4);  输出：0100  
+function padZero(num, n) { 
+	 if(n==1) return num;
+	  var len = num.toString().length;  
+	  while(len < n) {  
+			num = "0" + num;  
+			len++;  
+	  }  
+	  return num;  
+}
+
+//显示测试采集结果
+function showTestMsg(msg){
+	if( msg != ""){
+		$("#testDetailUrlResult").append("<div>"+msg+"</div>");
+		$('#testDetailUrlResult').scrollTop( $('#testDetailUrlResult')[0].scrollHeight );
+	}
+}
+function toggleTestMsg(obj){
+	$("#testDetailUrlResult").toggle();
+	if( $("#testDetailUrlResult").is(":visible") ){
+		$(obj).text("点击隐藏采集结果");
+	}else{
+		$(obj).text("点击显示采集结果");
+	}
+}
+
+function clearTestMsg(){
+	$("#testDetailUrlResult").hide();
+	$("#testDetailUrlResult").html('');
+}
+
+//获取字段替换规则
+function getReplacePara(){
+	var obj = $(".table-replace tbody tr");
+	var regex = Array();
+	var st = "";
+	var rt = "";
+	for(var i = 0; i < obj.length; i++){
+		st = obj.eq(i).find("#SearchText").val();	
+		rt = obj.eq(i).find("#ReplaceText").val();	
+		regex.push( st+"###"+rt);
+	}
+	regex = regex.join("@@@");
+	return regex;
+}
+
+//停止采集详细页的测试
+function stoptestDetailUrl(){
+	gStopTestDetail = 1;
+}
+
+function channelSelect(){
+	var objSelect = $("#ChannelID").children('option:selected');
+	var fn = objSelect.attr('fn');
+	var dn = objSelect.attr('dn');
+	var mid = objSelect.attr('mid');
+	var aid = objSelect.attr('aid');
+
+	if( aid == "" || $("#currentModelID").val() == mid ) return;
+	
+	$("#currentModelID").val( mid );
+	var arrFn= fn.split("@");  //字段名称
+	var arrDn = dn.split("@"); //显示名称
+	var arrAid = aid.split("@"); //ID
+	//生成2项
+	var html ='<tr>';
+	html += "<td class='num'>1</td>";
+	html += "<td><select name='AttributeID[]' id='AttributeID' >";
+	for(var i = 0; i < arrDn.length; i++){
+		var temp = arrDn[i].split(",");
+		html += "<option value='"+arrAid[i]+"###"+arrFn[i]+"' ";
+		if( arrFn[i] == "InfoTitle"){
+			 html += " selected='selected'";
+		}
+		html += ">"+temp[0]+"</option>";
+	}
+	html += "</select></td>";
+	html += "<td><textarea class='ar' name='AttributeRegex[]'></textarea></td>";
+	html += "<td><a onclick='delItem(this)'  class='btnDel'>删除</a>";
+	html += "<a onclick='testField(this)'  id='btnSave' class='btnSmall btnSuccess'>字段采集测试</a>";
+	html += "</td></tr>";
+	
+	html +='<tr>';
+	html += "<td class='num'>2</td>";
+	html += "<td><select name='AttributeID[]' id='AttributeID' >";
+	for(var i = 0; i < arrDn.length; i++){
+		var temp = arrDn[i].split(",");
+		html += "<option value='"+arrAid[i]+"###"+arrFn[i]+"' ";
+		if( arrFn[i] == "InfoContent"){
+			 html += " selected='selected'";
+		}
+		html += ">"+temp[0]+"</option>";
+	}
+	html += "</select></td>";
+	html += "<td><textarea class='ar' name='AttributeRegex[]'></textarea></td>";
+	html += "<td><a onclick='delItem(this)'  class='btnDel'>删除</a>";
+	html += "<a onclick='testField(this)'  id='btnSave' class='btnSmall btnSuccess'>字段采集测试</a>";
+	html += "</td></tr>";
+	
+	$(".table-field tbody").html( html );
+}
+</script>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$ChannelName}|{$Title}-{$WebName}</title>
+    <include file="Public:meta" />
+</head>
+<body  class="body_article">
+    <include file="Public:header" />
+    <!--区块5140 开始-->
+<div id="n5140" class="component floor_channel4_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5140">
+    <style type="text/css">
+        #n5140{
+            {$TChannel4Bg5140|ParseBg}
+            padding-top:{$TChannel4PaddingTop5140}px;
+            padding-bottom:{$TChannel4PaddingBottom5140}px;
+        }
+        #n5140 li{
+            animation-duration: {$TChannel4AnimationTime5140}s;
+            animation-fill-mode: both;
+        }
+
+        #n5140 .sidebar_comtainer{
+            width: {$TChannel4SideBarWidth5140}px;
+            {$TChannel4SideBarBg5140|ParseBg}
+            yd-previewable-class: float_ float_{$TChannel4HasSideBar5140};
+        }
+        #n5140 .sidelist{
+            yd-previewable-class: -sidelist {$TChannel4SideBarStyle5140}-sidelist;
+            border-color: {$TChannel4SideBarBorderColor5140};
+        }
+        #n5140 .sidelist a{
+            border-color: {$TChannel4SideBarBorderColor5140};
+        }
+        #n5140 .sidebar_title h2{
+            {$TChannel4SideBarTitle5140|ParseFont}
+        }
+        #n5140 .sidelist .InfoTitle{
+            {$TChannel4SideBarInfoTitle5140|ParseFont}
+        }
+        #n5140 .sidelist .InfoPrice{
+            {$TChannel4SideBarInfoPrice5140|ParseFont}
+        }
+
+        #n5140 .content_title h2{
+            {$TChannel4TitleFont5140|ParseFont}
+        }
+        #n5140 .content_container{
+            {$TChannel4InfoBg5140|ParseBg}
+        }
+        #n5140 .content_container .InfoTitle{
+            {$TChannel4InfoTitleFont5140|ParseFont}
+        }
+        #n5140 .content_container .TitleIcon{
+            width: {$TChannel4TitleIconSize5140}px;
+        }
+        #n5140 .content_container .InfoSContent{
+            {$TChannel4InfoSContentFont5140|ParseFont}
+        }
+        #n5140 .content_container .InfoTime{
+            {$TChannel4InfoTimeFont5140|ParseFont}
+        }
+        #n5140 .content_container li{
+            yd-previewable-class: column column{$TChannel4ColumnCount5140};
+        }
+        #n5140 .thumb-article0 li .InfoPicture,#n5140 .thumbright-article0 li .InfoPicture{
+            width: {$TChannel4InfoPictureSize5140}%;
+        }
+        #n5140 .article0{
+            yd-previewable-class: -article0 {$TChannel4Style5140}-article0;
+        }
+        #n5140 .article0 li a{
+            {$TChannel4InfoListBg5140|ParseBg}
+            {$TChannel4InfoListBorder5140|ParseBorder}
+            padding: {$TChannel4InfoListPadding5140};
+            margin: {$TChannel4InfoListMargin5140};
+        }
+    </style>
+    <div class="floor_channel4 full-width{$TChannel4FullWidth5140} floor_channel">
+        <neq name="TChannel4HasSideBar5140" value="0">
+            <div class="component_title sidebar_comtainer float_{$TChannel4HasSideBar5140}" yd-type="group" yd-groupid="5140">
+                <div yd-slot="5140A"></div>
+                <div class="sidebar" yd-group="5140" yd-tab="侧边栏设置">
+                    <neq name="TChannel4SideBarLabel5140|strpos='1'" value="0">
+                        <div class="sidebar_title"><h2>{$Think.lang.Hot}{$ChannelSName}</h2></div>  
+                        <div class="sidebar_body">
+                            <ul class="sidelist {$TChannel4SideBarStyle5140}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$ChannelID" top="$TChannel4SideBarCount5140" timeformat="Y-m-d" labelid="hot" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel4AnimationType5140}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img class="{$TRoundCorner}-round-corner" src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </neq>
+                    <neq name="TChannel4SideBarLabel5140|strpos='2'" value="0">
+                        <div class="sidebar_title"><h2>{$Think.lang.Recommend}{$ChannelSName}</h2></div>  
+                        <div class="sidebar_body">  
+                            <ul class="sidelist {$TChannel4SideBarStyle5140}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$ChannelID" top="$TChannel4SideBarCount5140" timeformat="Y-m-d" labelid="recommend" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel4AnimationType5140}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img class="{$TRoundCorner}-round-corner" src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </neq>
+                </div>
+                <div yd-slot="5140B"></div>
+            </div>
+        </neq>
+
+        <div class="component_body content_container">
+            <div class="content_title">
+                <include file="Public:location" />
+                <h2 yd-content="_channel,{$ChannelID}">{$ChannelName}</h2>
+            </div>
+            <div class="content_body" yd-content="info,{$ChannelID}" yd-group="5140" yd-tab="列表设置">
+                <ul class="article0 {$TChannel4Style5140}-article0">
+                    <infolist id="f" channelid="$ChannelID" keywords="$Think.request.keywords" timeformat="m-d"  NowPage="$NowPage"  empty="$Think.lang.NoInformation">
+                        <li class="n{$mod} column{$TChannel4ColumnCount5140}" yd-animation="{$TChannel4AnimationType5140}">
+                            <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" class="{$TRoundCorner}-round-corner ThemeColorParent" yd-content="_info,{$f.InfoID}">
+                                <div class="InfoPicture">
+                                    <img src="{$f.InfoPicture|DefaultPicture}" title="{$f.InfoTitle}" alt="{$f.InfoTitle}" />
+                                </div>
+                                <div class="InfoWrap">
+                                    <div class="InfoTitle ThemeColorChild">
+                                        <eq name="TChannel4Style5140" value="text"><img class="TitleIcon" src="{$TChannel4TitleIcon5140}"/></eq>
+                                        {$f.InfoTitle}
+                                    </div>
+                                    <div class="InfoSContent">{$f.InfoContent|strip_tags|Left=80}</div>
+                                    <div class="InfoTime ThemeColorChild ThemeColorBgChildAfter">{$f.InfoTime}</div>
+                                </div>
+                            </a>
+                        </li>
+                    </infolist>
+                </ul>
+                <div class="page_main"><div class="page">{$Page}</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--区块5140 结束--><include file="Public:footer" />
+</body>
+</html>

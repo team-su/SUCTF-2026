@@ -1,0 +1,15 @@
+<div class="footermenu">
+    <ul>
+    	<li><a <eq name="Tab" value="1">class="active"</eq> href="{:WxCardUrl()}"><img src="{$AppImages}c1.png"><p>会员卡</p></a></li>
+        <li><a <eq name="Tab" value="2">class="active"</eq> href="{:WxCardMemberUrl()}"><img src="{$AppImages}c4.png"><p>资料</p></a></li>
+        <li><a <eq name="Tab" value="4">class="active"</eq> href="{:WxExchangeUrl()}"><img src="{$AppImages}c3.png"><p>兑换</p></a></li>
+        <li><a <eq name="Tab" value="5">class="active"</eq> href="{:WxCouponUrl()}"><img src="{$AppImages}c5.png"><p>优惠卷</p></a></li>
+        <li><a <eq name="Tab" value="3">class="active"</eq> href="{:WxCardScoreUrl()}"><img src="{$AppImages}c2.png"><p>签到</p></a></li>
+    </ul>
+</div>
+<script type="text/javascript">
+    document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+		WeixinJSBridge.call('hideOptionMenu'); 
+    	WeixinJSBridge.call('hideToolbar');
+    });
+</script>

@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+    	.MemberAvatar{ width:50px; height:50px; }
+		div.table .datatable td.CommentContent{ text-align:left; padding:3px 5px;}
+		 .rank1{ color: red;}
+		.rank2{ color: blue;}
+		.rank3{ color: green;}
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+       <div class="table">
+                <div class="toolbars">
+                    <li class="toolbar"><b>评论对象：</b><a href="{$InfoID|InfoUrl}" target="_blank">{$InfoID|InfoTitle}</a></li>
+                </div>
+                <table class="datatable" id="datatable">
+                    <thead>
+                    <tr>
+                         <th width="70px" >评论人</th>
+                         <th width="70px" ></th>
+                         <th>内容</th>
+                         <th width="80px">评论等级</th>
+                         <th width="80px">是否审核</th>
+                         <th width="135px">时间</th>
+                    </tr>
+                    <volist name="Data" id="d" key="j">
+                        <tr>
+                            <td><img src="{$d.MemberAvatar|htmlspecialchars}" class="MemberAvatar" /><br />
+                            <notempty name="d.GuestName">{$d.GuestName|htmlspecialchars}<else/>匿名</notempty>
+                            </td>
+                            <td colspan="2" class="CommentContent">{$d.CommentContent|htmlspecialchars}</td>
+                            <td>
+                                <span class="rank{$d.CommentRank}">
+                                    <switch name="d.CommentRank">
+                                        <case value="1">差评</case>
+                                        <case value="2">中评</case>
+                                        <case value="3">好评</case>
+                                    </switch>
+                                </span>
+                            </td>
+                            <td>            
+                                <eq name="d.IsCheck" value="0">
+                                    <span style="color:#F00;">未审核</span>
+                                <else/>
+                                    <span style="color:#000;">已审核</span>
+                                </eq>
+                            </td>
+                            <td>{$d.CommentTime|strtotime|yd_friend_date}</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <notempty name="d.ReplyComments">
+                                    <volist name="d.ReplyComments" id="rc">
+                                        <tr class="rc{$rc.CommentID}">
+                                            <td><a href="javascript:void(0)" onclick="delReply('{$rc.CommentID}')">[ 删除 ]</a></td>
+                                            <td><img src="{$rc.MemberAvatar|htmlspecialchars}" class="MemberAvatar" /><br/>
+                                            <notempty name="rc.GuestName">{$rc.GuestName|htmlspecialchars}<else/>匿名</notempty></td>
+                                            <td class="CommentContent">{$rc.CommentContent|htmlspecialchars}</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{$rc.CommentTime|strtotime|yd_friend_date}</td>
+                                        </tr>
+                                    </volist>
+                            </notempty>
+                        </tbody>
+                    </volist>
+                    <tfoot style="background:#F3F3F3;">
+                        <tr>
+                            <td colspan="2"></td>
+                            <td style="padding:8px 0;">
+                                <textarea id="CommentContent" name="CommentContent" style="height:70px; width:99%; margin-bottom:8px;"></textarea>
+                                <input  id="btnSubmit" type="submit"  value="回复" onclick="reply()" />&nbsp;&nbsp;
+                                <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                            </td>
+                            <td colspan="3"></td>
+                        </tr>       
+                    </tfoot>                
+                </table>
+            </div>
+</div>
+</body>
+</html>
+<script>
+function GoBack(){
+	var url =  "{$Url}index?p={$Think.get.p}&IsCheck={$Think.get.IsCheck}&SearchWords={$Think.get.SearchWords}";
+	window.location.href = url;
+}
+
+function reply(){
+	var CommentContent = $("#CommentContent").val();
+	if(CommentContent==""){
+		ErrorBox("评论内容不能为空");
+		return;
+	}
+	var url = "{$Url}saveReply";
+	var p = {
+		CommentID:"{$CommentID}",
+		CommentContent: CommentContent
+	}
+	LoadBox();
+	$.post(url, p, function(data){
+			CloseLoadBox();
+			if(data.status == 1){
+				$("#CommentContent").val('');
+				var html = '<tr class="rc'+data.data['CommentID']+'">';
+				html += '<td><a href="javascript:void(0)" onclick="delReply('+data.data['CommentID']+')">[ 删除 ]</a></td>';  
+				html += '<td><img src="'+data.data['MemberAvatar']+'" class="MemberAvatar" /><br/>'+data.data['GuestName']+'</td>';
+				html += '<td class="CommentContent">'+data.data['CommentContent']+'</td><td></td><td></td>';
+				html += '<td>'+data.data['CommentTime']+'</td></tr>';
+				$("table.datatable tbody").prepend(html);
+				$("#CommentContent").focus();
+				SucceedBox(data.info);
+			}else{
+				ErrorBox(data.info);
+			}
+	}, "json");
+}
+
+//删除回复
+function delReply(id){
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		LoadBox();
+		var url = "{$Url}delReply/id/"+id;
+		$.get(url, null, function(data){
+				CloseLoadBox();
+				if(data.status==1){
+					$(".rc"+data.data).remove();
+				}else{
+					ErrorBox(data.info);
+				}
+		}, "json");
+	});
+}
+</script>

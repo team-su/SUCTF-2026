@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frmSave"  enctype="multipart/form-data">
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th class="w120">关键词名称</th>
+                        <td><input type='text' style='width:260px;' class='textinput' name = 'Keyword'  id='Keyword'   value=''  />
+                        <span class='Caution'>支持多个关键词，多关键词之间使用英文逗号隔开，如定义"1"和"首页"2个关键词：1,首页</span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="w120">回复消息类型</th>
+                        <td>
+                            <volist name="Type" id="t">
+                                <label>
+                                <input type='radio' onclick="SelectType('{$t.TypeID}')"  name='TypeID' value="{$t.TypeID}"   style="cursor:pointer" <eq name="i" value="1"> checked="checked"</eq>  />
+                                {$t.TypeName}&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            </volist>
+                        </td>
+                    </tr>
+                    <include file="tool" />
+                    <tr style="display:none">
+                        <th class="w120">优先级</th>
+                        <td>
+                        <input type='text' style='width:100px;' class='textinput' name = 'Priority'  id='Priority'   value='0'  />
+                        <span class='Caution'>请输入数字，值越小排名，优先级越高！</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">是否启用</th>
+                        <td>
+                        <input type='radio'  id='IsEnable'  name='IsEnable'    value='1' checked="checked" />
+                        启用&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type='radio'  id='IsEnable'  name='IsEnable'    value='0'   />
+                        禁用&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    </tr>
+            </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" class="marginright" type="submit" value="保存并继续添加" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="emotions" style="display:none;"></div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			$('#frmSave').resetForm();
+			SelectType("1");
+			$('#Keyword').focus();
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#musicfile').change(function(){
+		 if( !$(this).val() ) return;
+		$('#frmSave').attr('action','__GROUP__/public/upload/addwater/no/currentfile/musicfile');
+		$('#frmSave').submit();
+	 });
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmSave').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmSave').submit(function(){
+		LoadBox();
+		return false;  
+	 });
+	 
+	 $('#Keyword').focus();
+	 SelectType("1");
+});
+
+function GoBack(){
+	window.location.href = "{$Url}keywordReply";
+}
+</script>

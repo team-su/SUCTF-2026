@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+	<style>
+		.weui-badge{ color:#fff; margin-left:3px;}
+		.Status1{ background: #333;  /*新订单,  等待付款*/ }
+		.Status2{ background: green;  /*已付款, 待发货*/ }
+		.Status3{ background: blue;  /*已发货, 待收货*/ }
+		.Status4{ background: #F0F;  /*退款', 已退款*/ }
+		
+		.Status5{ background: #F30;  /*退货', 已退货*/ }
+		.Status6{ background: #999;  /*结单', 已完成*/ }
+		.Status7{ background: #ccc;  /*作废', 已作废*/ }
+		.Status8{ background: red;  /*已取消  已取消*/ }
+		
+		.ProductPrice{ color:#C33; }
+		.TotalOrderPrice{color:#f00;}
+		.weui-form-preview__item{ text-align:left;}
+	</style>
+</head>
+<body id="index" class="webapp">
+	<include file="./Public/tpl/user/header.html" />
+    <notempty name="Data">
+        <volist name="Data" id="d">
+            <div class="weui-form-preview" id="row{$d.OrderID}" style="margin-bottom:10px;">
+              <div class="weui-form-preview__hd">
+                  <label class="weui-form-preview__label">订单编号：{$d.OrderNumber}</label>
+                  <em class="weui-form-preview__value">
+                      <span class="weui-badge Status{$d.OrderStatus}">{$d.MemberOrderStatusName}</span>
+                  </em>
+              </div>
+              <div class="weui-form-preview__bd">
+              	  <div class="weui-form-preview__item">订单总金额：<span class="TotalOrderPrice">{$CurrencySymbol}{$d.TotalOrderPrice}</span></div>
+                  <div class="weui-form-preview__item">下单时间：</b><span class="OrderTime">{$d.OrderTime|strtotime|yd_friend_date}</span></div>
+                  <div class="weui-form-preview__item">
+                      <div class="weui-panel weui-panel_access">
+                          <div class="weui-panel__bd">
+                          		<volist name="d.Product" id="p" key="j">
+                                    <a href="{$p.ProductID|InfoUrl}" class="weui-media-box weui-media-box_appmsg" style="padding-top:5px; padding-bottom:5px;">
+                                          <div class="weui-media-box__hd">
+                                            	<img class="weui-media-box__thumb" src="{$p.ProductID|InfoPicture|DefaultPicture}" />
+                                          </div>
+                                          <div class="weui-media-box__bd">
+                                                <div class="weui-media-box__title" style="font-size:14px;">{$p.ProductName}</div>
+                                                <p class="weui-media-box__desc">
+                                                	<span class="ProductPrice">{$CurrencySymbol}{$p.ProductPrice}</span><br/>
+                                            		<span class="ProductQuantity">数量：{$p.ProductQuantity}</span><br/>
+                                                	<notempty name="p.ProductAttributes">
+                                                    	    <volist id="pa" name="p.ProductAttributes">{$pa.TypeAttributeName}：{$pa.AttributeValue}；&nbsp;&nbsp;</volist>
+                                                    </notempty>
+                                                </p>
+                                          </div>
+                                    </a>
+                                </volist>
+                          </div>
+                        </div>
+                  </div>
+              </div>
+          
+              <div class="weui-form-preview__ft">
+              	  <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="{$Url}viewOrder/id/{$d.OrderID}">订单详情</a>
+              	  <eq name="d.OrderStatus" value="1">
+                        <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="{$d.PayUrl}">付款</a>
+                        <a class="weui-form-preview__btn weui-form-preview__btn_primary" onclick="Cancel({$d.OrderID})">取消</a>
+                  </eq>
+                  <eq name="d.OrderStatus" value="3">
+                        <a class="weui-form-preview__btn weui-form-preview__btn_primary" onclick="Receive({$d.OrderID})">收货</a>
+                  </eq>
+              	  <eq name="d.OrderStatus" value="8">
+                  	  <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:" onClick="Del({$d.OrderID})" style="color:red;">删除</a>
+                  </eq>
+              </div>
+            </div>
+        </volist>
+    <else/>
+        <div class="weui-msg">
+            <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+            <div class="weui-msg__text-area">
+                <p class="weui-msg__desc">{$Think.lang.NoInformation}</p>
+            </div>
+        </div>
+    </notempty>
+	<include file="./Public/tpl/user/footer.html" />
+</body>
+</html>
+<script>
+	function GoBack(){
+		location.href = "{$Url}index";
+	}
+	
+	function Del(id){
+		$.confirm("确定删除订单吗?", function() {
+			LoadBox();
+			var url = "{$Url}delOrder";
+			var p = {"id": id};
+			$.get(url, p, function(data){
+				CloseLoadBox();
+				if (data.status==1){
+					$("#row"+id).remove();
+				}else{
+					ErrorBox(data.info);
+				}	
+			}, "json");
+		});
+	}
+	
+	//取消订单
+	function Cancel(OrderID){
+		$.confirm("确定要取消订单吗?", function() {
+			LoadBox();
+			var url = "{$Url}cancelOrder/id/"+OrderID;
+			$.get(url, null, function(data){
+				CloseLoadBox();
+				if(data.status == 1){
+					SucceedBox(data.info);
+					location.reload();
+				}else{
+					ErrorBox(data.info);
+				}
+			},"json");
+		});
+	}
+		
+	function Receive(id, type){
+		$.confirm("确认收货吗?", function() {
+			LoadBox();
+			var url = "{$Url}receiveOrder/id/"+id;
+			$.get(url, null, function(data){
+				CloseLoadBox();
+				if(data.status == 1){
+					SucceedBox(data.info);
+					if(type==1){
+						location.reload();
+					}else{
+						location.href  = "{$Url}order";
+					}
+				}else{
+					ErrorBox(data.info);
+				}
+			},"json");
+		});
+	}
+</script>

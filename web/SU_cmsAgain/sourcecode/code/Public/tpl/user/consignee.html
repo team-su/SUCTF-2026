@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>
+		#c{$DefaultConsigneeID} { display:block; }
+		.Default { 
+			background:url("{$Images}address.png") #fff no-repeat right 90px; background-size: 110px; 
+		}
+		#b{$DefaultConsigneeID} { display:none;}
+		.IsEnable{color:#F00;  color:red; }
+		.weui-form-preview__item{ text-align:left;}
+		.btnSetDefault{ color:#333;   cursor:pointer; border:0px solid #eaeaea;}
+	</style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+    <notempty name="Data">
+        <volist name="Data" id="d">
+            <div class="weui-form-preview row <eq name="d.ConsigneeID" value="$DefaultConsigneeID">Default</eq>" id="row{$d.ConsigneeID}" style="margin-bottom:10px;">
+              <div class="weui-form-preview__hd">
+                  <label class="weui-form-preview__label">
+                  		<span style="float:left;">{$d.ConsigneeRealName}</span>
+                   </label>
+                  <em class="weui-form-preview__value">{$d.ConsigneeAddressAlias}&nbsp;</em>
+              </div>
+              <div class="weui-form-preview__bd">
+              	  <div class="weui-form-preview__item">地址：{$d.ConsigneeAddress}</div>
+                  <div class="weui-form-preview__item">手机：{$d.ConsigneeMobile}</div>
+                  <div class="weui-form-preview__item">座机：{$d.ConsigneeTelephone}</div>
+                  <div class="weui-form-preview__item">Email：{$d.ConsigneeEmail}</div>
+                  <div class="weui-form-preview__item">邮编：{$d.ConsigneePostcode}</div>
+              </div>
+              <div class="weui-form-preview__ft">
+                  <a class="weui-form-preview__btn weui-form-preview__btn_primary"  onClick="modify({$d.ConsigneeID})">修改</a>
+                  <a class="weui-form-preview__btn weui-form-preview__btn_primary  color-danger"  onClick="del({$d.ConsigneeID})">删除</a>      
+                  <a class="weui-form-preview__btn weui-form-preview__btn_primary btnSetDefault" id="b{$d.ConsigneeID}" onClick="setDefault({$d.ConsigneeID})">设为默认地址</a>
+              </div>
+            </div>
+        </volist>
+    <else/>
+        <div class="weui-msg">
+            <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+            <div class="weui-msg__text-area">
+                <p class="weui-msg__desc">{$Think.lang.NoInformation}</p>
+            </div>
+        </div>
+    </notempty>
+    
+    <div class="weui-btn-area">
+           <a href="{$Url}addConsignee"  class="weui-btn weui-btn_primary">添加收货地址</a>
+    </div>
+</body>
+</html>
+<script>
+	function GoBack(){
+		location.href = "{$Url}index";
+	}
+	
+	function modify(id){
+		location.href= "{$Url}modifyConsignee/id/"+id;
+	}
+	
+	function del(id){
+		$.confirm("确定删除吗?", function() {
+			LoadBox();
+			var url = "{$Url}delConsignee";
+			var p = {"id": id};
+			$.get(url, p,function(data){
+				CloseLoadBox();
+				if (data.status == 1){
+					$("#row"+id).remove();
+				}else{ 
+					ErrorBox(data.info);
+				}	
+			}, "json");
+		});
+	}
+	
+	//设置为默认地址
+	function setDefault(id){
+		$.confirm("是否设为默认地址?", function() {
+			var url = "{$Url}setConsigneeDefault/id/"+id;
+			LoadBox();
+			$.get(url, null, function(data){
+				CloseLoadBox();
+				//默认提示
+				
+				$(".row").removeClass("Default");
+				$("#row"+id).addClass("Default");
+				
+				$("#c"+id).show();	
+				
+				//按钮
+				$(".btnSetDefault").show();
+				$("#b"+id).hide();	
+			}, "json");
+		});
+	}
+</script>

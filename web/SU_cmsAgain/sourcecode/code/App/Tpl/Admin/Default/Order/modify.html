@@ -1,0 +1,507 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.product_table{ width: 100%; border:1px solid #ccc;}
+		.product_table th, .product_table td{ padding:5px 5px; text-align:center; border:1px solid #ccc;}
+		.product_table th{  font-weight:bold; background:#eee; }
+		.product_table td{  }
+		.product_table tr:hover{ background:#eee;}
+		.product_table .totaltitle{ text-align: right; padding-right:5px; color:blue; }
+		.product_table .totalvalue{ text-align: center; font-weight:bold; color:#FF3300;  }
+		.product_table #DiscountPrice{ color:#FF3300; width:50px; text-align:center;}
+		.product_table #TotalOrderPrice{ font-size:28px; font-weight:bold;}
+		
+		.btnOrder{ padding:3px 10px; margin-right:5px; cursor:pointer;}
+		.btnOrder[disabled="disabled"],.btnOrder[disabled="disabled"]:hover{
+			background: #eee; color: #999;
+		}
+		.logtype1{ color:blue;}
+		.logtype2{ color:red;}
+		.logtype3{ color:green;}
+		.logtype4{ color:#F0F;}
+		.logtype5{ color:black;}
+		.logtype6{ color:#93F;}
+		.logtype7{ color:gray;}
+		.logtype8{ color:gray;}
+		
+		.os1, .os2, .os3, .os4, .os5,  .os6, .os7, .ps1, .ps2, .ss1, .ss2{ padding:0 10px 0 0;}
+		.os1{ color: black; }
+		.os2{ color: blue;}
+		.os3{ color: red;}
+		.os4{ color:#60F;}
+		.os5{ color:#999;}
+		.os6{ color:green;}
+		.os7{ color:gray;}
+		.ps1, .ss1{ color: blue; }
+		.ps2, .ss2{ color: red;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form  enctype="multipart/form-data" id="frm" method="post" action="{$Action}">
+            <input type="hidden" name="{$HiddenName}" value="{$HiddenValue}" />
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>订单号</th>
+                        <td style="font-weight:bold;color:blue; width:420px;">{$Data.OrderNumber}</td>
+                    </tr>
+                    <tr>
+                        <th>支付方式</th>
+                        <td>{$Data.PayName}</td>
+                    </tr>
+                    <tr>
+                        <th>配送方式</th>
+                        <td>{$Data.ShippingName}</td>
+                    </tr>
+                    <tr>
+                        <th>下单时间</th>
+                        <td>{$Data.OrderTime}</td>
+                    </tr>
+                    <tr>
+                        <th>订单状态</th>
+                        <td>
+                        <span id="OrderStatus" class="os{$Data.OrderStatus}">{$Data.OrderStatusName}</span>
+                        <eq name="Data.PayStatus" value="1">
+                            <span id="PayStatus" class="ps1">已支付</span>
+                        <else/>
+                            <span id="PayStatus" class="ps2">未支付</span>
+                        </eq>
+                        <eq name="Data.ShippingStatus" value="1">
+                            <span id="ShippingStatus" class="ss1">已发货</span>
+                        <else/>
+                            <span id="ShippingStatus" class="ss2">未发货</span>
+                        </eq>
+                    </td>
+                    </tr>
+                    <tr>
+                        <th>订单备注</th>
+                        <td><textarea style="height:60px;width:100%;" id="OrderRemark" name="OrderRemark">{$Data.OrderRemark}</textarea>
+                        <span class='Caution'>订单备注仅管理员可见，会员无法看到此处设置的内容！</span>
+                        </td>
+                    </tr>
+                    <tr>
+                            <th>订单操作</th>
+                            <td>
+                                    <input class="btnOrder"  id="btn2"  type="button" value="付款"   onclick="setStatus(2)" />
+                                    <input class="btnOrder"  id="btn3"  type="button"  value="发货"  onclick="setStatus(3)"/>
+                                    <input class="btnOrder"  id="btn6"  type="button"  value="结单"  onclick="setStatus(6)" style="display:none;" comment="结单操作由用户操作或系统自动操作" />
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input class="btnOrder"  id="btn4"  type="button"  value="退款"  onclick="setStatus(4)"/>
+                                    <input class="btnOrder"  id="btn5"  type="button"  value="退货"  onclick="setStatus(5)"/>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input class="btnOrder"  id="btn7"  type="button"  value="作废"  onclick="setStatus(7)"/>
+                                    
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input class="btnOrder" id="print"  type="button"  value="打印订单"  onclick="printOrder()" style="color:#00F"/>
+                            </td>
+                    </tr>
+                </table>
+                <table style="width:100%;">
+                    <tr>
+                        <th style="width:15%; padding:3px;text-align:right; font-weight:bold;">订单操作日志</th>
+                        <th style="padding:3px;">
+                            <table class="product_table">
+                            <tr>
+                                <th style="width:50px;">序号</th>
+                                <th  style="width:150px;">时间</th>
+                                <th style="width:120px;">操作人</th>
+                                <th style="width:70px;">行为</th>
+                                <th>备注</th>
+                            </tr>
+                            <tbody id="log_body">
+                            <notempty name="Log">
+                                <volist name="Log" id="l" key="j">
+                                    <tr>
+                                        <td class="num">{$j}</td>
+                                        <td>{$l.OrderLogTime|strtotime|yd_friend_date}</td>
+                                        <td>{$l.Operator}</td>
+                                        <td>
+                                            <span class="logtype{$l.OrderLogType}">
+                                                <switch name="l.OrderLogType">
+                                                    <case value="2">付款</case>
+                                                    <case value="3">发货</case>	
+                                                    <case value="4">退款</case>
+                                                    <case value="5">退货</case>
+                                                    <case value="6">结单</case>
+                                                    <case value="7">作废</case>
+                                                    <case value="8">已取消</case>
+                                                </switch>
+                                            </span>
+                                        </td>
+                                        <td style="text-align:left;">
+                                        <in name="l.OrderLogType" value="2,4">金额：{$CurrencySymbol}{$l.PayPrice}&nbsp;&nbsp;&nbsp;&nbsp;</in>
+                                        <in name="l.OrderLogType" value="3,5">
+                                            <notempty name="l.ShippingNumber">物流单号：{$l.ShippingNumber}&nbsp;&nbsp;&nbsp;&nbsp;</notempty>
+                                        </in>
+                                        {$l.OrderLogRemark}
+                                        </td>
+                                    </tr>
+                                </volist>
+                            <else/>
+                                <tr><td colspan="5"  id="NoData">暂无日志！</td></tr>
+                            </notempty>
+                            </tbody>
+                        </table>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-header"><h4>收货人信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr  style="display:none;">
+                        <th>会员名称</th>
+                        <td style="color:blue;"><eq name="Data.MemberID" value="0">游客<else/>[{$Data.MemberID}]&nbsp;{$Data.MemberRealName}</eq></td>
+                    </tr>
+                    <tr>
+                        <th>收货人姓名</th>
+                        <td><input type="text" class="textinput"  style="width:180px;" name="ConsigneeRealName" id="ConsigneeRealName"  value="{$Data.ConsigneeRealName}"/></td>
+                    </tr>
+                    <tr style="display:none;">
+                        <th>性别</th>
+                        <td>
+                        <label><input type="radio" name="ConsigneeGender" value="0" checked="checked"  />男</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="ConsigneeGender" value="1" />女</label>
+                    </td>
+                    </tr>
+                    <tr>
+                        <th>电子邮件</th>
+                        <td><input type="text" class="textinput" style="width:180px;" name="ConsigneeEmail" id="ConsigneeEmail" value="{$Data.ConsigneeEmail}" /></td>
+                    </tr>
+                    <tr>
+                        <th>手机</th>
+                        <td><input type="text" class="textinput" style="width:180px;" name="ConsigneeMobile" id="ConsigneeMobile" value="{$Data.ConsigneeMobile}" />
+                        <span class='Caution'>请设置手机号码，方便配送员联系！</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>电话</th>
+                        <td><input type="text" class="textinput"  style="width:180px;" name="ConsigneeTelephone" id="ConsigneeTelephone" value="{$Data.ConsigneeTelephone}" />
+                        <span class='Caution'>请设置电话，方便配送员联系！</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>地址</th>
+                        <td><input type="text" class="textinput w450"  name="ConsigneeAddress" id="ConsigneeAddress" value="{$Data.ConsigneeAddress}" /></td>
+                    </tr>
+                    <tr>
+                        <th>邮编</th>
+                        <td><input type="text" class="textinput"   style="width:180px;"  name="ConsigneePostcode" id="ConsigneePostcode" value="{$Data.ConsigneePostcode}" /></td>
+                    </tr>
+                    <tr>
+                        <th>{$Think.lang.ConsigneeRemark}</th>
+                        <td><textarea style="height:60px;width:100%;" id="ConsigneeRemark" name="ConsigneeRemark">{$Data.ConsigneeRemark}</textarea></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-header">
+                <h4>产品信息</h4>
+            </div>
+            <div class="box-content">
+                <table class="product_table">
+                    <tr>
+                        <th style="width:55px;">序号</th>
+                        <th>产品名称</th>
+                        <th style="width:140px;">产品价格</th>
+                        <th style="width:140px;">购买数量</th>
+                        <th style="width:140px;">小计</th>
+                    </tr>
+                    <notempty name="Product">
+                        <volist name="Product" id="p">
+                            <tr>
+                                <td>{$i}</td>
+                                <td style="text-align:left;">
+                                <a href="{$p.ProductID|InfoUrl}" target="_blank"><img src="{$p.ProductID|InfoPicture|DefaultPicture}" style="width:80px; float:left; margin-right:5px;" /></a>
+                                <a href="{$p.ProductID|InfoUrl}" target="_blank">{$p.ProductName}</a>
+                                <div class="ProductAttriubtes">
+                                    <volist id="pa" name="p.ProductAttributes">{$pa.TypeAttributeName}：{$pa.AttributeValue}；&nbsp;</volist>
+                                </div>
+                                </td>
+                                <td>{$CurrencySymbol}{$p.ProductPrice}</td>
+                                <td>{$p.ProductQuantity}</td>
+                                <td>{$CurrencySymbol}{$p.TotalPrice}</td>
+                            </tr>
+                        </volist>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">商品总金额：</td>
+                                <td class="totalvalue">{$CurrencySymbol}{$Data.TotalPrice}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">运费：</td>
+                                <td class="totalvalue">{$CurrencySymbol}{$Data.ShippingPrice}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">（商品总金额 + 运费）x  支付手续费比例（<span style="color:#FF3300">{$Data.PayRate}%</span>） = 支付手续费：</td>
+                                <td class="totalvalue">{$CurrencySymbol}<span id="PayPrice">{$Data.PayPrice}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">使用优惠券：</td>
+                                <td class="totalvalue">- {$CurrencySymbol}{$Data.CouponPrice}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">积分抵扣：</td>
+                                <td class="totalvalue">- {$CurrencySymbol}{$Data.PointPrice}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="totaltitle">人工调价（正数表示涨价，负数表示跌价）：</td>
+                                <td class="totalvalue"><input type="text"  autocomplete="off" class="textinput" name="DiscountPrice" id="DiscountPrice" value="{$Data.DiscountPrice}" /></td>
+                            </tr>
+    
+                            <tr>
+                                <td colspan="4"  class="totaltitle">商品总金额 + 运费 + 支付手续费 - 使用优惠券 + 人工调价 =  实际支付总金额：</td>
+                                <td class="totalvalue">{$CurrencySymbol}<span id="TotalOrderPrice">{$Data.TotalOrderPrice}</span></td>
+                            </tr>
+                    <else/>
+                        <tr><td colspan="5"  id="NoData">暂无商品！</td></tr>
+                    </notempty>
+                </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input class="btnSave marginright"  id="btnSubmit"  type="submit" value="保存" />
+                    <input  id="btnSubmit"  type="button" value="返回" onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlg">
+    <table cellpadding="3" cellspacing="3" border="0">
+		<tr>
+		   <th width="80px" nowrap="nowrap" align="right"><b>订单号&nbsp;</b></th>
+		   <th align="left" style="color:blue;">{$Data.OrderNumber}</th>
+		</tr>
+		<tr class="trPayPrice">
+		   <th width="80px" nowrap="nowrap" align="right"><b>支付金额&nbsp;</b></th>
+		   <th align="left" style="color:#F30;">{$CurrencySymbol}{$Data.TotalOrderPrice}</th>
+		</tr>
+		<tr class="trShippingNumber">
+		   <th width="80px" nowrap="nowrap" align="right"><b>物流单号&nbsp;</b></th>
+		   <th align="left" style="color:#F30;">
+		   		<input type="text" class="textinput"  style="width:250px;"  id="ShippingNumber"  value=""/>
+		   </th>
+		</tr>
+		<tr>
+		   <th width="80px" nowrap="nowrap" align="right"><b>时间&nbsp;</b></th>
+		   <th align="left" style="color:#F30; padding:3px 0">
+		   <input  type='text' class='Wdate' id='OrderLogTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value="{$CurrentTime}" />
+		   </th>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" align="right"><b>操作备注&nbsp;</b></td>
+			<td align="left"><textarea style="width:250px; height:60px;" id="OrderLogRemark"></textarea></td>
+		</tr>
+    </table>
+</div>
+<script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+<script type="text/javascript">
+//全局变量            0  1      2       3          4         5        6          7
+var g_typelist = ['', '', '付款', '发货',  '退款', '退货', '结单', '作废'];
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			<empty name="HiddenName">
+				$('#frm').resetForm();
+			</empty>
+		}else{
+			ErrorBox(data.info);
+		}
+	};
+	
+	$("#DiscountPrice").keyup(function(){
+			var DiscountPrice = parseFloat($("#DiscountPrice").val());
+			if( !isNaN(DiscountPrice) ){
+				var TotalPrice = parseFloat("{$Data.TotalPrice}");
+				var ShippingPrice = parseFloat("{$Data.ShippingPrice}");
+				var PayPrice = parseFloat("{$Data.PayPrice}");
+				var TotalOrderPrice = TotalPrice+ShippingPrice+PayPrice + DiscountPrice;
+				$("#TotalOrderPrice").text(TotalOrderPrice);
+			}
+	 });
+	
+	 $('#frm').submit(function(){
+		 LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	  pageInit();
+});
+
+//页面初始化
+function pageInit(){
+	setDefault();
+	UpdateStatus("{$Data.OrderStatus}");
+}
+ 
+//设置默认值
+function setDefault(){
+		$("input[name='ConsigneeGender'][value={$Data.ConsigneeGender}]").attr("checked",'checked');	
+		$("#DeliveryTimeID").val( "{$Data.DeliveryTimeID}");
+		$("#PayID").val( "{$Data.PayID}");
+		$("#ShippingID").val( "{$Data.ShippingID}");
+ }
+ 
+//设置状态
+function setStatus(type){	
+		var d = dialog.get('dlg');
+		if(d) d.close();
+		//初始化
+		$('#OrderLogTime').val( yd.getCurrentTime() );
+		$("#OrderLogRemark").val("");
+		$("#ShippingNumber").val("");
+		var dlgTitle = g_typelist[type];
+		var PayPrice="0";
+		
+		if( type == 2 || type == 4 ) {
+			$(".trPayPrice").show();
+			$(".trShippingNumber").hide();
+			PayPrice = "{$Data.TotalOrderPrice}"; 
+		}else if( type == 3 || type == 5 ) {
+			$(".trPayPrice").hide();
+			$(".trShippingNumber").show();
+		}else{
+			$(".trPayPrice").hide();
+			$(".trShippingNumber").hide();
+		}
+
+		var d = dialog({
+			title: dlgTitle,
+			id: 'dlg',
+			padding: 8,
+			content: document.getElementById('dlg'),
+			ok: function () {
+			  LoadBox();
+			  var url = "{$Url}setStatus";
+			  var data =  {
+					OrderID: '{$OrderID}',  //订单ID
+					OrderLogType: type,   //日志类型
+					PayPrice: PayPrice,
+					ShippingNumber: $('#ShippingNumber').val(),
+					OrderLogTime: $('#OrderLogTime').val(),   //操作时间
+					OrderLogRemark: $('#OrderLogRemark').val()   //操作备注
+				};
+				$.post(url, data, function(data, textStatus){
+					CloseLoadBox();
+					if (data.status == 1){
+						d.close().remove();
+						UpdateStatus( data.data.OrderLogType );
+						UpdateLog( data.data );
+						SucceedBox(data.info);
+					}else if(data.status == 0){
+						ErrorBox(data.info);
+					}
+				}, 'json');
+				return false;
+			},
+			okValue: '确定',
+			cancelValue: '取消',
+			cancel: true
+		}).show();
+}
+
+//更新状态
+function UpdateStatus(type){
+		$(".btnOrder").removeAttr("disabled"); 
+		$("#btn"+type).attr("disabled","disabled");
+		type = parseInt(type);
+		var title = g_typelist[type];
+		switch(type){
+			case 1:   //新订单
+				$("#btn3,#btn4,#btn5,#btn6").attr("disabled","disabled");
+				break;
+			case 2:  //付款
+				$("#btn5,#btn6").attr("disabled","disabled");
+				$("#PayStatus").text("已"+title);
+				break;
+			case 3:  //发货
+				$("#btn2,#btn3").attr("disabled","disabled");
+				$("#ShippingStatus").text("已"+title);
+				break;
+			case 4: //退款
+				$("#btn2,#btn3,#btn6").attr("disabled","disabled");
+				$("#OrderStatus").text(title);
+				break;
+			case 5: //退货
+				$("#btn2,#btn3,#btn6").attr("disabled","disabled");
+				$("#OrderStatus").text(title);
+				break;
+			case 6:  //结单
+				$("#btn2,#btn3").attr("disabled","disabled");
+				$("#OrderStatus").text(title);
+				$(".box-content input,.box-content select, .box-content textarea").attr("disabled","disabled");
+				$(".btnSave").hide();
+				if("{$Data.PayStatus}"==1) {
+					$("#btn4").removeAttr("disabled"); 
+				}else{
+					$("#btn2").removeAttr("disabled"); 
+				}
+				if("{$Data.ShippingStatus}"==1) {
+					$("#btn5").removeAttr("disabled"); 
+				}else{
+					$("#btn3").removeAttr("disabled"); 
+				}
+				$("#btn7").removeAttr("disabled"); 
+				$("#print").removeAttr("disabled"); 
+				break;
+			case 7: //作废
+				$(".btnOrder").attr("disabled","disabled");
+				$("#OrderStatus").text(title);
+				break;
+			case 8: //用户取消
+				$("#btn2,#btn3,#btn4,#btn5").attr("disabled","disabled");
+				break;
+		}
+}
+ 
+ //更新日志
+function UpdateLog(data){
+	var type = data.OrderLogType;
+	var OrderLogRemark = "";
+	if( type == 2 || type == 4 ){
+		OrderLogRemark = "金额：{$CurrencySymbol}"+data.PayPrice+"&nbsp;&nbsp;&nbsp;&nbsp;";
+	}
+	if( type == 3 || type == 5 ){
+		OrderLogRemark = "物流单号："+data.ShippingNumber+"&nbsp;&nbsp;&nbsp;&nbsp;";
+	}
+	OrderLogRemark += data.OrderLogRemark;
+	var OrderLogType = g_typelist[ data.OrderLogType ];
+
+	var html = "<tr>";
+	html += "<td class='num'></td>";
+	html += "<td>"+data.OrderLogTime+"</td>";
+	html += "<td>"+data.Operator+"</td>";
+	html += "<td><span class='logtype"+type+"'>"+OrderLogType+"</span></td>";
+	html += "<td style='text-align:left;'>"+OrderLogRemark+"</td>";
+	html += "</tr>";
+	$("#log_body").prepend(html);
+	//重新设置序号
+	var objTr = $("#log_body tr");
+	for(var i=0; i< objTr.length; i++){
+		objTr.eq(i).find(".num").html(i+1);
+	}
+}
+
+function printOrder(){
+	location.href = "{$Url}printing/id/{$Data.OrderID}";
+}
+</script>

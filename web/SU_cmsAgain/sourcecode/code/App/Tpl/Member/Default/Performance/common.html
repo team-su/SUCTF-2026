@@ -1,0 +1,296 @@
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+<table class="boxtable">
+	<tr>
+		<th class="w120">项目类型</th>
+		<td>
+			<volist name="Type" id="t">
+					<label><input type="radio" onclick="ChangeType({$t.ProjectTypeID})" name="ProjectType" value="{$t.ProjectTypeID}" />{$t.ProjectTypeName}</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+			</volist>
+		</td>
+	</tr>
+	<tr>
+		<th class="w120" style="color:red;">项目名称</th>
+		<td><input type="text" class="textinput"  style="width:400px;"  name="ProjectName" id="ProjectName" value="{$Data.ProjectName}" />
+		<span class='Caution'><span id="ProjectNameFormat" style="color:red;"></span></span>
+		</td>
+	</tr>
+	<tr id="TplNumber">
+		<th class="w120"></th>
+		<td>
+		电脑模板编号：<input type="text" onkeyup="ChangePcNumber(this)" class="textinput"  style="width:50px;"  name="PcNumber" id="PcNumber" value="{$Data.PcNumber}" maxlength="4" />
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		手机模板编号：<input type="text" class="textinput"  style="width:50px;"  name="WapNumber" id="WapNumber" value="{$Data.WapNumber}"  maxlength="4" />
+		</td>
+	</tr>
+	<tr id="TplFee">
+		<th class="w120"  style="color:red;">项目费用</th>
+		<td><input type="text" class="textinput"  style="width:120px;"  name="ProjectFee" id="ProjectFee" value="{$Data.ProjectFee}" />
+		<span class='Caution'>单位：元，请填写数字或小数</span>
+		</td>
+	</tr>
+	<tr id="TplAuthorize">
+		<th class="w120" >是否购买授权</th>
+		<td>
+			<label><input type="radio" onclick="ChangeAuthorize(0)"   name="IsAuthorize" value="0" />否</label>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<label><input type="radio"  onclick="ChangeAuthorize(1)" name="IsAuthorize" value="1" />是</label>
+			<span class="TplHost">
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			授权域名&nbsp;&nbsp;<input type="text" class="textinput"  style="width:180px;"  name="Host" id="Host" value="{$Data.Host}" />
+			<span class='Caution'>授权域名不能添加http://，如：www.xx.com</span>
+			</span>
+		</td>
+	</tr>
+	<tr id="TplCount">
+		<th class="w120">模板套数</th>
+		<td><input type="text" class="textinput"  style="width:120px;"  name="TemplateCount" id="TemplateCount" value="{$Data.TemplateCount}" />
+		<span class='Caution'>单位：套数。请填写当前代理级别对于的模板套数</span>
+		</td>
+	</tr>
+	<tr id="TplPay">
+		<th class="w120">付款方式</th>
+		<td>				
+			<select name="PayType" id="PayType">
+				<volist name="PayType" id="p">
+					<option value="{$p.PayTypeID}">{$p.PayTypeName}</option>
+				</volist>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th class="w120">客户名称</th>
+		<td>				
+			<select name="CustomerID" id="CustomerID">
+				<option value="0" selected="selected">====暂不指定客户====</option>
+				<volist name="CustomerData" id="c">
+					<option value="{$c.MemberID}">
+						{$c.MemberID}&nbsp;&nbsp;{$c.MemberName|htmlspecialchars}&nbsp;&nbsp;{$c.MemberRealName|htmlspecialchars}
+						<neq name="c.MemberGroupID" value="101">&nbsp;&nbsp;{$c.MemberGroupName|htmlspecialchars}</neq>
+					</option>
+				</volist>
+			</select>
+		</td>
+	</tr>
+	<tr>
+			<th>时间</th>
+			<td><input type="text" class="textinput Wdate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})"  style="width:150px" name="AddTime" value="{$Data.AddTime}"  /></td>
+	</tr>
+	<tr>
+		<th class="w120">备注</th>
+		<td><textarea type="text" class="textinput"  style="width:100%;height:70px;"  name="Remark" id="Remark" />{$Data.Remark}</textarea></td>
+	</tr>
+</table>
+</div>
+
+<div class="box-header"><h4>发票信息</h4></div>
+<div class="box-content">
+<table class="boxtable">
+	<tr>
+		<th class="w120">是否开发票</th>
+		<td>
+				<label><input type="radio"  onclick="ChangeNeedInvoice(1)" name="NeedInvoice" value="1" />是</label>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<label><input type="radio" onclick="ChangeNeedInvoice(0)"   name="NeedInvoice" value="0" />否</label>
+		</td>
+	<tr>
+	<tr class="InvoiceInfo">
+		<th class="w120"></th>
+		<td><a style="float:left"  id="btnSaveAll" onclick="GetInvoiceInfo()">提取客户信息</a>&nbsp;
+		<span id="tip"></span>
+		<span class='Caution'>点击按钮自动从客户信息中获取发票抬头、收件人、联系电话、收件地址</span>
+		</td>
+	</tr>
+	<tr class="InvoiceInfo">
+		<th class="w120">发票抬头</th>
+		<td><input type="text" class="textinput"  style="width:400px;"  name="InvoiceName" id="InvoiceName" value="{$Data.InvoiceName}" />
+		<span class='Caution'>如果开票人是公司，请填写公司名称</span>
+		</td>
+	</tr>
+	<tr class="InvoiceInfo">
+		<th class="w120" >发票内容</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="InvoiceContent" id="InvoiceContent" value="{$Data.InvoiceContent}" />
+		<span class='Caution'>如：网站建设、空间域名、软件开发、网站维护等</span>
+		</td>
+	</tr>
+	<tr class="InvoiceInfo">
+		<th class="w120">开票金额</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="InvoiceMoney" id="InvoiceMoney" value="{$Data.InvoiceMoney}" />
+		<span class='Caution'>单位：元，请填写数字或小数。默认等于项目费用</span>
+		</td>
+	</tr>
+	<tr class="InvoiceInfo">
+		<th class="w120">收件人</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="InvoiceConsignee" id="InvoiceConsignee" value="{$Data.InvoiceConsignee}" /></td>
+	</tr>
+	<tr class="InvoiceInfo">
+		<th class="w120">联系电话</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="InvoiceTelephone" id="InvoiceTelephone" value="{$Data.InvoiceTelephone}" /></td>
+	</tr>
+	<tr class="InvoiceInfo">
+		<th class="w120">收件地址</th>
+		<td><input type="text" class="textinput"  style="width:400px;"  name="InvoiceAddress" id="InvoiceAddress" value="{$Data.InvoiceAddress}" />
+		<span class='Caution'>默认显示客户登记的联系地址</span>
+		</td>
+	</tr>
+	<tr class="InvoiceInfo">
+		<th class="w120">发票备注</th>
+		<td><textarea type="text" class="textinput"  style="width:100%;height:60px;"  name="InvoiceRemark" id="InvoiceRemark" />{$Data.InvoiceRemark}</textarea></td>
+	</tr>
+</table>
+</div>
+<script type="text/javascript" src="{$WebPublic}My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			<empty name="HiddenName">
+				$('#frm').resetForm();
+				pageInit();
+			</empty>
+		}else{
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 //选中表单第一项
+	 function focusFirstItem(){
+		 $("#ProjectName").focus();
+	 }
+	 
+	 //设置默认值
+	 function setDefault(){
+		 $("input[name='ProjectType'][value={$Data.ProjectType}]").attr("checked",'checked');
+		 $("#CustomerID").val( "{$Data.CustomerID}" );
+		 $("#PayType").val( "{$Data.PayType}" );  //付款方式
+		 ChangeType("{$Data.ProjectType}");
+		 
+		 $("input[name='NeedInvoice'][value={$Data.NeedInvoice}]").attr("checked",'checked');
+		 ChangeNeedInvoice("{$Data.NeedInvoice}");
+		 
+		 $("input[name='IsAuthorize'][value={$Data.IsAuthorize}]").attr("checked",'checked');
+		 ChangeAuthorize("{$Data.IsAuthorize}");
+	 }
+	 
+	 function pageInit(){
+		 focusFirstItem();
+		 setDefault();
+	 }
+	 pageInit();
+});
+
+function ChangeNeedInvoice(type){
+	if(type==1){
+		$(".InvoiceInfo").show();
+	}else{
+		$(".InvoiceInfo").hide();
+	}
+}
+
+function ChangeAuthorize(type){
+	if(type==1){
+		$(".TplHost").show();
+	}else{
+		$(".TplHost").hide();
+	}
+}
+
+function ChangeType(type){
+	type = parseInt(type);
+	$("#TplNumber").hide();
+	$("#TplFee").show();
+	$("#TplPay").show();
+	$("#TplCount").hide();
+	$("#TplAuthorize").hide();
+	var flag = "{$HiddenName}";
+	switch(type){
+		case 1:
+			$("#ProjectNameFormat").html("格式：三合一模板销售、电脑模板销售、手机模板销售");
+			$("#TplNumber").show();
+			$("#TplAuthorize").show();
+			if( flag.length == 0 ) $("#ProjectName").val("三合一模板销售");
+			break;	
+		case 2:
+			$("#ProjectNameFormat").html("格式：xx项目定制开发");
+			$("#TplAuthorize").show();
+			if( flag.length == 0 ) $("#ProjectName").val("xx项目定制开发");
+			break;	
+		case 3:
+			$("#ProjectNameFormat").html("格式：域名xx.com、500M空间ftpname");
+			if( flag.length == 0 ) $("#ProjectName").val("域名xx.com、500M空间ftpname");
+			break;	
+		case 4:
+			$("#ProjectNameFormat").html("格式：xx.com网站备案	");
+			if( flag.length == 0 ) $("#ProjectName").val("xx.com网站备案");
+			break;	
+		case 5:
+			$("#ProjectNameFormat").html("格式：xx.com维护服务");
+			if( flag.length == 0 ) $("#ProjectName").val("xx.com维护服务");
+			break;	
+		case 6:
+			$("#ProjectNameFormat").html("格式：xx公司伙伴代理、xx普通代理");
+			if( flag.length == 0 ) $("#ProjectName").val("xx公司伙伴代理");
+			$("#TplCount").show();
+			break;	
+		case 7:
+			$("#ProjectNameFormat").html("格式：三合一模板登记、电脑模板登记、手机模板登记");
+			if( flag.length == 0 ) $("#ProjectName").val("三合一模板登记");
+			$("#TplNumber").show();
+			$("#TplPay").hide();
+			break;	
+		default:
+			$("#ProjectNameFormat").html("格式：填写实际项目名称");
+	}
+}
+
+//自动获取发票信息
+function GetInvoiceInfo(){
+	var CustomerID = $("#CustomerID").val();
+	if( CustomerID <= 0 ) {
+		alert("请先选择客户");
+		return;	
+	}
+	var ProjectFee = $("#ProjectFee").val();
+	var url = "{$Url}getInvoiceInfo/CustomerID/"+CustomerID;
+	var msg = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>&nbsp;获取中，请稍后...";
+	$("#tip").html(msg);
+	$.get(url, {}, function(data){
+		if (data.status == 1){
+			//自动获取的内容
+			$("#InvoiceName").val( data.data['MemberName'] );
+			$("#InvoiceConsignee").val( data.data['MemberRealName'] );
+			$("#InvoiceAddress").val( data.data['MemberAddress'] );
+			$("#InvoiceTelephone").val( data.data['MemberMobile'] );
+		}
+		$("#InvoiceMoney").val( ProjectFee );
+		$("#tip").html("");
+	}, "json");
+}
+
+function GoBack(){
+	var p ="?CustomerID={$Think.get.CustomerID}&ProjectType={$Think.get.ProjectType}&Year={$Think.get.Year}&";
+	p+= "Year={$Think.get.Year}&Month={$Think.get.Month}&NeedInvoice={$Think.get.NeedInvoice}";
+	location.href = "{$Url}index"+p;
+}
+
+function ChangePcNumber(obj){
+		var pcNumber = $(obj).val();
+		var wapNumber = parseInt(pcNumber,10) + 2000;
+		if( !isNaN(wapNumber) ){
+			$("#WapNumber").val( wapNumber );
+		}
+}
+</script>

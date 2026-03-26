@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$ChannelName}|{$Title}-{$WebName}</title>
+    <include file="Public:meta" />
+</head>
+<body  class="body_single">
+    <include file="Public:header" />
+    <!--区块5146 开始-->
+<div id="n5146" class="component floor_channel13_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5146">
+    <style type="text/css">
+        #n5146{
+            {$TChannel13Bg5146|ParseBg}
+            padding-top: {$TChannel13PaddingTop5146}px;
+            padding-bottom: {$TChannel13PaddingBottom5146}px;
+        }
+        #n5146 li{
+            animation-duration: {$TChannel13AnimationTime5146}s;
+            animation-fill-mode: both;
+        }
+
+        #n5146 .sidebar_comtainer{
+            width: {$TChannel13SideBarWidth5146}px;
+            {$TChannel13SideBarBg5146|ParseBg}
+            yd-previewable-class: float_ float_{$TChannel13HasSideBar5146};
+        }
+        #n5146 .sidebar_title h2{
+            {$TChannel13SideBarTitle5146|ParseFont}
+        }
+        #n5146 .sidelist{
+            yd-previewable-class: -sidelist {$TChannel13SideBarStyle5146}-sidelist;
+            border-color: {$TChannel13SideBarBorderColor5146};
+        }
+        #n5146 .sidelist a{
+            border-color: {$TChannel13SideBarBorderColor5146};
+        }
+        #n5146 .sidelist .InfoTitle{
+            {$TChannel13SideBarInfoTitle5146|ParseFont}
+        }
+        #n5146 .sidelist .InfoPrice{
+            {$TChannel13SideBarInfoPrice5146|ParseFont}
+        }
+
+        #n5146 .content_title h2{
+            {$TChannel13TitleFont5146|ParseFont}
+        }
+        #n5146 .content_container{
+            {$TChannel13ContentBg5146|ParseBg}
+        }
+        #n5146 .content_body .InfoTitle{
+            {$TChannel13InfoTitleFont5146|ParseFont}
+        }
+        #n5146 .content_body .ChannelContent, #n5146 #Map{
+            {$TChannel13ContentFont5146|ParseFont}
+        }
+    </style>
+    <div class="floor_channel13 full-width{$TChannel13FullWidth5146} floor_channel">
+        <neq name="TChannel13HasSideBar5146" value="0">
+            <div class="component_title sidebar_comtainer float_{$TChannel13HasSideBar5146}">
+                <div yd-slot="5146A"></div>
+                <notempty name="TChannel13SideBarChannel5146">
+                    <div class="sidebar" yd-group="5146" yd-tab="侧边栏设置">
+                        <div class="sidebar_title"><h2>{$TChannel13SideBarChannel5146|ChannelName}</h2></div>  
+                        <div class="sidebar_body">  
+                            <ul class="sidelist {$TChannel13SideBarStyle5146}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$TChannel13SideBarChannel5146" top="$TChannel13SideBarCount5146" timeformat="Y-m-d" labelid="$TChannel13SideBarLabel5146" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel13AnimationType5146}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </div>
+                </notempty>
+                <div yd-slot="5146B"></div>
+            </div>
+        </neq>
+        <div class="component_body content_container">
+            <div class="content_title">
+                <include file="Public:location" />
+                <h2 yd-content="_channel,{$ChannelID}">{$ChannelName}</h2>
+            </div>
+            <div class="content_body">
+                <div class="ChannelContent" yd-content="_channel,{$ChannelID},3">
+                    <eq name="HasReadLevel" value="1">{$ChannelContent}<else/>{$Think.lang.ReadLevelTip}</eq>
+                </div>
+                <notempty name="ChannelAlbum">
+                    <div class="ChannelAlbum swiper-container">
+                        <ul class="channelalbumlist swiper-wrapper">
+                            <channelalbumlist id="ca" channelid="$ChannelID">
+                                <li yd-animation="{$TChannel13AnimationType5146}" class="n{$i} swiper-slide"><img src="{$ca.AlbumPicture}" title="{$ca.AlbumTitle}" alt="{$ca.AlbumTitle}" /></li>
+                            </channelalbumlist>
+                        </ul>
+                    </div>
+                </notempty>
+                <div id="Map" yd-content="contact">
+                    <ul class="ContactInfo">
+                        <notempty name="Contact"><li><div class="Contact"><i class="ydicon-lianxiren"></i><b>{$Think.lang.Contact}：</b>{$Contact}</div></li></notempty>
+                        <notempty name="Mobile"><li><div class="Mobile"><i class="ydicon-shouji"></i><b>{$Think.lang.Mobile}：</b>{$Mobile}</div></li></notempty>
+                        <notempty name="Telephone"><li><div class="Telephone"><i class="ydicon-dianhua1"></i><b>{$Think.lang.Telephone}：</b>{$Telephone}</div></li></notempty>
+                        <notempty name="Fax"><li><div class="Fax"><i class="ydicon-fax-full"></i><b>{$Think.lang.Fax}：</b>{$Fax}</div></li></notempty>
+                        <notempty name="Email"><li><div class="Email"><i class="ydicon-youjian"></i><b>{$Think.lang.Email}：</b>{$Email}</div></li></notempty>
+                        <notempty name="PostCode"><li><div class="PostCode"><i class="ydicon-youbian"></i><b>{$Think.lang.PostCode}：</b>{$PostCode}</div></li></notempty>
+                        <notempty name="WebUrl">
+                            <li><div class="WebUrl"><i class="ydicon-wangzhan"></i><b>{$Think.lang.WebUrl}：</b><a href="{$WebUrl}" target="_blank"  class="WebUrl">{$WebUrl}</a></div></li>
+                        </notempty>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(window).load(function(){
+            var ChannelAlbum = new Swiper('#n5146 .ChannelAlbum',{
+                slidesPerView: 'auto',
+                calculateHeight : true
+            });
+        })
+    </script>
+</div>
+<!--区块5146 结束--><include file="Public:footer" />
+</body>
+</html>

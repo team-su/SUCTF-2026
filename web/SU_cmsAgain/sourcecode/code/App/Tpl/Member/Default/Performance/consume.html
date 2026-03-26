@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.type1{ color:black;}
+		.type2{ color:red;}
+		.type3{ color:green;}
+		.type4{ color:blue;}
+		.type5{ color:#600;}
+		.type6{ color:#FF6600;}
+		.type7{ color:#FF00FF;}
+		.type15{ color:#999;}
+		.InvoiceInfo{ cursor:pointer;}
+		.InvoiceItem{display:none; background:#FFF;padding:8px; line-height:22px;text-align:left;border:1px solid #87A34D;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    	<input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar">
+                    总充值金额：<span style="color:green; margin-right:20px;">￥{$ChongZhiFee}</span>
+                    已消费金额：<span style="color:blue;margin-right:20px;">￥{$UsedFee}</span>
+                    剩余金额：<span style="color:red;">￥{$LeftFee}</span>
+                </li>
+                <li class="toolbar toolbarform">
+                    <label>项目类型</label>
+                    <select name="ProjectType" id="ProjectType">
+                        <option value="-1">全部类型</option>
+                        <volist name="Type" id="p">
+                            <option value="{$p.ProjectTypeID}"  <eq name="p.ProjectTypeID" value="$ProjectType">selected="selected"</eq>>{$p.ProjectTypeName}</option>
+                        </volist>
+                    </select>
+                    <input id="btnSeek" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                     <th width="45px" >序号</th>
+                     <th width="200px" >项目名称</th>
+                     <th width="80px" >项目类型</th> 
+                     <th width="80px" >项目费用</th>
+                     <th width="100px" >付款方式</th>
+                     
+                     <th>备注</th>
+                     <th width="130px" >添加时间</th>
+                </tr>  
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td>{$i}</td>
+                        <td style="text-align:left;">
+                            {$d.ProjectName}
+                            <in name="d.ProjectType" value="1,7">
+                                &nbsp;&nbsp;<span style="color:blue">{$d.PcNumber}</span>
+                                &nbsp;<span style="color:#F60">{$d.WapNumber}</span>
+                            </in>
+                        </td>
+                        <td><span class="type{$d.ProjectType}">{$d.ProjectTypeName}</span></td>
+                        <td>
+                            <eq name="d.ProjectType" value="6">
+                                <span style="color:red;">+￥{$d.ProjectFee}</span>
+                            <else/>
+                                <span>-￥{$d.ProjectFee}</span>
+                            </eq>
+                        </td>
+                        <td><notin name="d.ProjectType" value="7">{$d.PayTypeName}</notin></td>
+                        <td style="text-align:left;">{$d.Remark}</td>
+                        <td>{$d.AddTime|strtotime|yd_friend_date}</td>
+                    </tr>
+                </volist>
+                </notempty>                          
+            </table>
+             <div class="tfoot">
+                  <div class="page"><span class="pagesize">每页<span class="pz">{$PageSize}</span>条</span>{$Page}</div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}consume");
+	$('#frm').submit();
+	return true;
+}
+</script>

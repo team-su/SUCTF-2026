@@ -1,0 +1,34 @@
+<eq name="TopHasChild" value="1">
+	<div id="subchannel_main" yd-group="4">
+		<notempty name="TSubNavShow">
+			<style type="text/css">
+				#subchannel_main{
+					{$TSubNavigationBg|ParseBg} padding: {$TSubNavigationPadding}px 0;
+				}
+				.subchannellist .depth2{
+					{$TSubNavigationFont|ParseFont}
+				}
+				.subchannellist .separator{
+					padding: 0 {$TSubNavigationSpace}px;
+				}
+			</style>
+			<div id="subchannel">
+				<ul class="subchannellist">
+					<channellist id="c" channelid="$TopChannelID"  depth="1">
+						<neq name="i" value="1"><li class="separator">{$TSubNavigationSeparator}</li></neq>
+						<li class="n{$i}">
+							<a class="depth2 ThemeColorHover <eq name='c.ChannelID' value='$ChannelID'>ThemeColor</eq>" href="{$c.ChannelUrl}">{$c.ChannelName}<eq name="c.HasChild" value="1"><i class="icon-more"></i></eq></a>
+							<eq name="c.HasChild" value="1">
+								<div class="depth3list">
+									<channellist id="c1" channelid="$c.ChannelID"  depth="1">
+										<a class="depth3 ThemeColorBgHover" href="{$c1.ChannelUrl}">{$c1.ChannelName}</a>
+									</channellist>
+								</div>
+							</eq>
+						</li>
+					</channellist>
+				</ul>
+			</div>
+		</notempty>
+	</div>
+</eq>

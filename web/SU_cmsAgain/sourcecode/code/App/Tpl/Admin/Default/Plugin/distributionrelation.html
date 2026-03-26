@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.ralationlist{ overflow:hidden;}
+		.ralationlist li {    
+			display:block; height:30px; 
+			background:url("{$Images}c_line.gif") left center no-repeat;
+			line-height:30px; 
+			padding-left:20px;
+		 }
+		.ralationlist li p{ display:inline; padding:4px 8px; border:1px solid #ccc; border-radius:3px; cursor:pointer; }
+		.ralationlist li p.current{     background: #eee; color: #f00; border-color: #f00;}
+		.ralationlist li i{ font-style:normal; color:#333; margin-left:1em;}
+	</style>
+</head>
+<body id="main_page">
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    	<input type="hidden" name="p" id="p" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars" style="border-bottom:1px solid #eee; padding-bottom:5px;">
+                <li  class="toolbar toolbarform" id="toolbarleft">
+                    <label class="first">分销商</label>
+                    <input type="text" class='textinput' name="Keywords" style="width:180px;" placeholder="Email 手机号码 昵称" value="{$Keywords}" id="Keywords" />
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+                <ul class="ralationlist">
+                    <notempty name="Data">
+                        <volist name="Data" id="d">
+                            <li>
+                            	<p n="1" mid="{$d.MemberID}" onclick="show(this)">{$d.MemberName|htmlspecialchars} {$d.MemberMobile|htmlspecialchars} [{$d.MemberID}]</p><i></i>
+                            </li>
+                        </volist>
+                    <else/>
+                         <div id="NoData">暂无数据！</div>
+                    </notempty>
+                </ul>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}distributionRelation");
+	$('#frm').submit();
+	return true;
+}	
+
+function show(obj){
+		var that = obj;
+		$(".ralationlist li p").removeClass("current");
+		$(that).addClass("current");
+		var url = "{$Url}getNextDistributionRelation";
+		var MemberID = $(that).attr("mid");
+		var params = {
+			'MemberID' : MemberID
+		};
+		var n = 1 + parseInt( $(that).attr("n") );
+		var style = "style=margin-left:" + (n-1) * 3 + "em";
+		showLoading(that);
+		$.get(url, params, function(data){
+				closeLoading(that);
+				if(data.data){
+					var len = data.data.length;
+					//先删除子菜单
+					$(".ralationlist .m"+MemberID).remove();
+					var html = "<span class='m"+MemberID+"'>";
+					for(var i = 0; i < len; i++){
+						var mid = data.data[i]["MemberID"];
+						html += "<li "+style+"><p onclick='show(this)' n='"+n+"' mid='"+mid+"'>";	
+						html += data.data[i]["MemberName"]+" "+data.data[i]["MemberMobile"]+ " [" + mid + "]";
+						html += "</p><i></i></li>";	
+					}
+					html += "</span>";
+					$(that).parent().after(html);
+				}else{
+					$(that).parent().find("i").html("<span style='color:red;'>没有下级！</span>");
+				}
+		},"json");
+}
+
+function showLoading(obj){
+	var html = "<img a src='{$WebPublic}Images/loading/9.gif' align='absmiddle' />&nbsp;加载中...";
+	$(obj).parent().find("i").html(html);
+}
+
+function closeLoading(obj){
+	$(obj).parent().find("i").html("");
+}
+
+$(document).ready(function(){
+	pageInit();
+});
+
+function pageInit(){
+	
+}
+</script>

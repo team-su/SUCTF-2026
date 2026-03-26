@@ -1,0 +1,87 @@
+@font-face{font-family:"ydiconfont";src:url('//at.alicdn.com/t/font_2289826_absk7cecxt6.woff2?t=1625136358309') format('woff2'),url('//at.alicdn.com/t/font_2289826_absk7cecxt6.woff?t=1625136358309') format('woff'),url('//at.alicdn.com/t/font_2289826_absk7cecxt6.ttf?t=1625136358309') format('truetype')}.ydiconfont{font-family:"ydiconfont"!important;font-size:16px;font-style:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.ydicon-xsj1:before{content:"\e810"}.ydicon-xsj2:before{content:"\e62d"}.ydicon-xsj3:before{content:"\e644"}.ydicon-mulu:before{content:"\e62a"}.ydicon-show1:before{content:"\e629"}.ydicon-dot5:before{content:"\e619"}.ydicon-dot6:before{content:"\e623"}.ydicon-dot1:before{content:"\e618"}.ydicon-dot2:before{content:"\e628"}.ydicon-dot3:before{content:"\e615"}.ydicon-dot4:before{content:"\e616"}.ydicon-wangzhi:before{content:"\e622"}.ydicon-hh3:before{content:"\e69f"}.ydicon-hh:before{content:"\e6e0"}.ydicon-wangwang:before{content:"\e6c4"}.ydicon-wangwang1:before{content:"\e6ad"}.ydicon-hh1:before{content:"\e625"}.ydicon-qr1:before{content:"\e611"}.ydicon-MSN:before{content:"\e626"}.ydicon-qr2:before{content:"\e646"}.ydicon-hh2:before{content:"\e663"}.ydicon-qq2:before{content:"\e665"}.ydicon-msn1:before{content:"\e997"}.ydicon-skype:before{content:"\e915"}.ydicon-wx1:before{content:"\e640"}.ydicon-fb1:before{content:"\e613"}.ydicon-qq1:before{content:"\e79d"}.ydicon-phone2:before{content:"\e614"}.ydicon-msn2:before{content:"\e6ba"}.ydicon-gotop1:before{content:"\e67a"}.ydicon-gotop2:before{content:"\e67b"}.ydicon-gotop3:before{content:"\e624"}.ydicon-gotop4:before{content:"\e605"}.ydicon-gotop5:before{content:"\e65a"}.ydicon-gotop6:before{content:"\e67f"}.ydicon-gotop7:before{content:"\e660"}.ydicon-gotop8:before{content:"\e673"}.ydicon-gotop9:before{content:"\e612"}.ydicon-gotop10:before{content:"\e653"}.ydicon-gotop11:before{content:"\e802"}.ydicon-gotop12:before{content:"\e603"}.ydicon-gotop13:before{content:"\e6b4"}.ydicon-gotop14:before{content:"\e63f"}.ydicon-gotop15:before{content:"\e729"}.ydicon-gotop16:before{content:"\e60f"}.ydicon-gotop17:before{content:"\e66f"}.ydicon-gotop18:before{content:"\e604"}.ydicon-gotop19:before{content:"\e627"}.ydicon-gotop20:before{content:"\e703"}.ydicon-gotop21:before{content:"\e62f"}.ydicon-gotop22:before{content:"\e670"}.ydicon-gotop23:before{content:"\e610"}.ydicon-nothing:before{content:"\e64c"}.ydicon-badge-right:before{content:"\e60e"}.ydicon-add1:before{content:"\e620"}.ydicon-add:before{content:"\e728"}.ydicon-yes1:before{content:"\e6a6"}.ydicon-no1:before{content:"\e6a8"}.ydicon-no:before{content:"\e61e"}.ydicon-yes:before{content:"\e60c"}.ydicon-hit1:before{content:"\e62c"}.ydicon-hit:before{content:"\e61a"}.ydicon-address:before{content:"\e609"}.ydicon-search:before{content:"\e60b"}.ydicon-prev:before{content:"\e60a"}.ydicon-next:before{content:"\e602"}.ydicon-youjian:before{content:"\e61b"}.ydicon-lianxiren:before{content:"\e60d"}.ydicon-dianhua:before{content:"\e606"}
+.ydicon-WB:before{content:"\e651"}.ydicon-WX:before{content:"\e691"}.ydicon-shouji:before{content:"\e63b"}.ydicon-wangzhan:before{content:"\e601"}.ydicon-weixin:before{content:"\e62e"}.ydicon-qq:before{content:"\e683"}.ydicon-youbian:before{content:"\e693"}.ydicon-dianhua1:before{content:"\e607"}.ydicon-FB:before{content:"\e608"}.ydicon-fax-full:before{content:"\e932"}.ydicon-Facebook:before{content:"\e711"}.ydicon-right4:before{content:"\e67d"}.ydicon-left4:before{content:"\e67e"}.ydicon-phone:before{content:"\e6c2"}.ydicon-left3:before{content:"\e726"}.ydicon-left1:before{content:"\e621"}.ydicon-right3:before{content:"\e727"}.ydicon-more1:before{content:"\e742"}.ydicon-more:before{content:"\e633"}.ydicon-right1:before{content:"\e62b"}.ydicon-play:before{content:"\e63a"}.ydicon-left:before{content:"\e61c"}.ydicon-right:before{content:"\e61d"}.ydicon-call:before{content:"\e7c0"}.ydicon-home:before{content:"\e617"}.ydicon-contact:before{content:"\e600"}.ydicon-product:before{content:"\e61f"}
+
+[class*='ydicon-']{ font-family: "ydiconfont" !important; font-style: normal; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+.ydicon-play:before { display: inline-block; border-radius: 50%; background: rgba(0,0,0,.5); height: 46px; width: 46px; line-height: 46px; font-size: 22px; color: #FFF; text-align: center; }
+/*==========字体 结束==========*/
+
+/*==========在线客服 开始==========*/
+/*默认蓝色*/
+/*.SonlineBox{ overflow: hidden; }*/
+.SonlineBox{ z-index: 999999990; font-family:"Microsoft YaHei",BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Segoe UI Symbol"}
+.SonlineBox .contentBox{ border-radius:6px;}
+.SonlineBox .openTrigger{ width: 50px; height: 50px; line-height: 50px; text-align: center; position:absolute; top:0px; border-radius: 6px; z-index:1; cursor:pointer; background:#2589ff; box-shadow: 0 0 9px 0 rgba(0,0,0,0.1); }
+.SonlineBox .openTrigger:before{ content: '\e6e0'; font-family: 'ydiconfont'; font-size: 30px; color: #FFF; }
+.SonlineBox1{ width:162px; font-size:12px; top:-600px; z-index:9999;}
+.SonlineBox1 .titleBox{ width:100%; height:35px; line-height:35px; background:#2589ff; position:relative; z-index:1;}
+.SonlineBox1 .titleBox span{ margin-left:10px; color:#fff; font-size:14px; font-family:'微软雅黑','黑体';}
+.SonlineBox1 .contentBox{ display:block; min-width: 160px; width:100%; height:auto; border:2px solid #2589ff; overflow:hidden; background:#fff; position:absolute; z-index:2; }
+.SonlineBox1 .contentBox .closeTrigger{ width:25px; height:25px; text-align: center; line-height: 25px; display:block; cursor:pointer;  position:absolute; top:5px;right:5px; z-index:2; }
+.SonlineBox1 .contentBox .closeTrigger:before{ content: '\e61e'; font-family: 'ydiconfont'; font-weight: bold; color: #FFF; }
+.SonlineBox1 .contentBox .closeTrigger:hover{-webkit-transform:scale(1) rotate(360deg);}
+.SonlineBox1 .contentBox .listBox{overflow:hidden; margin:6px 0; position:relative;}
+.SonlineBox1 .contentBox .listBox .QQList{ display:block; width:100%; margin:5px auto 5px auto; padding:0px 0;}
+.SonlineBox1 .contentBox .listBox .QQList span{ display:block; width:47%; height:25px; overflow:hidden; text-align:right;float:left; line-height:26px; color:#444;}
+.SonlineBox1 .contentBox .listBox .QQList div.ico{ width:52%; height:25px; overflow:hidden; float:left;}
+.SonlineBox1 .contentBox .listBox .QQList div.ico a{}
+.SonlineBox1 .contentBox .listBox .QrList{ margin: 10px 20px; text-align: center; }
+.SonlineBox1 .contentBox .listBox .QrList img{ width: 100%; max-width: 130px; margin-bottom: 5px; }
+.SonlineBox1 .contentBox .listBox .QrList span{ display: block; color: #515259; }
+.SonlineBox1 .contentBox .listBox .TelList a{ line-height: 26px; color: #0d84ff; }
+.SonlineBox1 .contentBox .listBox .LinkList{ margin: 5px 10px; color: #0d84ff; }
+
+.SonlineBox1 .contentBox .tels{ width:90%; margin:0 auto; border-top:1px dotted #ccc; height:auto; padding-bottom:10px; line-height:200%; text-align:center;}
+.SonlineBox1 .contentBox .tels font{ display:block; line-height:35px; font-family:'微软雅黑','黑体'; font-size:16px; color:#555;}
+.SonlineBox1 .contentBox .tels span{ display:block; line-height:25px; font-family:"Palatino Linotype", "Book Antiqua"; font-size:20px; color:#555; font-weight:bold;}
+
+/*样式2 3*/
+.SonlineBox2{ margin-left: 5px; }
+.SonlineBox2 .titleBox{ display: none; }
+.SonlineBox2 .contentBox{ position: relative; border: 0 !important; }
+.SonlineBox2 .contentBox .listBox .item{ position: relative; width: 50px; margin: 10px 0; text-align: center; background:#FFF; color: #2589ff; font-size: 25px; border-radius:6px; transition-duration: .2s;
+	box-shadow: 0 0 9px rgba(0,0,0,.1);
+	display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.SonlineBox2 .contentBox .listBox .item a{ display: block; color: inherit;}
+.SonlineBox2 .contentBox .listBox .item span.title{ display: none; font-size: 12px; text-align: center; white-space: nowrap; line-height: 1.2em; }
+.SonlineBox2 .contentBox .listBox .item .float_box{ position: absolute; left: 125%; transform: translateX(30px); top: 0; bottom: 0; margin: auto; font-size: 14px; color: #313233; visibility: hidden; opacity: 0; transition: .5s .1s; }
+.SonlineBox2 .contentBox .listBox .item .float_box span.triangle{ top: 12px; left: -11px; position: absolute; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-right: 11px solid #FFF; z-index: 1; }
+.SonlineBox2 .contentBox .listBox .item .float_box.tel{ width: 145px; background-color: #FFF; box-shadow: 0 0 9px rgba(0,0,0,.1); border: 1px solid #e4e5e9; height: 36px; line-height: 36px; text-indent: 10px; text-align: left; border-radius: 6px; }
+.SonlineBox2 .contentBox .listBox .item .float_box.tel span.triangle{ top: 12px !important; }
+.SonlineBox2 .contentBox .listBox .item .float_box.qr{ bottom: auto; border-radius: 6px; background-color: #FFF; padding: 4px; line-height: 1.5em; box-shadow: 0 0 9px rgba(0,0,0,.1); }
+.SonlineBox2 .contentBox .listBox .item .float_box.qr img{ width: 140px; }
+.SonlineBox2 .contentBox .listBox .item.footer:before{ content: "···";font-family:"Microsoft YaHei",BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Segoe UI Symbol"}
+.SonlineBox2 .contentBox .listBox .item:hover{ opacity: .9; }
+.SonlineBox2 .contentBox .listBox .item:hover .float_box{ transform: translateX(0px); visibility: visible; opacity: 1; }
+
+.SonlineBox2 .contentBox .tels{ position: absolute; left: 125%; bottom: 0; transform: translate(30px); background-color: #FFF; box-shadow: 0 0 9px rgba(0,0,0,.1); border-radius: 6px; visibility: hidden; opacity: 0; padding: 10px; transition: .5s .1s; }
+.SonlineBox2 .contentBox .tels.show{ transform: translate(0px); visibility: visible; opacity: 1; }
+.SonlineBox2 .contentBox .tels:after{ content: ""; bottom: 20px; margin-top: -32px; left: -11px; position: absolute; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-right: 11px solid #FFF; z-index: 1; }
+
+.SonlineBox2.positionright{ margin-right: 5px; }
+.SonlineBox2.positionright .contentBox .listBox .item .float_box{ left: auto; right: 125%; transform: translateX(-30px); }
+.SonlineBox2.positionright .contentBox .listBox .item .float_box span.triangle{ left: auto; right: -11px; border-left: 11px solid #FFF; border-right: 0; }
+.SonlineBox2.positionright .contentBox .listBox .item:hover .float_box{ transform: translateX(0px); visibility: visible; opacity: 1; }
+.SonlineBox2.positionright .contentBox .tels{left: auto; right: 125%; transform: translate(-30px); }
+.SonlineBox2.positionright .contentBox .tels.show{ transform: translate(0px); visibility: visible; opacity: 1; }
+.SonlineBox2.positionright .contentBox .tels:after{ left: auto; right: -11px; border-left: 11px solid #FFF; border-right: 0; }
+
+#topcontrol{ z-index: 9999; }
+@media screen and (max-width: 768px) {
+	/*gotop*/
+	#topcontrol{ z-index: 9999; }
+	#topcontrol .yd-gotop{ width: 45px !important; height: 45px !important; line-height: 45px !important; }
+	#topcontrol .yd-gotop i{ font-size: 25px !important; }
+
+	.SonlineBox1 .contentBox{
+		max-width: 200px;
+	}
+
+	.SonlineBox2{ width: auto !important; font-size: 12px; }
+	.SonlineBox2 .openTrigger{ width: 45px; height: 45px; line-height: 45px; }
+	.SonlineBox2 .contentBox { width: auto !important; }
+	.SonlineBox2 .contentBox .listBox .item{ width: 45px !important; font-size: 10px; height: 45px !important; }
+	.SonlineBox2 .contentBox .listBox .item span.title{ font-size: 10px; }
+	.SonlineBox2 .contentBox .listBox .item i{ font-size: 22px !important; }
+	.SonlineBox2 .contentBox .listBox .item.footer:before{ font-size: 28px; }
+}

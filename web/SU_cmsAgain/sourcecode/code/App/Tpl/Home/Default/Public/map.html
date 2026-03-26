@@ -1,0 +1,15 @@
+<eq name="Html" value="contactus">
+    <div id="Map" yd-content="contact">
+        <ul class="ContactInfo">
+            <notempty name="Contact"><li><div class="Contact"><i class="ydicon-lianxiren"></i><b>{$Think.lang.Contact}：</b>{$Contact}</div></li></notempty>
+            <notempty name="Mobile"><li><div class="Mobile"><i class="ydicon-shouji"></i><b>{$Think.lang.Mobile}：</b>{$Mobile}</div></li></notempty>
+            <notempty name="Telephone"><li><div class="Telephone"><i class="ydicon-dianhua1"></i><b>{$Think.lang.Telephone}：</b>{$Telephone}</div></li></notempty>
+            <notempty name="Fax"><li><div class="Fax"><i class="ydicon-fax-full"></i><b>{$Think.lang.Fax}：</b>{$Fax}</div></li></notempty>
+            <notempty name="Email"><li><div class="Email"><i class="ydicon-youjian"></i><b>{$Think.lang.Email}：</b>{$Email}</div></li></notempty>
+            <notempty name="PostCode"><li><div class="PostCode"><i class="ydicon-youbian"></i><b>{$Think.lang.PostCode}：</b>{$PostCode}</div></li></notempty>
+            <notempty name="WebUrl">
+                <li><div class="WebUrl"><i class="ydicon-wangzhan"></i><b>{$Think.lang.WebUrl}：</b><a href="{$WebUrl}" target="_blank"  class="WebUrl">{$WebUrl}</a></div></li>
+            </notempty>
+        </ul>
+    </div>
+</eq>

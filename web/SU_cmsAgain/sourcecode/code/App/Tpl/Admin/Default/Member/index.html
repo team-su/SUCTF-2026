@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+      <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}Add"  title="添加会员信息" target="_self">添加会员信息</a></li>
+            <li class="toolbar"><a id="btnSave" onclick="exportMember()" class="ydicon-daochu" title="导出所有会员为CSV" target="_self">导出所有会员</a></li>
+            <li class="toolbar" ><a id="selectall" style="display:none;" onclick="CheckAll()"  title="全选">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar"><a id="btnCheck" onclick="BatchCheck(1)" title="批量通过审核">审核</a></li>
+            <li class="toolbar"><a id="btnUnCheck" onclick="BatchCheck(0)" title="批量取消审核">取消审核</a></li>
+            <li class="toolbar"><a id="btnLock" onclick="BatchLock(1)" title="批量锁定">锁定</a></li>
+            <li class="toolbar"><a id="btnUnlock" onclick="BatchLock(0)" title="批量取消锁定">取消锁定</a></li>
+            <li class="toolbar"><a id="btnPwd" title="批量修改密码">修改密码</a></li>
+            <li class="toolbar toolbarform">
+                <label>姓名/手机/Email</label>
+                <input type="text" class='textinput' name="Keywords" style="width:80px" value="{$Keywords}" id="Keywords" placeholder=""/>
+                <select name="MemberGroupID"  >
+                    <option value="-1"  <eq name="MemberGroupID" value="-1">selected="selected"</eq> >全部分组</option>
+                    <volist id="mg" name="MemberGroup">
+                        <option value="{$mg.MemberGroupID}"  <eq name="MemberGroupID" value="$mg.MemberGroupID">selected="selected"</eq> >{$mg.MemberGroupName}</option>
+                    </volist>
+                </select>
+                <select name="IsCheck">
+                    <option value="-1" <eq name="IsCheck" value="-1">selected="selected"</eq> >全部</option>
+                    <option value="1"  <eq name="IsCheck" value="1">selected="selected"</eq>>已审核</option>
+                    <option value="0" <eq name="IsCheck" value="0">selected="selected"</eq>>未审核</option>
+                </select>
+                <a id="btnSeek" class="btnToolbarForm" onclick="Search()">查询</a>
+            </li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="45px" nowrap="nowrap"><input type="checkbox" onclick="CheckAll()" style="margin-right: 3px;" /></th>
+                <th width="45px" >会员ID</th>
+                <th>会员名称</th>
+                <th width="110px" >会员分组</th>
+                <th width="65px">登陆次数</th>
+                
+                <th width="35px" >性别</th>
+                <th width="70px" >真实姓名</th>
+                <th width="120px">注册时间</th>
+                <th width="120px" >属性</th>
+                <th width="325px">操作</th>
+            </tr>  
+            <volist name="Member" id="m">
+                <tr id="tr{$m.MemberID}">
+                    <td><input class="checkrow" type="checkbox" name="MemberID[]" value="{$m.MemberID}" /></td>
+                    <td>{$m.MemberID}</td>
+                    <td style="text-align:left;">
+						<span class="TipKey">{$m.MemberName|htmlspecialchars}</span>
+						<present name="m.AdminID"><b style="color:red;">[管理员]</b></present></td>
+                    <td><b>{$m.MemberGroupName|htmlspecialchars}</b></td>
+                    <td>{$m.LoginCount}</td>
+                    <td><eq name="m.MemberGender" value="0">男<else/>女</eq></td>
+                    
+                    <td>{$m.MemberRealName|htmlspecialchars}</td>
+                    <td>{$m.RegisterTime|strtotime|yd_friend_date}</td>
+                    
+                    <td>
+                        <eq name="m.IsLock" value="1">
+                        <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$m.MemberID},'member','锁定',1,'#F00','未锁',0,'#000','IsLock')">锁定</span>
+                        <else/>
+                        <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$m.MemberID},'member','锁定',1,'#F00','未锁',0,'#000','IsLock')">未锁</span>
+                        </eq>
+                        &nbsp;
+                        <eq name="m.IsCheck" value="0">
+                        <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$m.MemberID},'member','未审核',0,'#F00','已审核',1,'#000','IsCheck')">未审核</span>
+                        <else/>
+                        <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$m.MemberID},'member','未审核',0,'#F00','已审核',1,'#000','IsCheck')">已审核</span>
+                        </eq>
+                        &nbsp;
+                        <eq name="m.IsSystem" value="1"><span style="color:#000">系统&nbsp;</span></eq>
+                    </td>
+                    
+                    <td class="operator">
+                        <a style="float:left" id="btnEdit" name="btnEdit" href="{$Url}Modify/MemberID/{$m.MemberID}">修改</a>
+                        <neq name="m.IsSystem" value="1">
+                            <div class="btn-sep"></div>
+                            <a style="float:left" onclick="Del({$m.MemberID})" class="btnDel">删除</a>
+                        </neq>
+                        <div class="btn-sep"></div>
+                        <a style="float:left" href="{$Url}Take/MemberID/{$m.MemberID}" id="btnTake" target="_blank">代管</a>
+                        <div class="btn-sep"></div>
+                        <notpresent name="m.AdminID">
+                            <a  style="float:left" id="btnAdmin" onclick="SetAdmin({$m.MemberID})" title="批量设为管理员">设为管理员</a>
+                        </notpresent>
+                    </td>
+                </tr>
+            </volist>                                
+        </table>
+        <div class="tfoot">
+        	<div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+    </div>
+    </form>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgPwd" title="批量修改会员密码">
+    <table>
+        <tr>
+           <th width="80px" nowrap="nowrap" align="right"><span style="font-weight:bold;color:blue;padding-right:3px;">密码</span></th>
+           <th align="left">
+           <input type="password" id = "pwd1" name="pwd1"  maxlength="20" class="textinput" style="width:175px;margin-bottom:5px;" />
+           </th>
+        </tr>
+        <tr>
+            <td nowrap="nowrap" align="right"><span style="font-weight:bold;color:blue">重复密码</span></td>
+            <td align="left">
+            <input type="password"  id = "pwd2"  maxlength="20" name="pwd2" class="textinput" style="width:175px" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="dialog" id="dlgSetAdmin" title="设为管理员">
+    <form enctype="multipart/form-data" method="post" id="frmAdmin">
+        <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+        <table cellpadding="5px" cellspacing="5px" border="0">
+            <tr>
+                <td nowrap="nowrap" align="right">
+                <span style="font-weight:bold;color:blue;padding-right:3px;">管理员名称</span>
+                </td>
+                <td align="left">
+                <input type="hidden" id = "dlgMemberID"  name="dlgMemberID" />
+                <input type="text"  id = "dlgAdminName"  maxlength="20" name="dlgAdminName" class="textinput" style="width:175px;margin-bottom:3px;" />
+                </td>
+            </tr>
+            <tr>
+                <td nowrap="nowrap" align="right">
+                <span style="font-weight:bold;color:blue;padding-right:3px;">管理组</span>
+                </td>
+                <td align="left"><AdminGroupSelect id="dlgAdminGroupID" name="dlgAdminGroupID" /></td>
+            </tr>
+            <tr>
+               <th width="80px" nowrap="nowrap" align="right"><span style="font-weight:bold;color:blue;padding-right:3px;">密码</span></th>
+               <th align="left">
+               <input type="password" id = "pwd3" name="pwd3"  maxlength="20" class="textinput" style="width:175px;margin:3px 0;" />
+               </th>
+            </tr>
+            <tr>
+                <td nowrap="nowrap" align="right">
+                <span style="font-weight:bold;color:blue;padding-right:3px;">重复密码</span>
+                </td>
+                <td align="left">
+                <input type="password"  id = "pwd4"  maxlength="20" name="pwd4" class="textinput" style="width:175px" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<script type="text/javascript">
+//导出
+function exportMember(){
+	if(checkSafeQuestion()) return;
+	location.href = "{$Url}Export";
+}
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#tr"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}del/MemberID/"+id+"/p/{$NowPage}";
+		location.href = url;
+	});
+}
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='MemberID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "{$Url}batchDel");
+		$('#frm').submit();
+	});
+}
+
+	//批量审核
+function BatchCheck(bCheck){
+	if(checkSafeQuestion()) return;
+	//先必须选中记录==============================================
+	var arrChk = $("input[name='MemberID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	if( n == 0 ) {
+		WarnBox("请先选中记录!");
+		return;
+	}
+	//=========================================================
+	if( bCheck == 1 ){
+		ConfirmBox("确定审核通过吗?", function () {
+			$('#frm').attr("action", "{$Url}batchCheck/Check/1");
+			$('#frm').submit();
+		});
+	}else{
+		ConfirmBox("确定取消审核吗?", function () {
+			$('#frm').attr("action", "{$Url}batchCheck/Check/0");
+			$('#frm').submit();
+		});
+	}
+}
+
+function BatchLock(bLock){
+	if(checkSafeQuestion()) return;
+	//先必须选中记录==============================================
+	var arrChk = $("input[name='MemberID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	if( n == 0 ) {
+		WarnBox("请先选中记录!");
+		return;
+	}
+	//=========================================================
+	if( bLock == 1 ){
+		ConfirmBox("确定锁定吗?", function () {
+			$('#frm').attr("action", "{$Url}batchLock/Lock/1");
+			$('#frm').submit();
+		});
+	}else{
+		ConfirmBox("确定取消锁定吗?", function () {
+			$('#frm').attr("action", "{$Url}batchLock/Lock/0");
+			$('#frm').submit();
+		});
+	}
+}
+
+function SetAdmin(id){
+	if(checkSafeQuestion()) return;
+	$('#dlgMemberID').val(id);
+	dialog({
+		title: "设为为管理员",
+		id: 'setadmin',
+		padding: 8,
+		content: document.getElementById('dlgSetAdmin'),
+		ok: function () {
+			if( $('#dlgAdminName').val() == "" ){
+				WarnBox("管理员名称不能为空！");
+				$('#dlgAdminName').focus();
+				return false;
+			}
+			
+			if( $('#pwd3').val() == "" ){
+				WarnBox("密码不能为空！");
+				$('#pwd3').focus();
+				return false;
+			}
+			if( $('#pwd4').val() == "" ){
+				WarnBox("密码不能为空！");
+				$('#pwd4').focus();
+				return false;
+			}
+			
+			if( $('#pwd3').val() != $('#pwd4').val() ){
+				WarnBox("两次输入的密码不同，请重新输入！");
+				return false;
+			}
+			
+			$('#frmAdmin').attr("action", "{$Url}SetAdmin");
+			$('#frmAdmin').submit();
+		},
+		okValue: '确定',
+		cancelValue: '关闭',
+		cancel: true
+	}).show();
+}
+
+	//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/index");
+	$('#frm').submit();
+	return true;
+}	
+
+$(function(){
+	$('#btnPwd').click(function(){
+		var arrChk = $("input[name='MemberID[]']");
+		var n = 0;
+		for(var i = 0; i < arrChk.length; i++){
+			if(arrChk[i].checked) n++;
+		}
+		
+		if( n == 0 ) {
+			WarnBox("请先选中记录!");
+			return;
+		}
+		
+		var d=dialog({
+			title: $("#dlgPwd").attr("title"),
+			id: 'dlgPwd',
+			padding: 8,
+			content: document.getElementById('dlgPwd'),
+			ok: function () {
+				if( $('#pwd1').val() == "" ){
+					WarnBox("密码不能为空！");
+					$('#pwd1').focus();
+					return false;
+				}
+				
+				if( $('#pwd2').val() == "" ){
+					WarnBox("重复密码不能为空！");
+					$('#pwd2').focus();
+					return false;
+				}
+				
+				if( $('#pwd1').val() != $('#pwd2').val() ){
+					WarnBox("两次输入的密码不同，请重新输入！");
+					$('#pwd2').focus();
+					return false;
+				}
+				
+				LoadBox();
+				d.close().remove(); //使用appendTo，所有必须提前关闭
+				$("#dlgPwd").appendTo("form#frm");
+				$('#frm').attr("action", "{$Url}batchModifyPwd");
+				$("#frm").ajaxSubmit( {
+					resetForm: true, 
+					success: function(data){
+						CloseLoadBox();
+						$("#pwd1").val("");
+						$("#pwd2").val("");
+						if (data.status==1){
+							SucceedBox(data.info);
+						}else{
+							ErrorBox(data.info);
+						}
+					},
+					dataType: 'json'} 
+				);
+				return false;
+			},
+			okValue: '确定',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+		return false;
+	});
+})
+</script>

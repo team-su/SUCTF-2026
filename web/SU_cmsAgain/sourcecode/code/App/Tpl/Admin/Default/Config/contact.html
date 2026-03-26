@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}"  enctype="multipart/form-data">              
+            <div class="box-header"><h4>联系方式</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th class="w120">公司名称</th>
+                        <td><input type="text" class="textinput" style="width:330px" name="COMPANY" value="{$Company}" /></td>
+                    </tr>
+                    <tr>
+                        <th>联系人</th>
+                        <td><input type="text" class="textinput" style="width:180px" name="CONTACT" value="{$Contact}"  /></td>
+                    </tr>
+    
+                    <tr>
+                        <th class="w120">手机</th>
+                        <td><input type="text" class="textinput" style="width:180px" name="MOBILE" value="{$Mobile}" /></td>
+                    </tr>
+                    <tr>
+                        <th>固定电话</th>
+                        <td><input type="text" class="textinput" style="width:180px" name="TELEPHONE" value="{$Telephone}"  /></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>传真</th>
+                        <td><input type="text" class="textinput" style="width:180px" name="FAX" value="{$Fax}"  /></td>
+                    </tr>
+                    <tr>
+                        <th class="w120">电子邮件</th>
+                        <td><input type="text" class="textinput"  style="width:180px" name="EMAIL" value="{$Email}" /></td>
+                    </tr>
+                    <tr style="display:none" comment="取消qq号码，统一从在线客服中获取">
+                        <th class="w120">QQ号码</th>
+                        <td><input type="text" class="textinput" style="width:650px" name="QQ" value="{$QQ}" /></td>
+                    </tr>
+                    <tr>
+                        <th>邮政编码</th>
+                        <td><input type="text" class="textinput" style="width:80px" name="POSTCODE" value="{$PostCode}"  /></td>
+                    </tr>
+                    <tr>
+                        <th class="w120">联系地址</th>
+                        <td><input type="text" class="textinput" style="width:560px" name="ADDRESS" value="{$Address}" /></td>
+                    </tr>
+                    <tr style="display:none;">
+                        <th class="w120">坐标</th>
+                        <td>
+                            经度：<input type="text" class="textinput" style="width:90px; margin-right:15px;" name="Longitude"  id="Longitude" value="{$Longitude}" />
+                            纬度：<input type="text" class="textinput" style="width:90px;margin-right:8px;" name="Latitude"  id="Latitude" value="{$Latitude}" />
+                            <input type="button" value="从地图上选择..." onclick="OpenMap()" />
+                       </td>
+                    </tr>
+               </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>            
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgMap" title="获取坐标">
+	<div style="margin-bottom:8px;">
+    	地址：<input type="text" class="textinput" style="width:220px; margin-right:3px; " id="Address" value="" />
+        <input type="button" value="搜索" style="padding:2px 7px; cursor:pointer;" onclick="SearchMap()" />
+        <span style="float:right">
+        	经度：<span id="jd" style="margin-right:15px;">{$Longitude}</span>
+            纬度：<span id="wd">{$Latitude}</span>
+        </span>
+    </div>
+	<div style="width: 700px; height: 440px;"  id="container"></div>
+</div>
+<!--
+<script src="//api.map.baidu.com/api?v=3.0&ak="></script>
+-->
+<script>
+/*
+var map = new BMap.Map("container"); //在指定的容器内创建地图实例
+map.setDefaultCursor("crosshair"); //设置地图默认的鼠标指针样式
+map.enableScrollWheelZoom(true); //启用滚轮放大缩小，默认禁用。
+map.addControl( new BMap.NavigationControl() );
+map.centerAndZoom("北京市", 17);//必须使用这条指令，否则地图
+	
+map.addEventListener("click", function (e) { //地图右键单击事件，左键为click
+	map.clearOverlays(); //添加标注前清空以前的所有标注
+	var marker = new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat));        // 创建标注     
+	map.addOverlay(marker);
+	$("#jd").text( e.point.lng );
+	$("#wd").text( e.point.lat );
+});
+
+function OpenMap(){		
+	var jd = $("#Longitude").val();
+	var wd = $("#Latitude").val();
+	if( jd && wd){
+		var mypoint = new BMap.Point(jd, wd);
+		map.centerAndZoom(mypoint, 17);
+		map.clearOverlays();
+		var marker = new BMap.Marker(mypoint);
+		map.addOverlay(marker);
+		map.panBy(330, 180); //居中
+	}else{
+    	map.centerAndZoom("北京市", 17);//默认地图的显示范围
+	}
+	
+	
+	dialog({
+		title: "坐标选择",
+		id: 'dlgMap',
+		padding: 8,
+		content: document.getElementById('dlgMap'),
+		ok: function () {
+			$("#Longitude").val( $("#jd").text() );
+			$("#Latitude").val( $("#wd").text() );
+		},
+		okValue: '确定',
+		cancelValue: '关闭',
+		cancel: true
+	}).show();
+}
+
+//根据地质搜索范围
+function SearchMap() {
+	var local = new BMap.LocalSearch(map, {
+		renderOptions: { map: map }
+	});
+	var address = $("#Address").val();
+	local.search(address);
+}
+*/
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){ 
+		LoadBox();
+		return false;
+	 });
+});
+</script>

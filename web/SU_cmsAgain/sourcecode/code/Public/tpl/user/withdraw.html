@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>
+		.trBank{ display:none; margin:5px 8px; background: #f5f5f5;padding: 8px 18px; border-radius: 5px;}
+		.trBank .item{ padding: 2px 0;}
+		.MinWithdraw{font-size:14px; color:red; text-align:right;}
+		.BankName{font-size:14px;}
+    </style>
+</head>
+<body id="index" class="webapp notabbar">
+<form enctype="multipart/form-data" action="{$Action}" method="post" id="frm">
+     <include file="./Public/tpl/user/header.html" />
+     <div class="weui-cells weui-cells_form"  style="margin-top:0;">
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">提现金额</label></div>
+                <div class="weui-cell__bd"><input type="number" class="weui-input"  maxlength="8"  name="CashQuantity"  id="CashQuantity"  placeholder="请输入提现金额" /></div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd"></div>
+                <div class="weui-cell__bd MinWithdraw">最低提现额度：{$CurrencySymbol}{$MinWithdraw}  账户余额：{$CurrencySymbol}{$AvailableQuantity}</div>
+            </div>
+            
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">收款银行</label></div>
+                <div class="weui-cell__bd weui-cells_radio">
+                        <volist id="b" name="Bank">
+                            <label class="weui-cell weui-check__label">
+                                 <div class="weui-cell__bd BankName">{$b.BankName}<br/>{$b.BankAccount}<br/>{$b.OwnerName}</div>
+                                 <div class="weui-cell__ft">
+                                     <input type="radio"  name="bank" class="weui-check"  value="1" BankName="{$b.BankName}" BankAccount="{$b.BankAccount}" OwnerName="{$b.OwnerName}" />
+                                     <span class="weui-icon-checked"></span>
+                                 </div>
+                            </label>
+                        </volist>
+                        <label class="weui-cell weui-check__label">
+                             <div class="weui-cell__bd"><p>添加一个新银行</p></div>
+                             <div class="weui-cell__ft">
+                                 <input type="radio"  name="bank" class="weui-check"  value="0" BankName="{$b.BankName}" BankAccount="{$b.BankAccount}" OwnerName="{$b.OwnerName}" />
+                                 <span class="weui-icon-checked"></span>
+                             </div>
+                        </label>
+                </div>
+            </div>
+            
+			<div class="trBank">
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">收款银行</label></div>
+                    <div class="weui-cell__bd">
+                        <input type="text" class="weui-input"  name="BankName"  id="BankName" placeholder="详细的开户银行分行名称、支付宝、微信" value=""/>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">收款账号</label></div>
+                    <div class="weui-cell__bd">
+                        <input type="text" class="weui-input"  name="BankAccount"  id="BankAccount" placeholder="银行账号、支付宝、微信等" value=""/>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">开户人姓名</label></div>
+                    <div class="weui-cell__bd">
+                        <input type="text" class="weui-input"  name="OwnerName"  id="OwnerName" placeholder="收款账号的开户人姓名" value=""/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">提现密码</label></div>
+                <div class="weui-cell__bd"><input type="password" class="weui-input"  name="CashPassword"  id="CashPassword" value="" placeholder="请填写提现密码" /></div>
+            </div>
+    </div>
+    <div class="weui-btn-area">
+    	<input type="submit" id="btnSubmit"  class="weui-btn weui-btn_primary"   value="确认提现"/>
+    </div>
+</form>
+</body>
+</html>
+<script type="text/javascript">
+function GoBack(){
+	window.location.href = "{$Url}cash";
+}
+
+function pageInit(){
+	$("#CashQuantity").focus();
+	var obj = $("input[name='bank']:first");
+	obj.attr("checked",'checked');
+	$("#BankName").val( obj.attr("BankName") );
+	$("#BankAccount").val( obj.attr("BankAccount") );
+	$("#OwnerName").val( obj.attr("OwnerName") );
+}
+
+$(document).ready(function(e) {
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			location.href = "{$Url}cash";
+		}else{
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		 LoadBox();
+		 return false;
+	 });
+	 
+	 $("input[name='bank']").click(function(){
+		 	 var type = $(this).val();
+			 if( type == 0 ){
+				 $("#BankName").val("");
+				$("#BankAccount").val("");
+				$("#OwnerName").val("");
+				$(	".trBank").show();
+			 }else{
+				$("#BankName").val( $(this).attr("BankName") );
+				$("#BankAccount").val( $(this).attr("BankAccount") );
+				$("#OwnerName").val( $(this).attr("OwnerName") );
+				$(".trBank").hide();
+			 }
+	  });
+	pageInit();
+});
+</script>

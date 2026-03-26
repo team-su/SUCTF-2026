@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>
+		.weui-form-preview__item{ text-align:left;}
+	</style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+    <notempty name="Data">
+        <volist name="Data" id="d">
+            <div class="weui-form-preview" id="row{$d.ResumeID}" style="margin-bottom:10px;">
+              <div class="weui-form-preview__hd">
+                  <label class="weui-form-preview__label"> {$d.Time|strtotime|yd_friend_date}</label>
+                  <em class="weui-form-preview__value">{$d.JobName}</em>
+              </div>
+              <div class="weui-form-preview__bd">    
+                  <div class="weui-form-preview__item">待遇：{$d.Salary}</div>
+                  <div class="weui-form-preview__item">招聘人数：{$d.Number}</div>
+                  <div class="weui-form-preview__item">学历要求：{$d.Education}</div>
+                  <div class="weui-form-preview__item">性别要求：{$d.Gender}</div>
+
+                  <notempty name="d.Age"><div class="weui-form-preview__item">年龄要求：{$d.Age}</div></notempty>
+                  <notempty name="d.WorkPlace"><div class="weui-form-preview__item">工作地点：{$d.WorkPlace}</div></notempty>
+              </div>
+              <div class="weui-form-preview__ft">
+             	  <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="{$Url}modifyResume/ResumeID/{$d.ResumeID}">修改</a>
+                  <a class="weui-form-preview__btn weui-form-preview__btn_primary  color-danger" href="javascript:" onClick="delResume({$d.ResumeID})">删除</a>
+              </div>
+            </div>
+        </volist>
+    <else/>
+        <div class="weui-msg">
+            <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+            <div class="weui-msg__text-area">
+                <p class="weui-msg__desc">{$Think.lang.NoInformation}</p>
+            </div>
+        </div>
+    </notempty>
+</body>
+</html>
+<script>
+	function delResume(id){
+		$.confirm("确定删除吗?", function() {
+			LoadBox();
+			var url = "{$Url}delResume";
+			var p = {"ResumeID": id};
+			$.get(url, p,function(data){
+				CloseLoadBox();
+				if (data.status==1){
+					$("#row"+id).remove();
+				}else{
+					ErrorBox(data.info);
+				}	
+			}, "json");
+		});
+	}
+	
+	function GoBack(){
+		window.location.href = "{$Url}index";
+	}
+</script>

@@ -1,0 +1,244 @@
+<script type="text/javascript" src="{$WebPublic}My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					pageInit();
+				</empty>
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 $("#MemberName").focus();
+		 }
+		 
+		 $("input[name='IsOEM']").click(function(){
+			 ShowOEM($(this).val());
+		 });
+		 
+		 $("#Province").change(function(){
+				ChangeProvince( $(this).val() );
+		 });
+		 
+		 function ChangeProvince(p){
+			 //var objSelect = $("#Province").children('option:selected');
+			 var objSelect = $("#Province option[value="+p+"]");
+			 var childs = objSelect.attr("childs");
+			 var list = "";
+			 var item = "";
+			 var html = "<option value='0' selected='selected'>==请选择==</option>";
+			 if( childs.length > 0 ){
+			 	list = childs.split("@");
+				for(var i = 0; i < list.length; i++){
+					item = list[i].split(",");
+					html += "<option value="+item[0]+">"+item[1]+"</option>";
+				}
+			 }
+			 
+			$("#City option").remove();
+			$("#City").append(html);
+		 }
+		 
+		 //设置默认值
+		 function setDefault(){
+			 $("input[name='MemberGender'][value={$Data.MemberGender}]").attr("checked",'checked');
+			 $("input[name='MemberGroupID'][value={$Data.MemberGroupID}]").attr("checked",'checked');
+			 
+			 var IsOEM = "{$Data.IsOEM}";
+			 $("input[name='IsOEM'][value={$Data.IsOEM}]").attr("checked",'checked');
+			 ShowOEM(IsOEM);
+			 
+			 //省市联动
+			 $("#Province").val("{$Data.Province}");
+			 ChangeProvince("{$Data.Province}");
+			 $("#City").val("{$Data.City}");
+			 $("#InviterID").val("{$Data.InviterID}");
+			 
+		 }
+		 
+		 function ShowOEM(IsOEM){
+			 if( IsOEM == 1){
+			 	$(".OEM").show();	 
+			 }else{
+				$(".OEM").hide();	 
+			 }
+		 }
+		 
+		 function pageInit(){
+			 focusFirstItem();
+			 setDefault();
+		 }
+		 pageInit();
+	});
+</script>
+<script>
+function GoBack(){
+	window.location.href = "{$Url}Index?keywords={$Think.get.keywords}";
+}
+</script>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+<table class="boxtable">
+	 <tr>
+		<th>客户类型</th>
+		<td>
+			<volist id="g" name="CustomerGroup">
+				<label><input type="radio" name="MemberGroupID" value="{$g.MemberGroupID}"  />{$g.MemberGroupName}</label>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+			</volist>
+		</td>
+    </tr>
+	
+	<tr>
+	<th>所属业务员</th>
+	<td>
+		<select name="InviterID" id="InviterID">
+			<option value="0" selected="selected">====暂不指业务员====</option>
+			<volist name="OperatorData" id="c">
+				<option value="{$c.MemberID}">{$c.MemberID}&nbsp;&nbsp;{$c.MemberName|htmlspecialchars}&nbsp;&nbsp;{$c.MemberRealName|htmlspecialchars}</option>
+			</volist>
+		</select>
+		<span class='Caution'>表示当前客户是那个业务员的客户</span>
+	</td>
+</tr>
+	
+	<tr>
+		<th class="w120" style="color:red;">客户名称</th>
+		<td><input type="text" class="textinput"  style="width:370px;"  name="MemberName" id="MemberName" value="{$Data.MemberName}" />
+		<span class='Caution'>如果是公司，请填写公司名称；如果是个人请填写昵称或真实姓名</span>
+		</td>
+	</tr>
+	
+	<tr>
+		<th class="w120">真实姓名</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="MemberRealName" id="MemberRealName" value="{$Data.MemberRealName}" />
+		<span class='Caution'>可以和客户名称重复，如果客户名称为企业名称，这里可以填写负责人的真实姓名</span>
+		</td>
+	</tr>
+	 <tr>
+		<th>性别</th>
+		<td>
+			<label><input type="radio" name="MemberGender" value="0"  />男</label>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<label><input type="radio" name="MemberGender" value="1"  />女</label>
+		</td>
+    </tr>
+	<tr>
+		<th>所在地区</th>
+		<td><select name="Province" id="Province">
+			<option value="0" selected="selected">==请选择==</option>
+			<volist name="Area" id="a">
+				<option value="{$a.AreaID}" childs="{$a.Childs}">{$a.AreaName}</option>
+			</volist>
+			</select>
+			<select name="City" id="City"><option value="0" selected="selected">==请选择==</option></select>
+		</td>
+    </tr>
+</table>
+</div>
+
+<div class="box-header"><h4>联系方式</h4></div>
+<div class="box-content">
+<table class="boxtable">
+	<tr>
+		<th class="w120" >QQ号码</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="MemberQQ" id="MemberQQ" value="{$Data.MemberQQ}" /></td>
+	</tr>
+	<tr>
+		<th class="w120">电子邮件</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="MemberEmail" id="MemberEmail" value="{$Data.MemberEmail}" />
+		<span class='Caution'>客户没有邮箱，一般填写qq邮箱</span>
+		</td>
+	</tr>
+	<tr>
+		<th class="w120">手机号码</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="MemberMobile" id="MemberMobile" value="{$Data.MemberMobile}" /></td>
+	</tr>
+	<tr>
+		<th class="w120">固定电话</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="MemberTelephone" id="MemberTelephone" value="{$Data.MemberTelephone}" /></td>
+	</tr>
+	<tr>
+		<th class="w120" >淘宝旺旺</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="MemberTaobao" id="MemberTaobao" value="{$Data.MemberTaobao}" /></td>
+	</tr>
+	<tr>
+		<th class="w120" >微信</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="MemberWx" id="MemberWx" value="{$Data.MemberWx}" /></td>
+	</tr>
+	<tr>
+		<th class="w120">联系地址</th>
+		<td><input type="text" class="textinput"  style="width:500px;"  name="MemberAddress" id="MemberAddress" value="{$Data.MemberAddress}" /></td>
+	</tr>
+	<tr>
+		<th class="w120" >客户官网网址</th>
+		<td><input type="text" class="textinput"  style="width:220px;"  name="MemberSiteUrl" id="MemberSiteUrl" value="{$Data.MemberSiteUrl}" />
+		<span class='Caution'>网址必须以http://开头，如：http://www.xx.com</span></td>
+	</tr>
+	<tr>
+			<th class="w120">代理网站网址</th>
+			<td><input type="text" class="textinput"  style="width:220px;"  name="OEMUrl" id="OEMUrl" value="{$Data.OEMUrl}" />
+			<span class='Caution'>网址必须以http://开头，如：http://www.xx.com</span>
+			</td>
+	</tr>
+</table>
+</div>
+<div class="box-header"><h4>OEM信息</h4></div>
+<div class="box-content">
+<table class="boxtable">
+		<tr>
+			<th class="w120">是否OEM贴牌</th>
+			<td>
+				<label><input type="radio" name="IsOEM" value="1"  />是</label>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<label><input type="radio" name="IsOEM" value="0"  />否</label>
+			</td>
+		</tr>
+		<tr class="OEM">
+			<th class="w120">贴牌英文名称</th>
+			<td><input type="text" class="textinput"  style="width:150px;"  name="OEMName" id="OEMName" value="{$Data.OEMName}" />
+			<span class='Caution'>请填写贴牌产品的英文名称，如：AbcCMS</span></td>
+		</tr>
+	</table>
+</div>
+
+<div class="box-header"><h4>其它信息</h4></div>
+<div class="box-content">
+	<table class="boxtable">
+		<tr>
+		<th class="w120">登陆密码</th>
+		<td><input type="text" class="textinput"  style="width:150px;"  name="MemberPassword" id="MemberPassword" value="" />
+		<span class='Caution'>留空表示，不修改密码，保持原密码不变；登录手机号码、电子邮件</span>
+		</td>
+	<tr>
+		<tr>
+			<th class="w120">生日</th>
+			<td><input type="text" class="textinput Wdate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})"  style="width:150px" name="MemberBirthday" value="{$Data.MemberBirthday}"  /></td>
+		<tr>
+	<tr>
+		<th class="w120">备注</th>
+		<td><textarea id="Remark" name="Remark" style="width:100%; height:60px;">{$Data.Remark}</textarea></td>
+	<tr>
+		<tr>
+		<th class="w120">添加时间</th>
+		<td><input type="text" class="textinput Wdate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})"  style="width:150px" name="RegisterTime" value="{$Data.RegisterTime}"  /></td>
+	<tr>
+	</table>
+</div>

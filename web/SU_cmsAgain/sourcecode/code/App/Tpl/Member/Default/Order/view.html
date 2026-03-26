@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <include file="common" />
+	<style>
+		.product_table{ width: 100%; border:1px solid #E3E6EB;}
+		.product_table th, .product_table td{ padding:5px 5px; text-align:center; border:1px solid #E3E6EB;}
+		.product_table th{  font-weight:bold; background:#F2F4F6; }
+		.product_table td{  }
+		.product_table tr:hover{ background:#F5F5F5;}
+		.product_table .totaltitle{ text-align: right; padding-right:5px; color:#333; }
+		.product_table .totalvalue{ text-align: center; font-weight:normal; color:#FF3300;  }
+		.product_table #DiscountPrice{ color:#FF3300; width:50px; text-align:center;}
+		.product_table #TotalOrderPrice{ font-size:28px; font-weight:bold;}
+		.product_table .ProductAttributes{ color:#999;}
+		
+		.statuslist{}
+		.statuslist li{ padding:5px 0;}
+		.OrderNumber{}
+		.OrderStatus{ font-weight:bold; font-size:20px; color:#FF6600;}
+		.ShippingNumber{ color:#FF6600; margin-top:-10px;}
+		
+		.flowlist{ margin:0 auto; float:left;}
+		.flowlist li{ float:left; width:80px; text-align:center; }
+		.flowlist li .StatusName{ margin-top:18px;}
+		.flowlist li.dot{ width:110px; }
+		.flowlist li i{ background: url("{$Images}status.png")  no-repeat; display:block; margin: 0 auto; }
+		/*状态图标*/
+		.flowlist li i.icon-submit{ background-position: 0 0; height: 28px; width: 28px;  }
+		/*默认全部为灰色*/
+		.flowlist li i.icon-pay{ background-position: -64px -38px; height: 25px; width: 28px;  }
+		.flowlist li i.icon-send{ background-position: -64px -73px; height: 27px; width: 27px;  }
+		.flowlist li i.icon-receive{ background-position: -64px -110px; height: 23px; width: 30px;  }
+		.flowlist li i.icon-finish{ background-position: -64px -143px; height: 54px; width: 54px; margin-top:-15px;}
+		.flowlist li i.icon-dot{ display:block;  background-position: -64px -322px; height: 12px; width: 101px; margin-top:5px;}
+		
+		.item_table{ width: 100%; border:1px solid #E3E6EB; margin-bottom:8px;}
+		.item_table th, .item_table td{ padding:5px 8px; text-align:center; border:1px solid #E3E6EB;}
+		.item_table th{  font-weight:bold; background:#F2F4F6; }
+		.item_table td{ text-align:left; vertical-align:top;}
+		.item_table .thPay{ width:20%;}
+		.item_table .thConsignee{ width:20%;}
+		.item_table .thShipping{ width:20%;}
+		.item_table .thLogistics{width:40%;}
+		#LogisticsCompany{ margin-left:20px; }
+		
+		.logisticslist{}
+		.logisticslist li{ padding:2px 0; padding-left: 10px; border-left: 1px solid #d9d9d9; color: #333; position:relative;}
+		.logisticslist li .time{ margin-right:8px; color:#999;}
+		.logisticslist li i{
+			position: absolute; left: -6px; top: 8px; width: 11px;height: 11px;
+    		background: url({$Images}icons.png) -21px -72px #fff no-repeat;
+		}
+		.logisticslist li.first{  padding-top:0; color:#F60}
+		.logisticslist li.first i{ background-position:0 -65px; height:20px;  top: 0; }
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form  enctype="multipart/form-data" id="frm" method="post" action="{$Action}">
+        	<input type="hidden" name="{$HiddenName}" value="{$HiddenValue}" />
+            <table class="item_table">
+                    <tr>
+                        <td  style="text-align:center; ">
+                            <ul class="statuslist">
+                                <li class="OrderNumber">订单号：{$Data.OrderNumber}</li>
+                                <li class="OrderStatus">{$Data.MemberOrderStatusName}</li>
+                                <notempty name="Data.ShippingNumber">
+                                    <li class="ShippingNumber">快递单号：{$Data.ShippingNumber|htmlspecialchars}</li>
+                                </notempty>
+                                <li class="OrderOperator">
+                                    <eq name="Data.OrderStatus" value="1">
+                                        <div class="item"><a class="btnPay" target="_blank" href="{$Data.OrderID|PayUrl}">立即付款</a></div>
+                                        <div class="item"><a class="btnCancel" onclick="Cancel({$Data.OrderID},1)">取消订单</a></div>
+                                    </eq>
+                                    <eq name="Data.OrderStatus" value="3">
+                                        <div class="item"><a class="btnReceive" onclick="Receive({$Data.OrderID},1)">确认收货</a></div>
+                                    </eq>
+                                    <div class="item"><a class="btnPrint" target="_self" href="{$Url}printing?id={$Data.OrderID}">打印订单</a></div>
+                                </li>
+                            </ul>
+                        </td>
+                        <td colspan="3"  style="padding-top:20px; width:auto;">
+                            <ul class="flowlist">
+                                <!--第1步-->
+                                <li class="step_1">
+                                    <i class="icon-submit"></i>
+                                    <div class="StatusName">提交订单</div>
+                                    <div class="OrderTime">{$Data.OrderTime}</div>
+                                </li>
+                                
+                                <!--第2步-->
+                                <li class="dot"><i class="icon-dot" <notempty name="Data.PayTime">style="background-position-y: -334px;"</notempty> ></i></li>
+                                <li>
+                                    <i class="icon-pay" <notempty name="Data.PayTime">style="background-position-x: 0"</notempty> ></i>
+                                    <div class="StatusName">付款成功</div>
+                                    <div class="OrderTime">{$Data.PayTime}</div>
+                                </li>
+                                
+                                <!--第3步-->
+                                <li class="dot"><i class="icon-dot" <notempty name="Data.ShippingTime">style="background-position-y: -334px;"</notempty> ></i></li>
+                                <li>
+                                    <i class="icon-send" <notempty name="Data.ShippingTime">style="background-position-x: 0"</notempty>></i>
+                                    <div class="StatusName">卖家发货</div>
+                                    <div class="OrderTime">{$Data.ShippingTime}</div>
+                                </li>
+                                
+                                <!--第4步-->
+                                <li class="dot"><i class="icon-dot" <notempty name="Data.ShippingTime">style="background-position-y: -334px;"</notempty> ></i></li>
+                                <li>
+                                    <i class="icon-receive" <notempty name="Data.ShippingTime">style="background-position-x: 0"</notempty>></i>
+                                    <div class="StatusName">等待收货</div>
+                                    <div class="OrderTime">{$Data.ShippingTime}</div>
+                                </li>
+                                
+                                <!--第5步-->
+                                <li class="dot"><i class="icon-dot" <eq name="Data.OrderStatus" value="6">style="background-position-y: -334px;"</eq> ></i></li>
+                                <li>
+                                    <!--必须通过完成时间来判断，是否会员确认完成了订单-->
+                                    <i class="icon-finish" <notempty name="Data.FinishTime">style="background-position-x: 0"</notempty>></i>
+                                    <div class="StatusName" style="margin-top:3px;">完成</div>
+                                    <div class="OrderTime">{$Data.FinishTime}</div>
+                                </li>
+                            </ul>
+                            <gt name="Data.OrderPoint" value="0">
+                                <div style="padding-top:15px; clear:both; font-family:黑体;">
+                                    备注：确认收货后可以获得<span style="color:blue; padding:0 3px;">{$Data.OrderPoint}</span>积分
+                                </div>
+                            </gt>
+                        </td>
+                    </tr>
+                    <tr>
+                         <th class="thPay">付款信息</th>
+                         <th class="thShipping">配送信息</th>
+                        <th class="thConsignee">收货人信息</th>
+                        <th class="thLogistics">物流信息</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            支付方式：{$Data.PayName|htmlspecialchars}<br/>
+                            支付总金额：{$CurrencySymbol}{$Data.TotalOrderPrice}
+                        </td>
+                        <td>
+                            配送方式：{$Data.ShippingName|htmlspecialchars}<br/>
+                            运费：{$CurrencySymbol}{$Data.ShippingPrice}<br/>
+                            送货时间：<deliverytimelist id="d"><eq name="d.DeliveryTimeID" value="$Data.DeliveryTimeID">{$d.DeliveryTimeName}</eq></deliverytimelist><br/>
+                            {$Think.lang.ConsigneeRemark}：{$Data.ConsigneeRemark|htmlspecialchars}
+                        </td>
+                        <td>
+                                {$Think.lang.ConsigneeRealName|htmlspecialchars}：{$Data.ConsigneeRealName|htmlspecialchars}<br/>
+                                电子邮件：{$Data.ConsigneeEmail|htmlspecialchars}<br/>
+                                手机：{$Data.ConsigneeMobile|htmlspecialchars}<br/>
+                                电话：{$Data.ConsigneeTelephone|htmlspecialchars}<br/>
+                                地址：{$Data.ConsigneeAddress|htmlspecialchars}<br/>
+                                邮编：{$Data.ConsigneePostcode|htmlspecialchars}
+                        </td>
+                        <td>
+                            <notempty name="Data.ShippingNumber">
+                                    <div>快递单号：{$Data.ShippingNumber|htmlspecialchars}<span id="LogisticsCompany"></span></div>
+                                    <script>
+                                        $(document).ready(function(e) {
+                                            var url = "{:ApiUrl('QueryExpress')}";
+                                            var params = {
+                                                Number: '{$Data.ShippingNumber}'
+                                            }
+                                            $.get(url, params, function(data){
+                                                if(data.Status==1 && data.Data.data){
+                                                    var info = "<ul class='logisticslist'>";
+                                                    var obj = data.Data.data;
+                                                    for(var i = 0; i<obj.length; i++){
+                                                        info += (i==0) ? "<li class='first'><i ></i>" : "<li><i></i>";
+                                                        info += "<span class='time'>"+obj[i].time+"</span>";
+                                                        info += "<span class='context'>"+obj[i].context+"</span>";
+                                                        info += "</li>";
+                                                    }
+                                                    info += "</ul>";
+                                                }
+                                                if(data.Data.com && data.Data.com.length > 0 ){
+                                                    $("#LogisticsCompany").text( "物流公司："+data.Data.com);
+                                                }
+                                                $("#LogisticsInfo").html(info);
+                                            }, "json")
+                                        });
+                                    </script>
+                                    <div id="LogisticsInfo"></div>
+                             </notempty>
+                        </td>
+                    </tr>
+            </table>
+        
+            <table class="product_table">
+                    <tr>
+                        <th style="width:50px;">序号</th>
+                        <th>商品信息</th>
+                        <th style="width:120px;">产品价格</th>
+                        <th style="width:80px;">购买数量</th>
+                        <th style="width:150px;">小计</th>
+                    </tr>
+                    <notempty name="Product">
+                        <volist name="Product" id="p">
+                            <tr>
+                                <td>{$i}</td>
+                                <td style="text-align:left;">
+                                    <a href="{$p.ProductID|InfoUrl}" target="_blank"><img src="{$p.ProductID|InfoPicture|DefaultPicture}" style="width:80px; float:left; margin-right:5px;" /></a>
+                                    <a href="{$p.ProductID|InfoUrl}" target="_blank">{$p.ProductName|htmlspecialchars}</a>
+                                    <br/>
+                                    <span class="ProductAttributes">
+                                        <volist id="pa" name="p.ProductAttributes">{$pa.TypeAttributeName}：{$pa.AttributeValue}；&nbsp;&nbsp;</volist>
+                                    </span>
+                                </td>
+                                <td>{$CurrencySymbol}{$p.ProductPrice}</td>
+                                <td>{$p.ProductQuantity}</td>
+                                <td>{$CurrencySymbol}{$p.TotalPrice}</td>
+                            </tr>
+                        </volist>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">商品总金额：</td>
+                                <td class="totalvalue">{$CurrencySymbol}{$Data.TotalPrice}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">运费：</td>
+                                <td class="totalvalue">{$CurrencySymbol}{$Data.ShippingPrice}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">（商品总金额 + 运费）x  支付手续费比例（<span style="color:#FF3300">{$Data.PayRate}%</span>） = 支付手续费：</td>
+                                <td class="totalvalue">{$CurrencySymbol}<span id="PayPrice">{$Data.PayPrice}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">使用优惠券：</td>
+                                <td class="totalvalue">- {$CurrencySymbol}{$Data.CouponPrice}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">积分抵扣：</td>
+                                <td class="totalvalue">- {$CurrencySymbol}{$Data.PointPrice}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="totaltitle">人工调价（正数表示涨价，负数表示跌价）：</td>
+                                <td class="totalvalue">{$CurrencySymbol}{$Data.DiscountPrice}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"  class="totaltitle">商品总金额 + 运费 + 支付手续费 - 使用优惠券 + 人工调价 =  实际支付总金额：</td>
+                                <td class="totalvalue">{$CurrencySymbol}<span id="TotalOrderPrice">{$Data.TotalOrderPrice}</span></td>
+                            </tr>
+                    <else/>
+                        <tr><td colspan="5"  id="NoData">暂无商品！</td></tr>
+                    </notempty>
+                </table>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner"><input  id="btnSubmit"  type="button" value="返回" onclick="GoBack()" /></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script>
+function GoBack(){
+	window.location.href = "{$Url}index";
+}
+</script>

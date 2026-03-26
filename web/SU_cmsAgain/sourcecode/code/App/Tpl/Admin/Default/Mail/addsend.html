@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<div class="container plugin_margin_top">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmAdd">
+            <volist name="Group" id="g">
+                <div class="box-header"><h4>{$g.DisplayName}</h4></div>
+                <div class="box-content">
+                    <table class="boxtable">
+                        <volist name="Attribute" id="a">
+                            <eq name="a.GroupID" value="$g.AttributeID">
+                                <tr>
+                                    <th class="w120">{$a.DisplayName}</th>
+                                    <td>{$a.html}</td>
+                                </tr>
+                            </eq>
+                        </volist>
+                    </table>
+                </div>
+            </volist>
+    
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"  type="submit" value="保存并继续添加" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			try{
+				SucceedBox(data.info);
+				$('#frmAdd').resetForm();
+				$('#MailTitle').focus();
+				for ( s in CKEDITOR.instances ) {
+				   CKEDITOR.instances[s].setData('');
+				}
+			}catch(e){;}
+		}else{
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmAdd').submit(function(){
+			try{
+				LoadBox();
+				for ( s in CKEDITOR.instances ) {
+				   CKEDITOR.instances[s].updateElement();
+				}
+			}catch(e){
+				;
+			}finally{
+				$(this).ajaxSubmit( {success: complete,dataType: 'json'} );
+				return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+			}
+	 });
+	 
+	 $('#MailTitle').focus();
+});
+
+function GoBack(){
+	window.location.href = "{$Url}SendIndex";
+}
+</script>

@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.PointType1{ color: green; }
+		.PointType2{ color: blue;}
+		.PointType3{ color:black;}
+		.PointType4{ color:#FF00FF;}
+        #dlgCheck th{ padding:2px 0; font-weight:bold;}
+        #dlgCheck td{ padding:2px 0;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p"  value="{$NowPage}" />
+        <div class="table">
+            <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" onclick="Transfer()" class="ydicon-zhuanzhang" title="给会员转积分" target="_self">给会员转积分</a></li>
+                <li class="toolbar toolbarform">
+                    <label>会员名称/Email/手机</label>
+                    <input type="text" class='textinput' name="SearchWord" style="width:160px" value="{$SearchWord}" id="SearchWord"/>
+                    <label>类型</label>
+                    <select name="PointType" id="PointType">
+                        <option value="-1" selected="selected">全部</option>
+                        <volist id="pt" name="PointTypeList">
+                        	<option value="{$pt.PointTypeID}">{$pt.PointTypeName}</option>
+                        </volist>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="45px"  nowrap="nowrap">ID</th>
+                    <th width="180px" >会员名称</th>
+                    <th  width="100px">积分</th>
+                    <th  width="75px">类型</th>
+                    <th  width="200px">订单编号</th>
+                    
+                    <th>备注</th>
+					<th width="135px" >操作时间</th>
+                </tr>  
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr id="row{$d.PointID}" name="{$d.MemberName|htmlspecialchars} {$d.MemberMobile|htmlspecialchars}">
+                            <td>{$d.PointID}</td>
+                            <td style="text-align:left; padding-left:5px;">{$d.MemberName|htmlspecialchars} {$d.MemberMobile|htmlspecialchars}</td>
+                            <td>
+                                 <gt name="d.PointValue" value="0">
+                                    <span style="color:red;">+{$d.PointValue}</span>
+                                 <else/>
+                                    <span style="color:green;">{$d.PointValue}</span>
+                                 </gt>
+                            </td>
+                            <td><span class="PointType{$d.PointType}">{$d.PointTypeName|htmlspecialchars}</span></td>
+                            <td>{$d.OrderNumber|htmlspecialchars}</td>
+                            
+                            <td style="text-align:left; padding-left:5px;">{$d.PointRemark|htmlspecialchars}</td>
+                            <td>{$d.PointTime|strtotime|yd_friend_date}</td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="7" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                         
+            </table>
+            <div class="tfoot">
+                    <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+            </div>
+            </div>
+        </form>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgTransfer">
+    <table cellpadding="3" cellspacing="3" border="0">
+        <tr>
+           <th width="140px" nowrap="nowrap" align="right"><b>会员名称/Email/手机&nbsp;</b></th>
+           <th align="left"><input type="text" id = "dlgMember" name="dlgMember"  class="textinput" style="width:220px" /></th>
+        </tr>
+        <tr>
+           <th width="140px" nowrap="nowrap" align="right" style="padding:8px 0;"><b>积分&nbsp;</b></th>
+           <th align="left" style="padding:5px 0;">
+		   <input type="text" id = "dlgPointValue" name="dlgPointValue"  maxlength="6" class="textinput" style="width:60px" value="0" />
+           <span style="float:right;color:red;padding:5px 0;">填写负数表示扣除</span></th>
+        </tr>
+        <tr>
+            <td nowrap="nowrap" align="right"><b>备注&nbsp;</b></td>
+            <td align="left"><textarea  style="width:220px; height:65px;" name="dlgPointRemark" id="dlgPointRemark" /></textarea></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	pageInit();
+});
+
+function pageInit(){
+	$("#PointType").val( "{$PointType}");
+}
+
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}
+
+
+//给会员转电子币
+function Transfer(){
+		$('#dlgMember').text('');
+		$('#dlgPointValue').val('0');
+		$('#dlgPointRemark').val('');
+		dialog({
+			title: "给会员转积分",
+			id: 'transfer',
+			padding: 8,
+			content: document.getElementById('dlgTransfer'),
+			ok: function () {
+				var PointValue = $('#dlgPointValue').val();
+				if( isNaN(PointValue) ){
+					ErrorBox("金额必须为数字！");
+					return false;
+				}
+				var url = "{$Url}transfer";
+				var data =  {
+					Member: $('#dlgMember').val(), 
+					PointValue: $('#dlgPointValue').val(), 
+					PointRemark: $('#dlgPointRemark').val(), 
+				};
+				LoadBox();
+				$.get(url, data, function(data){
+					CloseLoadBox();
+					if (data.status == 1){
+						SucceedBox(data.info);
+						window.location.reload();
+					}else if(data.status == 0){
+						ErrorBox(data.info);
+					}
+				}, 'json');
+				return false;
+			},
+			okValue: '确定',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+}
+</script>

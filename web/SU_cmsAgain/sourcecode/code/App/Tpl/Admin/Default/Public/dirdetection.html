@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <div class="table">
+            <table class="datatable" id="datatable">
+                <tr>
+                     <th width="45px"  nowrap="nowrap">序号</th>
+                     <th width="135px" >名称</th>
+                     <th width="250px" >目录</th>
+                     <th width="170px" >当前权限检测结果</th>
+                     <th width="160px" >权限设置建议</th>
+                     <th>目录说明</th>
+                </tr>  
+                <volist name="DirList" id="d">
+                    <notin name="d.Name" value="">
+                    <tr>
+                        <td style="text-align:center;">{$i}</td>
+                        <td>{$d.Name}</td>
+                        <td style="text-align:left; padding-left:5px;">{$d.Dir}</td>
+                        <td>
+                            <neq name="d.FileExist" value="0">
+                                <eq name="d.IsWritable" value="1">
+                                    <span style="color:green;">可读写</span>&nbsp;&nbsp;
+                                    <eq name="d.IsExecutable" value="1"><span style="color:red;">已开启执行权限</span><else/><span style="color:green;">已关闭执行权限</span></eq>
+                                <else/>
+                                    <span style="color:red;">只读</span>
+                                </eq>
+                            <else/>
+                                <span style="color:blue;">文件或目录不存在</span>
+                            </neq>
+                        </td>
+                        <td style="text-align:center;">{$d.Suggest}</td>
+                        <td style="text-align:left; padding-left:5px;">{$d.Remark}</td>
+                    </tr>
+                    </notin>
+                </volist>
+                <tfoot id="warning">
+                    <tr>
+                        <th>备注</th>
+                        <td colspan="5">
+                            <div style="font-weight:bold;">防黑防挂马网站目录权限设置建议：</div>
+							<b>第1步：</b>先将整个网站根目录设置为只读；<br/>
+							<b>第2步：</b>将 /Data 和 /Upload 目录设置为<span style="color:red;">可读写</span>；<br/>
+                            <b>第3步：</b>关闭 /Data 和 /Upload 目录<span style="color:red;">脚本可执行权限</span>
+							<div class="cource oem{$IsOem}">
+								<a href="http://use.youdiancms.com/safe_config.html" target="_blank">点击打开权限设置详细教程>></a>
+							</div>
+                        </td>
+                    </tr>
+                </tfoot>       
+            </table>
+        </div>
+    </form>
+</div>
+</body>
+</html>

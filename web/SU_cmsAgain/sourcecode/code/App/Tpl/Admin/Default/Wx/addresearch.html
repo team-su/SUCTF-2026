@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frmAdd" enctype="multipart/form-data">
+            <div class="box-header"><h4>调查基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>调查名称</th>
+                        <td><input type="text" class="textinput w450"  id="ResearchName" name="ResearchName" value="" /></td>
+                    </tr>
+                                                <tr>
+                        <th>触发关键词</th>
+                        <td><input type="text" class="textinput" style="230px"  id="AppKeyword" name="AppKeyword" value="" />
+                        <span class='Caution'>在微信输入此关键词，将返回当前应用的图文消息！</span>
+                        </td>
+                    </tr>
+                <tr>
+                   <tr>
+                        <th nowrap="nowrap">是否是匿名调查</th>
+                        <td>
+                            <label><input type="radio" name="IsAnonymous" value="1" />是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="IsAnonymous" value="0"   checked="checked"  />否</label>
+                            <span class='Caution'>选择"是"表示为匿名调查，调查时无需填写姓名和手机号码</span>
+                        </td>
+                    </tr>
+                    <th>图文封面</th>
+                    <td><input type="text" id="wxresearchpictureImage" class="textinput w450" name="ResearchPicture" value="{$WebPublic}tpl/wx/images/research.png"  />
+                    <span class='UploadWrapper'>
+                        <input class='btnFileUpload' type='button' value='上传' />
+                        <input id='wxresearchpicture' name ='wxresearchpicture' type ='file'  size='70'   class='InputFile'  accept="image/*" />
+                    </span>
+                    <input id='btnServer' onclick='BrowserServer(1)' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'  class='btnUpload' />
+                    </td>
+                </tr>
+                 <tr>
+                        <th>图文描述</th>
+                        <td><textarea class="w450" style="height:45px; width:100%" name="ResearchDescription"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th>开始说明</th>
+                        <td>
+                        <textarea class="w450" style="height:80px; width:100%" name="StartDescription">感谢您参与此次调查，本调查目的在于了解产品对消费者购物选择的影响。您对本问卷的所有回答都是以匿名形式进行并且答案得到严格保密，研究结果将是结论性质的报告，不会泄漏您的任何相关信息。每位参与调研的朋友都将获得我们送出的尊贵礼品，同时你还有机会获得大奖。</textarea>
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>结束说明</th>
+                        <td>
+                        <textarea class="w450" style="height:80px; width:100%" name="EndDescription">尊敬的客户：
+感谢您的耐心参与，您的选择，将对我们起到重要的指导作用，我们在此向您表示诚挚的谢意。
+同时，为了回馈您的贡献，我们将从所有参与调研的客户中，随机抽取几位幸运奖得主。您将有机会获得我们为您精心准备的礼品一份，中奖名单将在近期公布，敬请关注。
+祝您生活愉快。</textarea>
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>起止时间</th>
+                        <td><script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+                        <input name='StartTime' type='text' class='Wdate' id='StartTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value='{$StartTime}' /><span style="padding:0px 5px">到</span><input name='EndTime' type='text' class='Wdate' id='EndTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value='{$EndTime}' />
+                        </td>
+                    </tr>
+               <tr>
+                        <th>调查结束后跳转到链接</th>
+                        <td><input type="text" class="textinput w450"  id="LinkUrl" name="LinkUrl" value="" />
+                        <span class='Caution'>建议设置为抽奖活动链接地址，调查结束后可参与抽奖</span>
+                        </td>
+                    </tr>
+                <tr>
+                    <tr>
+                        <th nowrap="nowrap">是否启用</th>
+                        <td>
+                            <label><input type="radio" name="IsEnable" value="1" checked="checked"  />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="IsEnable" value="0"  />禁用</label>
+                        </td>
+                    </tr>
+                  </table>
+            </div>
+
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright" type="submit"  value="保存并继续添加" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type='text/javascript'>
+function BrowserServer(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SetPictureField;
+	FileManager.popup(); 
+}
+
+function SetPictureField(fileUrl){
+	document.getElementById('wxresearchpictureImage').value = fileUrl;
+}
+
+$(document).ready(function(){
+	$('#frmAdd').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			$('#frmAdd').resetForm();
+			$('#ResearchName').focus();
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#frmAdd').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 $('#wxresearchpicture').change(function(){
+		 if( !$(this).val() ) return;
+		$('#frmAdd').attr('action','{$UploadAction}/currentfile/wxresearchpicture');
+		$('#frmAdd').submit();
+	 });
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmAdd').attr('action','{$Action}');
+	 });
+	 
+	 $("#wxresearchpictureImage").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	 });
+	 
+	 $('#ResearchName').focus();
+});
+
+function GoBack(){
+	window.location.href = "{$Url}research";
+}
+</script>

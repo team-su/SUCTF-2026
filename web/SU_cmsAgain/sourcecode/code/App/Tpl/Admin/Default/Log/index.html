@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.type1{ color: #000; /*其它操作*/}
+		.type2{ color: blue; /*添加*/}
+		.type3{ color: red; /*删除*/}
+		.type4{ color: #F60; /*修改*/}
+		.type5{ color: #30F; /*排序*/}
+		.type6{ color: green; /*导出*/}
+		.type7{ color:#666; /*清除缓存*/}
+		.type8{ color:#F0F; /*登录/退出*/}
+		.type9{ color:#600; /*发送短信*/}
+		.type10{ color:#333; /*上传文件*/}
+		.type11{ color:#888; /*调试日志*/}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p" id="p" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar" style="display:none;"><a id="btnCache" onclick="delAll()" title="清除所有日志" target="_self">清除所有日志</a></li>
+                <li class="toolbar" style="display:none;"><a id="btnSave" onclick="getLocation()"  title="根据IP获取地理位置" target="_self">获取IP地理位置</a></li>
+                <li class="toolbar" style="display:none;"><a id="btnConfig" href="{$Url}/config"  title="设置">设置</a></li>
+				
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar" style="display:none;"><a id="del" onclick="batchDel()" title="批量删除">删除</a></li>
+                <li class="toolbar"><a id="sortall" href="{$Url}index" title="刷新">刷新</a></li>
+				<li class="toolbar toolbartip"><span style="color:red;">系统自动清除6个月前的日志</span></li>
+                <li class="toolbar toolbarform">
+                    <label>关键词</label>
+                    <input type="text" class='textinput' name="UserName" placeholder="按操作员/操作项目/备注查询" style="width:220px" value="{$UserName}" id="UserName"/>
+                    <label>操作类型</label>
+                    <select id="LogType" name="LogType">
+                        <option value="">所有日志类型</option>
+                        <option value="2">添加</option>
+                        <option value="3">删除</option>
+                        <option value="4">修改</option>
+                        <option value="5">排序</option>
+                        <option value="6">导出</option>
+                        <option value="7">清除缓存</option>
+                        <option value="8">登录/退出</option>
+                        <option value="9">发送短信</option>
+						<option value="10">上传文件</option>
+						<option value="11">调试日志</option>
+                        <option value="1">其它操作</option>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                     <th width="160px" >操作员</th>
+                     
+                     <th width="230px" >IP地址</th>
+                     <th width="70px" >语言</th>
+                     <th width="220px" >操作项目</th>
+                     <th>备注</th>
+					 <th width="125px" >操作时间</th> 
+                </tr>  
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td>{$d.UserName|htmlspecialchars}</td>
+                        
+                        <td>{$d.UserIP|htmlspecialchars}&nbsp;&nbsp;<b style="color:#F30">{$d.UserCity|htmlspecialchars}</b>
+                        <input type="hidden" name="UserIP[]" value="{$d.UserIP|htmlspecialchars}" />
+                        </td>
+                        <td>{$d.LanguageID|LanguageName}</td>
+                        <td><span class="type{$d.LogType}">{$d.UserAction|htmlspecialchars}</span></td>
+                        <td style="text-align:left;padding-left:3px;">{$d.LogDescription}</td>
+						<td>{$d.LogTime|strtotime|yd_friend_date}</td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="7" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                  <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	pageInit();
+});
+
+function pageInit(){
+	$("#LogType").val( "{$LogType}");
+}
+
+function del(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}del/id/"+id;
+		location.href = url;
+	});
+}
+
+function delAll(){
+	return;
+	ConfirmBox('<div id="icon_delete">确定清空所有日志吗？</div>', function () {
+		location.href = "__URL__/delAll";
+	});
+}
+
+function getLocation(){
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("请选中至少一条记录!");
+		return;
+	}
+	LoadBox("获取地理位置中，请稍后...");
+	var url = "{$Url}index?p={$NowPage}&UserName={$UserName}&LogType={$LogType}";
+	$('#frm').attr("action", "__URL__/getLocation");
+	$('#frm').ajaxSubmit( {success: function(data){
+		window.location.href = url;
+	},dataType: 'json'} );
+}
+
+function batchDel(){
+	return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/del");
+		$('#frm').submit();
+	});
+}
+
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}	
+</script>

@@ -1,0 +1,126 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					focusFirstItem();
+				</empty>
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			 LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 $("#PayTypeID").change(function(){
+			 paySelect( $(this).val() );
+		 });
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 $("#CashRemark").focus();
+		 }
+		 
+		 //设置默认值
+		 function setDefault(){
+			 $("input[name='CashStatus'][value={$Data.CashStatus}]").attr("checked",'checked');
+		 }
+		 
+		 //页面初始化
+		 function pageInit(){
+			focusFirstItem();
+			setDefault();
+		 }
+		 
+		 pageInit();
+	});
+</script>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+	<table class="boxtable">
+    		<tr>
+				<th class="w120">会员名称</th>
+				<td>
+					{$Data.MemberName|htmlspecialchars}&nbsp;&nbsp;&nbsp;&nbsp;
+					{$Data.MemberEmail|htmlspecialchars}&nbsp;&nbsp;&nbsp;&nbsp;
+					{$Data.MemberMobile|htmlspecialchars}
+				</td>
+			</tr>
+			<tr>
+				<th class="w120">类型</th>
+				<td style="font-weight:bold;color:blue;">{$Data.CashTypeName}</td>
+			</tr>
+            <tr>
+				<th class="w120">
+                	<eq name="Data.CashType" value="4">提现</eq>金额
+                </th>
+				<td style="color:red;font-weight:bold;">{$Data.CashQuantity}</td>
+			</tr>
+            
+            <eq name="Data.CashType" value="4">
+                 <tr>
+                    <th class="w120">收款银行</th>
+                    <td>{$Data.BankName|htmlspecialchars}</td>
+                 </tr>
+                 <tr>
+                    <th class="w120">收款账号	</th>
+                    <td>{$Data.BankAccount|htmlspecialchars}</td>
+                 </tr>
+                 <tr>
+                    <th class="w120">开户人姓名	</th>
+                    <td>{$Data.OwnerName|htmlspecialchars}</td>
+                 </tr>
+            </eq>
+              <tr>
+                    <th class="w120">申请时间</th>
+                    <td>{$Data.CashTime}</td>
+             </tr>
+            
+             <tr>
+				<th class="w120">状态</th>
+				<td>
+                     <switch name="Data.CashType">
+                        <case value="1">
+                            <label><input type="radio" name="CashStatus" value="1" checked="checked"  />已支付</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="CashStatus" value="2" />未支付</label>
+                            <span class='Caution'>当状态为取消或未支付时，可以进行删除操作</span>
+                        </case>
+                        <case value="4" comment="提现">
+                            <label><input type="radio" name="CashStatus" value="1" checked="checked"  />已付款</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="CashStatus" value="2" />待付款</label>
+                            <span style="color:red; margin-left:2em;">
+                            	<b>提现流程：</b>
+                                [1] 会员申请提现&nbsp;&nbsp;
+                                [2] 管理员人工转账至提现账户&nbsp;&nbsp;
+                                [3] 将状态改为"已付款"
+                            </span>
+                        </case>
+                        <default/>
+                             <label><input type="radio" name="CashStatus" value="1" checked="checked"  />完成</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="CashStatus" value="2" />取消</label>
+                            <span class='Caution'>当状态为取消或未支付时，可以进行删除操作</span>
+                    </switch>
+                    
+                </td>
+			</tr>
+			<tr>
+				<th class="w120">备注</th>
+				<td><textarea  style="width:100%; height:80px;" name="CashRemark" id="CashRemark" />{$Data.CashRemark}</textarea></td>
+			</tr>
+	</table>
+</div>
+<script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>

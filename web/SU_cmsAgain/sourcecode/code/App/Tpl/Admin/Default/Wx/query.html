@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.app{float:left; width:19.8%; display:block; height:30px; line-height:30px;border-right:1px solid #E3E6EB;
+		border-top:1px solid #E3E6EB;text-align:center;cursor:pointer;}
+		.des{clear:both;	display:none; background-color:#FFF;padding:8px; 
+			line-height:22px;text-align:left;border:1px solid #87A34D;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+    <div class="table">
+        <table class="datatable" id="datatable">
+        <tr>
+            <th width="50px">序号</th>
+            <th width="220px">应用名称</th>
+            <th width="350px" >指令格式</th>
+            <th  style="padding-left:30px; text-align:left">指令用法</th>
+        </tr>  
+        <notempty name="App">                
+            <volist name="App" id="a">
+                <tr>
+                    <td>{$i}</td>
+                    <td  style="color:#00F; font-weight:bold">{$a.AppName|htmlspecialchars}</td>
+                    <td style="text-align:left; padding-left:5px">{$a.Format|htmlspecialchars}</td>
+                    <td style="padding-left:10px; text-align:left">{$a.Example|htmlspecialchars}</td>
+                </tr>
+            </volist>
+            <else/>
+                <tr><td colspan="4" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+        </notempty>                                
+        </table>
+        <div class="tfoot">
+            <div id="notice">
+                <b>说明：</b>
+                <span class="notice-item"><i>[1]</i>格式 中括号[] 表示选填参数，小括号() 表示必填参数</span>
+                <span class="notice-item"><i>[2]</i>以上为微查询指令，直接在微信中输入指令即可查询</span>
+             </div>
+        </div>
+ </div>
+</div>
+</body>
+</html>
+<script>
+function appover(id){
+	$("#"+id).css({"color":"blue", "background-color":"#F3F3F3"});
+}
+function appout(id){
+	$("#"+id).css({"color":"black", "background-color":"#FFFFFF"});
+}
+
+$(document).ready(function(){
+	$(".app").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+});
+</script>

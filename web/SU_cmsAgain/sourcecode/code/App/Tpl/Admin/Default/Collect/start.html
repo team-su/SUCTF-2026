@@ -1,0 +1,478 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.boxtable .para{ color: blue; padding: 0px 2px;}
+		.d2{ padding-left:2em;}
+		#log, #log1{ line-height: 1.8em;}
+		#progress{ line-height: 1.8em; display:none;}
+		#lblSuccess{ color:green; font-weight:bold; padding-right:15px;}
+		#lblFail{ color:red; font-weight:bold; padding-right:15px;}
+		#lblPass{ color:blue; font-weight:bold; padding-right:15px; }
+		#lblTime{ color:#60F; }
+		#testListUrlCount, #testCollectCount, #testDetailUrlCount{ padding: 0 5px;}
+		#testListUrlCount{ color:red;}
+		#testCollectCount{ color:blue;}
+		#testDetailUrlCount{ color:green;}
+		#showList{ cursor:pointer; color:#FF0000; font-weight:bold;}
+		#allList{ display:none; color:#FF0000; height:220px; overflow-y:scroll}
+		.box-footer-inner #btnSubmit.btnStart{
+			background:{$AdminThemeColor};color:#fff;
+		}
+		.box-footer-inner #btnSubmit.btnStart:hover{
+			background:{$AdminThemeColor}; opacity:.8;
+		}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}" enctype="multipart/form-data" >
+            <input type='hidden' id="NoCtrlEnter" value="1" />
+            <textarea id="ListUrlRegionRegex" style="display:none">{$Data.ListUrlRegionRegex}</textarea>
+            <input type="hidden" id="DetailUrlRegex" value="{$Data.DetailUrlRegex}" />
+            <textarea id="FieldPara" style="display:none">{$Data.FieldPara}</textarea>
+            <textarea id="ReplacePara" style="display:none">{$Data.ReplacePara}</textarea>
+            <textarea id="AllPageUrlRegex" style="display:none">{$Data.AllPageUrlRegex}</textarea>
+            <textarea id="NextPageUrlRegex" style="display:none">{$Data.NextPageUrlRegex}</textarea>
+            
+            <div class="box-header" id="c1"><h4>采集信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                        <tr>
+                            <th style="width:8%"></th>
+                            <td style="width:92%; line-height:2em;">采集初始化完成！
+                            本次采集的数据将存入频道&nbsp;<b class="para">{$Data.ChannelID|ChannelName}</b>，
+                            共有<b class="para" id="lblListUrlCount">0</b>个列表页需要采集！<b>&nbsp;&nbsp;采集参数如下：</b><br/>
+                            
+                            <div style="float:left;width:260px;">采集顺序：<b class="para"><eq name="Data.CollectOrder" value="1">顺序<else/>逆序</eq>采集</b></div>
+                            <div style="float:left;width:270px;">被采集网页编码：<b class="para"><eq name="Data.Charset" value="auto">自动检测<else/>{$Data.Charset}</eq></b></div>
+                            <div style="float:left;width:180px;">最大采集数量：<b class="para"><gt name="Data.MaxCount" value="0">{$Data.MaxCount}<else/>采集所有</gt></b></div>
+                            <div style="float:left;width:240px;"><gt name="Data.TimeTnterval" value="0">2个页面之间采集时间间隔：<b class="para">{$Data.TimeTnterval}毫秒</b></gt></div>
+                            
+                            <div style="float:left;width:260px; clear:both;">是否自动保存远程图片到服务器：<b class="para"><eq name="Data.AutoUploadImage" value="1">是<else/>否</eq></b></div>
+                            <div style="float:left;width:270px;">是否将采集的第1张图片作为缩略图：
+                                <eq name="Data.AutoThumbFirst" value="1">
+                                    <b class="para">是</b></div>
+                                    <div style="float:left;width:180px;">
+                                        <eq name="ThumbEnable" value="1">生成缩略图宽高：<b class="para">{$ThumbWidth} x {$ThumbHeight}</b></eq>
+                                    </div>
+                                <else/>
+                                    <b class="para">否</b></div>
+                                </eq>
+                            </div>
+                            <div style="float:left;width:180px;">是否保存重复标题：<b class="para"><eq name="Data.EnableTitle" value="1">是<else/>否</eq></b></div>
+                            <br/>
+                            <div style="clear:both">点击&nbsp;<b>"开始采集"</b>&nbsp;按钮开始采集！</div>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>
+                                <div id="log"></div>
+                                <div id="progress">
+                                    采集列表页完成，开始采集详细页内容，&nbsp;&nbsp;采集进度：
+                                    <span class='progressBar' id='pb'></span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    成功：<span id='lblSuccess'>0</span>
+                                    失败：<span id='lblFail'>0</span>
+                                    跳过：<span id='lblPass'>0</span>
+                                    耗时：<span id='lblTime'>0&nbsp;&nbsp;秒</span>
+                                </div>
+                                <div id="log1"></div>
+                            </td>
+                        </tr>
+                </table>
+            </div> 
+                     
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" class="btnStart marginright" type="button" value="开始采集" />
+                    <input id="btnSubmit" class="btnRetry marginright" style="display:none; color:#FF0000; " type="button" value="重新采集失败页面" />
+                    <input id="btnSubmit" class="btnStop marginright" type="button" value="停止采集" />
+                    <input id="btnSubmit" class="btnModify marginright" type="button" onclick="Modify()" value="修改采集规则" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.progressbar.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	var gAllListUrl = Array();
+	var gDetailUrl = Array();
+	var gErrorUrl = Array();
+	var gStop = false; //是否停止
+	var gCollectCount = 0; //列表页数量
+	var gCurrentNum = 0; //已经采集的列表页
+	
+	var gCurrent = 0; //已经采集的详细页
+	var gFail = 0; //采集失败数
+	var gSuccess = 0; //采集成功数
+	var gPass = 0;  //跳过数
+	var gFlag = 0;
+	
+	//计时器变量
+	var gTimerID = 0;
+	var gTime = 0;
+	//开始采集数据
+	$(".btnStart").click(function(){
+		if(checkSafeQuestion()) return;
+		initCollect();
+		if( $("#DetailUrlRegex").val() == "" ){  //表示直接从列表页采集
+			gDetailUrl = getAllListUrl();  //列表页当作详细页采集
+			if( gDetailUrl.length <= 0 ){
+				ErrorBox("请先设置列表页");
+				return;
+			}
+			writeLog("<b style='color:red;'>==开始采集==</b>");
+	
+			startCount();
+			$("#m1").hide();
+			gFlag = 1;
+			$("#progress").show();
+			$("#pb").progressBar(1, { max : gDetailUrl.length } );
+			collectContent();
+		}else{
+			gAllListUrl = getAllListUrl(); 
+			if( gAllListUrl.length <= 0 ){
+				ErrorBox("请先设置列表页");
+				return;
+			}
+			writeLog("<b style='color:red;'>==开始采集==</b>");
+			gCollectCount = gAllListUrl.length;
+			if( gCollectCount > 0 ){
+				var msg = "开始采集列表页，正在采集第<b id='testListUrlCount'>1</b>个列表页，";
+				msg += "共<b id='testCollectCount'>"+gCollectCount+"</b>个列表页，";
+				msg += "总共获取<b id='testDetailUrlCount'>"+gDetailUrl.length+"</b>详细页链接。&nbsp;&nbsp;";
+				msg += "<span onclick='toggleAll(this)' id='showList'>点击显示详情</span>&nbsp;&nbsp;";
+				msg += "<img id='m1' src='{$WebPublic}Images/loading/18.gif' border='0' align='absmiddle'/>";
+				msg += "<div id='allList'></div>";
+				writeLog( msg );
+				collectList();
+			}else{
+				writeLog("<span style='color:red;'>没有列表页需要采集！</span>");
+			}
+		}
+	});
+	
+	//重新采集失败页面
+	$(".btnRetry").click(function(){
+		if( gErrorUrl.length <= 0 ){
+			ErrorBox("没有错误页面需要采集");
+			return;
+		}
+		var errlist = gErrorUrl.slice(0); //数组克隆
+		initCollect();
+		writeLog("<b style='color:red;'>==重新开始采集失败页面==</b>");
+		gDetailUrl = errlist;  //指向错误页面数组
+		startCount();
+		$("#m1").hide();
+		gFlag = 1;
+		$("#progress").show();
+		$("#pb").progressBar(1, { max : gDetailUrl.length } );
+		collectContent();
+	});
+	
+	//采集初始化
+	function initCollect(flag){
+		disableButton();
+		clearLog();
+		clearCount();
+		
+		gStop = false;
+		gAllListUrl = Array();  gDetailUrl = Array(); gErrorUrl = Array();
+		gCollectCount = 0;  gCurrentNum = 0;
+		gCurrent = 0;  gFlag = 0;
+		gFail = 0; gSuccess = 0; gPass = 0;
+		
+		$(".btnRetry").hide();
+	}
+	
+	//停止采集数据
+	$(".btnStop").click(function(){
+		stopCount(); //停止计数
+		$("#m1").hide();
+		writeLog("<b style='color:red;'>==停止采集==</b>");
+		gStop = true;
+		enableButton();
+	});
+	
+	function collectList(){
+		if( gStop ) return;
+		var listUrl = gAllListUrl.shift();  //获取第一个元素
+		gFlag = 0;
+		if(listUrl){
+			gCurrentNum++;
+			$("#testListUrlCount").html( gCurrentNum );
+			var p = {
+				 ListUrl : listUrl,
+				 ListUrlRegionRegex : $("#ListUrlRegionRegex").val(),
+				 DetailUrlRegex : $("#DetailUrlRegex").val(),
+				 TimeTnterval : "{$Data.TimeTnterval}",
+				 Charset : "{$Data.Charset}",
+				 UserAgent:"{$Data.UserAgent}",
+				 MaxCount : "{$Data.MaxCount}"
+			};
+			$.post("{$Url}collectList", p, function(data){
+				if( gStop ) return;
+				if (data.status==1){
+					gDetailUrl = gDetailUrl.concat( data.data );
+					var msg = "<span style='color:blue;'>"+gCurrentNum+". 采集列表页&nbsp;&nbsp;<a target='_blank' href="+listUrl+">"+listUrl+"</a><br/>";
+					for(var i = 0; i < data.data.length; i++){
+						 msg += "&nbsp;&nbsp;&nbsp;&nbsp;["+(i+1)+"]&nbsp;&nbsp;";
+						 msg += "<a href='"+data.data[i]+"' target='_blank'>"+data.data[i] + "</a><br/>";
+					}
+					$("#allList").append(msg);
+					$("#testDetailUrlCount").html( gDetailUrl.length );
+				}else{
+					var msg = "<span class='d2'>采集列表页&nbsp;&nbsp;";
+					msg += "<a target='_blank' href="+listUrl+">"+listUrl+"</a>";
+					msg+= "&nbsp;&nbsp;<span style='color:red;'>"+data.info+"</span></span>"
+					writeLog(msg);
+				}
+				collectList(); //继续采集
+			}, "json");
+		}else{
+			//列表页采集完成
+			startCount();
+			$("#m1").hide();
+			gFlag = 1;
+			$("#progress").show();
+			$("#pb").progressBar(1, { max : gDetailUrl.length } );
+			collectContent();
+		}
+	}
+	
+	//采集详细页内容
+	function collectContent(){
+		if( gStop ) return;
+		gFlag = 1;
+		var order = parseInt("{$Data.CollectOrder}");  //采集顺序
+		var maxCount = parseInt("{$Data.MaxCount}"); //最大采集数量
+		var firstListUrl = (order == 1) ? gDetailUrl.shift() : gDetailUrl.pop();
+		if( firstListUrl && (maxCount == 0 || gCurrent < maxCount) ){
+			var p = {
+				DetailUrl : firstListUrl,
+				FieldInfo : $("#FieldPara").val(),
+				ReplacePara : $("#ReplacePara").val(),
+				Charset : "{$Data.Charset}",
+				UserAgent:"{$Data.UserAgent}",
+				
+				PageType : "{$Data.PageType}",
+				PageRegionRegex : $("#PageRegionRegex").val(),
+				AllPageUrlRegex : $("#AllPageUrlRegex").val(),
+				NextPageUrlRegex : $("#NextPageUrlRegex").val(),
+		 
+				TimeTnterval : {$Data.TimeTnterval},
+				AutoUploadImage : {$Data.AutoUploadImage},
+				AutoThumbFirst : {$Data.AutoThumbFirst},
+				ChannelID : {$Data.ChannelID},
+				EnableTitle : {$Data.EnableTitle},
+				EnableCheck : {$Data.EnableCheck}
+			};
+			$.ajax({
+				url: "{$Url}collectContent", 
+				type: "POST",
+				timeout: 60*1000,
+				data: p,
+				dataType:"json",
+				success: function(data){
+					if( gStop ) return;
+					gCurrent++; 
+					$("#pb").progressBar( gCurrent );
+					if (data.status == 1){
+						gSuccess++;
+						$("#lblSuccess").html( gSuccess );
+					}else if(data.status == 2){  //警告，不算错误
+						gPass++;
+						$("#lblPass").html( gPass );
+						msg = "<span class='d2'>采集详细页&nbsp;";
+						msg +="<a target='_blank' href='"+firstListUrl+"'>"+firstListUrl+"</a>&nbsp;内容成功";
+						msg += "&nbsp;&nbsp;<span style='color:blue;'>但"+data.info+"</span></span>";
+						writeLog( msg );
+					}else{
+						gFail++;
+						$("#lblFail").html( gFail );
+						msg = "<span class='d2'>采集详细页&nbsp;";
+						msg +="<a target='_blank' href='"+firstListUrl+"'>"+firstListUrl+"</a>&nbsp;内容失败";
+						msg += "&nbsp;&nbsp;<span style='color:red;'>"+data.info+"</span></span>";
+						gErrorUrl.push(firstListUrl);
+						writeLog( msg );
+					}
+					collectContent(); //继续采集
+				},
+				error:function(obj, textStatus, errorThrown){
+					if( gStop ) return;
+					gCurrent++; 
+					$("#pb").progressBar( gCurrent );
+					
+					var errmsg = "请求数据时发生错误";
+					if (textStatus == "timeout") {
+					   	errmsg = "请求数据超时";
+					}
+					
+					gFail++;
+					$("#lblFail").html( gFail );
+					msg = "<span class='d2'>采集详细页&nbsp;";
+					msg +="<a target='_blank' href='"+firstListUrl+"'>"+firstListUrl+"</a>&nbsp;内容失败";
+					msg += "&nbsp;&nbsp;<span style='color:red;'>"+errmsg+"</span></span>";
+					gErrorUrl.push(firstListUrl);
+					writeLog( msg );
+					collectContent(); //继续采集
+				}
+			});
+		}else{
+			stopCount();
+			enableButton();
+			writeLog("<b style='color:red;'>==采集结束==</b>");
+		}
+	}
+
+	//获取所有列表页地址
+	function getAllListUrl(){
+			var data = new Array();
+			//获取列表Url
+			var url = "{$Data.ListUrl}";
+			if( url.indexOf("{*}") == -1 ){
+				if( url != ""){
+			 		data.push( url );
+				}
+		 	}else{
+				var start =  parseInt( "{$Data.ListUrlStart}" );
+				var end =  parseInt( "{$Data.ListUrlEnd}" );
+				var step =  parseInt( "{$Data.ListUrlStep}" );
+				var len = parseInt( "{$Data.ListUrlLength}" );
+				for(var i = start; i <= end; i += step){
+					temp = url.replace("{*}", padZero(i, len));
+					data.push( temp );
+				}
+			}
+	
+			var other = "{$Data.ListUrlOther}";
+			//附加页Url
+			if( other != "" ){
+				//other = other.replace(/(^\s*)|(\s*$)/g, "");  //去掉空白字符
+				var text = other;
+				if( text.length > 12 ){
+					result = text.split("@@@");
+					if( result.length > 0 ){
+						data = data.concat( result );
+					}
+				}
+			}
+			return data;
+	};
+
+	 //补0操作，pad(100, 4);  输出：0100  
+	function padZero(num, n) { 
+		 if(n==1) return num;
+		  var len = num.toString().length;  
+		  while(len < n) {  
+				num = "0" + num;  
+				len++;  
+		  }  
+		  return num;  
+	};
+
+	function pageInit(){
+		gAllListUrl = getAllListUrl(); //获取所有列表页链接
+		$("#lblListUrlCount").html( gAllListUrl.length );
+		$("#pb").progressBar({
+			textFormat: 'fraction',
+			boxImage: '{$WebPublic}jquery/images/progressbar.gif', 
+			barImage: '{$WebPublic}jquery/images/progressbg_green.gif', 
+			showText: true
+		});	
+	};
+	
+	//显示采集日志
+	function writeLog(msg){
+		if( gStop ) return;
+		if( gFlag == 0 ){
+			//采集列表页
+			$("#log").append("<div>"+msg+"</div>");
+		}else{
+			//采集内容
+			$("#log1").append("<div>"+msg+"</div>");
+		}		
+	}
+
+	//清除日志
+	function clearLog(){
+		$("#log").html('');
+		$("#log1").html('');
+		//进度条
+		$("#pb").progressBar(1);
+		$("#progress").hide();
+		$("#lblSuccess").html( 0 );
+		$("#lblFail").html( 0 );
+		$("#lblPass").html( 0 );
+	}
+	
+	function enableButton(){
+		$(".btnStart").attr('disabled',false);
+		$(".btnStart").css('color','#336804');	
+		$(".btnStart").val("开始采集");
+		if( gErrorUrl.length > 0 ){
+			$(".btnRetry").show();
+		}
+	}
+	
+	function disableButton(){
+		$(".btnStart").css('color', '#F30');	
+		$(".btnStart").val("采集中，请稍后...");
+		$(".btnStart").attr('disabled',true);
+	}
+	
+	function startCount(){
+	   var hour = parseInt( gTime/3600 );
+	   var min = parseInt( gTime/60 );
+		if(min >= 60){
+			min = min%60;
+		}
+		var sec = gTime % 60;
+		
+		var time = sec + "&nbsp;秒&nbsp;";
+		if( min > 0 || hour > 0){
+			time = min + "&nbsp;分&nbsp;" + time;
+		}
+		
+		if( hour > 0 ){
+			time = hour + "&nbsp;时&nbsp;" + time;
+		}
+		$("#lblTime").html( time );
+		gTime++;
+		gTimerID=setTimeout(function(){startCount();}, 1000);
+	}
+	
+	function stopCount(){
+		clearTimeout( gTimerID )
+	}
+	
+	function clearCount(){
+		gTime = 0;
+		gTimerID = 0;
+		$("#lblTime").html( "0&nbsp;&nbsp;秒" );
+	}
+	//页面初始化
+	pageInit();
+});
+
+function toggleAll(obj){
+	$("#allList").toggle();
+	if( $("#allList").is(":visible") ){
+		$(obj).text("点击隐藏详情");
+	}else{
+		$(obj).text("点击显示详情");
+	}
+}
+
+function Modify(){
+	window.location.href = "{$Url}modify/id/{$CollectID}";
+}
+</script>

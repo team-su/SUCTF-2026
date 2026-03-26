@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		#CurrentInfo a{ color: blue; }
+		#CurrentInfo a:hover{ color:#F30; text-decoration:none;}
+   </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}message"  title="推送消息历史" target="_self">推送消息历史</a></li>
+            </div>
+     </div>
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frm">
+            <div class="box-header">
+                <h4>推送说明：(1)推送的消息会在手机通知栏显示&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    (2)APP没有启动也能收到推送的消息
+                </h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                        <tr>
+                            <th class="w120">消息类型</th>
+                            <td>
+                               <label style="margin-right:20px"><input type="radio" name="AppMessageType" onclick="changeAppMessageType(1)" checked="checked"  value="1"  />通知消息</label>
+                               <label><input type="radio" name="AppMessageType" onclick="changeAppMessageType(2)"  value="2"  />文章链接消息</label>
+                                <span class='Caution'>如果推送"文章链接消息"消息，在"手机通知栏"中会显示文章的标题和内容，用户点击后，会在APP打开这篇文章！</span>
+                            </td>
+                        </tr>
+                       <tr class="type2" style="display:none;">
+                            <th class="w120">文章<input type="hidden" value="" name="InfoID" id="InfoID" /></th>
+                            <td>
+                                <a id="btnSaveAll" onclick="showInfoDialog()"  title="请选择文章" target="_self" style="float:left;">选择推送文章</a>
+                                <div id="CurrentInfo" style="float:left; margin-left:10px;"></div>
+                            </td>
+                        </tr>
+                        <tr class="type1">
+                            <th class="w120">消息标题</th>
+                            <td><input type="text" class="textinput" style="width:450px;"  name="AppMessageTitle" id="AppMessageTitle" value="{$Data.AppMessageTitle}" />
+                            <span class='Caution'>消息标题会显示在"手机通知栏"中</span>
+                            </td>
+                        </tr>
+                        <tr class="type1">
+                            <th class="w120">消息内容</th>
+                            <td>
+                                <textarea id='AppMessageContent' name='AppMessageContent'>{$Data.AppMessageContent}</textarea>
+                                {:CkEditor('AppMessageContent', 300)}
+                                <span class='Caution'>消息内容会显示在"手机通知栏"中</span>
+                            </td>
+                        </tr>
+                 </table>
+             </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="开始推送消息" />&nbsp;&nbsp;
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(document).ready(function(){
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+            }else if(data.status==0){
+				ErrorBox(data.info);
+				$("#"+data.data).focus();
+			}
+		};
+		
+		 $('#frm').submit(function(){
+				try{
+					LoadBox("推送消息中，请稍后...");
+					for ( s in CKEDITOR.instances ) {
+					   CKEDITOR.instances[s].updateElement();
+					}
+				}catch(e){
+					;
+				}finally{
+					$(this).ajaxSubmit( {success: complete,dataType: 'json'} );
+					return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+				}
+	     });
+		 
+		 pageInit();
+		 function pageInit(){
+			 changeAppMessageType(1);
+		 }
+	});
+	
+	function changeAppMessageType(type){
+		if(type==1){
+			$(".type1").show();
+			$(".type2").hide();
+		}else if(type==2){
+			$(".type1").hide();
+			$(".type2").show();
+		}
+	}
+	
+	function showInfoDialog(){
+			var content = '<div id="dlgRelation"><iframe src="__GROUP__/Info/relation?cid=0&IsSingleSelect=1" name="frmRelation"';
+			content +=' id="frmRelation"  scrolling="no" frameborder="0"  height="400px" width="800px;"></iframe></div>';
+			gDlg = dialog({
+				title: "请选择要推送的文章",
+				id: 'relation',
+				padding: 0,
+				content: content,
+				ok: function () {
+					var obj = window.frames['frmRelation'].document;
+					var objSelected = $(obj).find(".rcb:checked");
+					if( !objSelected ){
+						ErrorBox("请至少选择一篇文章！");
+						return false;
+					}
+					var infotitle = objSelected.attr('infotitle' );
+					var infoid = objSelected.val();
+					var infourl = objSelected.attr('infourl' );
+					var html = '<a href='+infourl+' target="_blank">'+infotitle+'</a>';
+					$("#InfoID").val(infoid);
+					$("#CurrentInfo").html(html);
+					return true;
+				},
+				cancel:function(){  this.close(); },
+				okValue: '确定',
+				cancelValue: '关闭',
+				cancel: true
+			}).show();
+	}
+</script>

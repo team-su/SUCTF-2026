@@ -1,0 +1,182 @@
+<style>
+.mark{ height: 23px; vertical-align:middle; margin-right: 1em;}
+.marklist{ overflow:hidden; width: 730px; }
+.marklist p{ border-bottom: 1px solid #ddd; font-size:16px; color: #333; padding: 5px 0;}
+.marklist p span{ float:right; color: #aaa; font-size:14px;}
+.marklist img{ height: 22px; width: 32px; margin:8px; cursor: pointer; }
+.marklist img:hover{ opacity: .7;}
+
+.langlist{ overflow:hidden; width: 772px; background:#f2f3f4; padding: 10px;}
+.langlist li{ float:left; width: 90px; margin:5px; cursor: pointer; background:#fff; border-radius: 6px; padding: 5px;}
+.langlist li img{ width: 40px; height:25px; display: block; margin: 0 auto;}
+.langlist li div{ font-size:12px; text-align: center; white-space: no-wrap; margin-top: 5px;}
+.langlist li:hover{ opacity: .7; color:red;}
+</style>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+	<table class="boxtable">
+			<tr>
+				<th class="w120">语言名称</th>
+				<td>
+					<input type="text" class="textinput" style="width:220px;" name="LanguageName" id="LanguageName" value="{$Data.LanguageName}" />
+					<input type="button" id="btnLanguage" value="选择" onclick="selectLanguage()" />
+				</td>
+			</tr>
+			<tr>
+				<th class="w120">语言英文标识</th>
+				<td>
+					<input type="text" class="textinput" style="width:80px;" name="LanguageMark" id="LanguageMark" value="{$Data.LanguageMark}" />
+					<span class='Caution'>如：cn、en，只能是英文字母</span>
+				</td>
+			</tr>
+			<tr>
+				<th class="w120">国旗标志</th>
+				<td>
+					<input type="hidden"  name="LanguageIcon" id="LanguageIcon" value="{$Data.LanguageIcon}" />
+					<span id="languageImage"></span>
+					<input type="button" id="btnMark" value="选择" onclick="selectMark()" />
+				</td>
+			</tr>
+			<tr>
+				<th class="w120">语言排序</th>
+				<td><input type="number" class="textinput" style="width:80px;"  name="LanguageOrder" id="LanguageOrder" value="{$Data.LanguageOrder}" />
+				<span class='Caution'>请输入数字，值越小排名越靠前！</span>
+				</td>
+			</tr>
+			<tr>
+				<th>独立域名</th>
+				<td><input type="text" class="textinput w450" placeholder="如：en.xx.com，可不填" name="LanguageDomain" id="LanguageDomain" value="{$Data.LanguageDomain}" />
+				<span class='Caution'>不能包含http://，如:en.xx.com</span>
+				</td>
+			</tr>
+			<tr>
+				<th>默认语言</th>
+				<td>
+					<label><input type="radio" name="IsDefault" value="1" />是</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="IsDefault" value="0" checked="checked"   />否</label>
+					<span class='Caution'>网站被访问时，前台默认展示的网站语言</span>
+				</td>
+			</tr>
+			<tr>
+				<th>是否启用</th>
+				<td>
+					<label><input type="radio" name="IsEnable" value="1" checked="checked"  />启用</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="IsEnable" value="0" />禁用</label>
+				</td>
+			</tr>
+	</table>
+</div>
+<script type="text/javascript">
+var gDlg = null;
+function setMark(obj){
+	if(gDlg) {
+		gDlg.close().remove();
+		gDlg = null;
+	}
+	var mark = $(obj).data("mark");
+	changeLanguageType(mark);
+}
+
+function selectLanguage(){
+	if(gDlg) {
+		gDlg.close().remove();
+		gDlg = null;
+	}
+	var html = "<ul class='langlist'>";
+	<volist name="LanguageList" id="l">
+		html += "<li data-mark='{$l.mark}' data-name='{$l.name}' onclick='setLanguage(this)'>";
+		html += "<img  src='{$WebPublic}/Images/mark/{$l.mark}.png'  />";
+		html += "<div>{$l.name}</span></div>";
+	</volist>
+	html += "</ul>";
+	gDlg = dialog({ content: html, padding: 0, quickClose: true });
+	gDlg.show( document.getElementById('btnLanguage') );
+}
+
+function setLanguage(obj){
+	if(gDlg) {
+		gDlg.close().remove();
+		gDlg = null;
+	}
+	var mark = $(obj).data("mark");
+	changeLanguageType(mark);
+	var name = $(obj).data("name");
+	$("#LanguageName").val(name);
+}
+
+ function changeLanguageType(mark){
+	 $("#LanguageMark").val(mark);
+	 if(!mark) mark="cn";
+	 var markImage = "{$WebPublic}/Images/mark/"+mark+".png";
+	 $("#languageImage").html("<img class='mark' src='"+markImage+"' />");
+ }
+
+function selectMark(){
+	if(gDlg) {
+		gDlg.close().remove();
+		gDlg = null;
+	}
+	var html = "<div class='marklist'><p>选择国旗<span>自定义国旗图片可放置在网站Public/Images/mark文件夹下</span></p>";
+	<volist name="MarkList" id="m">
+		html += "<img data-mark='{$m}' src='{$WebPublic}/Images/mark/{$m}.png' onclick='setMark(this)' />";
+	</volist>
+	html += "</div>";
+	gDlg = dialog({ content: html,padding: 10,quickClose: true });
+	gDlg.show( document.getElementById('btnMark') );
+}
+
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					focusFirstItem();
+				</empty>
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			 LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 //改变语言
+		 $("#LanguageType").change(function(){
+			 var mark = $(this).val();
+			changeLanguageType(mark);
+		 });
+		 
+
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 var idName = "#{$Think.const.MODULE_NAME}Name";
+			 $(idName).focus();
+		 }
+		 
+		 //设置默认值
+		 function setDefault(){
+			 $("input[name='IsEnable'][value={$Data.IsEnable}]").attr("checked",'checked');
+			 $("input[name='IsDefault'][value={$Data.IsDefault}]").attr("checked",'checked');
+		 }
+		 
+		 //页面初始化
+		 function pageInit(){
+			focusFirstItem();
+			setDefault();
+			changeLanguageType("{$Data.LanguageMark}");
+		 }
+		 pageInit();
+	});
+</script>

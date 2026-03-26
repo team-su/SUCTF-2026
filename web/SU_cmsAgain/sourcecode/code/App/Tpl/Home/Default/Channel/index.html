@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$Title}-{$WebName}</title>
+    <include file="Public:meta" />
+</head>
+<body class="body_index">
+	<include file="Public:header" />
+
+<!--区块5109 开始-->
+<div id="n5109" class="component floor_banner0_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5109" yd-content="banner,{$TBanner0Group5109}">
+	<style type="text/css">
+		#n5109 .bannertext{
+			top: {$TBanner0TextTop5109}%;
+			text-align: {$TBanner0TextAlign5109};
+		}
+		#n5109 .bannertext .BannerName{ 
+			{$TBanner0NameFont5109|ParseFont}
+		}
+		#n5109 .bannertext .BannerDescription{
+			{$TBanner0DescriptionFont5109|ParseFont}
+		}
+		#n5109 .swiper-pagination{
+			yd-previewable-class: banner_dot banner_dot{$TBanner0Dot5109};
+		}
+		@media screen and (min-width: 1200px) {
+			.floor_banner0{
+				height: 520px;
+			}
+		}
+		@media screen and (max-width: 1199px) {
+			.floor_banner0{
+				height: 160px;
+			}
+		}
+	</style>
+	<div class="floor_banner0">
+		<div class="swiper-container">
+			<ul class="banner0 swiper-wrapper">
+				<bannerlist id="b" bannergroupid="$TBanner0Group5109">
+					<li class="swiper-slide">
+						<notempty name="b.BannerUrl">
+							<a href="{$b.BannerUrl}" target="_blank" ><img src="" pc-src="{$b.BannerImage}" wap-src="{$b.BannerThumbnail}" title="{$b.BannerName}" alt="{$b.BannerName}" /></a>
+							<else/>
+							<img src="" pc-src="{$b.BannerImage}" wap-src="{$b.BannerThumbnail}" title="{$b.BannerName}" alt="{$b.BannerName}" />
+						</notempty>
+						<div class="bannertext">
+							<notempty name="b.BannerName"><div class="BannerName" yd-text="banner,{$b.BannerID},BannerName">{$b.BannerName}</div></notempty>
+							<notempty name="b.BannerDescription"><div class="BannerDescription" yd-text="banner,{$b.BannerID},BannerDescription">{$b.BannerDescription|nl2br}</div></notempty>
+						</div>
+					</li>
+				</bannerlist>
+			</ul>
+		</div>
+		<div class="swiper-pagination banner_dot{$TBanner0Dot5109}"></div>
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			var isLoad = false;
+			$('#n5109 li img').load(function(){
+				if(isLoad) return;
+				isLoad = true;
+				var mySwiper = new Swiper('#n5109 .swiper-container',{
+					autoplay : 5000,//可选选项，自动滑动
+					autoplayDisableOnInteraction : false, //操作后是否禁止自动滑动
+					loop : true,//可选选项，开启循环
+					pagination : '#n5109 .swiper-pagination', //分页器容器
+					paginationClickable :true, //分页器是否可以点击
+					speed: 1500, //滑动速度
+					mode : '{$TBanner0Effect5109}',
+	                calculateHeight : true, //自动计算高度
+				})
+				$('#n5109 .floor_banner0').height('auto');
+			})
+		})
+	</script>
+</div>
+<!--区块5109 结束--><!--区块5137 开始-->
+<div id="n5137" class="component floor_article13_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5137" yd-content="info,{$TArticle13Channel5137}">
+	<notempty name="TArticle13Show5137">
+		<style type="text/css">
+			#n5137{
+				{$TArticle13Bg5137|ParseBg}
+				padding:{$TArticle13Padding5137}px 0;
+			}
+			#n5137 .component_title a{ 
+				{$TArticle13TitleFont5137|ParseFont}
+			}
+			#n5137 .component_bottom a,
+			#n5137 li a{ 
+				{$TArticle13InfoTitleFont5137|ParseFont}
+			}
+			#n5137 li a{
+				yd-previewable-class: ydicon- ydicon-{$TArticle13TitleIcon5137};
+			}
+			#n5137 li a:before{
+				color: {$TArticle13TitleIconColor5137};
+			}
+			#n5137 li span{ 
+				{$TArticle13InfoTimeFont5137|ParseFont}
+			}
+			#n5137 li{
+				animation-duration: {$TArticle13AnimationTime5137}s;
+				animation-fill-mode: both;
+			}
+		</style>
+		<div class="floor_article13 display{$TArticle13Show5137} full-width{$TArticle13FullWidth5137}">
+			<div class="component_title" yd-group="5137" yd-tab="标题设置">
+				<img src="{$TArticle13Icon5137}" />
+				<a href="{$TArticle13Channel5137|ChannelUrl}" target="_blank" yd-text="channel,{$TArticle13Channel5137},ChannelName">{$TArticle13Channel5137|ChannelName}</a>
+			</div>
+			<div class="component_body">
+				<ul class="article13">
+					<infolist id="f" channelid="$TArticle13Channel5137" top="$TArticle13Count5137" labelid="$$TArticle13Label5137">
+						<li yd-animation="{$TArticle13AnimationType5137}"><a href="{$f.InfoUrl}" target="_blank" class="ydicon-{$TArticle13TitleIcon5137}">{$f.InfoTitle}</a><span>{$f.InfoTime}</span></li>
+					</infolist>
+				</ul>
+			</div>
+			<div class="component_bottom"><a href="{$TArticle13Channel5137|ChannelUrl}" target="_blank">{$Think.lang.more}<i class="ydicon-right"></i></a></div>
+		</div>
+	</notempty>
+</div>
+<!--区块5137 结束--><!--区块5110 开始-->
+<div id="n5110" class="component floor_other1_main"  yd-add="1" yd-delete="1" yd-order="1" yd-group="5110" yd-content="_channel,{$TOther1Channel5110}">
+	<notempty name="TOther1Show5110">
+		<style type="text/css">
+			#n5110{
+				padding:{$TOther1Padding5110}px 0;
+				{$TOther1Bg5110|ParseBG}
+			}
+			#n5110 .component_title h2 a{
+				{$TOther1TitleFont5110|ParseFont}
+			}
+			#n5110 .component_title p{
+				{$TOther1SubtitleFont5110|ParseFont}
+			}
+			#n5110 .AlbumTitle{
+				{$TOther1InfoTitleFont5110|ParseFont}
+			}
+			#n5110 .AlbumDescription{
+				{$TOther1InfoSContentFont5110|ParseFont}
+			}
+			#n5110 li{
+				animation-duration: {$TOther1AnimationTime5110}s;
+				animation-fill-mode: both;
+				yd-previewable-class: column column{$TOther1ColumnCount5110};
+			}
+		</style>
+		<div class="floor_other1 display{$TOther1Show5110} full-width{$TOther1FullWidth5110}">
+			<notempty name="TOther1TitleStyle5110">
+		        <div class="component_title">
+		            <h2 class="h2_{$TOther1TitleStyle5110} ThemeBeforeColorBg"><a href="{$TOther1Channel5110|ChannelUrl}" yd-text="channel,{$TOther1Channel5110},ChannelName">{$TOther1Channel5110|ChannelName}</a></h2>
+		            <p yd-text="channel,{$TOther1Channel5110},ChannelSContent">{$TOther1Channel5110|ChannelSContent}</p>
+		        </div>
+	        </notempty>
+			<div class="component_body">
+				<ul class="other1" yd-content="_channel,{$TOther1Channel5110},4" yd-group="5110" yd-tab="列表设置">
+					<channelalbumlist id="ca" channelid="$TOther1Channel5110" length="$TOther1Count5110">
+						<li class="n{$mod} column{$TOther1ColumnCount5110}" yd-animation="{$TOther1AnimationType5110}">
+							<a class="{$TRoundCorner}-round-corner ThemeColorParent">
+								<div class="AlbumPicture"><img src="{$ca.AlbumPicture|DefaultPicture}" title="{$ca.AlbumTitle}" alt="{$ca.AlbumTitle}" /></div>
+								<div class="AlbumWrap">
+									<div class="AlbumTitle ThemeColorChild">{$ca.AlbumTitle}</div>
+									<div class="AlbumDescription">{$ca.AlbumDescription}</div>
+								</div>
+							</a>
+						</li>
+					</channelalbumlist>
+				</ul>
+			</div>
+			<div class="component_bottom"></div>
+		</div>
+	</notempty>
+</div>
+<!--区块5110 结束--><!--区块5148 开始-->
+<div id="n5148" class="component floor_product0_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5148">
+    <notempty name="TProduct0Show5148">
+        <style type="text/css">
+            #n5148{
+                padding:{$TProduct0Padding5148}px 0;
+                {$TProduct0Bg5148|ParseBG}
+            }
+            #n5148 .component_title h2 a{ 
+                {$TProduct0TitleFont5148|ParseFont}
+            }
+            #n5148 .component_title p{ 
+                {$TProduct0SubtitleFont5148|ParseFont}
+            }
+            #n5148 .tabbar a{
+                {$TProduct0ChannelListFont5148|ParseFont}
+            }
+            #n5148 .InfoTitle{ 
+                {$TProduct0InfoTitleFont5148|ParseFont}
+            }
+            #n5148 .InfoSContent{ 
+                {$TProduct0InfoSContentFont5148|ParseFont}
+            }
+            #n5148 .InfoPrice{ 
+                {$TProduct0InfoPriceFont5148|ParseFont}
+            }
+            #n5148 .component_body ul{
+                yd-previewable-class: -product0 {$TProduct0Style5148}-product0;
+            }
+            #n5148 .component_body li{
+                yd-previewable-class: column column{$TProduct0ColumnCount5148};
+            }
+            #n5148 li{
+                animation-duration: {$TProduct0AnimationTime5148}s;
+                animation-fill-mode: both;
+            }
+            #n5148 .thumb-product0 li .InfoPicture{
+                width: {$TProduct0InfoPictureSize5148}%;
+            }
+            #n5148 .product0 li a{
+                {$TProduct0InfoListBg5148|ParseBg}
+                {$TProduct0InfoListBorder5148|ParseBorder}
+                padding: {$TProduct0InfoListPadding5148};
+                margin: {$TProduct0InfoListMargin5148};
+            }
+        </style>
+        <div class="floor_product0 display{$TProduct0Show5148} full-width{$TProduct0FullWidth5148}">
+            <div class="component_title">
+                <notempty name="TProduct0TitleStyle5148">
+                    <h2 class="h2_{$TProduct0TitleStyle5148} ThemeBeforeColorBg"><a href="{$TProduct0Channel5148|ChannelUrl}" yd-text="channel,{$TProduct0Channel5148},ChannelName">{$TProduct0Channel5148|ChannelName}</a></h2>
+                    <p yd-text="channel,{$TProduct0Channel5148},ChannelSContent">{$TProduct0Channel5148|ChannelSContent}</p>
+                </notempty>
+                <ul class="tabbar" yd-content="channel,{$TProduct0Channel5148}">
+                    <channellist id="c" channelid="$TProduct0Channel5148">
+                        <li><a class="<eq name='i' value='1'>ThemeColorBg</eq> n{$i}" href="javascript:;" data-index="{$i}">{$c.ChannelName}</a></li>
+                    </channellist>
+                </ul>
+            </div>
+            <div class="component_body swiper-container" yd-content="info,{$TProduct0Channel5148}" yd-group="5148" yd-tab="列表设置">
+                <div class="swiper-wrapper">
+                    <channellist id="c" channelid="$TProduct0Channel5148">
+                        <ul class="n{$i} swiper-slide product0 {$TProduct0Style5148}-product0">
+                            <infolist id="f" channelid="$c.ChannelID" top="$TProduct0Count5148" labelid="$TProduct0Label5148">
+                                <li class="n{$mod} column{$TProduct0ColumnCount5148}" yd-animation="{$TProduct0AnimationType5148}">
+                                    <a href="{$f.InfoUrl}" target="_blank" class="{$TRoundCorner}-round-corner" yd-content="_info,{$f.InfoID}">
+                                        <div class="InfoPicture {$TRoundCorner}-round-corner"><img src="{$f.InfoPicture|DefaultPicture}" title="{$f.InfoTitle}" alt="{$f.InfoTitle}"/></div>
+                                        <div class="InfoWrap">
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <div class="InfoSContent">
+                                                <notempty name="f.InfoSContent">{$f.InfoSContent}<else/>{$f.InfoContent|strip_tags|Left=50}</notempty>
+                                            </div>
+                                        </div>
+                                        <notempty name="f.InfoPrice">
+                                            <div class="InfoPrice">
+                                                <span>{$CurrencySymbol}</span>{$f.InfoPrice}
+                                                <i class="ydicon-right3"></i>
+                                            </div>
+                                        </notempty>
+                                    </a>
+                                </li>
+                            </infolist>
+                        </ul>
+                    </channellist>
+                </div>
+            </div>
+            <div class="component_bottom"></div>
+        </div>
+        <script type="text/javascript">
+            $(function(){
+                var swiper = new Swiper('#n5148 .swiper-container',{
+                    speed: 500, //滑动速度
+                    calculateHeight : true, //自动计算高度
+                    onTouchEnd: function(item){
+                        console.log(item);
+                        $('#n5148 .tabbar a').removeClass('ThemeColorBg');
+                        $('#n5148 .tabbar a.n' + (item.activeIndex + 1)).addClass('ThemeColorBg');
+                    }
+                });
+                $('#n5148 .tabbar a').click(function(){
+                    $('#n5148 .tabbar a').removeClass('ThemeColorBg');
+                    $(this).addClass('ThemeColorBg');
+                    swiper.swipeTo($(this).attr('data-index') - 1, 2000);
+                })
+            })
+        </script>
+    </notempty>
+</div>
+<!--区块5148 结束--><!--区块5112 开始-->
+<div id="n5112" class="component floor_video2_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5112" yd-content="info,{$TVideo2Channel5112}">
+    <notempty name="TVideo2Show5112">
+        <style type="text/css">
+            #n5112{
+                {$TVideo2Bg5112|ParseBg}
+            }
+            #n5112 .InfoTitle{ 
+                {$TVideo2InfoTitleFont5112|ParseFont}
+            }
+            #n5112 .InfoSContent,#n5112 .InfoContent{
+                {$TVideo2InfoSContentFont5112|ParseFont}
+            }
+            #n5112 .swiper-active-switch{
+                background-color: {$TVideo2PaginationBgColor5112};
+            }
+            #n5112 li{
+                animation-duration: {$TVideo2AnimationTime5112}s;
+                animation-fill-mode: both;
+            }
+        </style>
+        <div class="floor_video2 display{$TVideo2Show5112}">
+            <div class="component_title"></div>
+            <div class="component_body swiper-container">
+                <ul class="video2 swiper-wrapper" yd-animation="{$TVideo2AnimationType5112}">
+                    <!-- 循环 开始 -->
+                    <infolist channelid="$TVideo2Channel5112" id="f" top="$TVideo2Count5112" labelid="$TVideo2Label5112">
+                        <li class="swiper-slide">
+                            <div class="InfoPicture" yd-image="info,{$f.InfoID},f1">
+                                <img src="{$f.f1}" title="{$f.InfoTitle}" alt="{$f.InfoTitle}"/>
+                                <i class="ydicon-play" onclick="videoPlay('{$f.InfoAttachment}')"></i>
+                            </div>
+                            <a class="ThemeColorParent" href="{$f.InfoUrl}" title="{$f.InfoTitle}" target="_blank" yd-content="_info,{$f.InfoID}">
+                                <div class="InfoTitle ThemeColorChild">{$f.InfoTitle}</div>
+                                <div class="InfoSContent"><notempty name="f.InfoSContent">{$f.InfoSContent}<else/>{$f.InfoContent|strip_tags|Left=100}</notempty></div>
+                            </a>
+                        </li>
+                    </infolist>
+                </ul>
+                <div class="swiper-pagination"></div>
+            </div>
+            <div class="component_bottom"></div>
+        </div>
+        <script type="text/javascript">
+            $(function(){
+                var swiper = new Swiper('#n5112 .swiper-container',{
+                    pagination : '#n5112 .swiper-pagination', //分页器容器
+                    paginationClickable :true, //分页器是否可以点击
+                    speed: 1000, //滑动速度
+                    calculateHeight : true, //自动计算高度
+                })
+                if($('#n5112 .video2 a').height() <= 0) return;
+                $('#n5112 .swiper-pagination').css('bottom', $('#n5112 .video2 a').height() + 30);
+                $(window).resize(function(){
+                    $('#n5112 .swiper-pagination').css('bottom', $('#n5112 .video2 a').height() + 30);
+                })
+            })
+        </script>
+    </notempty>
+</div>
+<!--区块5112 结束--><!--区块5155 开始-->
+<div id="n5155" class="component floor_picture0_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5155">
+	<notempty name="TPicture0Show5155">
+		<style type="text/css">
+			#n5155{
+				padding:{$TPicture0Padding5155}px 0;
+				{$TPicture0Bg5155|ParseBG}
+			}
+			#n5155 .component_title h2 a{
+				{$TPicture0TitleFont5155|ParseFont}
+			}
+			#n5155 .component_title p{
+				{$TPicture0SubtitleFont5155|ParseFont}
+			}
+			#n5155 .InfoTitle{
+				{$TPicture0InfoTitleFont5155|ParseFont}
+			}
+			#n5155 .InfoSContent{
+				{$TPicture0InfoSContentFont5155|ParseFont}
+			}
+			#n5155 ul{
+				yd-previewable-class: -picture0 {$TPicture0Style5155}-picture0;
+			}
+			#n5155 li{
+				animation-duration: {$TPicture0AnimationTime5155}s;
+				animation-fill-mode: both;
+				yd-previewable-class: column column{$TPicture0ColumnCount5155};
+			}
+			#n5155 .thumb-picture0 li .InfoPicture{
+				width: {$TPicture0InfoPictureSize5155}%;
+			}
+	        #n5155 .picture0 li .InfoWrap:after{
+	            <eq name="TPicture0InfoTitleFont5155|ParseItem=1" value="0">display: none;</eq>
+	        }
+	        #n5155 .picture0 li a{
+	            {$TPicture0InfoListBg5155|ParseBg}
+	            {$TPicture0InfoListBorder5155|ParseBorder}
+	            padding: {$TPicture0InfoListPadding5155};
+	            margin: {$TPicture0InfoListMargin5155};
+	        }
+		</style>
+	    <div class="floor_picture0 display{$TPicture0Show5155} full-width{$TPicture0FullWidth5155}">
+	    	<notempty name="TPicture0TitleStyle5155">
+		        <div class="component_title">
+		            <h2 class="h2_{$TPicture0TitleStyle5155} ThemeBeforeColorBg"><a href="{$TPicture0Channel5155|ChannelUrl}" yd-text="channel,{$TPicture0Channel5155},ChannelName">{$TPicture0Channel5155|ChannelName}</a></h2>
+		            <p yd-text="channel,{$TPicture0Channel5155},ChannelSContent">{$TPicture0Channel5155|ChannelSContent}</p>
+		        </div>
+	        </notempty>
+	        <div class="component_body">
+	            <ul class="picture0 {$TPicture0Style5155}-picture0" yd-group="5155" yd-tab="列表设置" yd-content="info,{$TPicture0Channel5155}">
+	                <infolist id="f" channelid="$TPicture0Channel5155" top="$TPicture0Count5155" labelid="$TPicture0Label5155">
+	                    <li class="n{$i} column{$TPicture0ColumnCount5155}" yd-animation="{$TPicture0AnimationType5155}">
+	                        <a class="ThemeColorParent {$TRoundCorner}-round-corner" href="{$f.InfoUrl}" target="_blank" yd-content="_info,{$f.InfoID}">
+	                            <div class="InfoPicture"><img src="{$f.InfoPicture|DefaultPicture}" title="{$f.InfoTitle}" alt="{$f.InfoTitle}" /></div>
+	                            <div class="InfoWrap">
+	                                <div class="InfoTitle ThemeColorChild">{$f.InfoTitle}</div>
+	                                <div class="InfoSContent">
+	                                    <notempty name="f.InfoSContent">{$f.InfoSContent}<else/>{$f.InfoContent|strip_tags|left=50}</notempty>
+	                                </div>
+	                            </div>
+	                        </a>
+	                    </li>
+	                </infolist>
+	            </ul>
+	        </div>
+	        <div class="component_bottom"></div>
+	    </div>
+	</notempty>
+</div>
+<!--区块5155 结束--><!--区块5114 开始-->
+<div id="n5114" class="component floor_page0_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5114" yd-content="_channel,{$TPage0Channel5114},3">
+	<notempty name="TPage0Show5114">
+		<style type="text/css">
+			#n5114 .ChannelWrap{
+				animation-duration: {$TPage0AnimationTime5114}s;
+				animation-fill-mode: both;
+			}
+			#n5114 .ChannelContent{
+				max-width: {$TPage0SubContentWidth5114}px;
+			}
+			#n5114 .ChannelSContent{ 
+				{$TPage0TitleFont5114|ParseFont}
+				max-width: {$TPage0SubContentWidth5114}px;
+			}
+			#n5114 .ChannelContent p{ 
+				{$TPage0SubContentFont5114|ParseFont}
+			}
+			#n5114 .ChannelContent i{
+				background-color: {$TPage0SubContentBgColor5114};
+			}
+			#n5114 .ChannelWrap{
+				animation-duration: {$TPage0AnimationTime5114}s;
+				animation-fill-mode: both;
+			}
+		</style>
+		<div class="floor_page0 display{$TPage0Show5114}">
+			<div class="component_body">
+				<img class="BgPicture" src="{$TPage0Picture5114}" title="{$TPage0Channel5114|ChannelName}" alt="{$TPage0Channel5114|ChannelName}" />
+				<div class="ChannelWrap" yd-animation="{$TPage0AnimationType5114}">
+					<div class="ChannelSContent" yd-text="channel,{$TPage0Channel5114},ChannelSContent">{$TPage0Channel5114|ChannelSContent}</div>
+					<div class="ChannelContent BgBackParent" yd-content="_channel,{$TPage0Channel5114},3" yd-group="5114" yd-tab="标题设置"><i></i><p>{$TPage0Channel5114|ChannelContent|strip_tags|left=$TPage0SubContentLeft5114}</p></div>
+					<div yd-slot="5114A"></div>
+				</div>
+			</div>
+		</div>
+	</notempty>
+</div>
+<!--区块5114 结束--><!--区块5149 开始-->
+<div id="n5149" class="component floor_article0_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5149">
+	<notempty name="TArticle0Show5149">
+		<style type="text/css">
+			#n5149{
+				{$TArticle0Bg5149|ParseBg}
+				padding:{$TArticle0Padding5149}px 0;
+			}
+			#n5149 .component_title h2 a{
+				{$TArticle0TitleFont5149|ParseFont}
+			}
+			#n5149 .component_title p{
+				{$TArticle0SubtitleFont5149|ParseFont}
+			}
+			#n5149 .InfoTitle{
+				{$TArticle0InfoTitleFont5149|ParseFont}
+			}
+			#n5149 .InfoSContent{
+				{$TArticle0InfoSContentFont5149|ParseFont}
+			}
+			#n5149 .InfoTime{
+				{$TArticle0InfoTimeFont5149|ParseFont}
+			}
+			#n5149 .TitleIcon{
+				width: {$TArticle0TitleIconSize5149}px;
+			}
+			#n5149 li{
+				animation-duration: {$TArticle0AnimationTime5149}s;
+				animation-fill-mode: both;
+				yd-previewable-class: column column{$TArticle0ColumnCount5149};
+			}
+			#n5149 ul{
+				yd-previewable-class: -article0 {$TArticle0Style5149}-article0;
+			}
+			#n5149 .thumb-article0 li .InfoPicture,#n5149 .thumbright-article0 li .InfoPicture{
+				width: {$TArticle0InfoPictureSize5149}%;
+			}
+	        #n5149 .article0 li a{
+	            {$TArticle0InfoListBg5149|ParseBg}
+	            {$TArticle0InfoListBorder5149|ParseBorder}
+	            padding: {$TArticle0InfoListPadding5149};
+	            margin: {$TArticle0InfoListMargin5149};
+	        }
+		</style>
+		<div class="floor_article0 display{$TArticle0Show5149} full-width{$TArticle0FullWidth5149}">
+			<notempty name="TArticle0TitleStyle5149">
+				<div class="component_title">
+					<h2 class="h2_{$TArticle0TitleStyle5149} ThemeBeforeColorBg"><a href="{$TArticle0Channel5149|ChannelUrl}" yd-text="channel,{$TArticle0Channel5149},ChannelName">{$TArticle0Channel5149|ChannelName}</a></h2>
+					<p yd-text="channel,{$TArticle0Channel5149},ChannelSContent">{$TArticle0Channel5149|ChannelSContent}</p>
+				</div>
+			</notempty>
+			<div class="component_body">
+				<ul class="article0 {$TArticle0Style5149}-article0" yd-group="5149" yd-tab="列表设置" yd-content="info,{$TArticle0Channel5149}">
+					<infolist id="f" channelid="$TArticle0Channel5149" top="$TArticle0Count5149" labelid="$TArticle0Label5149">
+						<li class="n{$mod} column{$TArticle0ColumnCount5149}" yd-animation="{$TArticle0AnimationType5149}">
+							<a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" class="{$TRoundCorner}-round-corner ThemeColorParent" yd-content="_info,{$f.InfoID}">
+								<div class="InfoPicture">
+									<img src="{$f.InfoPicture|DefaultPicture}" title="{$f.InfoTitle}" alt="{$f.InfoTitle}" />
+								</div>
+								<div class="InfoWrap">
+									<div class="InfoTitle ThemeColorChild" yd-var="TArticle0InfoTitleFont5149">
+										<eq name="TArticle0Style5149" value="text"><img class="TitleIcon" src="{$TArticle0TitleIcon5149}"/></eq>
+										{$f.InfoTitle}
+									</div>
+									<div class="InfoSContent" yd-var="TArticle0InfoSContentFont5149"><notempty name="f.InfoSContent">{$f.InfoSContent}<else />{$f.InfoContent|strip_tags|Left=80}</notempty></div>
+									<div class="InfoTime ThemeColorChild ThemeColorBgChildAfter" yd-var="TArticle0InfoTimeFont5149">{$f.InfoTime}</div>
+								</div>
+							</a>
+						</li>
+					</infolist>
+				</ul>
+			</div>
+			<div class="component_bottom"></div>
+		</div>
+	</notempty>
+</div>
+<!--区块5149 结束--><!--区块5117 开始-->
+<div id="n5117" class="component floor_other2_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5117" yd-content="_channel,{$TOther2Channel5117}">
+	<notempty name="TOther2Show5117">
+		<style type="text/css">
+			#n5117{
+				padding:{$TOther2Padding5117}px 0;
+				{$TOther2Bg5117|ParseBG}
+			}
+			#n5117 .component_title h2 {
+				{$TOther2TitleFont5117|ParseFont}
+			}
+			#n5117 .component_title p{
+				{$TOther2SubtitleFont5117|ParseFont}
+			}
+			#n5117 .AlbumTitle{
+				{$TOther2InfoTitleFont5117|ParseFont}
+			}
+			#n5117 .AlbumDescription{
+				{$TOther2InfoSContentFont5117|ParseFont}
+			}
+			#n5117 li{
+				animation-duration: {$TOther2AnimationTime5117}s;
+				animation-fill-mode: both;
+			}
+			#n5117 li .AlbumWrap{
+				border-width:{$TOther2BorderWidth5117}px;
+				border-style:solid;
+				border-color:{$TOther2BorderColor5117};
+				padding:{$TOther2ListPadding5117}px;
+			}
+		</style>
+		<div class="floor_other2 display{$TOther2Show5117} full-width{$TOther2FullWidth5117}">
+			<notempty name="TOther2TitleStyle5117">
+				<div class="component_title">
+					<h2 class="h2_{$TOther2TitleStyle5117} ThemeBeforeColorBg" yd-text="channel,{$TOther2Channel5117},ChannelName">{$TOther2Channel5117|ChannelName}</h2>
+					<p yd-text="channel,{$TOther2Channel5117},ChannelSContent">{$TOther2Channel5117|ChannelSContent}</p>
+				</div>
+			</notempty>
+			<div class="component_body {$TOther2Style5117}-container" yd-content="_channel,{$TOther2Channel5117},4" yd-group="5117" yd-tab="列表设置">
+				<ul class="other2 swiper-wrapper {$TOther2Style5117}-other2">
+					<channelalbumlist channelid="$TOther2Channel5117" id="ca" length="$TOther2Count5117">
+						<li class="swiper-slide <neq name='TOther2Style5117' value='swiper'>column{$TOther2ColumnCount5117}</neq>" yd-animation="{$TOther2AnimationType5117}">
+							<div class="AlbumWrap {$TRoundCorner}-round-corner">
+								<img src="{$ca.AlbumPicture}"  alt="{$ca.AlbumTitle}" title="{$ca.AlbumTitle}" />
+								<div class="AlbumTitle">{$ca.AlbumTitle}</div>
+								<notempty name="ca.AlbumDescription"><div class="AlbumDescription">{$ca.AlbumDescription}</div></notempty>
+							</div>
+						</li>
+					</channelalbumlist>
+				</ul>
+			</div>
+			<div class="component_bottom"></div>
+		</div>
+		<script type="text/javascript">
+			$(function(){
+				var swiper = new Swiper('#n5117 .swiper-container',{
+					autoplay: 2000,
+					autoplayDisableOnInteraction: false,
+					slidesPerView: 'auto',
+					calculateHeight : true,
+                    loop: true,
+                    loopedSlides: {$TOther2Count5117}
+				})
+			})
+		</script>
+	</notempty>
+</div>
+<!--区块5117 结束--><!--区块5119 开始-->
+<div id="n5119" class="component floor_link4_main" yd-add="1" yd-delete="1" yd-content="link" yd-order="1" yd-group="5119">
+	<notempty name="TLink4Show5119">
+		<style type="text/css">
+			#n5119{ 
+				padding:{$TLink4Padding5119}px 0;
+				{$TLink4Bg5119|ParseBG}
+			}
+			#n5119 .linklist .link_name{ 
+				{$TLink4TitleFont5119|ParseFont};
+			}
+			#n5119 .linklist li{
+				animation-duration: {$TLink4AnimationTime5119}s;
+				animation-fill-mode: both;
+				margin-right:{$TLink4Margin5119}px;
+				{$TLink4TextLinkFont5119|ParseFont}
+			}
+			#n5119 .linklist li a{ 
+				{$TLink4TextLinkFont5119|ParseFont}
+			}
+			#n5119 .linklist li img{ 
+				width:{$TLink4Width5119}px;
+				height:{$TLink4Height5119}px;
+			}
+		</style>
+		<div class="floor_link4 display{$TLink4Show5119} full-width{$TLink4FullWidth5119}">
+			<div class="component_title"></div>
+			<div class="component_body">
+				<ul class="linklist">
+					<notempty name="TLink4TitleStyle5119">
+						<li class="link_name " yd-animation="{$TLink4AnimationType5119}">{$TLink4Name5119}</li>
+						<empty name="TLink4Style5119"><notempty name="TLink4Separator5119"><li yd-animation="{$TLink4AnimationType5119}">{$TLink4Separator5119}</li></notempty></empty>
+					</notempty>
+					<linklist id="l" key="lk">
+						<notempty name="TLink4Style5119">
+							<notempty name="l.LinkLogo">
+								<li yd-animation="{$TLink4AnimationType5119}">
+									<a href="{$l.LinkUrl}" target="_blank">
+										<img src="{$l.LinkLogo}" title="{$l.LinkName}" alt="{$l.LinkName}" />
+									</a>
+								</li>
+							</notempty>
+							<else/>
+							<neq name="lk" value="1"><notempty name="TLink4Separator5119"><li yd-animation="{$TLink4AnimationType5119}">{$TLink4Separator5119}</li></notempty></neq>
+							<li yd-animation="{$TLink4AnimationType5119}">
+								<a class="ThemeColorHover" href="{$l.LinkUrl}" target="_blank">{$l.LinkName}</a>
+							</li>
+						</notempty>
+					</linklist>
+				</ul>
+			</div>
+			<div class="component_bottom"></div>
+		</div>
+	</notempty>
+</div>
+<!--区块5119 结束-->
+
+    <include file="Public:footer" />
+</body>
+</html>

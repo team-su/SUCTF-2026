@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{$ChannelName}|{$Title}-{$WebName}</title>
+<include file="Public:meta" />
+</head>
+<body class="body_article">
+	<include file="Public:header" />
+    
+    <!--区块5134 开始-->
+<div id="n5134" class="component floor_channel12_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5134">
+    <style type="text/css">
+        #n5134{
+            {$TChannel12Bg5134|ParseBg}
+            padding-top: {$TChannel12PaddingTop5134}px;
+            padding-bottom: {$TChannel12PaddingBottom5134}px;
+        }
+        #n5134 .floor_channel12{
+            {$TChannel12ContentBg5134|ParseBg}
+            animation-duration: {$TChannel12AnimationTime5134}s;
+            animation-fill-mode: both;
+        }
+        #n5134>.floor_channel12>.component_title h2{
+            {$TChannel12TitleFont5134|ParseFont}
+        }
+
+        #n5134 .resume_table th{
+            {$TChannel12LabelFont5134|ParseFont}
+        }
+        #n5134 .resume_table tr.input input.form_text,
+        #n5134 .resume_table tr.input textarea.form_textarea{
+            {$TChannel12InputBorder5134|ParseBorder}
+            {$TChannel12InputFont5134|ParseFont}
+            background: {$TChannel12InputBg5134};
+        }
+        #n5134 .resume_table tr.input input::-webkit-input-placeholder,
+        #n5134 .resume_table tr.input textarea::-webkit-input-placeholder{
+            {$TChannel12InputPlaceholderFont5134|ParseFont}
+        }
+        #n5134 .resume_table tr.input input:focus,
+        #n5134 .resume_table tr.input textarea:focus{
+            border-color: {$TChannel12InputFocusBorderColor5134};
+        }
+        #n5134 .resume_table input,
+        #n5134 .resume_table textarea{
+            margin: {$TChannel12InputMargin5134/2}px 0;
+        }
+
+        #n5134 .resume_table .submit_button{
+            {$TChannel12BtnFont5134|ParseFont}
+            {$TChannel12Btn5134|ParseButton}
+            {$TChannel12BtnBg5134|ParseBg}
+            text-align: center;
+        }
+        #n5134 .resume_table td.operation{
+            {$TChannel12BtnFont5134|ParseFont}
+        }
+    </style>
+    <div class="floor_channel12 full-width{$TChannel12FullWidth5134}" yd-animation="{$TChannel12AnimationType5134}">
+        <div class="component_title">
+            <include file="Public:location" />
+            <h2>{$ChannelName}</h2>
+        </div>
+        <div class="component_body"> 
+            <table class="resume_table">
+                <form enctype="multipart/form-data" method="post"  id="frmResume" action="{$ResumeAction}">
+                    <tr class="input">
+                        <th>{$Think.lang.RJobName}</th>
+                        <td>
+                            <input name="JobName" type="text" class="form_text" id="JobName" value="{$JobName}"/>
+                            <input id="JobID" name="JobID" type="hidden"  value="{$JobID}"  class="form_text" maxlength="100" />
+                        </td>
+                    </tr>      
+                    <tr class="input">
+                        <th>{$Think.lang.RYourName}<span class="required">*</span></th>
+                        <td>
+                            <input name="GuestName" type="text" value="{$MemberName}" class="form_text" id="GuestName" />
+                            <input id="GuestID" name="GuestID" type="hidden"  value="{$GuestID}"  class="form_text" maxlength="100" />
+                        </td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RGender}</th>
+                        <td>
+                            <input  type="radio" name="Gender" value="男" checked="checked" class="form_radio" />{$Think.lang.RMale}&nbsp;&nbsp;
+                            <input  type="radio" name="Gender" value="女"   class="form_radio"/>{$Think.lang.RFemale}
+                        </td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RBirthday}</th>
+                        <td><input name="Birthday" type="text" onClick="PickDate()" readonly="readonly"  class="Wdate form_text" id="Birthday"  onFocus="PickDate()" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.REthnic}</th>
+                        <td><input name="Ethnic" type="text" class="form_text" id="Ethnic" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RPolitical}</th>
+                        <td><input name="Political" type="text" class="form_text" id="Political" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.REducation}</th>
+                        <td><input name="Education" type="text" class="form_text" id="Education" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RBirthplace}</th>
+                        <td><input name="Birthplace" type="text" class="form_text" id="Birthplace" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RSchool}</th>
+                        <td><input name="School" type="text" class="form_text" id="School" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RSpecialty}</th>
+                        <td><input name="Specialty" type="text" class="form_text" id="Specialty" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RTelephone}<span class="required">*</span></th>
+                        <td><input name="Telephone" type="text" class="form_text" id="Telephone" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.REmail}</th>
+                        <td><input name="Email" type="text" class="form_text" id="Email" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RAddress}</th>
+                        <td><input name="Address" type="text" class="form_text" id="Address" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RSalary}</th>
+                        <td><input name="Salary" type="text" class="form_text" id="Salary" /></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.RDetail}</th>
+                        <td><textarea name="Detail" class="form_textarea" id="Detail"></textarea></td>
+                    </tr>
+                    <tr class="input">
+                        <th>{$Think.lang.Verifycode}<span class="required">*</span></th>
+                        <td>                         
+                            <input id="verifycode" class="form_text_verifycode" name="verifycode" type="text" maxlength="4" />
+                            <img src="{$Group}/public/ResumeCode" onclick="ChangeResumeCode()" class="code_image" id="ResumeCode" align="absMiddle" alt="{$Think.lang.ChangeVerifycode}"  title="{$Think.lang.ChangeVerifycode}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="operation" yd-group="5134" yd-tab="按钮设置">
+                            <input class="submit_button" type="submit" name="submit8" value="{$TChannel12Btn5134|ParseButtonName}" />
+                        </td>
+                    </tr>
+                </form>
+            </table>
+        </div>
+    </div>
+    <div class="component_bottom"></div>
+    <script type="text/javascript" src="{$WebPublic}My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#frmResume').ajaxForm({
+                success: complete,
+                dataType: 'json'
+            });
+            
+            function complete(data){
+                if (data.status==1){
+                    alert(data.info);
+                    $('#frmResume').resetForm();
+                }else if(data.status==0){
+                    alert(data.info);
+                }
+                ChangeResumeCode();
+            };
+            
+             $('#frmResume').submit(function(){  // 提交表单
+                //$('#frmAddBanner').ajaxSubmit();  
+                return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+             });
+        });
+
+        function PickDate(){
+            var language = "{$HomeLanguageMark}";
+            WdatePicker({
+                skin:'whyGreen',
+                dateFmt:'yyyy-MM-dd',
+                lang:language
+            })
+        }
+        
+        function ChangeResumeCode(){
+                var timenow = new Date().getTime();
+                var obj = document.getElementById('ResumeCode');
+                if( obj ) obj.src = '{$Group}/public/ResumeCode/'+timenow;
+        }
+    </script>
+</div>
+<!--区块5134 结束--><include file="Public:footer" />
+</body>
+</html>

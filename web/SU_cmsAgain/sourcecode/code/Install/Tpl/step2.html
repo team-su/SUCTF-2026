@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title><?php echo $CMSName ?>安装程序</title>
+<link href="<?php echo $Css ?>/table.css" rel="stylesheet" />
+<script type="text/javascript">
+function Check(){
+    if( document.mainform.dbhost.value=="") {
+		alert('数据库服务器不能为空！');
+        document.mainform.dbhost.focus();
+        return false;
+    }
+	
+	if( document.mainform.dbport.value=="") {
+		alert('数据库服端口号不能为空！');
+        document.mainform.dbport.focus();
+        return false;
+    }
+	
+    if( document.mainform.dbname.value=="") {
+		alert('数据库名不能为空！');
+        document.mainform.dbname.focus();
+        return false;
+    }
+	
+    if( document.mainform.dbuser.value=="") {
+		alert('数据库用户名不能为空！');
+        document.mainform.dbuser.focus();
+        return false;
+    }
+	
+	var dbprefix = document.mainform.dbprefix.value;
+	if( dbprefix=="") {
+		alert('数据库表前缀不能为空！');
+        document.mainform.dbprefix.focus();
+        return false;
+    }
+	if( dbprefix.substr(dbprefix.length-1, 1) != "_") {
+		alert('数据库表前缀必须以下划线_结尾！');
+        document.mainform.dbprefix.focus();
+        return false;
+    }
+
+    if( document.mainform.AdminName.value=="" ) {
+		alert('管理员用户名不能为空');
+        document.mainform.AdminName.focus();
+        return false;
+    }
+	
+    if(document.mainform.pwd1.value.length<8 || document.mainform.pwd1.value.length>20 ) {
+        alert('管理密码无效，密码长度应为：8-20个任意字符');
+        document.mainform.pwd1.focus();
+        return false;
+    }
+
+    if( document.mainform.pwd2.value =="" ) {
+        alert('重复管理密码不能为空');
+        document.mainform.pwd2.focus();
+        return false;
+    }
+    if( document.mainform.pwd2.value != document.mainform.pwd1.value ) {
+        alert('两次输入的密码不相同，请重新输入');
+        document.mainform.pwd1.focus();
+        return false;
+    }
+	
+	var obj = document.getElementById("btnSubmit");
+	obj.value = "安装中,请稍后...";
+	obj.disabled = true;
+	return true;
+
+}
+</script>
+</head>
+
+<body>
+<div class="login_center">
+	<table id="table1" border="0" cellpadding="0" width="100%">
+		<tr>
+			<td align="center">
+			<table id="table1" border="0" cellpadding="0">
+				<tr>
+					<td align="center" bgcolor="#007253"><img border="0" height="53" src="<?php echo $Images ?>/top_bg.jpg" /></td>
+				</tr>
+				<tr>
+					<td align="center" bgcolor="#ffffff" valign="top" class="centerbg">
+					<table border="0" cellpadding="0" style="width: 90%;" class="style1">
+						<tr>
+							<td class="left"><img alt="" src="<?php echo $Logo ?>" /></td>
+						</tr>
+						<tr>
+							<td class="left line"><img alt="" height="8" src="<?php echo $Images ?>/line.jpg" width="782" /></td>
+						</tr>
+						<tr>
+							<td>
+							<table style="width: 100%">
+								<tr>
+									<td class="left_botton">
+										<ul>
+											<li class="bottonli02">查看授权条款</li>
+											<li class="bottonli02">环境检查</li>
+											<li class="bottonli01">设置基本参数</li>
+											<li class="bottonli02">安装数据库</li>
+											<li class="bottonli02">安装成功</li>
+										</ul>
+									</td>
+									<td class="right_botton left">
+									<form enctype="multipart/form-data" name="mainform" method="post" action="index.php?InstallStep=3" onSubmit="return Check()">
+									<input type="hidden" name="step" value="2">
+									<input type="hidden" name="dbclass" value="1">
+									<div class="centerblock">
+										<table style="width: 100%">
+											<tr>
+												<td colspan="2" class="td01 left"><h2>设置数据库服务器</h2></td>
+											</tr>
+											<tr>
+												<td class="td01 right" width="20%">数据库服务器：</td>
+												<td class="td01 left"><input type="text" name="dbhost" value="localhost" size="35" class="logininput"/> (请向主机服务商索取数据库服务器地址)</td>
+											</tr>
+<tr>
+												<td class="td01 right" width="20%">数据库端口号：</td>
+												<td class="td01 left"><input type="text" name="dbport" value="3306" size="35" class="logininput"/> (请向主机服务商索取数据库端口号)</td>
+											</tr>
+											<tr>
+												<td class="td01 right" width="20%">数据库名：</td>
+												<td class="td01 left"><input type="text" name="dbname" value="" size="35" class="logininput"/> (如果数据库不存在，则创建数据库，否则使用现有数据库)</td>
+											</tr>
+											<tr>
+												<td class="td01 right" width="20%">数据库用户名：</td>
+												<td class="td01 left"><input type="text" name="dbuser" value="" size="35" class="logininput"/> (请向主机服务商索取数据库连接用户名)</td>
+											</tr>
+											<tr>
+												<td class="td01 right" width="20%">数据库密码：</td>
+												<td class="td01 left"><input type="password" name="dbpw" value="" size="35" class="logininput"/> (请向主机服务商索取数据库连接密码)</td>
+											</tr>
+                                            <tr>
+												<td class="td01 right" width="20%">数据库表前缀：</td>
+												<td class="td01 left">
+                                                <?php $DefaultDbPrefix = ($cmsinfo['CMSEnName']=='YouDianCMS') ? 'youdian_' : 'cms_';  ?>
+                                                <input type="text" name="dbprefix" value="<?php echo $DefaultDbPrefix ?>" size="35" class="logininput"/> (以下划线_结束，如：<?php echo $DefaultDbPrefix ?>)
+                                                </td>
+											</tr>
+											<tr>
+												<td colspan="2" class="td01 left"><h2>填写管理员信息</h2></td>
+											</tr>
+											<tr>
+												<td class="td01 right" width="20%">管理员用户名：</td>
+												<td class="td01 left"><input type="text" name="AdminName" value="admin" size="35" class="logininput"></td>
+											</tr>
+											<tr>
+												<td class="td01 right" width="20%">管理密码：</td>
+												<td class="td01 left"><input type="password" name="pwd1" value="" size="35" class="logininput"> (密码长度为8-20个字符，且必须包含字母和数字)</td>
+											</tr>
+											<tr>
+												<td class="td01 right" width="20%">重复管理密码：</td>
+												<td class="td01 left"><input type="password" name="pwd2" value="" size="35" class="logininput"> (密码长度为8-20个字符，且必须包含字母和数字)</td>
+											</tr>		
+										</table>
+									</div>
+									<div class="btnbox marginbot">
+										<input type="button" onclick="history.back();" value="上一步" class="inputsubmit01"/>
+										<input id="btnSubmit" type="submit" name="btnSubmit" value="安装数据库" class="inputsubmit01"/>&nbsp;
+									</div>
+									</form>
+									</td>
+								</tr>
+							</table>
+							</td>
+						</tr>
+					</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center"><img alt="" src="<?php echo $Images ?>/bottom_bg.jpg"/></td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

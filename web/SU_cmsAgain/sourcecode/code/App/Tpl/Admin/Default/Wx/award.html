@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+	#InfoHit{	color:#00F;	font-weight:bold;}
+	label{	color:#00F; 	line-height:21px; 	font-weight:bold; 	height:21px; 	vertical-align:middle;	font-size:12px;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data"  method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+        <div class="table">
+        <div class="toolbars">
+            <li class="toolbar toolbarform" id="toolbarleft">
+                <label class="first">活动名称</label>
+                <select name="AppID">
+                <volist name="App" id="a" >
+                    <option value="{$a.AppID}"  <eq name="a.AppID" value="$AppID">selected="selected"</eq> >{$a.AppName}</option>
+                </volist>
+                </select>
+                <label>手机号码</label><input type="text" class='textinput' name="Mobile" style="width:100px" value="{$Mobile}" id="Mobile"/>
+                <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+            </li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="45px" >编号ID</th> 
+                <th width="100px" >姓名</th>
+                <th width="100px" >联系电话</th>  
+                <th width="220px" nowrap="nowrap">中奖者微信号</th>
+                <th width="190px" >奖品</th>
+    
+                <th width="140px" >中奖SN码</th>
+                <th width="125px" >中奖时间</th>
+                <th width="60px" >是否领奖</th>
+                <th style="text-align:left;padding-left:20px">操作</th>
+            </tr>  
+            <notempty name="Award">                
+                <volist name="Award" id="a">
+                    <tr>
+                    <td><b>{$a.AwardID}</b></td>
+                    <td>{$a.MemberRealName|htmlspecialchars}</td>
+                    <td><b style="color:#0000FF">{$a.MemberMobile|htmlspecialchars}</b></td>
+                    <td style="text-align:left"><b>{$a.FromUser|htmlspecialchars}</b></td>
+                    <td><b>{$a.AwardNumberText|htmlspecialchars}</b>&nbsp;<b style="color:#F00">[{$a.AwardName|htmlspecialchars}]</b></td>
+                    
+                    <td>{$a.AwardSN|htmlspecialchars}</td>
+                    <td>{$a.AwardTime|strtotime|yd_friend_date}</td>
+                    <td>
+                        <eq name="a.IsCheck" value="1">
+                        <b style="color:#000">已领奖</b><else/><b style="color:#F00">未领奖</b>
+                        </eq>
+                    </td>
+                    <td style="text-align:left;">
+                    	<eq name="a.IsCheck" value="0"><a style="float:left" onclick="CheckAward({$a.AwardID})" id="btnEdit">领奖</a></eq>
+                    </td>
+                    </tr>
+                </volist>
+            <else/>
+            	<tr><td colspan="9" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                
+        </table>
+        <div class="tfoot">
+            <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+    </div>
+</form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/award");
+	$('#frm').submit();
+	return true;
+}	
+
+function CheckAward(id){
+	ConfirmBox("确定领奖吗?", function () {
+		url = "{$Url}checkAward/AwardID/"+id+"/p/{$NowPage}/AppID/{$AppID}/Mobile/"+$("#Mobile").val();
+		location.href = url;
+	});
+}
+
+$(document).ready(function(){
+	$("#Mobile").focus();
+});
+</script>

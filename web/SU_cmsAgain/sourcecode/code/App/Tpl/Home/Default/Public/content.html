@@ -1,0 +1,39 @@
+<!-- 频道/文章内容  开始-->
+<eq name="HasReadLevel" value="1">
+	   <div class="InfoSContent">{$InfoSContent}</div>
+	   <div class="InfoContent">
+			<notempty name="InfoAttachment">
+				<switch name="ChannelModelID">
+					<case value="34"><div><videoplayer src="$InfoAttachment" autoplay="0" height="auto" width="100%"  title="$InfoTitle" /></div></case>
+					<case value="35"><div class="InfoAttachment"><a class="btn" href="{$InfoAttachment}" target="_self">{$Think.lang.Download}</a></div></case>
+				</switch>
+			</notempty>
+			{$InfoContent}
+			<notempty name="Tag">
+				<div class="Tag"><b>{$Think.lang.Tag}：</b><taglist id="t" infoid="$InfoID"><a href="{$t.TagUrl}">{$t.TagName}</a></taglist></div>
+			</notempty>
+		</div>
+<else/>
+		<div class="InfoContent">{$Think.lang.ReadLevelTip}</div>
+</eq>
+<!-- 频道/文章内容  结束-->
+
+<!-- 当前信息 上一条 下一条  开始-->
+<div class="info_previous_next_wrap">
+	<div class="Previous">
+		<eq name="HasPrevious" value="1">
+			<b>{$Think.lang.Previous}{$ChannelSName}：</b><a  href="{$PreviousInfoUrl}" title="{$PreviousInfoTitle}">{$PreviousInfoTitle}</a>
+		<else/>
+			<b>{$Think.lang.Previous}{$ChannelSName}：</b>{$Think.lang.Nothing}
+		</eq>
+	</div>
+	
+	<div class="Next">
+		<eq name="HasNext" value="1">
+			<b>{$Think.lang.Next}{$ChannelSName}：</b><a  href="{$NextInfoUrl}" title="{$NextInfoTitle}">{$NextInfoTitle}</a>
+		<else/>
+			<b>{$Think.lang.Next}{$ChannelSName}：</b>{$Think.lang.Nothing}
+		</eq>
+	</div>
+</div>
+<!-- 当前信息 上一条 下一条  结束-->

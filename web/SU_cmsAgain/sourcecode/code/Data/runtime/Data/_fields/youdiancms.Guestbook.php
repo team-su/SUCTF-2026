@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'MessageID', 1 => 'GuestID', 2 => 'GuestName', 3 => 'GuestIP', 4 => 'Contact', 5 => 'MessageTitle', 6 => 'MessageContent', 7 => 'MessageTime', 8 => 'AnswerContent', 9 => 'AnswerTime', 10 => 'IsCheck', 11 => 'LanguageID', 12 => 'f1', 13 => 'f2', 14 => 'f3', 15 => 'f4', 16 => 'f5', 17 => 'Email', 18 => 'Address', 19 => 'Gender', 20 => 'QQ', '_autoinc' => true, '_pk' => 'MessageID', ); ?>

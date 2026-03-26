@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="plugin_body">
+    <table class="plugin_table">
+        <tr>
+            <th valign="top">
+                <ul class="submenulist">
+                    <li><a href="{$Group}/Order/index" class="current ydicon-right" target="plugin">订单管理</a></li>
+					<li><a href="{$Group}/Order/stat" target="plugin">销售统计</a></li>
+					
+                    <li class="separator"><a href="{$Group}/Shipping/index" target="plugin">配送方式管理</a></li>
+                    <li><a href="{$Group}/Pay/index" target="plugin">支付方式管理</a></li>
+                    <li><a href="{$Group}/Cash/index" target="plugin">资金管理</a></li>
+                    <li><a href="{$Group}/Point/index" target="plugin">积分管理</a></li>
+
+					<li  class="separator"><a href="{$Group}/Coupon/index" target="plugin">优惠券管理</a></li>
+					<li><a href="{$Group}/Type/index" target="plugin">商品类型管理</a></li>
+					<li><a href="{$Group}/Config/order" target="plugin">商城设置</a></li>
+                </ul>
+            </th>
+            <td valign="top" height="100%">
+				<iframe src="{$Group}/Order/index" name="plugin" width="100%" height="100%" scrolling="yes" frameborder="0"></iframe>
+			</td>
+        </tr>
+    </table>
+</body>
+</html>
+<include file="common" />

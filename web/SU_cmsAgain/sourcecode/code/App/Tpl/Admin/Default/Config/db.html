@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">    
+            <div class="box-header"  id="c2"><h4>数据库设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>数据库服务器</th>
+                        <td><input type="text" class="textinput w360" name="DB_HOST" value="{$DbHost}" />
+                        <span class='Caution'>本机请填localhost</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>端口号</th>
+                        <td><input type="text" class="textinput w360" name="DB_PORT" value="{$DbPort}" />
+                        <span class='Caution'>默认端口为3306</span>
+                        </td>
+                    </tr>
+                       <tr>
+                        <th>数据库名称</th>
+                        <td><input type="text" class="textinput w360" name="DB_NAME"  value="{$DbName}" /></td>
+                    </tr>
+                    <tr>
+                        <th>用户名</th>
+                        <td><input type="text" class="textinput w360" name="DB_USER" value="{$DbUser}"  /></td>
+                    </tr>
+                    <tr>
+                        <th>密码</th>
+                        <td><input type="password" class="textinput w360" name="DB_PWD" /></td>
+                    </tr>
+                    <tr>
+                        <th>表前缀</th>
+                        <td><input type="text" class="textinput w360" name="DB_PREFIX"  value="{$DbPrefix}" />
+                        <span class='Caution'>请填写表前缀，并以下划线结束。格式："字母+下划线"，如：cms_</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" class="marginright" name="configdb"  type="submit" value="配置数据库" />
+                    <input id="btnSubmit" name="testdb"  type="submit" value="测试连接" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			//url = "__GROUP__/public/clearcache/Action/clearcache";
+			//$.get(url, {}, DelCacheComplete, "json");
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		 LoadBox("正在连接数据库，请稍后...");
+		return false;
+	 });
+	 
+	function DelCacheComplete(data, textStatus){
+		if (data.status == 1){
+			SucceedBox("配置数据库成功!");
+		}else{ //删除缓存失败
+			ErrorBox(data.info);
+		}
+	}
+});
+</script>

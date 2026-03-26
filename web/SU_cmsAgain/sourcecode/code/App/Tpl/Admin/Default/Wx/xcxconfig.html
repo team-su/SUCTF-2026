@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+    	.ColorBox{ width:28px;height:28px; border:1px solid #ccc; cursor:pointer;}
+		.item2 .textinput{ width:99%;}
+		.item3 .textinput, .item4 .textinput{ width:200px;}
+		.previewicon{ height: 22px; width:22px; vertical-align:middle;}
+		.XcxIcons{ }
+		.XcxIcon{ width:40px; height:40px; border:0; margin:0 2px; cursor:pointer; border:2px solid #f7f7f7; padding:3px;}
+		.XcxIconActive{ border-color:#0C0; }
+		.hide{ display:none;}
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container box-footer-fixed">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}" enctype="multipart/form-data" >
+            <div class="box-header" id="c1"><h4>基本设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                   <tr>
+                        <th>小程序名称</th>
+                        <td><input type="text" class="textinput" style="width:260px;" id="XcxName" name="XCX_NAME" value="{$XcxName}" />
+                        <span class='Caution'>此名称在小程序标题栏显示</span></td>
+                    </tr>
+                    <tr>
+                        <th>小程序主题颜色</th>
+                        <td><input type="text" class="textinput" style="width:80px;" id="XcxThemeColor" name="XCX_THEME_COLOR" value="{$XcxThemeColor}" />
+                        <input type="text" class="textinput ColorBox" id="XcxThemeColorBox" style="background:{$XcxThemeColor}" readonly="readonly"/>
+                        <span class='Caution'>格式：16进制颜色格式。设置小程序主题颜色！</span></td>
+                    </tr>
+                    <tr>
+                        <th>小程序二维码</th>
+                        <td><input type="text" id="webqrfileImage" class="textinput w450" name="XCX_QRCODE" value="{$XcxQrcode}"  />
+                        <span class='UploadWrapper'>
+                            <input class='btnFileUpload' type='button' value='上传' />
+                            <input id='webqrfile' name ='webqrfile' type ='file'  size='70'   class='InputFile'  accept="image/*" />
+                        </span>
+                        <input id='btnQrServer' onclick='BrowserQrServer()' name ='btnServer'  type ='button' value="{$Think.lang.SelectPicture}"  class="btnPadding"  />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-header" id="c1">
+                <h4>小程序秘钥设置<span class="extra">
+                登录微信公众平台小程序管理后台->打开左侧[设置]链接->打开[开发设置]选项卡即可查看小程序AppID和AppSecret</span></h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                   <tr>
+                        <th>小程序AppID</th>
+                        <td><input type="text" class="textinput" style="width:260px;" id="XcxAppID" name="XCX_APP_ID" value="{$XcxAppID}" /></td>
+                    </tr>
+                    <tr>
+                        <th>小程序秘钥AppSecret</th>
+                        <td><input type="text" class="textinput" style="width:260px;" id="XcxAppSecret" name="XCX_APP_SECRET" value="{$XcxAppSecret}" /></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-header" id="c1"><h4>小程序支付设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                   <tr style="display:none;">
+                        <th>支付手续费</th>
+                        <td><input type="text" class="textinput" style="width:80px;" id="XcxPayRate" name="XCX_PAY_RATE" value="{$XcxPayRate}" />
+                        <span class="Caution" style="color: rgb(102, 102, 102);">如果支付手续费比例是2%，则填写0.02。支付手续费 = 商品总额 × 支付手续费比例</span></td>
+                    </tr>
+                    <tr>
+                        <th>商户号</th>
+                        <td><input type="text" class="textinput" style="width:260px;" id="XcxAccountName" name="XCX_ACCOUNT_NAME" value="{$XcxAccountName}" />
+                        <span class="Caution" style="color: rgb(102, 102, 102);">微信支付分配的商户号，如：1230000109</span></td>
+                    </tr>
+                    <tr>
+                        <th>商户支付密钥Key</th>
+                        <td><input type="text" class="textinput" style="width:260px;" id="XcxAccountKey" name="XCX_ACCOUNT_KEY" value="{$XcxAccountKey}" />
+                        <span class="Caution" style="color: rgb(102, 102, 102);">商户支付密钥Key，通常是32个字符</span></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-header" id="c1"><h4>底部工具栏通用设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                   <tr>
+                        <th>工具栏文字默认颜色</th>
+                        <td><input type="text" class="textinput" style="width:80px;" id="XcxTabColor" name="XCX_TAB_COLOR" value="{$XcxTabColor}" />
+                        <input type="text" class="textinput ColorBox" id="XcxTabColorBox" style="background:{$XcxTabColor}" readonly="readonly"/>
+                        <span class='Caution'>格式：16进制颜色格式。设置小程序工具栏文字默认颜色！</span></td>
+                    </tr>
+                    <tr>
+                        <th>工具栏文字选中颜色</th>
+                        <td><input type="text" class="textinput" style="width:80px;" id="XcxTabSelectedColor" name="XCX_TAB_SELECTED_COLOR" value="{$XcxTabSelectedColor}" />
+                        <input type="text" class="textinput ColorBox" id="XcxTabSelectedColorBox" style="background:{$XcxTabSelectedColor}" readonly="readonly"/>
+                        <span class='Caution'>格式：16进制颜色格式。设置小程序工具栏文字选中颜色！</span></td>
+                    </tr>
+                    <tr>
+                        <th>工具栏背景颜色</th>
+                        <td><input type="text" class="textinput" style="width:80px;" id="XcxTabBackgroundColor" name="XCX_TAB_BACKGROUND_COLOR" value="{$XcxTabBackgroundColor}" />
+                        <input type="text" class="textinput ColorBox" id="XcxTabBackgroundColorBox" style="background:{$XcxTabBackgroundColor}" readonly="readonly"/>
+                        <span class='Caution'>格式：16进制颜色格式。设置小程序工具栏背景颜色！</span></td>
+                    </tr>
+                    <tr>
+                        <th>工具栏上边框颜色</th>
+                        <td>
+                        <select id="XcxTabBorderStyle" name="XCX_TAB_BORDER_STYLE">
+                        	<option value="white">白色</option>
+                            <option value="black">黑色</option>
+                        </select>
+                        <span class='Caution'>设置小程序工具栏上边框颜色！仅仅支持黑色和白色</span></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-header" id="c1">
+                <h4>底部工具栏选项设置</h4>
+            </div>
+            <div class="box-content">
+                <style>
+                    .item1, .item2, .item3, .item4{ float:left;  text-align:center; padding:0px 5px;}
+                    .item1{ width:260px; }
+                    .item2{  width:60px; }
+                    .item3{  width:80px; }
+                    .item4{ width:100px; text-align:left;}
+                </style>
+                <table class="boxtable" id="tabitem">
+                    <tr>
+                        <th></th>
+                        <td>
+                            <div class="item1">调用频道</div>
+                            <div class="item2">显示名称</div>
+                            <div class="item3">工具栏图标</div>
+                            <div class="item4"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>第1个选项卡</th>
+                        <td>
+                            <div class="item1">
+                               <select style="width:99%;" disabled="disabled">
+                                    <option value='1'>首页</option>
+                                </select>
+                                <input name="XCX_TAB1_CHANNELID" value="0" type="hidden" />
+                            </div>
+                            <div class="item2"><input type="text" class="textinput"  name="XCX_TAB1_TITLE" value="{$XcxTab1Title}" /></div>
+                            <div class="item3">
+                                <input type="text" class="textinput" id="XcxTab1Icon"  name="XCX_TAB1_ICON" value="{$XcxTab1Icon}"  style="display:none;"/>
+                                <img src="{$IconPath}{$XcxTab1Icon}" class="previewicon" align="absmiddle" />
+                            </div>
+                            <div class="item4">
+                             	<input onclick="BrowserServer('XcxTab1Icon')"  type ='button' value='选择图标'  class="btnPadding" />
+                            	<span class="hide">
+                                <input type="text" class="textinput" id="XcxTab1IconActive"  name="XCX_TAB1_ICON_ACTIVE" value="{$XcxTab1IconActive}" />
+                                <img src="{$XcxTab1IconActive}" class="previewicon" align="absmiddle" />
+                                <input onclick="BrowserServer('XcxTab1IconActive')"  type ='button' value='选择图标'  class="btnPadding" />
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>第2个选项卡</th>
+                        <td>
+                            <div class="item1">
+                               <select name='XCX_TAB2_CHANNELID' style="width:99%;">
+                                    <volist name="Channel" id="c">
+                                        <eq name="c.ChannelID" value="$XcxTab2ChannelID">
+                                            <option value="{$c.ChannelID}" selected="selected">{$c.ChannelName}</option>
+                                        <else/>
+                                            <option value="{$c.ChannelID}">{$c.ChannelName}</option>
+                                        </eq>
+                                    </volist>
+                                </select>
+                            </div>
+                            <div class="item2"><input type="text" class="textinput" name="XCX_TAB2_TITLE" value="{$XcxTab2Title}" /></div>
+                            <div class="item3">
+                                <input type="text" class="textinput" id="XcxTab2Icon" name="XCX_TAB2_ICON" value="{$XcxTab2Icon}"  style="display:none;"/>
+                                <img src="{$IconPath}{$XcxTab2Icon}" class="previewicon" align="absmiddle" />
+                            </div>
+                            <div class="item4">
+                            	<input onclick="BrowserServer('XcxTab2Icon')"  type ='button' value='选择图标'  class="btnPadding" />
+                            	<span class="hide">
+                                <input type="text" class="textinput" id="XcxTab2IconActive"  name="XCX_TAB2_ICON_ACTIVE" value="{$XcxTab2IconActive}" />
+                                <img src="{$XcxTab2IconActive}" class="previewicon" align="absmiddle" />
+                                <input onclick="BrowserServer('XcxTab2IconActive')"  type ='button' value='选择图标'  class="btnPadding" />
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>第3个选项卡</th>
+                        <td>
+                            <div class="item1">
+                               <select name='XCX_TAB3_CHANNELID' style="width:99%;">
+                                    <volist name="Channel" id="c">
+                                        <eq name="c.ChannelID" value="$XcxTab3ChannelID">
+                                            <option value="{$c.ChannelID}" selected="selected">{$c.ChannelName}</option>
+                                        <else/>
+                                            <option value="{$c.ChannelID}">{$c.ChannelName}</option>
+                                        </eq>
+                                    </volist>
+                                </select>
+                            </div>
+                            <div class="item2"><input type="text" class="textinput"  name="XCX_TAB3_TITLE" value="{$XcxTab3Title}" /></div>
+                            <div class="item3">
+                                <input type="text"  id="XcxTab3Icon" class="textinput"  name="XCX_TAB3_ICON" value="{$XcxTab3Icon}"  style="display:none;"/>
+                                <img src="{$IconPath}{$XcxTab3Icon}" class="previewicon" align="absmiddle" />
+                            </div>
+                            <div class="item4">
+                            	<input onclick="BrowserServer('XcxTab3Icon')"  type ='button' value='选择图标'  class="btnPadding" />
+                            	<span class="hide">
+                                <input type="text" id="XcxTab3IconActive" class="textinput" name="XCX_TAB3_ICON_ACTIVE" value="{$XcxTab3IconActive}" />
+                                <img src="{$XcxTab3IconActive}" class="previewicon" align="absmiddle" />
+                                <input onclick="BrowserServer('XcxTab3IconActive')"  type ='button' value='选择图标'  class="btnPadding" />
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>第4个选项卡</th>
+                        <td>
+                            <div class="item1">
+                               <select name='XCX_TAB4_CHANNELID' style="width:99%;">
+                                    <volist name="Channel" id="c">
+                                        <eq name="c.ChannelID" value="$XcxTab4ChannelID">
+                                            <option value="{$c.ChannelID}" selected="selected">{$c.ChannelName}</option>
+                                        <else/>
+                                            <option value="{$c.ChannelID}">{$c.ChannelName}</option>
+                                        </eq>
+                                    </volist>
+                                </select>
+                            </div>
+                            <div class="item2"><input type="text" class="textinput"  name="XCX_TAB4_TITLE" value="{$XcxTab4Title}" /></div>
+                            <div class="item3">
+                                <input type="text" class="textinput"  name="XCX_TAB4_ICON"  id="XcxTab4Icon" value="{$XcxTab4Icon}"  style="display:none;"/>
+                                <img src="{$IconPath}{$XcxTab4Icon}" class="previewicon" align="absmiddle" />
+                            </div>
+                            <div class="item4">
+                            	<input onclick="BrowserServer('XcxTab4Icon')"  type ='button' value='选择图标'  class="btnPadding" />
+                            	<span class="hide">
+                                <input type="text" class="textinput" name="XCX_TAB4_ICON_ACTIVE"  id="XcxTab4IconActive" value="{$XcxTab4IconActive}" />
+                                <img src="{$XcxTab4IconActive}" class="previewicon" align="absmiddle" />
+                                <input onclick="BrowserServer('XcxTab4IconActive')"  type ='button' value='选择图标'  class="btnPadding" />
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th></th>
+                        <td>
+                            <span class='Caution'>注意：小程序规定工具栏图标不能是网络图片，所有不支持自定义上传。如需使用其他图标，请直接替换小程序目录下的图标，还需要重新提交小程序并等待审核</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <eq name="HasXcxConfig" value="1">
+                <div class="box-header" id="c1">
+                    <h4>自定义参数设置<span class="extra">参数配置在文件"/Data/xcx.php"里定义</span></h4>
+                </div>
+                <div class="box-content">
+                    <table class="boxtable" id="tabitem">
+                        <volist name="Attribute" id="a">
+                                    <tr>
+                                        <th>{$a.DisplayName}</th>
+                                        <td>{$a.html}</td>
+                                    </tr>
+                        </volist>
+                    </table>
+                </div>
+            </eq>
+                     
+            <div class="box-footer">
+                <div class="box-footer-inner"><input id="btnSubmit" type="submit" value="保存设置" /></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<div class="dialog" id="dlgIcon" title="选择图标">
+	<div class="XcxIcons">
+    	<volist name="Icons" id="c" mod="6">
+    		<img src="{$c.IconPath}" name="{$c.IconName}" class="XcxIcon" />
+            <eq name="mod" value="5"><br/></eq>
+        </volist>
+    </div>
+</div>
+<script type='text/javascript'>
+function BrowserServer(type){
+		var d = dialog({
+		title: $("#dlgIcon").attr("title"),
+		id: $("#dlgIcon").attr("id"),
+		padding: 8,
+		content: document.getElementById('dlgIcon'),
+		onshow:function(){
+			$(".XcxIcon").removeClass("XcxIconActive");
+			var imgSrc = $("#"+type).parent().find(".previewicon").attr("src");
+			$(".XcxIcon[src='"+imgSrc+"']").addClass("XcxIconActive");
+		},
+		ok: function () {
+			var name = $(".XcxIconActive").attr("name");
+			var imgSrc = $(".XcxIconActive").attr("src");
+			$("#"+type).val(name+".png"); //未选中
+			$("#"+type+"Active").val(name+"_on.png"); //选中，input
+			$("#"+type).parent().find(".previewicon").attr("src", imgSrc); //显示图片
+			return true;
+		},
+		okValue: '确定',
+		cancelValue: '取消',
+		cancel: function () {
+			
+		}
+	}).show();
+}
+
+function BrowserQrServer(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SetQrFileField;
+	FileManager.popup(); 
+}
+function SetQrFileField(fileUrl){
+	document.getElementById('webqrfileImage').value = fileUrl;
+}
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	$(".XcxIcon").click(function(){
+		$(".XcxIcon").removeClass("XcxIconActive");
+		$(this).addClass("XcxIconActive");
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	 
+	 //保存提交
+	 $('#btnSubmit').click(function(){
+		$('#frmConfig').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	 $('#webqrfile').change(function(){  
+		if( !$(this).val() ) return;
+		$('#frmConfig').attr('action','__GROUP__/public/upload/addwater/no/currentfile/webqrfile');
+		$('#frmConfig').submit();
+	 });
+	 
+	 $("#webqrfileImage").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	});
+	
+	 //主题颜色
+	 $("#XcxThemeColor,#XcxThemeColorBox").colorpicker({
+		fillcolor:false,
+		success:function(o,color){
+			setColor("#XcxThemeColor",color);
+		}
+	});
+	
+	//工具栏文字默认颜色
+	$("#XcxTabColor,#XcxTabColorBox").colorpicker({
+		fillcolor:false,
+		success:function(o,color){
+			setColor("#XcxTabColor",color);
+		}
+	});
+	
+	//工具栏文字选中颜色
+	$("#XcxTabSelectedColor,#XcxTabSelectedColorBox").colorpicker({
+		fillcolor:false,
+		success:function(o,color){
+			setColor("#XcxTabSelectedColor",color);
+		}
+	});
+	
+	//工具栏背景颜色
+	$("#XcxTabBackgroundColor,#XcxTabBackgroundColorBox").colorpicker({
+		fillcolor:false,
+		success:function(o,color){
+			setColor("#XcxTabBackgroundColor",color);
+		}
+	});
+	
+	function setColor(input, color){
+			$(input).val(color);
+			$(input).css("color",color);
+			$(input+"Box").css("background-color",color);
+	}
+	
+   function pageInit(){
+		//$(".item3 .textinput, .item4 .textinput").powerFloat({ targetMode: "ajax",	 targetAttr: "value", position: "5-7" });
+		$("#XcxTabBorderStyle").val("{$XcxTabBorderStyle}");
+	}
+	pageInit();
+});
+</script>

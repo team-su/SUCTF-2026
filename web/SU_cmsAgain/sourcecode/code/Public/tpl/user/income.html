@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>.CashQuantity{text-align:left;color:red;text-align-last:left;}</style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+    <div class="header">
+        <span style="padding-top:5px;">
+       		<b>收益总金额：</b><span style="color:red;">{$CurrencySymbol}{$TotalQuantity}</span>
+        </span>
+    </div>
+    
+    <notempty name="Data">
+        <volist name="Data" id="d">
+            <div class='weui-form-preview'  id="row{$d.CashID}"  style='margin-bottom:10px;'>
+              <div class="weui-form-preview__hd">
+                  <label class="weui-form-preview__label CashQuantity">{$CurrencySymbol}{$d.CashQuantity}</label>
+                 <em class="weui-form-preview__value">{$d.CashTime|strtotime|yd_friend_date}</em>
+              </div>
+              <div class="weui-form-preview__bd">
+              		<div class="weui-form-preview__item">{$d.CashRemark}</div>
+               </div>
+            </div>
+        </volist>
+    <else/>
+        <div class="weui-msg">
+            <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+            <div class="weui-msg__text-area">
+                <p class="weui-msg__desc">{$Think.lang.NoInformation}</p>
+            </div>
+        </div>
+    </notempty>
+</body>
+</html>
+<script>
+	function GoBack(){
+		location.href = "{$Url}index";
+	}
+</script>

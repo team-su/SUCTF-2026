@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data"  method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+    <div class="table">
+        <div class="toolbars">
+            <li class="toolbar"><a id="btnCache" onclick="DelAll()"  title="删除所有消息">删除所有消息</a></li>
+            <li class="toolbar"><a id="btnSave" onclick="exportMessage()" class="ydicon-daochu" title="导出所有消息" target="_self">导出所有消息</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar"><a id="refresh" href="{$Url}message" title="刷新">刷新</a></li>
+            <li class="toolbar toolbarform">
+                <label>内容/姓名/手机/微信ID</label><input type="text" class='textinput' name="Keywords" style="width:180px" value="{$Keywords}" id="Keywords"/>
+                <label>消息类型</label><select name="MsgType" id="MsgType">
+                <option value="">全部</option>
+                <option value="text">文本消息</option>
+                <option value="image">图片消息</option>
+                <option value="location">地理位置</option>
+                <option value="link">链接消息</option>
+                <option value="event">事件推送</option>
+                </select>
+                <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+            </li>
+        </div>
+        <table class="datatable" id="datatable">
+        <tr>
+            <th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+            <th width="50px">消息ID</th>
+            <th width="70px" >消息类型</th>
+            <th>消息内容</th>
+            <th width="70px" >真实姓名</th>
+            <th width="90px" >手机号码</th>
+             <th width="200px" >发送方微信ID</th>
+            <th  width="120px">时间</th>
+        </tr>  
+        <notempty name="Message">                
+            <volist name="Message" id="m">
+                <tr id="t{$m.MessageID}">
+                    <td><input class="checkrow" type="checkbox" name="MessageID[]" value="{$m.MessageID}" /></td>
+                    <td>{$m.MessageID}</td>
+                    <td>
+                        <switch name="m.MsgType">
+                            <case value="text"><b style="color:black">文本消息</b></case>
+                            <case value="image"><b style="color:purple">图片消息</b></case>
+                            <case value="location"><b style="color:blue">地理位置消息</b></case>
+                            <case value="link"><b style="color:red">链接消息</b></case>
+                            <case value="event"><b style="color:green">事件推送</b></case>
+                        </switch>
+                    </td>
+                    <td style="text-align:left">
+                        <switch name="m.MsgType">
+                            <case value="text">{$m.p1|htmlspecialchars}</case>
+                            <case value="image">
+                            	<img src="{$m.p1|htmlspecialchars}"  height="45px" alt="点击查看原图" border="0" style="cursor:pointer" class="TagTip" imgaddr="{$m.p1|htmlspecialchars}" />
+                            </case>
+                            <case value="location">经度:{$m.p2|htmlspecialchars}&nbsp;&nbsp;维度:{$m.p1|htmlspecialchars}&nbsp;&nbsp;{$m.p4|htmlspecialchars}</case>
+                            <case value="link"><a href="{$m.p3|htmlspecialchars}">{$m.p1|htmlspecialchars}<br/>{$m.p2|htmlspecialchars}</a></case>
+                            <case value="event">
+                                <eq name="m.p1" value="subscribe">关注事件</eq>
+                                <eq name="m.p1" value="unsubscribe">取消关注事件</eq>
+                                <eq name="m.p1" value="CLICK">自定义菜单</eq>
+                            </case>
+                        </switch>
+                    </td>
+                    <td>{$m.MemberRealName|htmlspecialchars}</td>
+                    <td>{$m.MemberMobile|htmlspecialchars}</td>
+                    <td>{$m.FromUserName|htmlspecialchars}</td>
+                    <td>{$m.CreateTime|strtotime|yd_friend_date}</td>
+                </tr>
+            </volist>
+        <else/>
+        	<tr><td colspan="8" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+        </notempty>                                
+        </table>
+        <div class="tfoot">
+          <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+    </div>
+</form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='MessageID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/batchDelMessage");
+		$('#frm').submit();
+	});
+}
+
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/message");
+	$('#frm').submit();
+	return true;
+}
+
+//导出信息
+function exportMessage(){
+	if(checkSafeQuestion()) return;
+	location.href = "{$Url}exportMessage";
+}
+
+//查询
+function DelAll(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		location.href = "__URL__/delAllMessage";
+	});
+}	
+
+//提示信息
+$(document).ready(function(){
+	$(".TagTip").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "imgaddr"
+	});
+	//选中操作
+	//$("#MsgType").attr("value",'{$MsgType}');
+	$("#MsgType").val('{$MsgType}');
+	$("#Keywords").focus();
+});
+</script>

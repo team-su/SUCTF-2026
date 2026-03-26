@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <div class="table">
+            <div class="toolbars">
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <notempty name="Think.get.id">
+                    <li class="toolbar"><a id="btnBack" href="{$Url}area/id/{$Grand}" target="_self" title="上一级">上一级</a></li>
+                </notempty>
+            </div>
+
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="45px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                    <th>区域名称</th>
+                    <th width="80px" >下级数量</th>
+                    <th width="100px" >操作</th>
+                </tr>
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr id="row{$d.AreaID}" name="{$d.AreaName}">
+                            <td><input class="checkrow" type="checkbox" name="id[]" value="{$d.AreaID}" data_name="{$d.AreaName}" /></td>
+                            <td>{$d.AreaName}</td>
+                            <td>{$d.ChildCount}</td>
+                            <td  class="operator">
+                                <a id="btnSearch" href="{$Url}area/id/{$d.AreaID}">查看下级</a>
+                            </td>
+                        </tr>
+                    </volist>
+                    <else/>
+                    <tr><td colspan="3" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>
+            </table>
+            <div class="tfoot">
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

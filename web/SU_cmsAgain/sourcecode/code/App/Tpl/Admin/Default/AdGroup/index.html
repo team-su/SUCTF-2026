@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p" id="p" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}add"  title="添加广告位" target="_self">添加广告位</a></li>
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="batchDel()" title="批量删除">删除</a></li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="40px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                     <th width="65px" >广告位ID</th>
+                     <th width="200px" >广告位名称</th>
+                     <th width="80px" >广告数量</th>
+                     <th>广告位描述</th>
+                     <th width="60px" >是否启用</th>
+                     <th width="150px" >操作</th>
+                </tr>
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr id="tr{$d.AdGroupID}">
+                        <td><eq name="d.AdCount" value="0"><input class="checkrow" type="checkbox" name="id[]" value="{$d.AdGroupID}" /></eq></td>
+                        <td>{$d.AdGroupID}</td>
+                        <td class="TipKey">{$d.AdGroupName|htmlspecialchars}</td>
+                        <td style="font-weight:bold;color:blue;">{$d.AdCount}</td>
+                        <td style="text-align:left;">{$d.AdGroupDescription|htmlspecialchars}</td>
+                        <td>
+                            <eq name="d.IsEnable" value="1">
+                                <span style="color:black;cursor:pointer;"  onclick="toggleStatus(this,{$d.AdGroupID},'ad_group')">启用</span>
+                            <else/>
+                                <span style="color:red;cursor:pointer;"  onclick="toggleStatus(this,{$d.AdGroupID},'ad_group')">禁用</span>
+                            </eq>
+                        </td>
+                        <td class="operator">
+                            <a style="float:left" href="{$Url}Modify/id/{$d.AdGroupID}" id="btnEdit">修改</a>
+                            <div class="btn-sep"></div>
+                            <eq name="d.AdCount" value="0">
+                                <a style="float:left" onclick="del({$d.AdGroupID})" class="btnDel">删除</a>
+                            </eq>
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="7" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                 <div id="notice">
+                      <b>说明：</b><span class="notice-item">如果广告位有广告，则不能删除！</span>
+                  </div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#tr"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		location.href = "{$Url}del/id/"+id;;
+	});
+}
+
+function batchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/del");
+		$('#frm').submit();
+	});
+}
+</script>

@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>
+		#product { border-collapse:collapse; font-size:14px;}
+		#product .totaltitle{ text-align: right;  color:#333; font-size:14px;;}
+		#product .totalvalue{ text-align: center; font-weight:normal; color:#F00;  }
+		#product th, #product td{ text-align: center; border:1px solid #e0e0e0; padding:7px 3px;}
+		
+		#LogisticsCompany{ }
+		.logisticslist{}
+		.logisticslist li{ padding:3px 0;  color: #333; font-size:14px;}
+		.logisticslist li .time{ margin-right:5px; color:#999;}
+		.logisticslist li.first{ color:#F60;}
+		
+		.weui-form-preview__item{ text-align:left;}
+	</style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+    <div class="weui-cells__title">订单详情</div>
+    
+    <div class="weui-form-preview" style="margin-bottom:10px;">
+          <div class="weui-form-preview__bd">
+              	  <div class="weui-form-preview__item">订单号：{$Data.OrderNumber}</div>
+                  <div class="weui-form-preview__item">支付方式：{$Data.PayName}</div>
+                  <div class="weui-form-preview__item">配送方式：{$Data.ShippingName}</div>
+                  <div class="weui-form-preview__item">下单时间：{$Data.OrderTime}</div>
+                  <div class="weui-form-preview__item">订单状态：{$Data.MemberOrderStatusName}</div>
+          </div>
+          <div class="weui-form-preview__ft">
+                <eq name="Data.OrderStatus" value="1">
+                    <a class="weui-form-preview__btn weui-form-preview__btn_primary"  href="{$Data.OrderID|PayUrl}">立即付款</a>
+                    <a class="weui-form-preview__btn weui-form-preview__btn_primary"  onclick="Cancel({$Data.OrderID})"  style="color:red;">取消订单</a>
+                </eq>
+                <eq name="Data.OrderStatus" value="3">
+                    <a class="weui-form-preview__btn weui-form-preview__btn_primary" onclick="Receive({$Data.OrderID},1)"   style="color:#333;">确认收货</a>
+                </eq>     
+          </div>
+    </div>
+              
+    <div class="weui-cells__title">收货人信息</div>
+    <div class="weui-form-preview" style="margin-bottom:10px;">
+          <div class="weui-form-preview__bd">
+              	  <div class="weui-form-preview__item">收货人姓名：{$Data.ConsigneeRealName}</div>
+                  <div class="weui-form-preview__item">手机：{$Data.ConsigneeMobile}</div>
+                  <div class="weui-form-preview__item">座机：{$Data.ConsigneeTelephone}</div>
+                  <div class="weui-form-preview__item">电子邮件：{$Data.ConsigneeEmail}</div>
+                  <div class="weui-form-preview__item">地址：{$Data.ConsigneeAddress}</div>
+                  
+                  <div class="weui-form-preview__item">邮编：{$Data.ConsigneePostcode}</div>
+                  <div class="weui-form-preview__item">送货时间：
+                  		<deliverytimelist id="d"><eq name="d.DeliveryTimeID" value="$Data.DeliveryTimeID">{$d.DeliveryTimeName}</eq></deliverytimelist>
+                  </div>
+                  <div class="weui-form-preview__item">{$Think.lang.ConsigneeRemark}：{$Data.ConsigneeRemark}</div>
+          </div>
+    </div>
+    
+    <notempty name="Data.ShippingNumber">
+        <div class="weui-cells__title">物流信息</div>
+        <div class="weui-form-preview" style="margin-bottom:10px;">
+              <div class="weui-form-preview__bd">
+                      <div class="weui-form-preview__item">快递单号：{$Data.ShippingNumber}</div>
+                      <div class="weui-form-preview__item"   id="Logistics" style="display:none;">物流公司：<span id="LogisticsCompany"></span></div>
+                      <div class="weui-form-preview__item"   id="LogisticsInfo"></div>
+              </div>
+        </div>
+		<script>
+            $(document).ready(function(e) {
+                var url = "{:ApiUrl('QueryExpress')}";
+                var params = {
+                    Number: '{$Data.ShippingNumber}'
+                }
+                $.get(url, params, function(data){
+                    if(data.Status==1 && data.Data.data){
+                        var info = "<ul class='logisticslist'>";
+                        var obj = data.Data.data;
+                        for(var i = 0; i<obj.length; i++){
+                            info += (i==0) ? "<li class='first'>" : "<li>";
+                            info += "<span class='time'>"+obj[i].time+"</span>";
+                            info += "<span class='context'>"+obj[i].context+"</span>";
+                            info += "</li>";
+                        }
+                        info += "</ul>";
+                    }
+                    if(data.Data.com && data.Data.com.length > 0 ){
+                        $("#LogisticsCompany").text(data.Data.com);
+						$("#Logistics").show();	
+                    }else{
+						$("#Logistics").hide();	
+					}
+                    $("#LogisticsInfo").html(info);
+                }, "json")
+            });
+        </script>
+    </notempty>
+	
+    <div class="weui-cells__title">商品信息</div>
+    <div class="weui-cells weui-cells_form">
+    	<table id="product" class="kuang" border="1" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <th>名称</th>
+                    <th style="width:60px;">小计</th>
+                </tr>
+                <notempty name="Product">
+                    <volist name="Product" id="p">
+                        <tr>
+                            <td style="text-align:left;">
+                                <div style="overflow:hidden;">
+                                    <a href="{$p.ProductID|InfoUrl}" target="_blank" style="float:left;">
+                                        <img src="{$p.ProductID|InfoPicture|DefaultPicture}" style="width:80px;margin-right:3px;" />
+                                    </a>
+                                    <p style="float:left; line-height:1.4em; ">
+                                        <div><a href="{$p.ProductID|InfoUrl}">{$p.ProductName}</a></div>
+                                        <div class="ProductAttriubtes">
+                                            <volist id="pa" name="p.ProductAttributes">{$pa.TypeAttributeName}：{$pa.AttributeValue}；&nbsp;</volist>
+                                        </div>
+                                        <div class="ProductPrice">{$CurrencySymbol}{$p.ProductPrice}</div>
+                                        <div class="ProductQuantity">数量：{$p.ProductQuantity}</div>
+                                    </p>
+                                </div>
+                            </td>
+                            <td>{$CurrencySymbol}{$p.TotalPrice}</td>
+                        </tr>
+                    </volist>
+                        <tr>
+                            <td class="totaltitle">商品总金额：</td>
+                            <td class="totalvalue">{$CurrencySymbol}{$Data.TotalPrice}</td>
+                        </tr>
+                        <tr>
+                            <td class="totaltitle">运费：</td>
+                            <td class="totalvalue">{$CurrencySymbol}{$Data.ShippingPrice}</td>
+                        </tr>
+                        <tr>
+                            <td class="totaltitle">支付手续费：</td>
+                            <td class="totalvalue">{$CurrencySymbol}<span id="PayPrice">{$Data.PayPrice}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="totaltitle">使用优惠券：</td>
+                            <td class="totalvalue">-{$CurrencySymbol}{$Data.CouponPrice}</td>
+                        </tr>
+                        <tr>
+                                <td class="totaltitle">积分抵扣：</td>
+                                <td class="totalvalue">- {$CurrencySymbol}{$Data.PointPrice}</td>
+                         </tr>
+                        <tr>
+                            <td class="totaltitle">人工调价（正数涨价，负数跌价）：</td>
+                            <td class="totalvalue">{$CurrencySymbol}{$Data.DiscountPrice}</td>
+                        </tr>
+
+                        <tr>
+                            <td class="totaltitle">实际支付总金额：</td>
+                            <td class="totalvalue">{$CurrencySymbol}<span id="TotalOrderPrice">{$Data.TotalOrderPrice}</span></td>
+                        </tr>
+                <else/>
+                    <tr><td colspan="2"  id="NoData">暂无商品！</td></tr>
+                </notempty>
+            </table>
+    </div>
+</body>
+</html>
+<script>
+	function GoBack(){
+		location.href = "{$Url}order";
+	}
+	
+	//取消订单
+	function Cancel(OrderID){
+		$.confirm("确定要取消订单吗?", function() {
+			LoadBox();
+			var url = "{$Url}cancelOrder/id/"+OrderID;
+			$.get(url, null, function(data){
+				CloseLoadBox();
+				if(data.status == 1){
+					SucceedBox(data.info);
+					location.reload();
+				}else{
+					ErrorBox(data.info);
+				}
+			},"json");
+		});
+	}
+		
+	function Receive(id, type){
+		$.confirm("确认收货吗?", function() {
+			LoadBox();
+			var url = "{$Url}receiveOrder/id/"+id;
+			$.get(url, null, function(data){
+				CloseLoadBox();
+				if(data.status == 1){
+					SucceedBox(data.info);
+					if(type==1){
+						location.reload();
+					}else{
+						location.href  = "{$Url}order";
+					}
+				}else{
+					ErrorBox(data.info);
+				}
+			},"json");
+		});
+	}
+</script>

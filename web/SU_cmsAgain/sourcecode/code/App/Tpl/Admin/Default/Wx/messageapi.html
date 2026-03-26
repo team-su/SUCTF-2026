@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}"  enctype="multipart/form-data">
+           <div class="box-header"><h4>消息接口设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                   <tr>
+                        <th>URL</th>
+                        <td><b style="color:#00F">{:WxApiUrl()}</b></td>
+                    </tr>
+                    <tr>
+                        <th>Token</th>
+                        <td><input type="text" class="textinput" style="width:300px" name="WX_TOKEN" value="{$WxToken}"  />
+                        <span class='Caution'>建议填写为：<b style="color:#00F">{:WxToken()}</b>，Token必须为英文或数字，长度为3-32个字符</span>
+                        </td>
+                    </tr>
+                    <tr>
+                         <th></th>
+                        <td style="padding-top:8px; color:#FF3300; font-weight:bold">
+                        Token填写完成以后，请先点击<b style="color:#00F">“保存设置”</b>按钮保存配置，然后按以下步骤配置微信公众平台：
+                        </td>
+                    </tr>
+                     <tr>
+                         <th>第<i>1</i>步：</th>
+                        <td>
+                        点击<a href="https://mp.weixin.qq.com/" target="_blank" style="color:#00F"><b>https://mp.weixin.qq.com</b></a>
+                        登录微信公众平台，然后点击页面左下方<b style="color:#00F">“开发-基本设置”</b>，进入基本设置页面；
+                        </td>
+                    </tr>
+                    <tr>
+                         <th>第<i>2</i>步：</th>
+                        <td>第一次成为开发者，要勾选<b style="color:#00F">“我同意”</b>复选框，然后点击<b style="color:#00F">“成为开发者”</b>按钮；</td>
+                    </tr>
+                    <tr>
+                         <th>第<i>3</i>步：</th>
+                        <td>在<b style="color:#00F">“服务器配置”</b>页面中，将上面设置的信息分别填入Url和Token表单中；</td>
+                    </tr>
+                    <tr>
+                         <th>第<i>4</i>步：</th>
+                        <td>点击<b style="color:#00F">“提交”</b>按钮，如果提示成功，表示消息接口配置成功；</td>
+                    </tr>
+                   <tr>
+                         <th>第<i>5</i>步：</th>
+                        <td>最后一步，别忘记了一定要点击<b style="color:#00F">“开启”</b>按钮，否则你的开发者模式是不会生效的。</td>
+                    </tr>
+               </table>
+            </div>
+            
+            <div class="box-header">
+                <h4>凭证接口设置
+                <span  class="extra">只有服务号，认证订阅号才有微信自定义菜单！
+                点击<a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com</a>登录微信公众平台，
+                然后点击页面左下方“开发-基本设置”查看AppId和AppSecret
+                </span>
+                </h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                   <tr>
+                        <th>AppId</th>
+                        <td><input type="text" class="textinput" style="width:300px" name="WX_APP_ID" value="{$WxAppid}"  />
+                        <span class='Caution'>请填写微信公众平台后台的AppId</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>AppSecret</th>
+                        <td><input type="text" class="textinput" style="width:300px" name="WX_APP_SECRET" value="{$WxAppSecret}"  />
+                        <span class='Caution'>请填写微信公众平台后台的AppSecret</span>
+                        </td>
+                    </tr>
+               </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+});
+</script>

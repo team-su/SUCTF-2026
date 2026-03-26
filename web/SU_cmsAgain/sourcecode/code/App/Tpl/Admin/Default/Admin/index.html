@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+    <form enctype="multipart/form-data" method="post" id="frm">
+          <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+          <input type="hidden" id = "pwd1" name="pwd1"  maxlength="20" />
+          <input type="hidden" id = "pwd2" name="pwd2"  maxlength="20" />
+          <div class="table">
+				<notempty name="IsSuperAdmin">
+					<div  class="toolbars">
+						<li class="toolbar"><a id="btnSaveAll" href="{$Url}Add"  title="添加管理员信息" target="_self">添加管理员信息</a></li>
+						<li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+						<li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+						<li class="toolbar"><a id="btnLock" onclick="BatchLock(1)" title="批量锁定">锁定</a></li>
+						<li class="toolbar"><a id="btnUnlock" onclick="BatchLock(0)" title="批量取消锁定">取消锁定</a></li>
+						<li class="toolbar"><a id="btnPwd" title="批量修改密码">修改密码</a></li>
+					</div>
+				</notempty>
+                <table class="datatable" id="datatable">
+                    <tr>
+                    	<th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                        <th width="60px" >管理员ID</th>
+                        <th>管理员名称</th>
+                        <th width="110px" >所属分组</th>
+                        <th width="45px" >性别</th>
+                        
+                        <th width="110px" >前台用户</th>
+                        <th width="65px">登陆次数</th>
+                        <th width="120px">最后登录时间</th>
+                        <th width="100px">最后登录IP</th>
+                        <th width="80px" >属性</th>
+						<notempty name="IsSuperAdmin">
+							<th  width="150px" >操作</th>
+						</notempty>
+                    </tr>
+                    <volist name="Admin" id="m">
+                        <tr id="tr{$m.AdminID}">
+                            <td>
+								<neq name="m.AdminID" value="1">
+									<input class="checkrow" type="checkbox" name="AdminID[]" value="{$m.AdminID}" />
+								</neq>
+							</td>
+                            <td>{$m.AdminID}</td>
+                            <td style="text-align:left;" class="TipKey">{$m.AdminName|htmlspecialchars}</td>
+                            <td><b>{$m.AdminGroupName|htmlspecialchars}</b></td>
+                            <td><eq name="m.MemberGender" value="0">男<else/>女</eq></td>
+                            
+                            <td>{$m.MemberName|htmlspecialchars}</td>
+                            <td>{$m.LoginCount}</td>
+                            <td>{$m.LastLoginTime|strtotime|yd_friend_date}</td>
+                            <td>{$m.LastLoginIP}</td>
+                            <td>
+                                 <eq name="m.IsLock" value="1">
+                                    <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$m.AdminID},'admin','锁定',1,'#F00','未锁',0,'#000','IsLock')">锁定</span>
+                                <else/>
+                                    <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$m.AdminID},'admin','锁定',1,'#F00','未锁',0,'#000','IsLock')">未锁</span>
+                                </eq>
+                                &nbsp;
+                                <eq name="m.IsSystem" value="1"><span style="color:#F00">系统</span></eq>
+                            </td>
+							<notempty name="IsSuperAdmin">
+								<td class="operator">
+									<a style="float:left" id="btnEdit" name="btnEdit" href="{$Url}Modify/AdminID/{$m.AdminID}">修改</a>
+									<neq name="m.IsSystem" value="1">
+										<div class="btn-sep"></div>
+										<a style="float:left" onclick="Del({$m.AdminID})" class="btnDel">删除</a>
+									</neq>
+								</td>
+							</notempty>
+                        </tr>
+                    </volist>                                
+                </table>
+                 <div class="tfoot">
+                    <div class="page" ><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+                 </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgPwd" title="批量修改管理员密码">
+	<table>
+		<tr>
+		   <th width="80px" nowrap="nowrap" align="right"><span style="font-weight:bold;color:blue;padding-right:3px;">密码</span></th>
+		   <th align="left"><input type="password" id = "dlgpwd1" name="dlgpwd1"  maxlength="20" class="textinput" style="width:175px;margin-bottom:5px;" /></th>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" align="right"><span style="font-weight:bold;color:blue;padding-right:3px;">重复密码</span></th>
+			<td align="left"><input type="password"  id = "dlgpwd2"  maxlength="20" name="dlgpwd2" class="textinput" style="width:175px" /></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript">
+function Del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#tr"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}del/AdminID/"+id+"/p/{$NowPage}";
+		location.href = url;
+	});
+}
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='AdminID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "{$Url}batchDel");
+		$('#frm').submit();
+	});
+}
+
+function BatchLock(bLock){
+	if(checkSafeQuestion()) return;
+	//先必须选中记录==============================================
+	var arrChk = $("input[name='AdminID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	if( n == 0 ) {
+		WarnBox("请先选中记录!");
+		return;
+	}
+	//=========================================================
+	if( bLock == 1 ){
+		ConfirmBox("确定锁定吗？", function () {
+			$('#frm').attr("action", "{$Url}batchLock/Lock/1");
+			$('#frm').submit();
+		});
+	}else{
+		ConfirmBox("取消锁定吗？", function () {
+			$('#frm').attr("action", "{$Url}batchLock/Lock/0");
+			$('#frm').submit();
+		});
+	}
+}
+
+$(function(){
+	$('#btnPwd').click(function(){
+		if(checkSafeQuestion()) return;
+		var arrChk = $("input[name='AdminID[]']");
+		var n = 0;
+		for(var i = 0; i < arrChk.length; i++){
+			if(arrChk[i].checked) n++;
+		}
+		
+		if( n == 0 ) {
+			WarnBox("请先选中记录!");
+			return;
+		}
+		
+		var d = dialog({
+			title: "批量修改管理员密码",
+			id: 'batchpwd',
+			padding: 8,
+			content: document.getElementById('dlgPwd'),
+			ok: function () {
+				if( $('#dlgpwd1').val() == "" ){
+					WarnBox("密码不能为空！");
+					$('#dlgpwd1').focus();
+					return false;
+				}
+				
+				if( $('#dlgpwd2').val() == "" ){
+					WarnBox("密码不能为空！");
+					$('#dlgpwd2').focus();
+					return false;
+				}
+				
+	
+				
+				$("#pwd1").val( $('#dlgpwd1').val() );
+				$("#pwd2").val( $('#dlgpwd2').val() );
+				LoadBox();
+				
+				$('#frm').attr("action", "{$Url}batchModifyPwd");
+				$("#frm").ajaxSubmit( {
+					resetForm: true, 
+					success: function(data){
+						CloseLoadBox();
+						$("#pwd1").val("");
+						$("#pwd2").val("");
+						$("#dlgpwd1").val("");
+						$("#dlgpwd2").val("");
+						if (data.status==1){
+							d.close().remove();
+							SucceedBox(data.info);
+						}else{
+							ErrorBox(data.info);
+						}
+					},
+					dataType: 'json'} 
+				);
+				return false;
+			},
+			okValue: '确定',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+		return false;
+	});
+})
+</script>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{$ChannelName}|{$Title}-{$WebName}</title>
+<include file="Public:meta" />
+</head>
+<body>
+<div class="body_feedback">
+	<include file="Public:header" />
+</div>
+<!--区块5131 开始-->
+<div id="n5131" class="component floor_channel11_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5131">
+    <style type="text/css">
+        #n5131{
+            {$TChannel11Bg5131|ParseBg}
+            padding-top: {$TChannel11PaddingTop5131}px;
+            padding-bottom: {$TChannel11PaddingBottom5131}px;
+        }
+        #n5131 li{
+            animation-duration: {$TChannel11AnimationTime5131}s;
+            animation-fill-mode: both;
+        }
+
+        #n5131 .sidebar_comtainer{
+            {$TChannel11SideBarBg5131|ParseBg}
+            width: {$TChannel11SideBarWidth5131}px;
+            yd-previewable-class: float_ float_{$TChannel11HasSideBar5131};
+        }
+        #n5131 .sidelist{
+            yd-previewable-class: -sidelist {$TChannel11SideBarStyle5131}-sidelist;
+            border-color: {$TChannel11SideBarBorderColor5131};
+        }
+        #n5131 .sidelist a{
+            border-color: {$TChannel11SideBarBorderColor5131};
+        }
+        #n5131 .sidebar_title h2{
+            {$TChannel11SideBarTitle5131|ParseFont}
+        }
+        #n5131 .sidelist .InfoTitle{
+            {$TChannel11SideBarInfoTitle5131|ParseFont}
+        }
+        #n5131 .sidelist .InfoPrice{
+            {$TChannel11SideBarInfoPrice5131|ParseFont}
+        }
+
+        #n5131>.floor_channel11>.content_container{
+            {$TChannel11ContentBg5131|ParseBg}
+        }
+        #n5131>.floor_channel11>.content_container .content_title h2{
+            {$TChannel11TitleFont5131|ParseFont}
+        }
+
+        #n5131 .feedback_table th{
+            {$TChannel11LabelFont5131|ParseFont}
+        }
+
+        #n5131 .feedback_table tr.input input,
+        #n5131 .feedback_table tr.input textarea{
+            {$TChannel11InputBorder5131|ParseBorder}
+            {$TChannel11InputFont5131|ParseFont}
+            background: {$TChannel11InputBg5131};
+        }
+        #n5131 .feedback_table input,
+        #n5131 .feedback_table textarea{
+            margin: {$TChannel11InputMargin5131/2}px 0;
+        }
+        #n5131 .feedback_table tr.input input::-webkit-input-placeholder,
+        #n5131 .feedback_table tr.input textarea::-webkit-input-placeholder{
+            {$TChannel11InputPlaceholderFont5131|ParseFont}
+        }
+        #n5131 .feedback_table tr.input input:focus,
+        #n5131 .feedback_table tr.input textarea:focus{
+            border-color: {$TChannel11InputFocusBorderColor5131};
+        }
+
+        #n5131 .feedback_table .submit_button{
+            {$TChannel11BtnFont5131|ParseFont}
+            {$TChannel11Btn5131|ParseButton}
+            {$TChannel11BtnBg5131|ParseBg}
+            <eq name="TChannel11BtnFont5131|ParseItem=8" value="justify">width:100%;</eq>
+            text-align: center;
+        }
+        #n5131 .feedback_table td.operation{
+            {$TChannel11BtnFont5131|ParseFont}
+        }
+    </style>
+    <div class="floor_channel11 full-width{$TChannel11FullWidth5131} floor_channel">
+        <neq name="TChannel11HasSideBar5131" value="0">
+            <div class="component_title sidebar_comtainer float_{$TChannel11HasSideBar5131}">
+                <div yd-slot="5131A"></div>
+                <notempty name="TChannel11SideBarChannel5131">
+                    <div class="sidebar" yd-group="5131" yd-tab="侧边栏设置">
+                        <div class="sidebar_title"><h2>{$TChannel11SideBarChannel5131|ChannelName}</h2></div>  
+                        <div class="sidebar_body">  
+                            <ul class="sidelist {$TChannel11SideBarStyle5131}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$TChannel11SideBarChannel5131" top="$TChannel11SideBarCount5131" timeformat="Y-m-d" labelid="$TChannel11SideBarLabel5131" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel11AnimationType5131}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </div>
+                </notempty>
+                <div yd-slot="5131B"></div>
+            </div>
+        </neq>
+
+        <div class="component_body content_container">
+            <div class="content_title">
+                <include file="Public:location" />
+                <h2 yd-content="_channel,{$ChannelID}">{$ChannelName}</h2>
+            </div>
+            <div class="content_body">
+                <table class="feedback_table">
+                    <form enctype="multipart/form-data" method="post" id="frm" action="{:FeedbackUrl()}">
+                        <input type="hidden" name="ChannelID" value="{$ChannelID}" />
+                        <feedbackmodellist id="fm">
+                            <tr class="input">
+                                <th>{$fm.DisplayName}<eq name="fm.IsRequire" value="1"><span class="required">*</span></eq></th>
+                                <td>
+                                <switch name="fm.DisplayType">
+                                    <case value="textarea">
+                                        <textarea id="{$fm.FieldName}"   name="{$fm.FieldName}" class="form_textarea" style="height: {$fm.DisplayHeight}">{$fm.DisplayValue}</textarea>
+                                    </case>
+                                    <case value="radio">
+                                        <volist name="fm.Item" id="it">
+                                                <input id="{$fm.FieldName}" name="{$fm.FieldName}" type="radio"  class="form_radio"   value="{$it.Value}"  {$it.Selected}  />{$it.Text}&nbsp;&nbsp;
+                                        </volist>
+                                    </case>
+                                   <case value="checkbox">
+                                        <volist name="fm.Item" id="it">
+                                                <input id="{$fm.FieldName}"  class="form_checkbox"   name="{$fm.FieldName}[]" value="{$it.Value}" type="checkbox" {$it.Selected} />{$it.Text}&nbsp;&nbsp;
+                                        </volist>
+                                    </case>
+                                    <case value="select">
+                                        <select  id="{$fm.FieldName}"  name="{$fm.FieldName}"  class="form_select" >
+                                            <volist name="fm.Item" id="it">
+                                                    <option  value="{$it.Value}"  {$it.Selected} >{$it.Text}</option>
+                                            </volist>
+                                         </select>
+                                    </case>
+                                    <case value="label">{$fm.DisplayValue}</case>
+                                    <case value="password"><input id="{$fm.FieldName}" name="{$fm.FieldName}" type="password"   class="form_text"  value="{$fm.DisplayValue}" /></case>
+                                    <default /><input id="{$fm.FieldName}" name="{$fm.FieldName}" type="text"   class="form_text"  maxlength="100"  style="height: {$fm.DisplayHeight}"  value="{$fm.DisplayValue}" />
+                                 </switch>
+                                 </td>
+                             </tr>
+                        </feedbackmodellist>
+                        
+                        <eq name="FeedbackVerifycode" value="1">
+                            <tr class="input">
+                                <th class="required">{$Think.lang.Verifycode}</th>
+                                <td>
+                                <input id="verifycode" class="form_text_verifycode" name="verifycode" type="text" maxlength="4" />
+                                <img  src="{$Group}/public/feedbackCode/"  onclick="ChangeFeedbackCode()"  class="code_image" id="fbcode"  align="absMiddle"  alt="{$Think.lang.ChangeVerifycode}"  title="{$Think.lang.ChangeVerifycode}" />
+                                </td>
+                            </tr>
+                        </eq>
+                        <tr>
+                            <td colspan="2" class="operation" yd-group="5131" yd-tab="按钮设置"><input class="submit_button" type="submit" name="submit8" value="{$TChannel11Btn5131|ParseButtonName}" /></td>
+                        </tr>
+                    </form>
+                </table>
+            </div>
+            <div class="content_bottom"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#frm').ajaxForm({
+                success: complete,
+                dataType: 'json',
+                beforeSubmit: check
+            });
+            
+                function check(){
+                    <feedbackmodellist id="fm">
+                            <eq name="fm.IsRequire" value="1">
+                                    if($("#{$fm.FieldName}").val()==""){
+                                        alert("{$fm.DisplayName}{$Think.lang.Required}");
+                                        $("#{$fm.FieldName}").focus();
+                                        return false;
+                                    }
+                            </eq>
+                            
+                            <eq name="fm.IsValidate" value="1">
+                                <notempty name="fm.ValidateRule">
+                                        var re = new RegExp("{$fm.ValidateRule}");
+                                        if(!re.test( $("#{$fm.FieldName}").val() )){
+                                            alert("{$fm.DisplayName}{$Think.lang.Invalid}");
+                                            $("#{$fm.FieldName}").focus();
+                                            return false;
+                                        }
+                                </notempty>
+                            </eq>
+                    </feedbackmodellist>
+                <eq name="FeedbackVerifycode" value="1">
+                    if( $("#verifycode").val() == ""){
+                        alert("{$Think.lang.VerifyCodeRequired}");
+                        $("#verifycode").focus();
+                        return false;
+                    }
+                </eq>
+                return true;
+            }
+            
+            function complete(data){
+                if (data.status==1){
+                    alert(data.info);
+                    $('#frm').resetForm();
+                }else if(data.status==0){
+                    alert(data.info);
+                }
+                ChangeFeedbackCode();
+            };
+            
+             $('#frm').submit(function(){
+                return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+             });
+        });
+
+        function ChangeFeedbackCode(){
+            var timenow = new Date().getTime();
+            var obj = document.getElementById('fbcode');
+            if( obj ) obj.src = "{$Group}/public/feedbackCode/"+timenow;
+        }
+    </script>
+</div>
+<!--区块5131 结束--><include file="Public:footer" />
+</body>
+</html>

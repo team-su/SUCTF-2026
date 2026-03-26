@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+      <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="refresh" href="{$Group}/public/AdminLeft/MenuTopID/15" title="刷新后，左下脚显示最新的应用列表！" target="menu">刷新</a></li>                   
+            <li class="toolbar"><a id="sortall" onclick="BatchSort()" title="批量排序">排序</a></li>
+        </div>
+        <table class="datatable" id="datatable">
+        <tr>
+            <th width="50px" >编号</th>
+            <th width="200px" >应用名称</th>
+            <th width="65px" >排序</th>
+            <th width="80px" >是否显示</th>
+            <th style="text-align:left;padding-left:20px">操作</th>
+        </tr>  
+        <notempty name="Menu">
+            <volist name="Menu" id="m">
+                <tr>
+                    <td>{$i}</td>
+                    <td style="font-weight:bold;">&nbsp;{$m.MenuName}</td>
+                    <td><input type="number" class='textinput' onclick="this.select()" style="width:65px" name="MenuOrder[]" value="{$m.MenuOrder}" />
+                    	<input type="hidden" class='textinput' name="MenuOrderID[]" value="{$m.MenuID}" />
+                    </td>
+                    <td><eq name="m.IsEnable" value="1"><b style="color:black">显示</b><else/><b style="color:red">隐藏</b></eq></td>
+                    <td class="operator">
+                        <eq name="m.IsEnable" value="1">       
+                        	<a style="float:left" onclick="SetStatus({$m.MenuID}, 0)" class="btnDel" >隐藏</a>
+                        <else/>
+                        	<a style="float:left" onclick="SetStatus({$m.MenuID},1)" id="btnEdit" >显示</a>
+                        </eq>
+                    </td>
+                </tr>
+            </volist>  
+        <else/>
+        	<tr><td colspan="5" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+        </notempty>                              
+        </table>
+        <div class="tfoot">
+          <div id="notice">
+                <b>说明：</b>
+                <span class="notice-item"><i>[1]</i>状态为“显示”的微应用将在左下方微信应用列表中显示</span>
+                <span class="notice-item"><i>[2]</i>设置后，请点击“刷新”按钮进行刷新</span>
+          </div>
+        </div>
+    </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//排序
+function BatchSort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "__URL__/batchSortMenu");
+		$('#frm').submit();
+	});
+}	
+
+function SetStatus(id, status){
+	if(checkSafeQuestion()) return;
+	var url = "{$Url}enableMenu/MenuID/"+id+"/IsEnable/"+status;
+	window.location.href = url;
+}
+</script>

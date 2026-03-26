@@ -1,0 +1,64 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					focusFirstItem();
+				</empty>
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 var idName = "#{$Think.const.MODULE_NAME}Name";
+			 $(idName).focus();
+		 }
+		 
+		 //设置默认值
+		 function setDefault(){
+			 $("input[name='IsEnable'][value={$Data.IsEnable}]").attr("checked",'checked');
+		 }
+		 
+		 function pageInit(){
+			 focusFirstItem();
+			 setDefault();
+		 }
+		 pageInit();
+	});
+</script>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+<table class="boxtable">
+	<tr>
+		<th class="w120" style="color:red;">广告位名称</th>
+		<td><input type="text" class="textinput"  style="width:280px;"  name="AdGroupName" id="AdGroupName" value="{$Data.AdGroupName}" /></td>
+	<tr>
+	<tr>
+		<th class="w120">广告位描述</th>
+<td><textarea type="text" class="textinput"  style="width:100%;height:80px;"  name="AdGroupDescription" id="AdGroupDescription" />{$Data.AdGroupDescription}</textarea></td>
+	<tr>
+	<tr>
+		<th class="w120">是否启用</th>
+		<td>
+			<label><input type="radio" name="IsEnable" value="1"   checked="checked" />是</label>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<label><input type="radio" name="IsEnable" value="0"/>否</label>
+		</td>
+	<tr>
+</table>
+</div>

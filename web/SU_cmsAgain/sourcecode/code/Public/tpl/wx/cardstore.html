@@ -1,0 +1,22 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>会员卡</title>
+<include file="./Public/tpl/wx/meta.html" />
+<link href="{$AppCss}card.css" rel="stylesheet" type="text/css">
+</head>
+
+<body id="cardaddr" class="mode_webapp2">
+
+<div class="qiandaobanner"><a href="javascript:history.go(-1);"><img src="{$AppImages}addr.jpg"></a> </div>
+<div class="cardexplain">
+    <volist name="Store" id="s">
+        <h2>{$s.StoreName}</h2>
+            <ul class="round">
+            <li class="addr"><a href="#"><span>{$s.StoreAddress}</span></a></li>
+            <li class="tel"><a href="tel:{$s.StoreTelephone}"><span>{$s.StoreTelephone}</span></a></li>
+            </ul>
+    </volist>
+</div>
+<include file="./Public/tpl/wx/cardfooter.html" />
+</body>
+</html>

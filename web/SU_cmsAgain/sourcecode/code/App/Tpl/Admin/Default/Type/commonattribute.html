@@ -1,0 +1,138 @@
+<script type="text/javascript">
+	function ChangeInputType(id){
+		if(id == 2){
+			$(".trInputValue").show();
+		}else{
+			$(".trInputValue").hide();
+		}	 
+	 }
+		 
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					ChangeInputType(1);
+					focusFirstItem();
+				</empty>
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			 LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 var idName = "#TypeAttributeName";
+			 $(idName).focus();
+		 }
+		 
+
+		 
+		 //设置默认值
+		 function setDefault(){
+			 $("#TypeGroupID").val( "{$Data.TypeGroupID}" );
+			 $("input[name='ValueType'][value={$Data.ValueType}]").attr("checked",'checked');
+			 $("input[name='InputType'][value={$Data.InputType}]").attr("checked",'checked');
+			 $("input[name='IsSearch'][value={$Data.IsSearch}]").attr("checked",'checked');
+			 $("input[name='IsEnable'][value={$Data.IsEnable}]").attr("checked",'checked');
+		 }
+		 
+		 //页面初始化
+		 function pageInit(){
+			ChangeInputType("{$Data.InputType}");
+			focusFirstItem();
+			setDefault();
+		 }
+		 pageInit();
+	});
+</script>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+	<table class="boxtable">
+    		<tr>
+				<th class="w120">所属类型</th>
+				<td><b style="color:blue;">{$TypeName}</b>
+                <input type="hidden" value="{$TypeID}" name="TypeID" />
+                </td>
+			</tr>
+			<tr>
+				<th class="w120">属性名称</th>
+				<td><input type="text" class="textinput" style="width:300px;" name="TypeAttributeName" id="TypeAttributeName" value="{$Data.TypeAttributeName}" /></td>
+			</tr>
+            <notempty name="TypeGroup">
+            <tr>
+				<th class="w120">所属分组</th>
+				<td>
+                	<select name="TypeGroupID" id="TypeGroupID">
+                        <volist name="TypeGroup" id="tg">
+                            <option value="{$tg.TypeGroupID}">{$tg.TypeGroupName}</option>
+                        </volist>
+                    </select>
+                </td>
+			</tr>
+            </notempty>
+			<tr>
+				<th class="w120">排序</th>
+				<td><input type="text" class="textinput" style="width:60px;"  name="TypeAttributeOrder" id="TypeAttributeOrder" value="{$Data.TypeAttributeOrder}" />
+				<span class='Caution'>请输入数字，值越小排名越靠前！</span>
+				</td>
+			</tr>
+            <tr>
+				<th>属性值类型</th>
+				<td>
+					<label><input type="radio" name="ValueType" value="1" checked="checked"  />唯一属性</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="ValueType" value="2" />单选属性</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="ValueType" value="3" />复选属性</label>
+                    <span class='Caution'>"唯一属性"表示属性值只能设置一个值，用户只能查看该值；
+                    选择"单选/复选属性"时，可以对该属性设置多个值，同时还能对不同属性值指定不同的价格加价，用户购买商品时需要选定具体的属性值</span>
+				</td>
+			</tr>
+            <tr>
+				<th>录入方式</th>
+				<td>
+					<label><input type="radio" name="InputType" value="1" checked="checked" onclick="ChangeInputType(1)"  />手工录入</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="InputType" value="2"  onclick="ChangeInputType(2)" />从列表中选择（一行代表一个可选值）</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="InputType" value="3"  onclick="ChangeInputType(3)" />多行文本框</label>
+				</td>
+			</tr>
+            <tr class="trInputValue">
+				<th>可选值列表</th>
+				<td><textarea id="InputValue" name="InputValue" style="width:300px; height:100px">{$Data.InputValue}</textarea>
+                <span class='Caution'>录入方式选择"从列表中选择"有效</span>
+                </td>
+			</tr>
+            <tr>
+				<th>是否作为检索条件</th>
+				<td>
+					<label><input type="radio" name="IsSearch" value="1"   />是</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="IsSearch" value="0" checked="checked" />否</label>
+                    <span class='Caution'>选择"是"表示需要将该属性作为检索条件</span>
+				</td>
+			</tr>
+			<tr>
+				<th>是否启用</th>
+				<td>
+					<label><input type="radio" name="IsEnable" value="1" checked="checked"  />启用</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="IsEnable" value="0" />禁用</label>
+				</td>
+			</tr>
+	</table>
+</div>

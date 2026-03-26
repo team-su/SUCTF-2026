@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.RewriteRule{ color:red; margin-right: 10px; cursor:pointer; }
+		.RewriteRuleContent{ display: none; color:blue;  font-size:14px; border-radius: 0;border: 0;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+        <div class="box-header"  id="c5"><h4>伪静态设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+               <tr>
+                    <th  class="w120">是否启用伪静态</th>
+                    <td>
+                    <label><input type="radio" name="URL_MODEL" value="2" <eq name="UrlModel" value="2">checked="checked"</eq> />启用</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="URL_MODEL" value="1" <eq name="UrlModel" value="1">checked="checked"</eq> />禁用 </label><span class="Caution">伪静态用于去除网址中的<b>index.php</b>，伪静态需要Web服务器支持(IIS7.0或更高版本、Apache默认支持伪静态)！</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>伪静态后缀设置</th>
+                    <td><input type="text" class="textinput w120" name="URL_HTML_SUFFIX" value="{$UrlHtmlSuffix}" /><span class="Caution">常设置为html，htm，shtml等，设为空表示没有后缀</span></td>
+                </tr>
+				<tr>
+                    <th>伪静态规则</th>
+                    <td>
+						<span class="RewriteRule" onclick="showRewriteRule(1, this)">nginx伪静态规则</span>
+						<span class="RewriteRule" onclick="showRewriteRule(2, this)">apache伪静态规则</span>
+						<span class="RewriteRule" onclick="showRewriteRule(3, this)">iis伪静态规则</span>
+					</td>
+                </tr>
+            </table>
+            
+            <table class="warningtable">
+                <th>说明：</th>
+                <td> 
+                       [1] 伪静态规则存放在网站根目录下，主要有3个文件，分别用于不同的服务器环境：
+                        <div style="padding-left:1.7em;">
+                            web.config：用于iis7.0以上版本<br/>
+                            .htaccess：用于Apache服务器、IIS6.0 + ISAPI_Rewrite3<br/>
+                            httpd.ini：用于IIS6.0 + ISAPI_Rewrite2<br/>
+                        </div>
+                        [2] IIS6.0必须安装ISAPI_Rewrite才支持伪静态组件，Apache和IIS7.0以后默认支持伪静态
+                </td>
+            </table>
+        </div>
+        <div class="box-footer">
+            <div class="box-footer-inner">
+                <input  id="btnSubmit"  type="submit" value="保存设置" />
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<textarea class="RewriteRuleContent" id="rule1" style="width:420px;height:170px;">
+location / {
+	if (!-e $request_filename){
+		rewrite  ^(.*)$  /index.php?s=$1  last;   break;
+	}
+}
+</textarea>
+<textarea class="RewriteRuleContent" id="rule2" style="width:420px;height:170px;">
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(.*)$ index.php [L,E=PATH_INFO:$1]
+</IfModule>
+</textarea>
+<textarea class="RewriteRuleContent" id="rule3" style="width:850px;height:410px;">
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.webServer>
+		<rewrite>
+			<rules>
+				<rule name="OrgPage" stopProcessing="true">
+					<match url="^(.*)$" />
+					<conditions logicalGrouping="MatchAll">
+						<add input="{HTTP_HOST}" pattern="^(.*)$" />				
+						<add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />				
+						<add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />			
+					</conditions>				
+					<action type="Rewrite" url="index.php/{R:1}" />			
+				</rule>
+				<rule name="disableDownloadHtml">
+                    <match url="^App/Tpl/.*.html$" ignoreCase="true" />
+                    <action type="CustomResponse" url="/" statusCode="403" statusReason="Forbidden" statusDescription="Forbidden" />
+                </rule>
+			</rules>
+	    </rewrite>
+   </system.webServer>
+</configuration>
+</textarea>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+});
+
+function showRewriteRule(type, obj){
+	var title = $(obj).text();
+	var selector = "rule"+type;
+	var d = dialog({title: title, id: 'dlgRewriteRule', padding: 0,
+		content: document.getElementById(selector),
+		ok: function () {
+			$("#"+selector).select();
+			var hasCopied = document.execCommand('Copy');
+			if(hasCopied){
+				SucceedBox("复制成功！");
+			}else{
+				ErrorBox("复制失败，请使用Ctrl+c复制内容！");
+			}
+			d.close().remove();
+		},
+		okValue: '复制',
+		cancelDisplay: true,
+		cancelValue:"关闭",
+		cancel: function () {
+			d.close().remove();
+		}
+	}).show();
+}
+</script>

@@ -1,0 +1,14 @@
+<tr>
+	<th class="w120"><b style="color:red">会员分组名称</b></th>
+	<td><input type="text" style="width:200px;" class="textinput" name="MemberGroupName" id="MemberGroupName" value="{$Data.MemberGroupName}"></td>
+</tr>
+<tr>
+	<th class="w120">会员分组备注</th>
+	<td><textarea style="width:100%;height:50px;" class="textinput" name="MemberGroupRemark" id="MemberGroupRemark">{$Data.MemberGroupRemark}</textarea></td>
+</tr>
+<tr>
+	<th class="w120">折扣率</th>
+	<td><input type="text" style="width:80px;" class="textinput" name="DiscountRate" id="DiscountRate" value="{$Data.DiscountRate}">
+	<span class='Caution'>表示当前会员分组享受的商品折扣率，最终价格 = 市场价 x 折扣率；0.85表示85折，1表示不打折，0表示免费</span>
+	</td>
+</tr>

@@ -1,0 +1,402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="version" content="1.0">
+	<include file="Public:meta" />
+    <style>
+        .content-wrapper, .result-wrapper{ display: none; }
+        #stat{ margin-left: 5em; font-size:16px; display: none;padding:6px 0;}
+        #stat span{ color: red; }
+        #c2{ position: relative;padding: 15px 0; height: 33px;}
+        .yd-fm-filelist li{width:10%;}
+        .yd-fm-search, .yd-fm-set-btn{display: none; top:auto;}
+        #yd-fm-container,#yd-fm-file-manager{width: 100%;}
+    </style>
+</head>
+<body id="main_page">
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" method="post" id="frm">
+            <div class="box-header" id="c1">
+                <h4>清理未使用图片</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <td>
+                        1、执行智能扫描，自动检索数据库和模板文件是否引用，对前台访问速度有轻微影响。<br/>
+                        2、执行批量删除，将彻底删除，请确认无误或备份文件再执行。<br/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="box-header" id="c2">
+                <div class="toolbars">
+                    <li class="toolbar"><a id="btnSeek" onclick="ScanImage()" title="智能扫描" target="_self">智能扫描</a></li>
+                    <li class="toolbar"><a id="selectall" onclick="CheckAllFile()" title="全选">全选</a></li>
+                    <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">批量删除</a></li>
+                    <li class="toolbar"><span id="stat">扫描完成，共发现<span id="stat-counts">0</span>个未使用图片</span></li>
+                </div>
+                <div class="yd-fm-search"><input class="yd-fm-search-input" type="text" placeholder="搜索关键词"></div>
+                <span class="yd-fm-set-btn ydicon-set"></span>
+            </div>
+            <div class="result-wrapper">
+                    <div id="ScanResult">
+                        <div i="content" class="ui-dialog-content" id="yd-fm-file-manager">
+                            <div id="yd-fm-container">
+                            <div class="yd-fm-file-container style1" >
+                                <div class="yd-fm-file-head"><span class="s1">文件名</span><span>日期</span><span class="s3">大小</span></div>
+                                <div class="yd-fm-filelist">
+                                </div>
+                            </div>
+
+                            <div  class="yd-fm-filter">
+                                <div class="yd-fm-filter-head"><i class="ydicon-icon_close-107 yd-fm-close-btn"></i></div>
+                                <div class="yd-fm-filter-title">视图</div>
+                                <div class="yd-fm-filter-view">
+                                    <div class="yd-fm-item s1 yd-radio " data-val="1">缩略图</div>
+                                    <div class="yd-fm-item s2 yd-radio" data-val="2">列表</div>
+                                </div>
+                                <div class="yd-fm-filter-title">排序</div>
+                                <div class="yd-fm-filter-sort">
+                                    <div class="yd-fm-item s1 yd-radio " data-val="1">时间</div>
+                                    <div class="yd-fm-item s2 yd-radio" data-val="2">名称</div>
+                                    <div class="yd-fm-item s3 yd-radio" data-val="3">大小</div>
+                                </div>
+                                <div class="yd-fm-filter-title">排序顺序</div>
+                                <div class="yd-fm-filter-sort-type">
+                                    <div class="yd-fm-item s3 yd-radio " data-val="3">降序</div>
+                                    <div class="yd-fm-item s4 yd-radio" data-val="4">升序</div>
+                                </div>
+                                <div class="yd-fm-filter-title"></div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    //缓存操作
+    function setStorage(key, value){
+        localStorage.setItem(key, value);
+    }
+    function getStorage(key){
+        return localStorage.getItem(key)
+    }
+
+    var globalFiles ;
+    var mViewType = getStorage('YDCurrentViewType') || 1; //视图样式
+    var mSortField = getStorage('YDCurrentSortField') || 1; //排序方式
+    var mSortOrder = getStorage('YDCurrentSortOrder') || 3; //排序顺序
+
+    function showFile(){
+        var files = Object.values(globalFiles);//转为数组
+        var sortField = mSortField; //排序方式
+        var sortOrder = mSortOrder; //排序顺序
+        if(mSortField==1){  //按时间
+            if(mSortOrder==3){  //降序排列
+                files.sort((a,b)=>{ return b.FileTimeStamp - a.FileTimeStamp; });
+            }else{
+                files.sort((a,b)=>{ return a.FileTimeStamp - b.FileTimeStamp; });
+            }
+
+
+        }else if(mSortField==2){ //按名称
+            if(mSortOrder==3) {  //降序排列
+                files.sort((a,b)=>{
+                    var nameA =a.FileName.toUpperCase();
+                    var nameB =b.FileName.toUpperCase();
+                    if (nameA > nameB) {
+                        return -1;
+                    }else{
+                        return 1;
+                    }
+
+                });
+            }else{
+                files.sort((a,b)=>{
+                    var nameA =a.FileName.toUpperCase();
+                    var nameB =b.FileName.toUpperCase();
+                    if (nameA < nameB) {
+                        return -1;
+                    }else{
+                        return 1;
+                    }
+                });
+            }
+
+        }else{ //按名称
+            if(mSortOrder==3) {  //降序排列
+                files.sort((a,b)=>{ return b.FileSize - a.FileSize; });
+            }else{
+                files.sort((a,b)=>{ return a.FileSize - b.FileSize; });
+            }
+        }
+
+
+
+        $('.yd-fm-filelist').html('');
+        if(!files || files.length < 1){
+            var html = '<div class="yd-fm-dir-empty ydicon-folder"><span>文件夹是空的</span></div>';
+            $('.yd-fm-filelist').append(html);
+            return;
+        }
+
+        var fileCounts=0;
+        for (let key  in  files) {
+            var item = files[key];
+            var html = '<li    title="'+ item.FileUrl + '">';
+            html += '<div class="yd-fm-fileitem click-select-file" data-fullname="'+item.FullFileName
+                +'" data-name="'+ item.FileName
+                +'" data-imgsrc="'+ item.FileUrl
+                +'" data-extname="'+ item.FileExt
+                +'" data-isimg="'+ "1"
+                +'" data-w="'+ item.Width
+                +'" data-h="'+ item.Height
+                +'" data-size="'+ item.FileSize
+                +'" data-fsize="'+ item.FriendFileSize
+                +'" data-index="'+ key
+                +'">'
+
+
+            if(item.FileSize / 1024 > 500){
+                html += '<div class="yd-fm-file-img"><img data-src="'+ item.FileUrl +'" data-fsize="'+item.FileSize+'"/></div>';
+                html += '<div class="yd-fm-file-threshold">图片过大<br/>不自动显示缩略图<span>显示</span></div>';
+            }else{
+                html += '<div class="yd-fm-file-img"><img data-src="'+ item.FileUrl +'" data-fsize="'+item.FileSize+'" src="'+ item.FileUrl +'"/></div>';
+            }
+
+            html += '<div class="yd-fm-wrap">'
+            html += '<div class="yd-fm-file-icon" data-src="'+ item.FileUrl +'" ><img src="'+ item.FileIcon +'" /></div>';
+            html += '<div class="yd-fm-file-name" >'+ item.FileName +'</div>';
+            html += '<div class="yd-fm-file-time">'+ item.FileTime +'</div>';
+            html += '<div class="yd-fm-file-size">'+ item.FriendFileSize +'</div>';
+            html += '</div></div>';
+            html += ' <input style="display: none" class="FileNameChk" type="checkbox" name="FullFileName[]" value="'+ item.FullFileName +'" />';
+            html += '</li>';
+            $('.yd-fm-filelist').append(html);
+
+            fileCounts++;
+        }
+
+        $(".result-wrapper").show();
+        $("#stat").css("display","block");
+        $("#stat-counts").text(fileCounts);
+        $(".yd-fm-set-btn").show();
+        $(".yd-fm-search").show();
+
+        $('#yd-fm-container .yd-fm-file-threshold').click( checkItemImg );
+        $('#yd-fm-container .click-select-file').click( selectFile );
+
+        $(".yd-fm-file-icon").powerFloat({
+            targetMode: "ajax",
+            targetAttr: "data-src"
+        });
+    }
+
+    function ScanImage(){
+        LoadBox('扫描中，请稍后...');
+        $.post("__URL__/ScanImage", null, function(res){
+            CloseLoadBox();
+
+            if(res.status == 1){
+                globalFiles = res.data;
+                showFile();
+            }else{
+                ErrorBox(res.info)
+            }
+        }, 'JSON');
+    }
+
+    var checkItemImg = (function(){
+        var checkBtns = $('#yd-fm-container .click-select-file .yd-fm-file-threshold span');
+        checkBtns.click(function(){
+            var img = $(this).parent().parent().find('.yd-fm-file-img img');
+            img.attr('src',img.data('src'));
+            $(this).parent().remove();
+            return false;
+        })
+    })
+
+    var selectFile = (function(){
+        var imgfullname= $(this).attr("data-fullname");
+        var CurCheckbox=$("input[name='FullFileName[]'][value='"+imgfullname+"']");
+
+        if(CurCheckbox.prop("checked")){
+            $(this).removeClass('on ydicon-gouxuan');
+            CurCheckbox.prop("checked",false);
+        }else{
+            $(this).addClass('on ydicon-gouxuan');
+            CurCheckbox.prop("checked",true);
+        }
+    })
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='FullFileName[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='FullFileName[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("已选择"+n+"个文件。确定删除吗？删除后将无法恢复", function () {
+		$('#frm').attr("action", "__URL__/batchDelImage");
+		$('#frm').submit();
+	});
+}
+
+//全选
+function CheckAllFile(){
+    var title = $("#selectall").attr('title');
+    if(title == "全选"){
+        $("#selectall").attr('title','取消');
+        $("#selectall").html('取消');
+        $("input[name='FullFileName[]']").prop('checked', true);
+        $("#yd-fm-container .click-select-file").addClass("on ydicon-gouxuan");
+    }else{
+        $("#selectall").attr('title','全选');
+        $("#selectall").html('全选');
+        $("input[name='FullFileName[]']").prop('checked', false);
+        $("#yd-fm-container .click-select-file").removeClass("on ydicon-gouxuan");
+    }
+}
+
+//提示信息
+$(document).ready(function(){
+
+    //搜索 绑定搜索事件
+    var seachInput = $('.yd-fm-search input');
+    seachInput.val("");
+    var seachInputTimer;
+    seachInput.unbind().bind('input propertychange',function(e){
+        var value = $(this).val();
+        var files = $('.yd-fm-fileitem');
+        files.removeClass('on ydicon-gouxuan');
+        clearTimeout(seachInputTimer);
+        if(!value || value == ''){
+            files.show();
+            return;
+        }
+        seachInputTimer = setTimeout(function(){
+            files.hide();
+            files.each(function(){
+                var itemName = $(this).data('name');
+                if(itemName.indexOf(value) != -1){
+                    $(this).show();
+                }
+            })
+            setImgSrc();
+        }, 200)
+    })
+    //右侧栏 绑定右侧栏事件
+    $('.yd-fm-set-btn').click(function(){
+        if($(this).hasClass('on')){
+            hideFilter();
+        }else{
+            $(this).addClass('on');
+            $('.yd-fm-filter').animate({right: '0px'});
+        }
+    })
+    $('.yd-fm-filter .yd-fm-close-btn').mouseup(function(){
+        hideFilter();
+    })
+
+    function hideFilter() {
+        $('.yd-fm-set-btn').removeClass('on');
+        $('.yd-fm-filter').animate({right: '-310px'});
+    }
+
+
+    //图片懒加载 替换src
+    function setImgSrc(){
+        var wrapHeight = $('.yd-fm-file-container.style1').height();
+        var files = $('.yd-fm-fileitem img');
+        files.each(function(){
+            var top = parseInt($(this).offset().top) - 200;
+            var size = parseInt($(this).data('fsize')) / 1024;
+            if(size < 500 && top < wrapHeight && !$(this).attr('src') && !$(this).parent().is(':hidden')){
+                $(this).attr('src', $(this).data('src'));
+            }
+        })
+    }
+
+    //视图样式切换
+    $('.yd-fm-filter-view .yd-fm-item.s'+mViewType).addClass('on'); //初始化选中项
+    $('.yd-fm-file-container').addClass('style'+mViewType); //初始化文件样式
+    var viewChangeItem = $('.yd-fm-filter-view .yd-fm-item');
+    viewChangeItem.click(function(){
+        viewChangeItem.removeClass('on');
+        $(this).addClass('on')
+        $('.yd-fm-file-container').removeClass('style1 style2 style3');
+        $('.yd-fm-file-container').addClass('style'+$(this).data('val'));
+        setStorage('YDCurrentViewType', $(this).data('val'));
+        mViewType = $(this).data('val');
+        if($(this).hasClass('s1')){
+            setImgSrc(); //视图为缩略图时触发懒加载
+            //alert(423423);
+        }
+    })
+
+    //排序方式
+    $('.yd-fm-filter-sort .yd-fm-item.s'+mSortField).addClass('on'); //初始化选中项
+    var sort = $('.yd-fm-filter-sort .yd-fm-item');
+    sort.click(function(e){
+        sort.removeClass('on');
+        $(this).addClass('on');
+        mSortField = $(this).data('val');
+        setStorage('YDCurrentSortField', $(this).data('val'));
+        showFile();
+      // alert($(this).data('val'));
+
+    })
+    //升序 降序
+    $('.yd-fm-filter-sort-type .yd-fm-item.s'+mSortOrder).addClass('on'); //初始化选中项
+    var sortType = $('.yd-fm-filter-sort-type .yd-fm-item');
+    sortType.click(function(){
+        sortType.removeClass('on');
+        $(this).addClass('on');
+        mSortOrder =  $(this).data('val');
+        setStorage('YDCurrentSortOrder', $(this).data('val'));
+        showFile();
+       // alert($(this).data('val'));
+    })
+
+
+
+    $('#frm').ajaxForm({
+        success: complete,
+        dataType: 'json',
+        beforeSubmit: check
+    });
+
+    function check(){
+        return true;
+    }
+
+    function complete(data){
+        if (data.status==1){
+            SucceedBox(data.info);
+            window.setTimeout( ScanImage,1500);
+        }else if(data.status==0){
+            ErrorBox(data.info);
+        }
+    };
+
+    $('#frm').submit(function(){  // 提交表单
+        //$('#frmAddBanner').ajaxSubmit();
+        return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
+    });
+});
+</script>

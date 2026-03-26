@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.type-wrapper label{ margin-right: 2em;}
+		.content-wrapper, .result-wrapper{ display: none; }
+		.check-item{ font-size:15px; border-bottom: 1px solid #ddd; padding: 5px 0;}
+		#main_page #btnSubmit.btnCheckWords{ padding: 8px 35px; background: #5cb85c; color:#fff; border: 0px solid #5cb85c;}
+		#main_page #btnSubmit.btnCheckStop{ padding: 8px 35px; background: #FF5722; color:#fff; border: 0px solid #FF5722;}
+		#CheckResult{ text-align:left; line-height:1.8em; font-size:16px; max-height:350px; overflow-y:auto; padding-left:10px;}
+		#stat{ margin-left: 5em; font-size:16px;}
+		#stat span{ margin-right:1em; }
+		#main_page .box-footer-inner input[disabled=disabled]{ cursor: not-allowed; opacity: 0.5; }
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container box-footer-fixed">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header" id="c1">
+                <h4>敏感词检测</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+					<tr>
+                        <th>检测类别</th>
+                        <td class="type-wrapper">
+							<!--<label><input type="radio" onclick="changeType(1)" name="WordsType" value="1"/>全部</label>-->
+                            <label><input type="radio" onclick="changeType(2)"name="WordsType" value="2"/>新广告法禁用词</label>
+                            <label><input type="radio" onclick="changeType(3)"name="WordsType" value="3"/>违规敏感词</label>
+                            <label><input type="radio" onclick="changeType(4)"name="WordsType" value="4"/>自定义词</label>
+                        </td>
+                    </tr>
+                     <tr class="content-wrapper">
+                        <th>自定义敏感词</th>
+                        <td>
+							<textarea style="width:100%;height:160px" placeholder="敏感词1,敏感词2,敏感词3" id="WordsContent" name="WordsContent">{$WordsContent}</textarea>
+							<span class='Caution'>多个敏感词以英文逗号隔开</span>
+						</td>
+                    </tr>
+                </table>
+            </div> 
+			
+			<div class="result-wrapper">
+				<div class="box-header" id="c2">
+					<h4>违规检测结果
+						<span id="stat">
+							待检测页面总数：<span id="stat-dai">0</span>
+							已检测：<span id="stat-wan" style="color:green;">0</span>
+							违规页面：<span id="stat-wei" style="color:red;">0</span>
+						</span>
+						<span style="color:red; font-size:15px;float:right;">注意：系统仅检测网页文本，不对图片进行检测！</span>
+					</h4>
+				</div>
+				<div class="box-content">
+					<div id="CheckResult"></div>
+				</div>
+			</div>
+                     
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" class="marginright" type="submit" value="保存" />
+					<input id="btnSubmit" class="btnCheckWords marginright" type="button" onclick="initCheckWords()" value="立即检测"/>
+					<input id="btnSubmit" class="btnCheckStop marginright" type="button" onclick="stopCheck()" disabled="disabled" value="停止检测"/>
+					<input id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 pageInit();
+});
+
+function pageInit(){
+	$("input[name='WordsType'][value={$WordsType}]").attr("checked",'checked');
+	changeType("{$WordsType}");
+}
+
+//改变类型
+function changeType(type){
+	if(type==1 || type==4){
+		$(".content-wrapper").show();
+	}else{
+		$(".content-wrapper").hide();
+	}
+}
+
+//关键词检测
+var gUrl = null;
+var gIndex = 0;
+var gWei = 0; //违规页面数
+var gStartTime = 0;
+var gIsStop = true;
+//初始化检测
+function initCheckWords(){
+	if(checkSafeQuestion()) return;
+	startCheck();
+	var url = "{$Url}intiCheckWords";
+	var params = {};
+	params["WordsContent"] = $("#WordsContent").val();
+	params["WordsType"] = $("input[name='WordsType']:checked").val();
+	$.ajax({url: url,  type: "POST", timeout: 30000, data: params, dataType:"json", success: function(res){
+			if (res.status == 1){
+				gUrl = res.data;
+				gIndex = 0;
+				gWei = 0;
+				$("#stat-dai").text(gUrl.length);
+				$("#stat-wan").text(gIndex);
+				$("#stat-wei").text(gWei);
+				startCheckWords();
+			}else{
+				showResult(res.info);
+				endCheck();
+			}
+		}, error:function errorCallback(obj, textStatus, errorThrown){
+			var errmsg = (textStatus == "timeout") ? "初始化检测操作超时" :"初始化检测发生错误 "+obj.statusText;
+			showResult(errmsg);
+			endCheck();
+		}
+	});
+}
+
+function startCheckWords(){
+	if(gIsStop) return;
+	var url = "{$Url}startCheckWords";
+	var params = {};
+	params["Url"] = gUrl[gIndex]["Url"];
+	$.ajax({
+		url: url,  type: "POST", timeout: 60*1000, data: params, dataType:"json", 
+		success: function(res){
+			if(gIsStop) return;
+			if (res.status == 1){
+				
+				if(res.info){ //不为空表示，检测成功，存在违规词
+					gWei++;
+					$("#stat-wei").text(gWei);
+					showResult(res.info);
+				}
+			}else{  //就算发生错误，也继续检测
+				showResult(res.info);
+			}
+			gIndex++;
+			$("#stat-wan").text(gIndex);
+			if(gIndex >= gUrl.length){ //检测完成
+				endCheck();
+				return;
+			}
+			startCheckWords();
+		}, 
+		error:function errorCallback(obj, textStatus, errorThrown){
+			var errmsg = (textStatus == "timeout") ? "操作超时" :"发生错误 "+obj.statusText;
+			showResult(errmsg);
+			gIndex++; //超时继续检测
+			startCheckWords();
+		}
+	});
+}
+
+//开始检测
+function startCheck(){
+	$(".result-wrapper").show();
+	gIsStop = false;
+	gIndex = 0;
+	gStartTime = new Date().getTime(); //精确到毫秒
+	$("#stat-dai").text(0);
+	$("#stat-wan").text(0);
+	$("#stat-wei").text(0);
+	clearResult();
+	showResult("开始检测，请稍后...", "blue");
+	$(".box-footer-inner input").attr("disabled", "disabled");
+	$(".btnCheckStop").removeAttr("disabled");
+}
+
+//停止检测
+function stopCheck(){
+	gIsStop = true;
+	$(".box-footer-inner input").removeAttr("disabled");
+	$(".btnCheckStop").attr("disabled", "disabled");
+	showResult("停止检测！", 'red');
+}
+
+//结束检测
+function endCheck(){
+	var endTime = new Date().getTime(); //精确到毫秒
+	var totalTime = parseInt( (endTime-gStartTime)/1000 );
+	$(".box-footer-inner input").removeAttr("disabled");
+	$(".btnCheckStop").attr("disabled", "disabled");
+	var msg = "";
+	if(gWei == 0){
+		msg +="<span>检测完成，未发现违规页面，";
+	}else{
+		msg +="<span style='color:red;'>检测完成，发现<span style='color:blue'>"+gWei+"</span>个疑似违规页面，";
+	}
+	totalTime = friendTime(totalTime);
+	msg += "本次检测耗时<span style='color:blue'>"+totalTime+"</span>（结果仅供参考，请人工排查核对）</span>";
+	showResult(msg);
+}
+
+function friendTime(second){
+	var str = "";
+	if(second>=60){
+		var min = Math.floor(second/60);
+		str = min+"分"+(second%60)+"秒";
+	}else{
+		str = second+"秒";
+	}
+	return str;
+}
+
+//显示检测结果
+function showResult(msg, color){
+	if(!msg) return;
+	var html = "<div class='check-item'>";
+	if(color){
+		html += "<span style='color:"+color+"'>"+msg+"</span>";
+	}else{
+		html += msg;
+	}
+	html += "</div>";
+	$("#CheckResult").append(html);
+	$('#CheckResult').scrollTop( $('#CheckResult')[0].scrollHeight );
+}
+
+//清空结果
+function clearResult(){
+	$("#CheckResult").html("");
+}
+</script>

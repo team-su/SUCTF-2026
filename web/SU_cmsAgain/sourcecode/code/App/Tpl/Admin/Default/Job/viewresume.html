@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.resume{width:690px; padding:10px 0; text-align:center;  margin: 0 auto;}
+		.resume-table{ width:100%; border:2px solid #000; text-align:center;}
+		.resume-table caption{ font-size: 25px; padding: 10px 0; font-weight:normal;letter-spacing: 6px;}
+		.resume-table td { color:#000; font-size:15px; border:1px solid #000; text-align:center; padding:6px 5px;}
+		.resume-table .detail{ line-height:1.6em; min-height:25em;word-break: break-all;word-wrap:break-word;text-align:left }
+		.resume-bottom{font-size:12px; padding:6px 0; text-align:right;}
+		@media print {
+			.no-print{ display:none;}
+			.container{ box-shadow:none; }
+		}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+            <div class="box">
+                <div class="resume">
+					  <table class="resume-table">
+						<caption>个人简历</caption>
+						<tr>
+						  <td style="width:100px; "><b>姓名</b></td>
+						  <td style="width:150px;">
+							{$Resume.GuestName|htmlspecialchars}
+							<neq name="Resume.GuestID" value="0"><span style="color:red">[会员]</span></neq>
+						  </td>
+						  <td style="width:100px;"><b>性别</b></td>
+						  <td style="width:150px;">{$Resume.Gender|htmlspecialchars}</td>
+						  <td style="width:120px;" rowspan="5">照片</td>
+						</tr>
+						<tr>
+						   <td><b>出生年月</b></td><td>{$Resume.Birthday|htmlspecialchars}</td>
+						   <td><b>民族</b></td><td>{$Resume.Ethnic|htmlspecialchars}</td>
+						</tr>
+						<tr>
+						  <td><b>籍贯</b></td><td>{$Resume.Birthplace|htmlspecialchars}</td>
+						  <td><b>政治面貌</b></td><td>{$Resume.Political|htmlspecialchars}</td>
+						</tr>
+						<tr>
+						  <td><b>毕业院校</b></td><td>{$Resume.School|htmlspecialchars}</td>
+						  <td><b>所学专业</b></td><td>{$Resume.Specialty|htmlspecialchars}</td>
+						</tr>
+						<tr>
+						  <td><b>电子邮件</b></td><td>{$Resume.Email|htmlspecialchars}</td>
+						  <td><b>最高学历</b></td><td>{$Resume.Education|htmlspecialchars}</td>
+						</tr>
+						<tr>
+						  <td><b>联系电话</b></td><td>{$Resume.Telephone|htmlspecialchars}</td>
+						  <td><b>待遇要求</b></td><td colspan="2">{$Resume.Salary|htmlspecialchars}</td>
+						</tr>
+						<tr><td><b>住址</b></td><td colspan="4">{$Resume.Address|htmlspecialchars}</td></tr>
+					   <tr><td  style="text-align:left;padding-left:28px" colspan="5"><b>详细介绍</b></td></tr>
+						<tr><td  colspan="5"><div class="detail">{$Resume.Detail|htmlspecialchars}</div></td></tr>
+					  </table>
+					  <div class="resume-bottom">
+							应聘岗位：<span style="color:red;margin-right:15px;">{$Resume.JobName|htmlspecialchars}</span>
+							投递时间：<span style="color:red;">{$Resume.Time}</span>
+					  </div>
+				</div> 
+                <div class="box-footer no-print">
+                    <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"   type="button" onclick="javascript:window.print();" value="打印简历" />
+                    <input  id="btnSubmit"  type="button" onclick="javascript:history.go(-1);" value="返回" />
+                    </div>
+                </div>
+            </div>          
+        </div>        
+    </div>
+    </div>
+</body>
+</html>

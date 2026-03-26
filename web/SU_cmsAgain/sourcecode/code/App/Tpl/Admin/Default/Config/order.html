@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+        <div class="box-header"  id="c7"><h4>订单设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+               <tr>
+                    <th class="w120">货币符号</th>
+                    <td><input type="text" class="textinput" style="width:100px;" name="CURRENCY_SYMBOL" value="{$CurrencySymbol}" />
+                    <span class='Caution'>设置页面显示的货币符号：人民币符号是￥，美元符号是$</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="w120">订单编号前缀</th>
+                    <td><input type="text" class="textinput" style="width:100px;" name="ORDER_PREFIX" value="{$OrderPrefix}" />
+                    	<span class='Caution'>常设为大写字母，订单编号格式：前缀+年月日时分秒+4位随机数字！如：YN201601181201580001</span>
+                    </td>
+                </tr>
+                <tr style="display:none;">
+                    <th class="w120">订单提交权限</th>
+                    <td>
+                        <label><input type="radio" name="ORDER_ALLOW" value="1"  />允许匿名提交在线订单</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="ORDER_ALLOW" value="2" checked="checked" />允许会员提交在线订单</label>
+                    </td>
+                </tr>
+             
+                 <tr style="display:none">
+                    <th class="w120">每页显示订单数</th>
+                    <td><input type="text" class="textinput w360" name="ORDER_PAGESIZE" value="{$OrderPageSize}" /></td>
+                </tr>
+                <tr>
+                    <th class="w120">订单提交是否启用验证码</th>
+                    <td>
+                        <label><input type="radio" name="ORDER_VERIFYCODE" value="1"  />启用</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="ORDER_VERIFYCODE" value="0" checked="checked" />禁用</label>
+                        <span class='Caution'>启用后，提交订单时必须输入验证码</span>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th>订单商品金额满多少免运费</th>
+                    <td><input type="text" class="textinput" style="width:60px;" name="FREE_SHIPPING_THRESHOLD" value="{$FreeShippingThreshold}" />
+                    	<span class='Caution'>0：表示不免运费，请设置为整数</span></td>
+                </tr>
+                <tr>
+                    <th>积分换算比例&nbsp;<b style="color:blue;">1元等于<b></th>
+                    <td><input type="text" class="textinput" style="width:60px;" name="POINT_EXCHANGE_RATE" value="{$PointExchangeRate}" />&nbsp;<b style="color:blue;">积分</b>
+                    	<span class='Caution'>必须设置为整数。当用积分兑换商品时，积分兑换现金比例。如设置为10，表示1个积分可以抵扣0.1元</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>发货后多少天自动收货</th>
+                    <td>
+                        <select name="AUTO_RECEIVE_DAYS" id="AUTO_RECEIVE_DAYS">
+                            <option value="0">禁止自动收货</option>
+                            <option value="1">1天</option>
+                            <option value="2">2天</option>
+                            <option value="3">3天</option>
+                            <option value="4">4天</option>
+                            <option value="5">5天</option>
+                            <option value="6">6天</option>
+                            <option value="7">1星期</option>
+                            <option value="8">8天</option>
+                            <option value="9">9天</option>
+                            <option value="10">10天</option>
+                            <option value="11">11天</option>
+                            <option value="12">12天</option>
+                            <option value="13">13天</option>
+                            <option value="14">2星期</option>
+                            <option value="15">半个月</option>
+                        </select>
+                        <span class='Caution'>如果模板没有购物功能，请设置为"禁止自动收货"</span>
+                    </td>
+                </tr>
+        	</table>
+        </div>     
+        
+       <div class="box-header"  id="c7"><h4>邮件通知设置</h4></div>
+        <div class="box-content">
+        	<table class="boxtable">
+                <tr>
+                    <th class="w120">是否邮件通知</th>
+                    <td>
+                        <label><input type="radio" name="ORDER_EMAIL" value="1" onclick="ChangeEmail(1)"  />是</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="ORDER_EMAIL" value="0" onclick="ChangeEmail(0)" checked="checked" />否</label>
+                        <span class='Caution'>启用后，客户提交订单后，会发送邮件通知。</span>
+                    </td>
+                </tr>
+               <tr class="email">
+                    <th class="w120">接收邮件帐号</th>
+                    <td><input type="text" class="textinput" style="width:350px" name="ORDER_EMAIL_TO" value="{$OrderEmailTo}" />
+                    <span class='Caution'>多个邮箱以英文逗号隔开，留空为[管理首页]->[联系方式]设置的电子邮件</span>
+                    </td>
+                </tr>
+                <tr class="email">
+                     <th class="w120">邮件标题</th>
+                    <td><input type="text" class="textinput"  style="width:350px"  name="ORDER_EMAIL_TITLE" value="{$OrderEmailTitle}" /></td>
+                </tr>
+                <tr class="email">
+                     <th class="w120">邮件内容</th>
+                    <td>
+                    <textarea  class="textinput"  style="width:100%;height:100px;" id="ORDER_EMAIL_BODY"  name="ORDER_EMAIL_BODY" >{$OrderEmailBody}</textarea>
+                    <span class='Caution'>标题和内容均支持变量：
+                        <literal>
+                            <b onclick="insertAtCursorByID('ORDER_EMAIL_BODY','{$OrderTime}')"  class="tplvar">{$OrderTime}</b>表示下单时间&nbsp;&nbsp;
+                            <b onclick="insertAtCursorByID('ORDER_EMAIL_BODY','{$OrderNumber}')"  class="tplvar">{$OrderNumber}</b>表示订单编号&nbsp;&nbsp;
+                            <b onclick="insertAtCursorByID('ORDER_EMAIL_BODY','{$TotalOrderPrice}')"  class="tplvar">{$TotalOrderPrice}</b>表示订单总额&nbsp;&nbsp;
+                        </literal>
+                    </span>
+                    </td>
+                </tr>
+           </table>
+        </div>
+        
+        <div class="box-header"  id="c7"><h4>订单短信通知设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+                    <tr>
+                        <th class="w120">是否短信通知</th>
+                        <td>
+                            <label><input type="radio" name="ORDER_SMS" value="1" onclick="ChangeSms(1)"  />是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="ORDER_SMS" value="0" onclick="ChangeSms(0)" checked="checked" />否</label>
+                            <span class='Caution'>启用后，客户提交订单后，会发送短信通知。</span>
+                        </td>
+                    </tr>
+                    <tr class="sms">
+                        <th class="w120">手机号码</th>
+                        <td><input type="text" class="textinput" style="width:130px" name="ORDER_SMS_TO" value="{$OrderSmsTo}" />
+                        <span class='Caution'>注意：仅支持一个手机号码</span>
+                        </td>
+                    </tr>
+                    <tr class="sms">
+                         <th class="w120">短信通知模板</th>
+                        <td>
+                            <textarea name="ORDER_SMS_TEMPLATE" id="OrderSmsTemplate" style="height:70px; width:100%">{$OrderSmsTemplate}</textarea>
+                        </td>
+                    </tr>
+                    <tr class="sms">
+                        <th class="w120"></th>
+                        <td>
+                            <span class='Caution'>
+                                <literal>
+                                    模板内容举例：您有新的订单：订单编号【{$OrderNumber}】，订单金额【{$TotalOrderPrice}】，下单时间【{$OrderTime}】，请及时处理！
+                                    <div style="text-indent:23px">设置好模板后，通常需要提交到短信服务商，审核以后才能使用。
+                                    支持模板变量：
+                                        <b onclick="insertAtCursorByID('OrderSmsTemplate','{$OrderTime}')"  class="tplvar">{$OrderTime}</b>表示下单时间&nbsp;&nbsp;
+                                        <b onclick="insertAtCursorByID('OrderSmsTemplate','{$OrderNumber}')"  class="tplvar">{$OrderNumber}</b>表示订单编号&nbsp;&nbsp;
+                                        <b onclick="insertAtCursorByID('OrderSmsTemplate','{$TotalOrderPrice}')"  class="tplvar">{$TotalOrderPrice}</b>表示订单总额&nbsp;&nbsp;
+                                    </div>
+                                </literal>
+                            </span>
+                        </td>
+                    </tr>
+            </table>
+        </div>
+        
+        <div class="box-footer">
+            <div class="box-footer-inner">
+                <input  id="btnSubmit" class="marginright"  type="submit" value="保存设置" />
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function ChangeEmail(type){
+	if( type == 1 ){
+		$(".email").show();
+	}else{
+		$(".email").hide();
+	}
+}
+
+function ChangeSms(type){
+	if( type == 1 ){
+		$(".sms").show();
+	}else{
+		$(".sms").hide();
+	}
+}
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		try{
+			LoadBox();
+			for ( s in CKEDITOR.instances ) {
+			   CKEDITOR.instances[s].updateElement();
+			}
+		}catch(e){
+			;
+		}finally{
+			return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+		}
+	 });
+	 
+	 function pageInit(){
+			$("input[name='ORDER_EMAIL'][value={$OrderEmail}]").attr("checked",'checked');
+			$("input[name='ORDER_ALLOW'][value={$OrderAllow}]").attr("checked",'checked');
+			$("input[name='ORDER_VERIFYCODE'][value={$OrderVerifyCode}]").attr("checked",'checked');
+			ChangeEmail("{$OrderEmail}");
+			
+			$("input[name='ORDER_SMS'][value={$OrderSms}]").attr("checked",'checked');
+			ChangeSms("{$OrderSms}");
+			
+			$("#AUTO_RECEIVE_DAYS").val("{$AutoReceiveDays}");
+	 }
+	 pageInit();
+});
+</script>

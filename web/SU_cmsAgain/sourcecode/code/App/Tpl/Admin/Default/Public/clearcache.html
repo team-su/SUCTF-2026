@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <eq name="HtmlEnable" value="1">
+    	<style>tr.myhtmlcache{ display:table-row;}</style>
+    <else/>
+    	<style>tr.myhtmlcache{ display:none;}</style>
+    </eq>
+</head>
+<body id="main_page">
+<div class="container">
+    <div style="display:none;background-color:#FFF; padding:5px; border:1px solid #CCC" id="t1">
+        <b>快速设置时间：</b>
+        <a onclick="SetIndexTime(1*60*60)">1小时</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetIndexTime(12*60*60)">12小时</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetIndexTime(3*24*60*60)">3天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetIndexTime(7*24*60*60)">7天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetIndexTime(15*24*60*60)">15天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetIndexTime(30*24*60*60)">1月</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetIndexTime(3*30*24*60*60)">3月</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetIndexTime(0)"><b>永久缓存</b></a>
+    </div>
+    
+    <div style="display:none;background-color:#FFF; padding:5px; border:1px solid #CCC" id="t2">
+        <b>快速设置时间：</b>
+        <a onclick="SetChannelTime(1*60*60)">1小时</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetChannelTime(12*60*60)">12小时</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetChannelTime(3*24*60*60)">3天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetChannelTime(7*24*60*60)">7天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetChannelTime(15*24*60*60)">15天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetChannelTime(30*24*60*60)">1月</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetChannelTime(3*30*24*60*60)">3月</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetChannelTime(0)"><b>永久缓存</b></a>
+    </div>
+    
+    <div style="display:none;background-color:#FFF; padding:5px; border:1px solid #CCC" id="t3">
+        <b>快速设置时间：</b>
+        <a onclick="SetInfoTime(1*60*60)">1小时</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetInfoTime(12*60*60)">12小时</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetInfoTime(3*24*60*60)">3天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetInfoTime(7*24*60*60)">7天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetInfoTime(15*24*60*60)">15天</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetInfoTime(30*24*60*60)">1月</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetInfoTime(3*30*24*60*60)">3月</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a onclick="SetInfoTime(0)"><b>永久缓存</b></a>
+    </div>
+            
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmSave">
+            <input type='hidden' name='Action' id="myaction" value="clearcache" />
+            <div class="box-header"><h4>系统缓存管理</h4></div>
+                <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                       <th nowrap="nowrap" style="color:#F00;width:380px;" >一键清除系统所有缓存</th>
+                       <td><input type="button" id="btnSubmit" onclick="ClearCache('SystemCache')" value="清除系统缓存" />
+                       <span class='Caution'><span style="color:blue;">快捷键：Ctrl + Del&nbsp;&nbsp;</span>
+                       清除系统所有缓存(模板缓存、配置缓存、频道缓存、模型缓存)，但不清除Html静态缓存！</span>
+                       </td>
+                    </tr>
+                </table>
+            </div>
+                  
+            <div class="box-header">
+                <h4>HTML静态缓存管理
+                    <span style="margin-left:10px;color:#F00;font-size:12px;">注意：在"调试模式"下，HTML静态缓存无效！</span>
+                </h4>
+            </div>
+            <div class="box-content" >
+                <table class="boxtable">
+                <tr>
+                <th nowrap="nowrap"   style="width:380px;">是否启用Html静态缓存</th>
+                 <td>
+                <label><input type="radio" onclick="EnableHtml(1)" name="HTML_ENABLE" value="1" <eq name="HtmlEnable" value="1">checked="checked"</eq> />启用</label>
+                &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio"  onclick="EnableHtml(0)"  name="HTML_ENABLE" value="0" <eq name="HtmlEnable" value="0">checked="checked"</eq> />禁用</label>
+                <span class='Caution'>开启Html静态缓存，有利于提升系统性能！</span>
+                </td>
+                </tr>
+                <tr name="htmlcache" class="myhtmlcache">
+                    <th><span style="color:blue">网站首页</span>Html静态缓存时间</th>
+                    <td><input type="number" class="textinput" style="width:110px" name="INDEX_CACHE_TIME" id="IndexCacheTime" value="{$IndexCacheTime}"  rel="t1"  />
+                    <span class='Caution'>单位：秒 0表示永久缓存。超时将自动重新生成HTML，请根据网站首页更新频率设置，默认为7天</span>
+                    </td>
+                </tr>
+                <tr  name="htmlcache" class="myhtmlcache">
+                    <th><span style="color:blue">频道首页</span>Html静态缓存时间</th>
+                    <td><input type="number" id="ChannelCacheTime" class="textinput" style="width:110px" name="CHANNEL_CACHE_TIME" value="{$ChannelCacheTime}"  rel="t2"/>
+                    <span class='Caution'>单位：秒 0表示永久缓存。超时将自动重新生成HTML，请根据频道首页更新频率设置，默认为15天</span>
+                    </td>
+                </tr>
+                <tr  name="htmlcache" class="myhtmlcache">
+                    <th><span style="color:blue">内容页面</span>Html静态缓存时间</th>
+                    <td><input type="number"  id="InfoCacheTime"  class="textinput" style="width:110px" name="INFO_CACHE_TIME" value="{$InfoCacheTime}"   rel="t3"/>
+                    <span class='Caution'>单位：秒 0表示永久缓存。超时将自动重新生成HTML，请根据内容页面更新频率设置，默认为0</span>
+                    </td>
+                </tr>
+                <tr  name="htmlcache" class="myhtmlcache">
+                    <th style="color:#F0F">一键清除全部Html静态缓存</th>
+                    <td><input type="button" id="btnSubmit"  onclick="ClearCache('AllHtmlCache')" value="清除全部Html"   />
+                    <span class='Caution'><span style="color:blue;">快捷键：Shift + Del</span></span></td>
+                </tr>
+            </table>
+            </div> 
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" type="button"  onclick="ClearCache('SaveConfig')" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else{ //添加频道失败
+			ErrorBox(data.info);
+		}
+	};
+	
+	$('#frmSave').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	});
+	
+	$("#IndexCacheTime").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+	
+	$("#ChannelCacheTime").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+	
+	$("#InfoCacheTime").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+	
+	EnableHtml({$HtmlEnable});
+});
+
+//清除系统缓存
+function ClearCache(action){
+	$('#myaction').val(action);
+	//alert($('#myaction').val());
+	$('#frmSave').submit();
+}
+
+function EnableHtml(status){
+	if( status == 1 ){
+		$("tr.myhtmlcache").css("display","table-row"); 
+	}else{
+		$("tr.myhtmlcache").css("display","none"); 
+	}
+}
+
+function SetIndexTime(time){
+	$("#IndexCacheTime").val(time);
+}
+function SetChannelTime(time){
+	$("#ChannelCacheTime").val(time);
+}
+function SetInfoTime(time){
+	$("#InfoCacheTime").val(time);
+}
+</script>

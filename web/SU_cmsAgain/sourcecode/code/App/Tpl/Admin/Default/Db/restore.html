@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+   <form enctype="multipart/form-data" method="post" id="frm">
+              <div class="table">
+               <div class="toolbars">
+                    <li class="toolbar"><a id="btnSaveAll" class="ydicon-beifen" onclick="BackupAll()"  title="备份数据库">备份数据库</a></li>
+                    <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                    <li class="toolbar"><a id="del" onclick="BatchDel()" title="删除选中备份文件">删除</a></li>
+                    <li class="toolbar toolbartip">
+                        备份数据总大小：<span style="color:red;font-weight:bold; margin-right:10px">{$SqlFileTotalSize|byte_format}</span>
+                        共<span style="color:red;font-weight:bold">{$SqlFileCount}</span>个备份文件
+                    </li>
+                </div>
+                <table class="datatable" id="datatable">
+                <tr>
+                    <th width="50px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                    <th width="300px">备份文件</th>
+                    <th width="130px" >文件大小</th>
+                    <th width="200px" >备份时间</th>
+                    <th style="text-align:left;padding-left:112px">操作</th>
+                </tr>
+                <notempty name="SqlFile">                 
+                    <volist name="SqlFile" id="s">
+                        <tr>
+                            <td><input class="checkrow" type="checkbox" name="files[]" value="{$s.Name}" /></td>
+                            <td>{$s.Name}</td>
+                            <td><b>{$s.Size|byte_format}</b></td>
+                            <td>{$s.Time|yd_friend_date}</td>
+                            <td class="operator">
+                                <a style="float:left; " onclick="RestoreSql('{$s.Name}')" id="btnCheckDb">还原</a>
+                                <div class="btn-sep"></div>
+                                <a style="float:left" onclick="DelSql('{$s.Name}')" class="btnDel">删除</a>
+                            </td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="5"  id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                
+                </table>
+                 <div class="tfoot">
+                      <span id="notice">
+                      		<b>备注：</b>
+                            <span class="notice-item">如需备份指定表，请在[系统管理]-[数据库管理]菜单中备份！</span>
+                      </span>
+                 </div>
+            </div>
+       </form>
+</div>
+</body>
+</html>
+
+<div class="table dialog" id="dlgContent" title="查看" style="padding:0">
+	<textarea readonly="readonly" id="sqlContent" style="width:760px;height:330px"></textarea>
+</div>
+
+<script type="text/javascript">
+//备份所有数据
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	var arrChk = $("input[name='files[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("请选中要删除备份文件!");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/batchDelSqlFile");
+		$('#frm').submit();
+	});
+}
+
+function DelSql(file){
+	if(checkSafeQuestion()) return;
+	var tip = DeleteTip(file);
+	ConfirmBox(tip, function () {
+		url = "{$Url}delSqlFile/file/"+file;
+		location.href = url;		
+	});
+}
+
+//数据回复
+function RestoreSql(file){
+	ConfirmBox("确定还原吗?还原操作会覆盖现有的数据！", function () {
+		LoadBox("数据还原中，请稍后...");
+		var timenow = new Date().getTime();
+		url = "{$Url}recover";
+		$.get(url, {file:file,t:timenow}, RestoreComplete, "json");
+	});
+}
+
+function RestoreComplete(data, textStatus){
+	CloseLoadBox();
+	if (data.status == 1){
+		SucceedBox( data.info );
+	}else{
+		ErrorBox(data.info);
+	}
+}
+
+//备份所有数据
+function BackupAll(){
+	ConfirmBox("确定备份数据库吗?", function () {
+		LoadBox("数据库备份中，请稍后...");
+		url = "{$Url}backup";
+		$.get(url, {}, DbComplete, "json");
+	});
+}	
+
+//备份所有数据回调函数
+function DbComplete(data, textStatus){
+	CloseLoadBox();
+	if (data.status == 1){
+		SucceedBox("数据库备份成功！");
+		location.href = "{$Url}restore";
+	}else{ 
+		ErrorBox(data.info);
+	}
+}
+</script>

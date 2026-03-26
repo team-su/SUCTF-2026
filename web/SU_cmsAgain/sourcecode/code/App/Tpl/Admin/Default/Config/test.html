@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">               
+            <div class="box-header"><h4>测试设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                <tr>
+                    <th class="w120">上传目录</th>
+                    <td><input disabled="disabled" type="text" class="textinput w360" name="UPLOAD" value="{$Upload}" /></td>
+                </tr>
+				 <tr>
+                    <th class="w120">目录</th>
+                    <td><a id="btnSaveAll">上传图片</a></td>
+                </tr>
+				<tr>
+                    <th class="w120"></th>
+                    <td><div id="filelist"></div></td>
+                </tr>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script>
+var options = {"Debug":1, 'city': "长沙",  'age':28};
+yd.setOptions(options);
+yd.log("options", options);
+
+var str = yd.format("这里是[0], 今年[1]", "长沙", 28);
+//var str = yd.format("这里是[city], 今年[age]", options);
+yd.log(str);
+</script>

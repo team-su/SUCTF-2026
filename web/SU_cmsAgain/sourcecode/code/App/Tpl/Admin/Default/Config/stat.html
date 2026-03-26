@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.box-header h4 a{ font-size:12px; font-weight:normal;color:blue;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header" id="c1">
+                <h4>站长统计设置
+                    <span class="extra">还没有帐号？点击注册<a target="_blank" title="点击注册" href="http://tongji.baidu.com/web/register">百度统计注册</a>
+                </h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr style="display:none;">
+                        <th>帐号</th>
+                        <td><input type="text" class="textinput" style="width:200px;"  name="STAT_USERNAME" value="{$StatUserName}" />
+                        <span class='Caution'>请填写注册的帐号，仅用于备忘，可不填写！</span>
+                        </td>
+                    </tr>
+                    <tr  style="display:none;">
+                        <th>密码</th>
+                        <td><input type="text" class="textinput" style="width:200px;" name="STAT_USERPWD" value="{$StatUserPwd}" />
+                        <span class='Caution'>请填写注册的密码！仅用于备忘，可不填写！</span></td>
+                    </tr>
+                     <tr>
+                        <th>同步统计脚本代码</th>
+                        <td><textarea style="width:100%;height:170px" name="STAT_CODE">{$StatCode}</textarea>
+                        <span class='Caution'>同步统计脚本代码常放在网页底部区域，请登录统计服务商提供商后台，将同步统计脚本粘贴到文本框！</span>
+                        </td>
+                    </tr>
+                    <tr  style="display:none;">
+                        <th>同步统计图标预览</th>
+                        <td>{$StatCode}<span class='Caution'>点击图标登录，可查看网站流量统计情况！</span></td>
+                    </tr>
+                    <tr>
+                        <th>异步统计脚本代码</th>
+                        <td><textarea style="width:100%;height:170px" name="ASYNC_STAT_CODE">{$AsyncStatCode}</textarea>
+                        <span class='Caution'>异步统计代码会加载到&lt;head&gt;标签里面，不影响页面加载时间，不会在页面显示统计图标！
+                        注意：是否支持异步代码请咨询统计服务商，百度统计支持异步统计</span>
+                        </td>
+                    </tr>
+                    
+                     <tr>
+                        <th>是否启用</th>
+                        <td>
+                            <label><input type="radio" name="STAT_ENABLE" value="1" <eq name="StatEnable" value="1">checked="checked"</eq> />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="STAT_ENABLE" value="0" <eq name="StatEnable" value="0">checked="checked"</eq> />禁用</label>
+                        </td>
+                    </tr>
+                </table>
+            </div> 
+                     
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+});
+</script>

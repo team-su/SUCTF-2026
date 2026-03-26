@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.box-header h4 a{ font-size:12px; font-weight:normal;color:red; margin-left:20px;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header" id="c1">
+                <h4>robots文件修改
+                    <span class="extra">
+						robots协议也叫robots.txt，是一种存放于网站根目录下的文本文件，它告诉网络搜索引擎，网站中的哪些内容是不应被搜索引擎收录，哪些是可以被收录！
+						<a target="_blank" href="https://baike.baidu.com/item/robots协议">什么是robots协议？</a>
+					<span>
+                </h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                     <tr>
+                        <th>robots协议内容</th>
+                        <td><textarea style="width:100%;height:380px" id="RobotsContent" name="RobotsContent">{$RobotsContent}</textarea></td>
+                    </tr>
+					<tr>
+                        <th></th>
+                        <td style="padding: 10px 3px;">
+							<span onclick="setContent(0)" class="btnWarning btnSmall">恢复默认值</span>
+							<span onclick="setContent(1)" class="btnDanger btnSmall">禁止所有搜索引擎收录</span>
+							<span onclick="setContent(2)" class="btnDanger btnSmall">禁止百度收录</span>
+							<a id="viewRobots" class="btnSuccess btnSmall"  target="_blank" href="">查看我的robots协议</a>
+						</td>
+                    </tr>
+                </table>
+            </div> 
+                     
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" class="marginright" type="submit" value="保存" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	setRobotsUrl();
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		setRobotsUrl();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	 function setRobotsUrl(){
+	 		//加上随机字符串，避免缓存
+			var timestamp=new Date().getTime();
+			var url = "{$WebInstallDir}robots.txt?"+timestamp;
+			$("#viewRobots").attr("href", url);
+	 }
+});
+
+ function setContent(type){
+	if(1==type){
+		content = "User-agent: *\r\nDisallow: /";
+	}else if(2==type){
+		content = "User-agent: baiduspider\r\nDisallow: /";
+	}else if(0==type){
+		content = "User-agent: *";
+	}
+	$("#RobotsContent").val(content);
+ }
+</script>

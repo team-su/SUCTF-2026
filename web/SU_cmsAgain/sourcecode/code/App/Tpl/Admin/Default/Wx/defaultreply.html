@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frmSave"  enctype="multipart/form-data">
+            <input type="hidden" name="ReplyID" value="{$Reply.ReplyID}" />
+            <div class="box-header"><h4>默认自动回复</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                <tr>
+                    <th class="w120">回复消息类型</th>
+                    <td>
+                        <volist name="Type" id="t">
+                            <label>
+                            <eq name="t.TypeID" value="$Reply.TypeID">
+                                <input type='radio' onclick="SelectType('{$t.TypeID}')"  name='TypeID' style="cursor:pointer"    value="{$t.TypeID}" checked="checked"   />
+                            <else/>
+                                <input type='radio' onclick="SelectType('{$t.TypeID}')"  name='TypeID'   style="cursor:pointer"   value="{$t.TypeID}"  />
+                            </eq>
+                            {$t.TypeName}&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        </volist>
+                    </td>
+                </tr>
+                <include file="tool" />
+                <tr>
+                    <th class="w120">是否启用</th>
+                    <td>
+                    <input type='radio'  id='IsEnable'  name='IsEnable'    value='1' <eq name="Reply.IsEnable" value="1">checked="checked"</eq> />
+                    启用&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type='radio'  id='IsEnable'  name='IsEnable'    value='0'  <eq name="Reply.IsEnable" value="0">checked="checked"</eq>  />
+                    禁用&nbsp;&nbsp;&nbsp;&nbsp;
+                    </td>
+                </tr>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" type="submit" value="保存" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="emotions" style="display:none;"></div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#musicfile').change(function(){
+		 if( !$(this).val() ) return;
+		$('#frmSave').attr('action','__GROUP__/public/upload/addwater/no/currentfile/musicfile');
+		$('#frmSave').submit();
+	 });
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmSave').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmSave').submit(function(){
+		LoadBox();
+		return false;  
+	 });
+	 
+	 SelectType("{$Reply.TypeID}");
+});
+</script>

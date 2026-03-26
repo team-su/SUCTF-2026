@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+        <div class="box-header"  id="c7"><h4>基本设置</h4></div>
+        <div class="box-content">
+          <table class="boxtable">
+			<tr>
+                    <th class="w120">发布权限</th>
+                    <td>
+                        <label><input type="radio" name="GUEST_BOOK_ALLOW" value="0"  />禁止留言</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="GUEST_BOOK_ALLOW" value="1"  />允许游客留言</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="GUEST_BOOK_ALLOW" value="2"  />只允许会员留言</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>是否审核</th>
+                    <td>
+                        <label><input type="radio" name="GUEST_BOOK_CHECK" value="1" />审核</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="GUEST_BOOK_CHECK" value="0" />不审核</label>
+                    </td>
+                </tr>
+             <tr>
+                  <th>是否启用验证码</th>
+                 <td>
+                    <label><input type="radio" name="GUEST_BOOK_VERIFYCODE" value="1" />启用</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" name="GUEST_BOOK_VERIFYCODE" value="0" />关闭</label>
+                </td>
+              </tr>
+                 <tr  style="display:none">
+                    <th class="w120">每页显示留言数</th>
+                    <td><input type="text" class="textinput w260" name="GUEST_BOOK_PAGESIZE" value="{$GuestBookPageSize}" /></td>
+                </tr>
+           </table>
+        </div>
+        
+        <div class="box-header"  id="c7"><h4>邮件通知设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+                <tr>
+                    <th nowrap="nowrap">是否邮件通知</th>
+                    <td>
+                    <label><input type="radio" name="GUEST_BOOK_SENDEMAIL" value="1" onclick="ChangeMail(1)" />是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" name="GUEST_BOOK_SENDEMAIL" value="0" onclick="ChangeMail(0)" />否</label>
+                    </td>
+                </tr>
+               <tr class="mail">
+                     <th class="w120">接收邮件帐号</th>
+                    <td><input type="text" class="textinput" style="width:350px" name="GUEST_BOOK_EMAIL" value="{$GuestBookEmail}" />
+                    <span class='Caution'>多个邮箱以英文逗号隔开，留空为[管理首页]->[联系方式]设置的电子邮件</span>
+                    </td>
+                </tr>
+                <tr class="mail">
+                     <th class="w120">通知邮件标题</th>
+                    <td><input type="text" class="textinput"  style="width:350px"  name="GUEST_BOOK_EMAIL_TITLE" value="{$GuestBookEmailTitle}" /></td>
+                </tr>
+			</table>
+        </div>
+        
+       <div class="box-header"  id="c7"><h4>留言短信通知设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+                    <tr>
+                        <th class="w120">是否短信通知</th>
+                        <td>
+                            <label><input type="radio" name="GUEST_BOOK_SMS" value="1" onclick="ChangeSms(1)"  />是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="GUEST_BOOK_SMS" value="0" onclick="ChangeSms(0)" checked="checked" />否</label>
+                            <span class='Caution'>启用后，客户提交留言后，会发送短信通知。</span>
+                        </td>
+                    </tr>
+                    <tr class="sms">
+                        <th class="w120">手机号码</th>
+                        <td><input type="text" class="textinput" style="width:130px" name="GUEST_BOOK_SMS_TO" value="{$GuestBookSmsTo}" />
+                        <span class='Caution'>注意：仅支持一个手机号码</span>
+                        </td>
+                    </tr>
+                    <tr class="sms">
+                         <th class="w120">短信通知模板</th>
+                        <td>
+                            <textarea name="GUEST_BOOK_SMS_TEMPLATE" id="GuestBookSmsTemplate" style="height:70px; width:100%">{$GuestBookSmsTemplate}</textarea>
+                        </td>
+                    </tr>
+                    <tr class="sms">
+                        <th class="w120"></th>
+                        <td>
+                            <span class='Caution'>
+                                <literal>
+                                    模板内容举例：您有新的留言：留言内容【{$Content}】，留言时间【{$Time}】，请及时处理！
+                                    <div style="text-indent:23px">设置好模板后，通常需要提交到短信服务商，审核以后才能使用。
+                                        支持模板变量：
+                                        <b onclick="insertAtCursorByID('GuestBookSmsTemplate','{$Content}')"  class="tplvar">{$Content}</b>表示留言内容&nbsp;&nbsp;
+                                        <b onclick="insertAtCursorByID('GuestBookSmsTemplate','{$Time}')"  class="tplvar">{$Time}</b>表示留言时间&nbsp;&nbsp;
+                                    </div>
+                                </literal>
+                            </span>
+                        </td>
+                    </tr>
+            </table>
+        </div>
+        
+        <div class="box-footer">
+            <div class="box-footer-inner">
+                <input  id="btnSubmit" class="marginright"  type="submit" value="保存设置" />
+                <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	 
+	$('#frmConfig').submit(function(){
+		try{
+			LoadBox();
+			for ( s in CKEDITOR.instances ) {
+			   CKEDITOR.instances[s].updateElement();
+			}
+		}catch(e){
+			;
+		}finally{
+			return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+		}
+	 });
+	 
+	 function pageInit(){
+		 $("input[name='GUEST_BOOK_ALLOW'][value={$GuestBookAllow}]").attr("checked",'checked');
+		 $("input[name='GUEST_BOOK_CHECK'][value={$GuestBookCheck}]").attr("checked",'checked');
+		 $("input[name='GUEST_BOOK_VERIFYCODE'][value={$GuestBookVerifycode}]").attr("checked",'checked');
+		 
+		  $("input[name='GUEST_BOOK_SENDEMAIL'][value={$GuestBookSendEmail}]").attr("checked",'checked');
+		  ChangeMail("{$GuestBookSendEmail}"); 
+		  
+		  $("input[name='GUEST_BOOK_SMS'][value={$GuestBookSms}]").attr("checked",'checked');
+		  ChangeSms("{$GuestBookSms}"); 
+	 }
+	 pageInit();
+});
+
+function Insert(value){
+	try{
+		if(value == '') return;
+		var oEditor = CKEDITOR.instances.GUEST_BOOK_EMAIL_BODY;
+		if(!oEditor) return;
+		//mode:source  wysiwyg
+		if ( oEditor.mode == 'wysiwyg' ){
+			oEditor.insertText( value );
+		}
+	}catch(e){
+	}
+}
+
+function GoBack(){
+	window.location.href = "{$Group}/guestbook/Index";
+}
+
+function ChangeSms(type){
+	if( type == 1 ){
+		$(".sms").show();
+	}else{
+		$(".sms").hide();
+	}
+}
+
+function ChangeMail(type){
+	if( type == 1 ){
+		$(".mail").show();
+	}else{
+		$(".mail").hide();
+	}
+}
+</script>

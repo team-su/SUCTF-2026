@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmSave">
+            <input type='hidden' name='Action' value="save" />         
+            <div class="box-header"><h4>修改密码</h4></div>
+            <div class="box-content">
+                <table class="boxtable" style="width:600px; margin:0 auto;" align="center">
+                    <eq name="HasOldPassword" value="1">
+                    <tr>
+                        <th class="w120">原密码</th>
+                        <td><input type='password' style='width:200px;' class='textinput' name = 'pwd1' /></td>
+                    </tr>
+                    </eq>
+                    <tr>
+                        <th class="w120">新密码</th>
+                        <td><input type="password" style='width:200px;'  class='textinput' name = 'pwd2' /></td>
+                    </tr>
+                    <tr>
+                        <th class="w120">新密码确认</th>
+                        <td><input type='password' style='width:200px;'  class='textinput' name = 'pwd3' /></td>
+                    </tr>
+                </table>
+            </div> 
+            <div class="box-footer">
+                <div class="box-footer-inner"><input  id="btnSubmit"  type="submit" value="保存" /></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frmSave').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				$('#frmSave').resetForm();
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frmSave').submit(function(){
+			 LoadBox();
+	     	 return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+	});
+</script>

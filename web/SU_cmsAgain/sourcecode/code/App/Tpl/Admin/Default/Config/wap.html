@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">                   
+            <div class="box-header"  id="c7"><h4>手机网站设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>手机网站状态</th>
+                        <td>
+                            <label><input  onclick="changeWapStatus(1)" type="radio" name="WAP_STATUS" value="1"  />打开</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<label>
+							<input   onclick="changeWapStatus(0)" type="radio" name="WAP_STATUS" value="0" />关闭</label>
+                        </td>
+                    </tr>
+                    
+                   <tr class="trWrapper">
+                        <th>手机网站Logo</th>
+                        <td>
+                            <input type="text" id="weblogofileImage" class="textinput w450" name="WAP_LOGO" value="{$WapLogo}"  />
+                            <span class='UploadWrapper'>
+                                <input class='btnFileUpload' type='button' value='上传' />
+                                <input id='weblogofile' name ='weblogofile' type ='file'  size='70'  class='InputFile'  accept="image/*"/>
+                            </span>
+                            <input id='btnServer' onclick='BrowserServer()' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'   class="btnPadding"  />
+                            <span class='Caution'>如果为空则使用电脑网站Logo</span>
+                        </td>
+                    </tr>
+                    <tr class="trWrapper">
+                        <th>手机网站域名</th>
+                        <td><input type="text" class="textinput w450" name="WAP_URL" value="{$WapUrl}"  />
+                        <span class='Caution'><b>去掉</b>域名前缀http://，多域名之间以英文逗号分开，例如：www.baidu.mobi、m.baidu.com</span></td>
+                    </tr>
+                     <tr class="trWrapper">
+                        <th>手机网站域名二维码</th>
+                        <td>
+                            <input type="text" id="webqrfileImage" class="textinput w450" name="WAP_QRCODE" value="{$WapQrcode}"  />
+                            <span class='UploadWrapper'>
+                                <input class='btnFileUpload' type='button' value='上传' />
+                                <input id='webqrfile' name ='webqrfile' type ='file'  size='70'  class='InputFile'  accept="image/*" />
+                            </span>
+                            <input id='btnQrServer' onclick='BrowserQrServer()' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'   class="btnPadding"  />
+                            <span class='Caution'>二维码在线制作网址：<a href="http://cli.im/url" target="_blank">http://cli.im/url</a></span>
+                        </td>
+                    </tr>
+					<tr class="trWrapper">
+                        <th class="w120">是否自动跳转到手机网站</th>
+                        <td>
+                        <label><input type="radio" name="WAP_AUTO_REDIRECT" value="1" <eq name="WapAutoRedirect" value="1">checked="checked"</eq> />是</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="WAP_AUTO_REDIRECT" value="0" <eq name="WapAutoRedirect" value="0">checked="checked"</eq> />否</label>
+    <span class='Caution'>启用后，在手机上访问电脑网站时，将自动跳转到手机网站，推荐设置为“否”</span>
+                        </td>
+                    </tr>
+                    <tr class="trWrapper">
+                        <th class="w120">是否禁止电脑访问手机网站</th>
+                        <td><label><input type="radio" name="WAP_PC_ACCESS" value="1" <eq name="WapPcAccess" value="1">checked="checked"</eq> />是</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="WAP_PC_ACCESS" value="0" <eq name="WapPcAccess" value="0">checked="checked"</eq> />否</label>
+                        <span class='Caution'>启用后，电脑端将无法访问手机网站，推荐设置为“否”</span>
+                        </td>
+                    </tr>
+               </table>
+            </div>
+                 
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>          
+</div>
+</body>
+</html>
+<script type='text/javascript'>
+function BrowserServer(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SetFileField;
+	FileManager.popup(); 
+}
+
+function SetFileField(fileUrl){
+	document.getElementById('weblogofileImage').value = fileUrl;
+}
+
+function BrowserQrServer(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SetQrFileField;
+	FileManager.popup(); 
+}
+
+function SetQrFileField(fileUrl){
+	document.getElementById('webqrfileImage').value = fileUrl;
+}
+
+function changeWapStatus(status){
+	if( status == 1){
+		$(".trWrapper").show();
+	}else{
+		$(".trWrapper").hide();
+	}
+}
+
+$(document).ready(function(){
+	$("input[name='WAP_STATUS'][value={$WapStatus}]").attr("checked",'checked');
+	changeWapStatus("{$WapStatus}");
+	
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#weblogofile').change(function(){  
+		if( !$(this).val() ) return;
+		$('#frmConfig').attr('action','__GROUP__/public/upload/addwater/no/currentfile/weblogofile');
+		$('#frmConfig').submit();
+	 });
+	 
+	 $('#webqrfile').change(function(){  
+		if( !$(this).val() ) return;
+		$('#frmConfig').attr('action','__GROUP__/public/upload/addwater/no/currentfile/webqrfile');
+		$('#frmConfig').submit();
+	 });
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmConfig').attr('action','{$Action}');
+	 });
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	 $("#weblogofileImage").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	});
+	
+	$("#webqrfileImage").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	});
+});
+</script>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{$InfoTitle}|{$Title}-{$WebName}</title>
+<include file="Public:meta" />
+</head>
+<body  class="body_picture infodetail">
+	<include file="Public:header" />
+	
+    <!--区块5089 开始-->
+<div id="n5089" class="component floor_detail3_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5089">
+    <style type="text/css">
+        #n5089{
+            {$TDetail3Bg5089|ParseBg}
+            padding: {$TDetail3Padding5089}px 0;
+        }
+        #n5089 li{
+            animation-duration: {$TDetail3AnimationTime5089}s;
+            animation-fill-mode: both;
+        }
+
+        #n5089 .sidebar_container{
+            {$TDetail3SideBarBg5089|ParseBg}
+            yd-previewable-class: float_ float_{$TDetail3HasSideBar5089};
+        }
+        #n5089 .sidebar_title h2{
+            {$TDetail3SideBarTitle5089|ParseFont}
+        }
+        #n5089 .sidelist .InfoTitle{
+            {$TDetail3SideBarInfoTitle5089|ParseFont}
+        }
+        #n5089 .sidelist .InfoPrice{
+            {$TDetail3SideBarInfoPrice5089|ParseFont}
+        }
+
+        #n5089 .content_body .InfoTitle h1{
+            {$TDetail3Title5089|ParseFont}
+        }
+        #n5089 .InfoContent{
+            {$TDetail3Content5089|ParseFont}
+        }
+        #n5089 .content_container{
+            {$TDetail3ContentBg5089|ParseBg}
+        }
+        #n5089 .info_from_wrap{
+            {$TDetail3StatFont5089|ParseFont}
+        }
+        #n5089 .info_previous_next_wrap{
+            {$TDetail3NextFont5089|ParseFont}
+        }
+        #n5089 .Next, #n5089 .Previous{
+            border-color: {$TDetail3NextBorderColor5089};
+        }
+    </style>
+    <div class="floor_detail3 full-width{$TDetail3FullWidth5089} floor_detail">
+        <neq name="TDetail3HasSideBar5089" value="0">
+            <div class="component_title sidebar_container float_{$TDetail3HasSideBar5089}">
+            	<div yd-slot="5089A"></div>
+            	<notempty name="TDetail3SideBarChannel5089">
+                    <eq name="TDetail3SideBarChannel5089" value="-1">
+                        <assign name="CurrentChannelID" value="$ChannelID" />
+                        <else/>
+                        <assign name="CurrentChannelID" value="$TDetail3SideBarChannel5089" />
+                    </eq>
+	                <div class="sidebar" yd-group="5089" yd-tab="侧边栏设置">
+		                <div class="sidebar_title"><h2>{$CurrentChannelID|ChannelName}</h2></div>  
+		                <div class="sidebar_body">
+		                    <ul class="sidelist {$TDetail3SideBarStyle5089}-sidelist {$TRoundCorner}-round-corner">
+		                        <infolist id="f" channelid="$CurrentChannelID" top="$TDetail3SideBarCount5089" timeformat="Y-m-d" labelid="$TDetail3SideBarLabel5089" empty="$Think.lang.NoInformation">
+		                            <li yd-animation="{$TDetail3AnimationType5089}">
+		                                <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+		                                    <div class="InfoPicture"><img class="{$TRoundCorner}-round-corner" src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+		                                    <div class="InfoTitle">{$f.InfoTitle}</div>
+		                                    <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+		                                </a>
+		                            </li>
+		                        </infolist>
+		                   </ul>
+		                </div>
+		                <div class="sidebar_bottom"></div>
+		            </div>
+	            </notempty>
+            	<div yd-slot="5089B"></div>
+            </div>
+        </neq>
+        <div class="component_body content_container" yd-animation="{$TDetail3AnimationType5089}">
+            <div class="content_title"></div>
+            <div class="content_body" yd-content="_info,{$InfoID}">
+                <div class="InfoTitle"><h1>{$InfoTitle}</h1></div>
+                <div class="info_from_wrap">
+                    <neq name="TDetail3StatShow5089|strpos='1'" value="0">
+                        <b>{$Think.lang.From}：</b>
+                        <notempty name="InfoFrom">{$InfoFrom}<else/><a href="{$WebUrl}" target="_blank">{$WebName}</a></notempty>&nbsp;
+                    </neq>
+                    <neq name="TDetail3StatShow5089|strpos='2'" value="0">
+                        <b>{$Think.lang.Date}：</b><eq name="TDetail3InfoTime5089" value="1">{$InfoTime|strtotime|date="Y-m-d",###}<else />{$InfoTime|strtotime|date="m-d",###}</eq>&nbsp;
+                    </neq>
+                    <neq name="TDetail3StatShow5089|strpos='3'" value="0">
+                        <b>{$Think.lang.Hit}：</b>{$InfoHit}&nbsp;
+                    </neq>
+                    <neq name="TDetail3StatShow5089|strpos='4'" value="0">
+                        <b>{$Think.lang.belong}：</b><a href="{$ChannelUrl}" target="_blank">{$ChannelName}</a>
+                    </neq>
+                </div>
+                <include file="Public:content" />
+            </div>
+            <div class="content_bottom"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+<!--区块5089 结束--><include file="Public:footer" />
+</body>
+</html>

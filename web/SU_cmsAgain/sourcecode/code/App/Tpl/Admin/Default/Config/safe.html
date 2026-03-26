@@ -1,0 +1,551 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		#dirtable{ width:100%;border:1px solid #E3E6EB;background:#fff; border-radius:3px; }
+		#dirtable td,#dirtable th { color:#000; border:1px solid #E3E6EB; text-align:center; padding:6px 2px; }
+		#dirtable th{ background:#F3F3F3;}
+		#dirtable tr:hover { background-color:#F3F3F3 }
+		#dirtable tr:hover { background-color:#F3F3F3 }
+		.yes{	font-size: 18px;	color: #339900;	font-weight:bold;	font-family:Verdana;} 
+		.no{	font-size:18px;	color:red;	font-weight:bold;	font-family:Verdana;}
+		.btn{ margin-left:10px; padding:4px 18px;}
+		
+		.dialog table th{ text-align:right; color:blue; font-weight:bold; padding: 5px 5px;}
+		.dialog table .textinput{ margin-bottom:5px; width:95%;}
+		#question-list{display:none;background-color:#FFF; padding:5px; border:1px solid #CCC; 
+			overflow:hidden; min-width:220px; border-radius: 5px; }
+		#question-list div{ cursor:pointer; padding:6px 5px; border-bottom: 1px solid #ddd; border-radius: 5px; margin: 3px 0;}
+		#question-list div:hover{ color: red; background:#f0f0f0;}
+
+		.binduc .avatar{ width: 45px; border-radius: 50px; border: 2px solid #fff;}
+		.binduc .WxName{ white-space: nowrap; text-overflow: ellipsis; }
+		
+		.uc-wrapper{ margin: 5px 20px; width: 180px; height: 220px; text-align: center;}
+		.uc-wrapper img{ width: 100%; border: 1px solid #eee;}
+		.uc-wrapper p{ color:red; padding: 8px 0; font-size:16px; text-align: center;}
+		
+		.function-wrapper{ white-space: wrap;}
+		.function-wrapper .functions{ padding: 3px 5px; float:left; width: 110px;}
+		.function-wrapper .functions.f1{color:#000;}
+		.function-wrapper .functions.f0{color:#999;}
+		
+		.purview-wapper{ font-size:14px; padding-left:1em;font-weight:normal; }
+		.purview-wapper b{ font-weight:normal; color:blue;}
+		.btnRandom{ margin-left: 3px; padding: 4px 10px}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container  box-footer-fixed">
+    <div class="box">
+        <form  enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">    
+            <div class="box-header"  id="c3"><h4>后台安全设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th  style="width:20%">后台登录目录名称</th>
+                        <td>
+                            <input type="text" class="textinput" style="width:120px;" name="AdminLoginName" id="AdminLoginName" value="{$AdminLoginName}" />
+							<span class="btn btnSmall btnDanger btnRandom" onclick="makeAdminLoginName()">随机生成</span>
+                            <span class='Caution'>不设置，将默认为：admin。如设置为admin123，后台登陆地址变为：<span style="color:blue;">http://您的网址/admin123</span></span>
+                        </td>
+                    </tr>
+					<tr>
+                        <th>后台访问IP白名单列表<div class="red">您的本机IP：{$CurrentIP}</div></th>
+                        <td>
+							<textarea style="height:70px;width:50%;" name="AdminWhiteIP" placeholder="一行一个IP">{$AdminWhiteIP}</textarea>
+                        </td>
+                    </tr>
+					<tr>
+                        <th></th>
+                        <td><div class='Caution CautionBottom'>一行一个IP，支持IP范围设置：7.23.58.2/30（表示：7.23.58.2 - 7.23.58.30）。设置以后，系统更安全，只有指定白名IP的客户端才能登录和访问后台！</div></td>
+                    </tr>
+                </table>
+            </div>
+            
+			<div class="box-header"  id="c3">
+				<h4>目录权限设置
+					<span class="purview-wapper">
+						设置步骤：
+						1、网站安装完成后，先关闭目录<b>/App</b>、<b>/Data</b>、<b>/Public</b>、<b>/Upload</b>、<b>/Install</b>
+						<span style="color:red; margin-right:8px; ">脚本可执行权限</span>；
+						2、将网站根目录设置为<b>只读</b>；
+						3、设置目录<b>/Data</b>和<b>/Upload</b>权限为<b>可读写</b>。
+						<span class="cource oem{$IsOem}">
+							<a href="http://use.youdiancms.com/safe_config.html" target="_blank">详细教程>></a>
+						</span>
+					</span>
+				</h4>
+			</div>
+			<div class="box-content">
+				<table id="dirtable">
+					<tr>
+						 <th width="45px"  nowrap="nowrap">序号</th>
+						 <th width="150px" >名称</th>
+						 <th width="160px" >目录</th>
+						 <th width="210px" >当前目录权限</th>
+						 <th width="200px" >权限设置建议</th>
+						 <th  width="110px">权限是否正确</th>
+						 <th>目录说明</th>
+					</tr>  
+					<volist name="DirList" id="d">
+						<tr>
+							<td style="text-align:center;">{$i}</td>
+							<td style="text-align:left; padding-left:5px;">{$d.Name}</td>
+							<td style="text-align:left; padding-left:5px;">{$d.Dir|substr=1}</td>
+							<td>
+								<neq name="d.FileExist" value="0">
+									<eq name="d.IsWritable" value="1">
+										<span style="color:green;">读写</span>&nbsp;&nbsp;
+										<eq name="d.IsExecutable" value="1">
+											<span style="color:red;">已开启脚本执行权限</span>
+										<else/>
+											<span style="color:green;">已关闭脚本执行权限</span>
+										</eq>
+									<else/>
+										<span style="color:red;">只读</span>
+									</eq>
+								<else/>
+									<span style="color:blue;">文件或目录不存在</span>
+								</neq>
+							</td>
+							<td style="text-align:center;">{$d.Suggest}</td>
+							<td style="text-align:center;">
+								<eq name="d.DirStatus" value="1">
+									<span class="yes">√</span>
+								<else/>
+									<span class="no">×</span>
+								</eq>
+							</td>
+							<td style="text-align:left; padding-left:5px;">{$d.Remark}</td>
+						</tr>
+					</volist> 
+				</table>
+			</div>
+			
+			<div class="box-header"  id="c3">
+				<h4>二次安全验证问题
+					<span style="font-size:14px; padding-left:1em;font-weight:normal;color:red;">
+						  设置后，必须正确回答问题后，才能进行删除、修改等编辑操作。强烈建议设置，系统更安全
+					</span>
+				</h4>
+			</div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th  style="width:20%">安全验证问题</th>
+                        <td>
+                            <eq name="SafeEnable" value="1">
+								<b class="green">已设置</b>
+								<span class="btn btnSmall btnDanger" onclick="modifySafeQuestion()" >修改</span>
+							<else/>
+								<b class="red">未设置</b>
+								<span class="btn btnSmall btnDanger" onclick="setSafeQuestion()">立即设置</span>
+							</eq>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+			<div class="box-header"  id="c3">
+				<h4>绑定微信 扫码登录后台
+					<span style="font-size:14px; padding-left:1em;font-weight:normal;color:red;">
+						  说明：1）每个管理员都可以单独绑定微信；
+						  2）绑定微信，可微信扫码登录管理后台，更安全更方便
+					</span>
+				</h4>
+			</div>
+			<div class="box-content binduc">
+                <table class="boxtable">
+                    <tr>
+                        <th  style="width:20%">
+							<notempty name="MemberAvatar">
+                                <img class="avatar" src="{$MemberAvatar}" />
+                            <else />
+                                <img class="avatar" src="{$Images}defaultavatar.png">
+                            </notempty>
+						</th>
+                        <td style="width:80px;" nowrap>
+                            <notempty name="UcOpenID">
+								<notempty name="WxName"><div class="WxName">{$WxName}</div></notempty>
+								<div class="green"><b>已绑定微信</b></div>
+							<else/>
+								<div class="red"><b>未绑定微信</b></div>
+							</notempty>
+                        </td>
+						<td style="width: auto;">
+							<notempty name="UcOpenID">
+								<span class="btn btnSmall btnDanger" onclick="unbindUc()" >解绑</span>
+							<else/>
+								<span class="btn btnSmall btnDanger" onclick="bindUc()">立即绑定</span>
+							</notempty>
+						</td>
+                    </tr>
+                </table>
+            </div>
+
+			<div class="box-header"  id="c3">
+				<h4>禁用危险函数
+					<span style="font-size:14px; padding-left:1em;font-weight:normal;color:red;">
+						  建议修改配置文件php.ini中disable_functions，禁止以下危险函数（黑色：未禁止；灰色：已禁用）
+					</span>
+				</h4>
+			</div>
+            <div class="box-content">
+                <table class="boxtable"><tr><td colspan="2" class="function-wrapper">{$DisableFunction}</td></tr></table>
+            </div>
+			
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<div class="dialog" id="dlgSafe" title="设置二次安全验证问题">
+    <table>
+        <tr>
+			<th width="85px" nowrap="nowrap" >问题名称</th>
+			<td width="260px">
+				<input class="textinput sq" rel="question-list" type="text" id="dlgSafeQuestion" placeholder="请输入问题名称，如：我母亲姓名？" value="{$SafeQuestion}" />
+			</td>
+        </tr>
+
+        <tr>
+            <th nowrap="nowrap">问题答案</th>
+            <td align="left">
+                <input  class="textinput" type="text" id="dlgSafeAnswer" placeholder="请输入问题答案" value="" />
+            </th>
+        </tr>
+				 <tr>
+			<th></th>
+			<td class="red">{$Tip}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="dialog" id="dlgModifySafe" title="修改二次安全验证问题" style="padding: 0 20px;">
+    <table>
+		<tr>
+			<th width="85px" nowrap="nowrap" style="color:green;">旧问题名称</th>
+			<td width="260px"><b class="red">{$SafeQuestion}</b></td>
+        </tr>
+		<tr>
+            <th nowrap="nowrap" style="color:green;">旧问题答案</th>
+            <td align="left"><input  class="textinput" type="text" id="dlgOldSafeAnswer" placeholder="请输入旧问题答案" value="" /></th>
+        </tr>
+		
+		<tr>
+            <th nowrap="nowrap">是否启用安全验证</th>
+            <td align="left">
+                <label><input type="radio" name="dlgSafeEnable" value="1" checked="checked" onclick="enable(1)" />启用</label>
+                <label style="margin-left:15px;"><input type="radio" name="dlgSafeEnable" value="0"  onclick="enable(0)" />禁用</label>
+            </th>
+        </tr>
+        <tr class="newTr">
+			<th width="85px" nowrap="nowrap" >新问题名称</th>
+			<td width="260px">
+				<input class="textinput sq" rel="question-list" type="text" id="dlgNewSafeQuestion" placeholder="请输入新问题名称，如：我母亲姓名？" value="{$SafeQuestion}" />
+			</td>
+        </tr>
+        <tr class="newTr">
+            <th nowrap="nowrap">新问题答案</th>
+            <td align="left">
+                <input  class="textinput" type="text" id="dlgNewSafeAnswer" placeholder="请输入新问题答案" value="" />
+            </th>
+        </tr>
+				<tr>
+			<th></th>
+			<td class="red">{$Tip}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="dialog" id="dlgBindUc" title="扫码绑定微信">
+	<div class="uc-wrapper">
+		<img class="uc-qr" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" />
+		<p>打开微信 扫码绑定</p>
+	</div>
+</div>
+
+<div id="question-list">
+	<b>点击快速设置问题：</b>
+	<volist id="q" name="Question">
+		<div onclick="selectQuestion(this)">{$q}</div>
+	</volist>
+</div>
+	
+<script type="text/javascript">
+var gDlgType = 0; //1：设置、2修改
+/*
+*选择问题
+*/
+function selectQuestion(obj){
+	var text = $(obj).text();
+	if(gDlgType==1){
+		$("#dlgSafeQuestion").val(text);
+	}else{
+		$("#dlgNewSafeQuestion").val(text);
+	}
+}
+
+function showQuestionTip(){
+	$(".sq").powerFloat({reverseSharp:true,position:"4-5"});
+}
+
+/**
+*修改安全问题
+*/
+function modifySafeQuestion(){
+	showQuestionTip();
+	gDlgType = 2;
+	$("#dlgOldSafeAnswer").val("");
+	$("#dlgNewSafeAnswer").val("");
+	var d = dialog({
+		content: document.getElementById('dlgModifySafe'),
+		title:$("#dlgModifySafe").attr("title"), 
+		quickClose: false, 
+		okValue:"保存",
+		ok:function(){
+			var url = "{$Url}modifySafeQuestion";
+			var params = {
+				"OldSafeAnswer": $("#dlgOldSafeAnswer").val(),
+				"SafeEnable": $("input[name='dlgSafeEnable']:checked").val(),
+				"NewSafeQuestion": $("#dlgNewSafeQuestion").val(),
+				"NewSafeAnswer": $("#dlgNewSafeAnswer").val()
+			};
+			console.log(params);
+			$.post(url, params, function(res){
+				if(res.status==1){
+					SucceedBox(res.info);
+					d.close().remove();
+					location.reload();
+				}else{
+					ErrorBox(res.info);
+				}
+			}, "json");
+			return false;
+		}, 
+		cancelValue:"取消",
+		cancel:function(){
+			gDlgType = 0;
+			d.close().remove();
+		},
+		id:'dlgModifySafe', 
+		padding:8
+	});
+	d.show();
+}
+
+/**
+*设置安全问题
+*/
+function setSafeQuestion(){
+	gDlgType = 1;
+	showQuestionTip();
+	$("#dlgSafeAnswer").val("");
+	var d = dialog({
+		content: document.getElementById('dlgSafe'),
+		title:$("#dlgSafe").attr("title"), 
+		quickClose: false, 
+		okValue:"保存",
+		ok:function(){
+			var url = "{$Url}setSafeQuestion";
+			var params = {
+				"SafeQuestion":$("#dlgSafeQuestion").val(),
+				"SafeAnswer": $("#dlgSafeAnswer").val()
+			};
+			$.post(url, params, function(res){
+				if(res.status==1){
+					SucceedBox(res.info);
+					d.close().remove();
+					location.reload();
+				}else{
+					ErrorBox(res.info);
+				}
+			}, "json");
+			return false;
+		}, 
+		cancelValue:"取消",
+		cancel:function(){
+			gDlgType = 0;
+			d.close().remove();
+		},
+		id:'dlgSafe', 
+		padding:8
+	});
+	d.show();
+}
+
+function enable(type){
+	if(type==1){
+		$(".newTr").show();
+	}else{
+		$(".newTr").hide();
+	}
+}
+
+function ShowBox(data){
+	var msg = "<div id='icon_warning' style='padding:10px 8px 10px 50px;'>"+data.info+"</div>";
+	d = dialog({
+		content:msg,
+		title:"友情提示", 
+		quickClose: false, 
+		cancel: false,
+		okValue:"重新登录",
+		ok:function(){
+			location.href = data.data;
+		}, 
+		id:'tipAdmin', 
+		padding:8
+	});
+	 //必须模态弹框，部分nginx就会打不开新后台地址
+	d.showModal();
+}
+
+function makeAdminLoginName(){
+	var randomString = yd.makeRandomString(8).toLowerCase();
+	$("#AdminLoginName").val(randomString);
+}
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){ //修改了后台地址，需要重新登录
+			ShowBox(data);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		 LoadBox();
+		return false;
+	 });
+	 
+	function pageInit(){
+		
+	}
+	pageInit();
+});
+</script>
+
+<script>
+var gTimerID = null;
+var gBindDlg = null;
+
+/**
+ * 解除绑定
+ */
+function unbindUc(){
+	if(checkSafeQuestion()) return;
+	var params = {OkText:"解绑"};
+	var tip = "<p>确定解除绑定吗？<br/><span class='red'>";
+	tip += "绑定微信更安全，不建议解绑！</span></p>";
+	ConfirmBox(tip, function () {
+		var url = "{$Url}unbindUc";
+		$.post(url, null, function(res){
+			if(res.status==1){
+				SucceedBox(res.info);
+				location.reload();
+			}else{
+				ErrorBox(res.info);
+			}
+		},"json")
+	}, null, params);
+}
+
+/**
+ * 绑定
+ */
+function bindUc(){
+	if(checkSafeQuestion()) return;
+	LoadBox();
+	var url = "{$UcUrl}/api/index.php/public/Uc/getBindUcQrcode";
+	closeBindDlg();
+	$.post(url, null, function(res){
+		console.log("getBindUcQrcode", res);
+		CloseLoadBox();
+		if(res.Status==1){
+			var SceneStr = res.Data.SceneStr;
+			$(".uc-wrapper img").attr("src", res.Data.Qrcode);
+			gBindDlg = dialog({
+				content: document.getElementById('dlgBindUc'),
+				title:$("#dlgBindUc").attr("title"), 
+				quickClose: false, 
+				cancelDisplay:false,
+				onshow:function(){
+					checkBindUcQrcode(SceneStr);
+				},
+				cancel:function(){
+					closeBindDlg();
+				},
+				id:'dlgBindUc', 
+				padding:8
+			}).show();
+		}else{
+			ErrorBox(res.Message);
+		}
+	},"json")
+}
+
+//定时检查绑定是否成功
+function checkBindUcQrcode(SceneStr){
+	gTimerID = setTimeout(function(){
+		var url = "{$UcUrl}/api/index.php/public/Uc/checkBindUcQrcode";
+		var SiteDomain = "{$CurrentDomain}";
+		var WebName = "{$WebName}";
+		var params = {
+			SceneStr:SceneStr, 
+			SiteDomain:SiteDomain, 
+			SiteTitle:WebName
+		};
+		$.post(url, params, function(res){
+			if(res.Status == 1){ //绑定成功
+				setUcBindInfo(res.Data);
+				closeBindDlg();
+			}else{
+				checkBindUcQrcode(SceneStr);
+			}
+		},"json")
+	}, 1800);
+}
+
+//绑定扫码校验成功后，设置绑定信息
+//data包含：UserAvatar、WxName、UcOpenID
+function setUcBindInfo(data){
+	var url = "{$Url}setUcBindInfo";
+	$.post(url, data, function(res){
+		if(res.status == 1){ //绑定成功
+			SucceedBox(res.info);
+			location.reload();
+		}else{
+			ErrorBox(res.info);
+		}
+	},"json")
+}
+
+//关闭绑定对话框
+function closeBindDlg(){
+	if(gBindDlg){
+		gBindDlg.close().remove();
+		gBindDlg = null;
+	}
+	if(gTimerID > 0){
+	  	clearTimeout(gTimerID);
+		gTimerID = null;
+	}
+}
+</script>

@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'LogID', 1 => 'LogType', 2 => 'UserAction', 3 => 'UserName', 4 => 'UserIP', 5 => 'UserCity', 6 => 'LogTime', 7 => 'LogDescription', 8 => 'LanguageID', '_autoinc' => true, '_pk' => 'LogID', ); ?>

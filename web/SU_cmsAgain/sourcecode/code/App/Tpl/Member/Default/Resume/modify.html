@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.resume{padding:10px; text-align:left;}
+		.resume .resume_title{ line-height:30px;}
+		.resume table{width:100%; border:1px solid #ccc; border-collapse:collapse;}
+		.resume td, .resume th{ border:1px solid #ccc; padding:3px 5px;}
+		.resume td { color:#000; text-align:left; }
+		.resume th{ font-weight:bold; width:120px; text-align:center; }
+		.textinput{ border:0; border-bottom:1px solid #ccc;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+      <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmSave">
+                <input type="hidden" name="ResumeID" value="{$Resume.ResumeID}" />
+                <div class="resume">
+                <div class="resume_title">
+                    应聘岗位：<span style="color:red; margin-right:10px;">{$Resume.JobName}</span>
+                    投递时间：<span style="color:red;">{$Resume.Time}</span>
+                </div>
+                    <table align="center">
+<tr>
+  <th>姓名</th>
+  <td>
+      <input type='text' style='width:100px;' class='textinput' name = 'GuestName'  value='{$Resume.GuestName}'  />
+      <neq name="Resume.GuestID" value="0"><span style="color:red">[会员]</span></neq>
+  </td>
+  <th>性别</th>
+  <td><input type='text' style='width:130px;' class='textinput' name = 'Gender'  value='{$Resume.Gender}'  /></td>
+  <td style="width:120px;" rowspan="5"></td>
+</tr>
+<tr>
+   <th>出生年月</th>
+   <td>
+        <input type='text' style='width:105px;' class='textinput Wdate' name = 'Birthday'  value='{$Resume.Birthday}' onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" readonly='readonly' />
+   </td>
+   <th>民族</th>
+   <td><input type='text' style='width:130px;' class='textinput' name = 'Ethnic'  value='{$Resume.Ethnic}'  /></td>
+</tr>
+<tr>
+  <th>籍贯</th>
+  <td>
+      <input type='text' style='width:130px;' class='textinput' name = 'Birthplace'  value='{$Resume.Birthplace}'  /></td>
+  <th>政治面貌</th>
+  <td><input type='text' style='width:130px;' class='textinput' name = 'Political'  value='{$Resume.Political}'  /></td>
+</tr>
+<tr>
+  <th>毕业院校</th>
+  <td><input type='text' style='width:150px;' class='textinput' name = 'School'  value='{$Resume.School}'  /></td>
+  <th>所学专业</th>
+  <td><input type='text' style='width:150px;' class='textinput' name = 'Specialty'  value='{$Resume.Specialty}'  /></td>
+</tr>
+<tr>
+  <th>电子邮件</th>
+  <td><input type='text' style='width:150px;' class='textinput' name = 'Email'  value='{$Resume.Email}'  /></td>
+  <th>最高学历</th>
+  <td><input type='text' style='width:150px;' class='textinput' name = 'Education'  value='{$Resume.Education}'  /></td>
+</tr>
+<tr>
+  <th>联系电话</th>
+  <td><input type='text' style='width:150px;' class='textinput' name = 'Telephone'  value='{$Resume.Telephone}'  /></td>
+  <th>待遇要求</th>
+  <td colspan="2"><input type='text' style='width:150px;' class='textinput' name = 'Salary'  value='{$Resume.Salary}'  /></td>
+</tr>
+<tr>
+   <th>住址</th>
+   <td colspan="4"><input type='text' style='width:40%;' class='textinput' name = 'Address'  value='{$Resume.Address}'  /></td>
+</tr>
+<tr>
+  <th>详细介绍</th>
+  <td  colspan="4"><textarea style='width:99%; height:180px;' name='Detail'>{$Resume.Detail}</textarea></td>
+</tr>
+</table>
+                </div> 
+                <div class="box-footer">
+                    <div class="box-footer-inner">
+                        <input  id="btnSubmit" class="marginright"  type="submit" value="保存简历" />
+                        <input  id="btnSubmitBack"  type="button" onclick="javascript:window.location='{$Url}index'" value="返回" />
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	 
+	$('#frmSave').submit(function(){
+		LoadBox();
+		return false;  
+	});
+});
+</script>

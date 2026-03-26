@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+	<style>
+		.count{ color:red; font-style:normal; margin-left:5px;}
+	</style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+    <div class="weui-tab weui-tab-best">
+          <div class="weui-navbar">
+                <a class="weui-navbar__item <eq name="Level" value="1">weui-bar__item--on</eq>" href="{$Url}downline?Level=1">一级下线<i class="count">{$Downline1Count}</i></a>
+                <a class="weui-navbar__item <eq name="Level" value="2">weui-bar__item--on</eq>" href="{$Url}downline?Level=2">二级下线<i class="count">{$Downline2Count}</i></a>
+                <a class="weui-navbar__item <eq name="Level" value="3">weui-bar__item--on</eq>" href="{$Url}downline?Level=3">三级下线<i class="count">{$Downline3Count}</i></a>
+          </div>
+          <div class="weui-tab__bd">
+				<notempty name="Data">
+                    <table class="datatable">
+                        <thead>
+                            <tr>
+                                <th style="width:55px;">会员ID</th>
+                                <th>用户名称</th>
+                                <th style="width:120px;">手机号码</th>
+                                <th style="width:125px;">时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <volist name="Data" id="d">
+                                <tr>
+                                    <td>{$d.MemberID}</td>
+                                    <td>{$d.MemberName}</td>
+                                    <td>{$d.MemberMobile}</td>
+                                    <td>{$d.DistributorTime|strtotime|yd_friend_date}</td>
+                                </tr>
+                            </volist>
+                        </tbody>
+                    </table>
+                <else/>
+                        <div class="weui-msg">
+                            <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+                            <div class="weui-msg__text-area">
+                                <p class="weui-msg__desc">{$Think.lang.NoInformation}</p>
+                            </div>
+                        </div>
+                </notempty>
+         </div>
+    </div>
+</body>
+</html>
+<script>
+	function GoBack(){
+		location.href = "{$Url}index";
+	}
+</script>

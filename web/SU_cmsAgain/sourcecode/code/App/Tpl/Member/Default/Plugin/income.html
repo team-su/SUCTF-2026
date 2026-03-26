@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    	<input type="hidden" name="p" id="NowPage" value="{$NowPage}" />
+        <div class="table">          
+            <div class="toolbars">
+                <li class="toolbar">收益总金额：<span style="color:red;">{$CurrencySymbol}{$TotalQuantity}</span></li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="50px"  nowrap="nowrap">ID</th>
+                    <th  width="100px">收益金额</th>
+                    <th width="135px" >收益时间</th>
+                    <th>备注</th>
+                </tr>  
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr>
+                            <td>{$d.CashID}</td>
+                            <td style="color:red;">{$CurrencySymbol}{$d.CashQuantity}</td>
+                            <td>{$d.CashTime|strtotime|yd_friend_date}</td>
+                            <td style="text-align:left; padding-left:8px;">{$d.CashRemark|htmlspecialchars}</td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="4"  id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                  
+            </table>
+            <div class="tfoot"><div class="page">{$Page}</div></div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script>
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}
+
+function del(id){
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		var url = "{$Url}del?id="+id+"&p={$NowPage}&CashType={$CashType}";
+		location.href = url;
+	});
+}
+
+function pageInit(){
+	$("#CashType").val( "{$CashType}");
+}
+
+$(document).ready(function(){
+	pageInit();
+});
+</script>

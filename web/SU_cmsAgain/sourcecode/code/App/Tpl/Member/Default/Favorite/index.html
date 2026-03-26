@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    	<input type="hidden" name="p" id="NowPage" value="{$NowPage}" />
+       <div class="table">          
+           <div class="toolbars">
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="batchDel()" title="批量删除">删除</a></li>
+            </div>
+            <table class="datatable" id="datatable">
+            <tr>
+                <th width="45px">选中</th>
+                <th width="70px">ID</th>
+                <th width="100px">图片</th>
+                <th>名称</th>
+                <th width="120px" >价格</th>
+                
+                <th  width="135px">收藏时间</th>
+                <th width="80px">操作</th>
+            </tr>  
+            <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td><input class="checkrow" type="checkbox" name="id[]" value="{$d.FavoriteID}" /></td>
+                        <td>{$d.FavoriteID}</td>
+                        <td>
+                            <notempty name="d.InfoPicture">
+                                <a href="{$d.InfoUrl}" target="_blank">
+                                    <img src="{$d.InfoPicture}" style="width:100px; border:0" alt="{$d.InfoTitle}" title="{$d.InfoTitle}" />
+                                </a>
+                            </notempty>
+                        </td>
+                        <td style="text-align:left; padding-left:5px;"><a href="{$d.InfoUrl}" target="_blank">{$d.InfoTitle}</a></td>
+                        <td>{$d.DiscountPrice}</td>
+                        <td>{$d.FavoriteTime|strtotime|yd_friend_date}</td>
+                        <td class="operator">
+                            <a style="margin:0 auto;" onclick="del({$d.FavoriteID})" class="btnDel">删除</a>
+                        </td>
+                    </tr>
+                </volist> 
+            <else/>
+                <tr><td colspan="7"  id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                
+            </table>
+            <div class="tfoot"><div class="page">{$Page}</div></div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function del(id){
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}del/id/"+id+"/p/{$NowPage}";
+		location.href = url;
+	});
+}
+
+function batchDel(){
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/del");
+		$('#frm').submit();
+	});
+}
+</script>

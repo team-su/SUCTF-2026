@@ -1,0 +1,78 @@
+@charset "utf-8";
+body, article, section, h1, h2, hgroup, p, a, ul, li, em, div, small, span, footer, canvas, figure, figcaption, input {margin: 0;padding: 0;}
+a { color:#333;    cursor: pointer;    text-decoration: none;}
+ul,li{    list-style-type: none; }
+body {background-attachment: scroll;  background-color: #f1f1f1;
+	font-family:Microsoft YaHei,Helvitica,Verdana,Tohoma,Arial,san-serif;
+	overflow-x:hidden; margin: 0; padding:0; color: #666666; font-size:14px;
+}
+
+
+/*==WEUI样式重置 开始==*/
+.weui-tabbar{ position:fixed;}
+.weui-form-preview__hd .weui-form-preview__value{ font-size:1.2em;}
+.weui-form-preview__bd{ font-size:1em;}
+.weui-cells{ font-size:16px;}
+.weui-form-preview__item{ text-align:left;}
+
+/*定义一个weui-tab-best 样式*/
+.weui-tab-best .weui-navbar__item{ padding:8px 0;/*修改内边距下面样式padding-top也要做相应的修改*/ color:#000;}
+.weui-tab-best .weui-navbar+.weui-tab__bd{ padding-top:40px;}
+.weui-tab-best .weui-navbar:after{ border-color:#e9e9e9;}
+.weui-tab-best .weui-bar__item--on{background:#e9e9e9;}
+.weui-tab-best .weui-navbar__item:after{ border:0; }
+/*==WEUI样式重置 结束==*/
+
+
+/*==全局样式 开始==*/
+.webapp{padding:49px 0 60px 0;}
+.notabbar{ padding-bottom:0;}
+.MenuIcon{ width: 20px; height:20px; border:0;}
+.header{ padding: 8px 5px; overflow:hidden;}
+/*颜色定义*/
+.color-default { color: #333;}
+.color-danger{ color: #e64340;}
+.DefaultLanguage{ color: #F30; background:#f8f8f8;}
+/*按钮*/
+.btnDel{ color:#f00;  padding:4px 8px; font-size:12px; cursor:pointer; border:0px solid #f00;}
+/*数据表格*/
+.datatable{ width:100%; text-align:center; margin:0px auto; border-collapse:collapse;}
+.datatable caption{ text-align:left; padding:10px 3px; background:#fff; color:#000; text-indent:3px; font-size:14px;}
+.datatable th, .datatable td{ text-align:center; font-size:14px;  border:0px solid #E3E6EB;}
+.datatable td{ padding:10px 3px; }
+.datatable td b{  color:#444;}
+.datatable td p{ font-size:13px; color:#999; font-weight:normal; padding-top:5px;}
+.datatable th{ background:#e9e9e9; padding:10px 3px; color:#333;}
+.datatable tbody tr:nth-child(2n) {  background: #f5f5f5;  }  
+.datatable tbody tr:nth-child(2n+1) {   background: #fff;  } 
+.datatable #NoData{ color:#F00; padding:10px 3px; text-align:left;}
+.datatable .operator{}
+.datatable .operator .item{ display:block; text-align:center; margin:3px 0; height:2em;}
+/*==全局样式 结束==*/
+
+
+/*==顶部菜单  开始==*/
+.menu_header {position: relative;z-index: 7; height: auto!important; }
+.menu_topbar {color: #333; background: #fff; border-bottom: 1px solid #e5e5e5;position: fixed;top: 0;left: 0;width: 100%;height: 48px;line-height: 48px;text-align: center; }
+ .head-title {font-size: 18px; line-height:48px; padding:0; margin:0; font-weight:normal;}
+
+.head_btn_left {display: block;position: absolute;left: 8px; top: 0px;}
+.head_btn_left span{ background: url(../images/return.png)  left center no-repeat; background-size:24px; float: left; height: 48px; width:32px; padding:0 3px;  }
+
+.head_btn_right {display: block;position: absolute;right: 8px; top: 0px;}
+.head_btn_right span{background: url(../images/home.png) left center no-repeat; background-size:24px; float: left; height: 48px; width:32px; padding:0 3px; }
+/*==顶部菜单  结束==*/
+
+/*==弹出对话框表格 开始==*/
+.dialog .weui-cells{ margin-top:0;}
+.dialog .weui-cell{ padding:5px 0;}
+.dialog .tip{ color: red;  text-align:right; float:right;}
+/*==弹出对话框表格 结束==*/
+
+/*==用户头像 开始==*/
+.usercenter { margin: 8px auto;  text-align:center;}
+.usercenter .MemberName{ margin-right:0px; color:#333;}
+.usercenter .MemberGroupName{ color:#999; margin-left:5px; display:none;}
+.usercenter .MemberAvatar{overflow:hidden; }
+.usercenter .MemberAvatar img{width:70px; height:70px; border-radius:50%;}
+/*==用户头像 结束==*/

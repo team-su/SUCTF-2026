@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="btnBack" href="{$Url}index" target="_self" title="返回">返回</a></li>
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}addGroup/TypeID/{$TypeID}"  title="添加属性分组" target="_self">添加属性分组</a></li>
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="batchDel()" title="批量删除">删除</a></li>
+                <li class="toolbar"><a id="sortall" onclick="sort()" title="批量排序">排序</a></li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="45px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                     <th width="80px" >属性分组ID</th>
+                     <th>属性分组名称</th>
+                     <th width="90px" >属性个数</th>
+                     <th width="70px" >排序</th>
+                     <th width="90px" >是否启用</th>
+                     <th width="150px">操作</th>
+                </tr>  
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr id="row{$d.TypeGroupID}">
+                        <td><eq name="d.AttributeCount" value="0"><input class="checkrow" type="checkbox" name="id[]" value="{$d.TypeGroupID}" /></eq></td>
+                        <td>{$d.TypeGroupID}</td>
+                        <td class="TipKey">{$d.TypeGroupName|htmlspecialchars}</td>
+                        <td style="color:red;">{$d.AttributeCount}</td>
+                        <td><input type="number" class='textinput' onclick="this.select()" style="width:65px" name="OrderNumber[]" value="{$d.TypeGroupOrder}" />
+                            <input type="hidden" class='textinput' name="OrderID[]" value="{$d.TypeGroupID}" />
+                        </td>
+                        <td>
+                            <eq name="d.IsEnable" value="1">
+                                <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$d.TypeGroupID},'type_group')">启用</span>
+                            <else/>
+                                <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$d.TypeGroupID},'type_group')">禁用</span>
+                            </eq>
+                        </td>
+                        <td class="operator">
+                            <a style="float:left" href="{$Url}modifyGroup/id/{$d.TypeGroupID}/TypeID/{$TypeID}" id="btnEdit">修改</a>
+                            <eq name="d.AttributeCount" value="0">
+                                <div class="btn-sep"></div>
+                                <a style="float:left" onclick="del({$d.TypeGroupID})" class="btnDel">删除</a>
+                            </eq>
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="7" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                <div id="notice">
+                    <b>说明：</b>
+                     <span class="notice-item"><i>[1]</i>为了便于管理和显示，可以对属性进行分组处理，一个分组可以包含多个属性</span>
+                     <span class="notice-item"><i>[2]</i>不能删除包含有属性的分组</span>
+                </div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#row"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}delGroup/TypeID/{$TypeID}/id/"+id;
+		location.href = url;
+	});
+}
+
+function batchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/delGroup/TypeID/{$TypeID}");
+		$('#frm').submit();
+	});
+}
+
+function sort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "__URL__/sortGroup/TypeID/{$TypeID}");
+		$('#frm').submit();
+	});
+}
+</script>

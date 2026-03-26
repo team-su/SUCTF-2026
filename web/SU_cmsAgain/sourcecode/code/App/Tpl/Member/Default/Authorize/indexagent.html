@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		#InfoHit{	color:#00F;	font-weight:bold;}
+		.WINNT{ color:black; font-weight:bold;}
+		.Linux{ color: #00F; font-weight:bold;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data"  method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+      <div class="table">
+        <div  class="toolbars">
+            <li class="toolbar">
+                <label>域名</label>&nbsp;&nbsp;<input type="text" class='textinput' name="Host" style="width:150px" value="{$Host}" id="Host"/>&nbsp;&nbsp;&nbsp;
+                <input id="btnSeek" type="submit" value="查询" onclick="Search()" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </li>
+            <li class="toolbar">授权域名总数：<b style="color:blue;">{$AuthorizeCount}</b></li>
+        </div>
+<table class="datatable" id="datatable">
+<tr>
+<th width="45px">序号</th>
+<th width="230px">域名</th>
+<th width="55px" >版本号</th>
+<th width="65px" >操作系统</th>
+<th width="70px" nowrap="nowrap">是否授权</th>
+
+<th width="130px" nowrap="nowrap">授权时间</th>
+<th width="220px" >所属客户</th>
+<th>备注</th>
+<th width="75px" >操作员</th>
+</tr>  
+<notempty name="Data">                
+<volist name="Data" id="d" key="j">
+<tr>
+<td style="font-weight:bold;">{$j}</td>
+<td  style="text-align:left;padding-left:5px;"><a href="http://{$d.Host}" target="_blank">{$d.Host}</a></td>
+<td>{$d.Version}</td>
+<td><span  class="{$d.OS}">{$d.OS}</span></td>
+<td><eq name="d.IsAuthorize" value="1"><b style="color:green">已授权<else/><b style="color:#F00">未授权</eq></b></td>
+<td><eq name="d.IsAuthorize" value="1">{$d.AuthorizeTime|strtotime|yd_friend_date}</eq></td>
+<td><notempty name="d.CustomerID">{$d.CustomerName}&nbsp;[{$d.CustomerID}]&nbsp;</notempty>
+<notempty name="d.OEM"><br/><span style="color:blue;">{$d.OEM}</span></notempty>
+</td>
+<td style="text-align:left;">{$d.Remark}</td>
+<td>{$d.OperatorName}</td>
+</tr>
+</volist>
+<else/>
+<tr><td colspan="10" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+</notempty>                                
+</table>
+<div class="tfoot"><div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>&nbsp;&nbsp;{$Page}</div>
+</div>
+    </div>
+</form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/index");
+	$('#frm').submit();
+	return true;
+}
+
+//提示信息
+$(document).ready(function(){
+	//选中操作
+	$("#Host").attr("value",'{$Host}');
+	$("#IsAuthorize").attr("value",'{$IsAuthorize}');
+});
+</script>

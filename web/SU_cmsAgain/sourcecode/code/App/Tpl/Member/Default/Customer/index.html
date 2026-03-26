@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.group101{ color:black;}
+		.group102{ color:red;}
+		.group110{ color:green;}
+		.group111{ color:blue;}
+		.group112{ color:#F30;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    	<input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}add"  title="添加客户信息" target="_self">添加客户信息</a></li>
+                <li class="toolbar toolbarform">
+                    <label> 姓名/手机/Email</label>
+                    <input type="text" id="keywords" name="keywords"  class="textinput" style="width:150px;" value="{$Keywords}" />
+                    <input id="btnSeek" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                     <th width="40px" >客户ID</th>
+                     <th width="220px" >客户昵称</th>
+                     <th width="60px" >客户类型</th>
+                     <th width="70px" >真实姓名</th>
+                     <th width="75px" >QQ号码</th>
+                     
+                     <th width="90px" >手机/座机</th>
+                     <th width="125px" >E-mail</th>
+                     <th>联系地址/备注</th>
+                     <th width="130px" >添加时间</th>
+                     <th width="60px" >操作</th>
+                </tr>  
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td>{$d.MemberID}</td>
+                        <td>
+                        <notempty name="d.MemberSiteUrl">
+                            <a href="{$d.MemberSiteUrl}" target="_blank" title="{$d.MemberSiteUrl}">{$d.MemberName|htmlspecialchars}</a>
+                        <else/>
+                            {$d.MemberName|htmlspecialchars}
+                        </notempty>
+                        <eq name="d.IsOEM" value="1">
+                        <br/><b style="color:red; margin-right:5px;">[OEM]</b>
+                            <notempty name="d.OEMUrl">
+                                <a href="{$d.OEMUrl}" target="_blank" title="{$d.OEMUrl}"><b>{$d.OEMName}</b></a>
+                            <else/>
+                                <b style="color:red;">{$d.OEMName}</b>
+                            </notempty>
+                        </b>
+                        </eq>
+                        </td>
+                        <td><b class="group{$d.MemberGroupID}">{$d.MemberGroupName|htmlspecialchars}</b></td>
+                        <td>{$d.MemberRealName}<eq name="d.MemberGender" value="1"><b style="color:#F30;">&nbsp;[女]</b></eq></td>
+                        <td>{$d.MemberQQ|htmlspecialchars}</td>
+                        
+                        <td>{$d.MemberMobile|htmlspecialchars}<notempty name="d.MemberTelephone"><br/>{$d.MemberTelephone|htmlspecialchars}</notempty></td>
+                        <td>{$d.MemberEmail|htmlspecialchars}</td>
+                        <td style="padding-left:5px; text-align:left;"><b>地址：</b>{$d.MemberAddress|htmlspecialchars}
+                        <notempty name="d.Remark"><br/><b>备注：</b>{$d.Remark|htmlspecialchars}</notempty></td>
+                        <td>{$d.RegisterTime|strtotime|yd_friend_date}</td>
+                        <td class="operator"><a href="{$Url}Modify/id/{$d.MemberID}?keywords={$Keywords}" id="btnEdit">修改</a></td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="11" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                  <div class="page">
+                    <span class="pagesize">每页<span class="pz">{$PageSize}</span>条</span>
+                    &nbsp;&nbsp;
+                    <empty name="Page">共<span style="color:red;">{$TotalCount}</span>条<else/>{$Page}</empty>
+                  </div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}	
+</script>

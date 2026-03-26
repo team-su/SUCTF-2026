@@ -1,0 +1,60 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>{$c.CardName}</title>
+<include file="./Public/tpl/wx/meta.html" />
+<link href="{$AppCss}card.css" rel="stylesheet" type="text/css">
+<script src="{$AppJs}accordian.js" type="text/javascript"></script>
+</head>
+<body id="cardnews" onLoad="new Accordian('basic-accordian',5,'header_highlight');" class="mode_webapp2">
+<div class="qiandaobanner">
+    <a href="javascript:history.go(-1);"><img src="{$AppImages}cardinfo.jpg" /></a>
+</div>
+
+<div id="basic-accordian">
+    <div id="test-header" class="accordion_headings header_highlight">
+    <div class="tab cardinfo">
+        <span class="title">会员卡使用说明</span>
+    </div>
+    <div id="test-content" style="display: block; overflow: hidden; opacity: 1; ">
+        <div class="accordion_child">
+            <b>详情说明</b>
+            <ul>
+                <span style="color:#666666;font-family:'Microsoft YaHei', Helvitica, Verdana, Arial, san-serif;background-color:#FCFCFC;">
+                    {$c.CardDescription}
+                </span>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="test1-header" class="accordion_headings">
+    <div class="tab integral_info">
+    	<span class="title">会员积分说明</span>
+    </div>
+    <div id="test1-content" style="display: none; overflow: hidden;">
+    <div class="accordion_child">
+        <b>详情说明</b>
+        <ul>
+            <span style="color:#666666;font-family:'Microsoft YaHei', Helvitica, Verdana, Arial, san-serif;background-color:#FCFCFC;">
+                 {$c.ScoreDescription}
+            </span>
+        </ul>
+    </div>
+    </div>
+</div>
+
+<div id="test2-header" class="accordion_headings">
+    <div class="tab businesses_info"><span class="title">商家介绍</span></div>
+        <div id="test2-content" style="display: none; overflow: hidden;">
+            <div class="accordion_child">
+                <p class="xiangqing">{$c.MerchantName}<br/>
+                    <span style="color:#666666;font-family:'Microsoft yahei', helvitica, verdana, arial,san-serif;background-color:#fcfcfc;">{$c.MerchantDescription}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<include file="./Public/tpl/wx/cardfooter.html" />
+</body>
+</html>

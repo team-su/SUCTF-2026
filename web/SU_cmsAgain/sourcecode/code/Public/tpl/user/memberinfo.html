@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>#MemberBirthday{border:0; width:100px;}</style>
+</head>
+<body id="index" class="webapp">
+	<include file="./Public/tpl/user/header.html" />
+	<form enctype="multipart/form-data" action="{$Action}" method="post" id="frm">
+    	<input type="hidden" name="{$HiddenName}" value="{$HiddenValue}" />
+        <volist name="Group" id="g">
+            <div class="weui-cells weui-cells_form" style="margin-top:0;">
+                    <volist name="Attribute" id="a">
+                        <notin name="a.FieldName" value="IsCheck,IsLock">
+                            <eq name="a.GroupID" value="$g.AttributeID">
+                                <div class="weui-cell">
+                                    <div class="weui-cell__hd"><label class="weui-label">{$a.DisplayName}</label></div>
+                                    <div class="weui-cell__bd">{$a.html}</div>
+                                </div>
+                            </eq>
+                        </notin>
+                    </volist>
+            </div>
+        </volist>
+        <div class="weui-btn-area">
+            <input type="submit" id="btnSubmit"  class="weui-btn weui-btn_primary"   value="保存"/>
+        </div>
+	</form>
+	<include file="./Public/tpl/user/footer.html" />
+</body>
+</html>
+<script>
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+            }else if(data.status==0){
+				ErrorBox(data.info);
+			}else if(data.status==2){
+				ErrorBox(data.info); //上传失败
+			}else if(data.status==3){
+				$('.'+data.data.ImageField).val(data.data.Path);
+				$('#'+data.data.ImageField).css("background-image", "url("+data.data.Path+")");
+				SucceedBox(data.info); //上传成功
+			}
+		};
+		
+		$('#btnSubmit').click(function(){
+		 	$('#frm').attr('action','{$Action}');
+	    });
+		 
+		 $('#frm').submit(function(){
+			LoadBox();
+	     	return false;
+	     });
+	});
+
+	function GoBack(){
+		location.href = "{$Url}index";	
+	}
+</script>

@@ -1,0 +1,341 @@
+<!-- wap Logo 开始-->
+<div id="wap_logo_main">
+  <div id="wap_logo">
+     <notempty name="WebLogo">
+       <div id="menu"></div>
+       <div class="WebLogo">
+       		<a class="WebLogo" href="{:HomeUrl()}"><img src="{$WapLogo}" /></a>
+       		<notempty name="Language">
+			<eq name="HomeLanguageMark" value="en"><a class="languagebtn ThemeColorBg" href="{:LanguageUrl('cn')}" target="_self">中</a></eq>
+			<eq name="HomeLanguageMark" value="cn"><a class="languagebtn ThemeColorBg" href="{:LanguageUrl('en')}" target="_self">EN</a></eq>
+		</notempty>
+       		<a class="shownavbtn" href="javascript:;"></a>
+       	</div>
+     </notempty>
+  </div>
+</div>
+<!--wap Logo 结束-->
+
+<!--wap 导航 开始-->
+<div id="wap_navigation">
+    <i id="wap_navigationshade"></i>
+    <ul class="wap_navigationlist">
+        <div class="seachwrap">
+            <form name="frmInfoSearch" method="post" action="{:InfoSearchAction()}">
+                <input class="Keywords" name="Keywords" value="{$SearchWord}" type="text" placeholder="{$Think.lang.InputKeyword}"/>
+                <input class="btnSearch" name="btnSearch" class="btn" type="submit" value=""  />
+            </form>
+        </div>
+        <navigationlist id="n1" channelid="0" depth="1">
+            <li class="depth0">
+          		<a href="{$n1.ChannelUrl}" class='<eq name="n1.ChannelID" value="$TopChannelID">ThemeColor</eq> minBorderBottom'>{$n1.ChannelName}</a>
+	              <eq name="n1.HasChild" value="1">
+	                  <i class="showmore"></i>
+	                  <ul class="wap_subnavigationlist">
+	                      <navigationlist id="n2" channelid="$n1.ChannelID" depth="2">
+	                          <li class="depth{$n2.ChannelDepth}"><a class="minBorderBottom" href="{$n2.ChannelUrl}">{$n2.ChannelName}</a></li>
+	                      </navigationlist>
+	                  </ul>
+	              </eq>
+            </li>
+        </navigationlist>
+    </ul>
+</div>
+<!--wap 导航 结束-->
+
+<!--区块5041 开始-->
+<div id="n5041" class="component floor_head0_main">
+	<style type="text/css">
+		#n5041{
+			{$THead0Bg5041|ParseBg}
+		}
+		#n5041 .floor_head0_shade2{
+			{$THead0Bg5041|ParseBg}
+			opacity: {$THead0BgColorOpacity5041};
+			height: {$THead0LogoHeight5041}px;
+			padding: {$THead0Padding5041}px 0;
+		}
+		#n5041 .floor_head0.navigation-style1{
+			{$THead0Bg5041|ParseBg}
+		}
+		#n5041.notTop .floor_head0.navigation-style2{
+			{$THead0Bg5041|ParseBg}
+		}
+		#n5041 .floor_head0{
+			padding: {$THead0Padding5041}px 0;
+		}
+		#n5041 .logo img{
+			height: {$THead0LogoHeight5041}px;
+		}
+		#n5041 .navigation{
+			text-align: {$THead0NavigationAlign5041};
+		}
+		#n5041 .navigation ul.navigationlist li{
+			line-height: {$THead0LogoHeight5041}px;
+		}
+		#n5041 .navigation ul.navigationlist>li>a{
+			{$THead0NavigationFont5041|ParseFont}
+			padding-left: {$THead0NavigationSpace5041}px;
+			padding-right: {$THead0NavigationSpace5041}px;
+		}
+		#n5041 .subnavigationlist{
+			{$THead0SubNavigationBg5041|ParseBg}
+		}
+		#n5041 .subnavigationlist a{
+			{$THead0SubNavigationFont5041|ParseFont}
+		}
+		#n5041 .user{
+			line-height: {$THead0LogoHeight5041}px;
+		}
+		#n5041 #member a.login_btn{
+			{$THead0MemberLoginFont5041|ParseFont}
+			{$THead0LoginBtn5041|ParseButton}
+			background: {$THead0LoginBtnBgColor5041};
+		}
+		#n5041 #member a.login_btn:hover{
+			{$THead0LoginBtn5041|ParseButtonHover}
+		}
+		#n5041 #member a.reg_btn{
+			{$THead0MemberRegFont5041|ParseFont}
+			{$THead0RegBtn5041|ParseButton}
+			background: {$THead0RegBtnBgColor5041};
+			margin-left: {$THead0MemberBtnMargin5041}px;
+		}
+		#n5041 #member a.reg_btn:hover{
+			{$THead0RegBtn5041|ParseButtonHover}
+		}
+		#n5041 .navigation ul.navigationlist>li>a.current,
+		#n5041 .navigation ul.navigationlist>li:hover>a{
+			{$THead0NavigationHoverFont5041|ParseFont};
+			{$THead0NavigationHoverBg5041|ParseBg};
+		}
+		#n5041 .navigation ul.navigationlist>li.separator{
+			width: {$THead0NavigationSeparatorWidth5041}px;
+			height: {$THead0LogoHeight5041}px;
+			{$THead0NavigationSeparatorBg5041|ParseBg}
+		}
+		#n5041 .navigation ul.navigationlist>li.separator span{
+			color: {$THead0NavigationSeparatorColor5041};
+		}
+		#n5041 .subnavigationlist a:hover{
+			{$THead0SubNavigationHoverBg5041|ParseBg}
+			{$THead0SubNavigationHoverFont5041|ParseFont}
+		}
+		#n5041 .nav_active{
+			background: {$THead0NavigationActiveLineColor5041};
+		}
+	</style>
+	<i class="floor_head0_shade{$THead0Style5041}"></i>
+	<div class="floor_head0 navigation-style{$THead0Style5041}" yd-add="1" yd-delete="1" yd-order="1" yd-group="5041" yd-content="channel">
+	    <div class="head0 full-width{$THead0FullWidth5041}">
+			<div class="logo" yd-content="basic" yd-group="5041" yd-tab="基本设置">
+				<a href="{:HomeUrl()}" target="_self">
+					<img src="{$WebLogo}" title="{$WebName}" alt="{$WebName}" />
+				 </a>
+			</div>
+			<div class="user">
+				<notempty name="THead0ShowMember5041"><div id="member" class="member" yd-content="reg" yd-group="5041" yd-tab="登录注册设置"></div></notempty>
+				<notempty name="THead0ShowLanguage5041">
+					<notempty name="Language">
+						<div class="language" yd-content="language">
+							<eq name="HomeLanguageMark" value="en"><a class="ThemeColorBg" href="{:LanguageUrl('cn')}" target="_self">中</a></eq>
+							<eq name="HomeLanguageMark" value="cn"><a class="ThemeColorBg" href="{:LanguageUrl('en')}" target="_self">EN</a></eq>
+						</div>
+					</notempty>
+				</notempty>
+			</div>
+			<div class="navigation">
+				<ul class="navigationlist">
+					<i class="nav_active"></i>
+					<channellist id="c1" channelid="0" key="ci">
+						<neq name="ci" value="1"><li class="separator"><notempty name="THead0NavigationSeparatorImg5041"><img src="{$THead0NavigationSeparatorImg5041}" /><else/><span>{$THead0NavigationSeparator5041}</span></notempty></li></neq>
+						<li class="list-item" data-index="{$ci}">
+							<a href="{$c1.ChannelUrl}" target="{$c1.ChannelTarget}" class="<eq name='c1.ChannelID' value='$TopChannelID'>current</eq>">{$c1.ChannelName}</a>
+							<notempty name="THead0SubNavigationStyle5041">
+								<eq name="c1.HasChild" value="1">
+									<ul class="subnavigationlist style{$THead0SubNavigationStyle5041}">
+										<channellist id="c2" channelid="$c1.ChannelID">
+											<li><a href="{$c2.ChannelUrl}" target="{$c2.ChannelTarget}">{$c2.ChannelName}</a></li>
+										</channellist>
+									</ul>
+								</eq>
+							</notempty>
+						</li>
+					</channellist>
+				</ul>
+			</div>
+	    </div>
+	</div>
+	<script>
+		$(function(){
+			var width = 0;
+			var left = 0;
+			//用户
+			pageInit();
+			function pageInit(){
+				if( $("#n5041 #member").length > 0 ){
+					if( "{$EnableHtml}" == 1 ){
+						$.get("{:JsonUrl()}", null, function(data){ UpdateLoginStatus(data['MemberID'], data['MemberName'], data['EnableMember']); },"json");
+					}else{
+						UpdateLoginStatus("{$MemberID}", "{$MemberName}", "{$EnableMember}");
+					}
+				}
+			}
+			function UpdateLoginStatus(id, name, flag){
+				if(flag==0){
+					$("#n5041 #member").remove();
+					return;
+				}
+				var html = "";
+				if( id ){
+					html += '<a href="{:MemberUrl()}" target="_blank" class="MemberName">'+name+'</a>';
+					html += '<a href="{:MemberLogoutUrl()}" target="_self" style="color: red;">{$Think.lang.MemberQuit}</a>';
+				}else{
+					html += '<a href="{:MemberLoginUrl()}" class="login_btn" target="_self">{$Think.lang.Login}</a>';
+					html += '<a href="{:MemberRegUrl()}" class="reg_btn" target="_self">{$Think.lang.Reg}</a>';
+				}
+				$("#n5041 #member").html( html );
+			}
+
+			// pc导航栏js
+			$('#n5041 ul.navigationlist li').mousemove(function(){
+				if($(this).find('ul').is(":animated")) return;
+				$(this).find('ul').slideDown(280);
+				if($(this).find('.style2').length > 0){
+					var length = $('#n5041 ul.navigationlist>li.list-item').length;
+					console.log(length - $(this).data('index'), length);
+					if(length - $(this).data('index') <= 3){
+						var child = $(this).find('.subnavigationlist');
+						child.css({
+							marginLeft: - (child.width() - $(this).width()) + 'px',
+						})
+					}
+				}
+			});
+			$('#n5041 ul.navigationlist li').mouseleave(function(){
+				$(this).find('ul').slideUp(280);
+			});
+			
+			$('#n5041 .nav_active').css({
+				width: $('#n5041 .navigationlist li a.current').parent().width(),
+				left: $('#n5041 .navigationlist li a.current').parent()[0] && $('#n5041 .navigationlist li a.current').parent()[0].offsetLeft,
+			});
+			$('#n5041 .navigationlist li').mousemove(function(){
+				$('#n5041 .nav_active').css({
+					width: $(this).width(),
+					left: $(this)[0].offsetLeft
+				});
+			})
+			$('#n5041 .navigationlist li').mouseleave(function(){
+				$('#n5041 .nav_active').css({
+					width: $('#n5041 .navigationlist li a.current').parent().width(),
+					left: $('#n5041 .navigationlist li a.current').parent()[0] && $('#n5041 .navigationlist li a.current').parent()[0].offsetLeft,
+				});
+			})
+
+			$('#n5041 .subnavigationlist').mousemove(function(){
+				$('#n5041 .nav_active').css('left', $(this).parent()[0].offsetLeft);
+			})
+
+			if($('#n5041').find('.floor_head0').hasClass('navigation-style2')){
+				$('#n5041').height('0')
+			}else{
+				$('#n5041').height($('#n5041 .floor_head0')[0].clientHeight)
+			}
+			// 头部固定
+			function logoMainChange(){
+				if($('#n5041').offset().top < $(window).scrollTop()){
+					$('#n5041').addClass('notTop');
+				}else{
+					$('#n5041').removeClass('notTop');
+				}
+			}
+			// 滚动事件
+			$(window).scroll(function(){
+				logoMainChange();
+			});
+		})
+	</script>
+</div>
+<!--区块5041 结束--><!--区块5150 开始-->
+<neq name="Html" value="index">
+<div id="n5150" class="component floor_channel15_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5150">
+    <style type="text/css">
+        #n5150{
+            {$TChannel15Bg5150|ParseBg}
+            padding-top:{$TChannel15PaddingTop5150}px;
+            padding-bottom:{$TChannel15PaddingBottom5150}px;
+        }
+        #n2314 .TheChannelContent{
+            animation-duration: {$TChannel15AnimationTime5150}s;
+            animation-fill-mode: both;
+        }
+    </style>
+    <div class="floor_channel15 full-width{$TChannel15FullWidth5150}">
+        <div class="component_body">
+            <div class="banner_img">
+                <notempty name="ChannelPicture">
+                    <div yd-content="_channel,{$ChannelID},3"><img pc-src="{$ChannelPicture}" wap-src="{$f2}" title="{$ChannelName}" alt="{$ChannelName}" /></div>
+                <else />
+                    <neq name="TopChannelID|ChannelPicture" value="">
+                        <div yd-content="_channel,{$TopChannelID},3"><img pc-src="{$TopChannelID|ChannelPicture}" wap-src="{$TopChannelID|ChannelF2}" title="{$TopChannelID|ChannelName}" alt="{$TopChannelID|ChannelName}" /></div>
+                    <else/>
+                        <div class="TheChannel">
+                            <img pc-src="{$TChannel15PcPicture5150}" wap-src="{$TChannel15WapPicture5150}" title="{$TChannel15PictureAlt5150}" alt="{$TChannel15PictureAlt5150}" />
+                            <div class="TheChannelContent" yd-animation="{$TChannel15AnimationType5150}">{$TChannel15Content5150}</div>
+                        </div>
+                    </neq>
+                </notempty>
+            </div>
+        </div>
+    </div>
+</div>
+</neq>
+<!--区块5150 结束--><!--区块5133 开始-->
+<neq name="Html" value="index">
+    <div id="n5133" class="component floor_channel1_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5133" yd-content="channel">
+    	<notempty name="TChannel1Show5133">
+            <eq name="TopHasChild" value="1">
+                <style type="text/css">
+                    #n5133{
+                        {$TChannel1Bg5133|ParseBg}
+                        padding-top: {$TChannel1PaddingTop5133}px;
+                        padding-bottom: {$TChannel1PaddingBottom5133}px;
+                    }
+                    #n5133 .separator{
+                        padding: 0 {$TChannel1Space5133}px;
+                    }
+                    #n5133 li a{
+                        width:{$TChannel1LiWidth5133}px;
+                        {$TChannel1Font5133|ParseFont}
+                       {$TChannel1LiBg5133|ParseBg}
+                       {$TChannel1LiBorder5133|ParseBorder}
+                    }
+                    #n5133 li a.current, #n5133 li a:hover{
+                        {$TChannel1HoverFont5133|ParseFont}
+                        {$TChannel1LiHoverBg5133|ParseBg}
+                        {$TChannel1LiHoverBorder5133|ParseBorder}
+                    }
+                </style>
+    			<div class="floor_channel1 full-width{$TChannel1FullWidth5133}">
+    				<ul yd-animation>
+    					<channellist id="c" channelid="$TopChannelID" depth="1">
+    						<neq name="i" value="1"><li class="separator">{$TChannel1Separator5133}</li></neq>
+    						<li class="n{$i}">
+    							<a class="depth2 <eq name='c.ChannelID' value='$ChannelID'>current</eq>" href="{$c.ChannelUrl}">{$c.ChannelName}<eq name="c.HasChild" value="1"> <i class="ydicon-xsj2"></i></eq></a>
+    							<eq name="c.HasChild" value="1">
+    								<div class="depth3list">
+    									<channellist id="c1" channelid="$c.ChannelID"  depth="1">
+    										<a class="depth3" href="{$c1.ChannelUrl}">{$c1.ChannelName}</a>
+    									</channellist>
+    								</div>
+    							</eq>
+    						</li>
+    					</channellist>
+    				</ul>
+    			</div>
+            </eq>
+    	</notempty>
+    </div>
+</neq>
+<!--区块5133 结束-->

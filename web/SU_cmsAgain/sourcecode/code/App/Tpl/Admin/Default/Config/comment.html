@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header"  id="c5">
+                <h4>评论设置</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                       <tr>
+                        <th  class="w120">评论权限</th>
+                            <td>
+                            <label><input type="radio" name="COMMENT_ENABLE" value="0" <eq name="CommentEnable" value="0">checked="checked"</eq> />禁止评论</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="COMMENT_ENABLE" value="1" <eq name="CommentEnable" value="1">checked="checked"</eq> />允许游客评论</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="COMMENT_ENABLE" value="2" <eq name="CommentEnable" value="2">checked="checked"</eq> />只允许会员评论</label>
+                            </td>
+                                            </tr>
+                            <tr>
+                            <th  class="w120">是否购买商品后才能评论</th>
+                            <td>
+                            <label><input type="radio" name="COMMENT_BUY" value="1" <eq name="CommentBuy" value="1">checked="checked"</eq> />是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="COMMENT_BUY" value="0" <eq name="CommentBuy" value="0">checked="checked"</eq> />否</label>
+                            <span class='Caution'>订单状态必须为已支付状态，仅对商品有效</span>
+                            </td>
+                                            </tr>
+                                            </tr>
+                            <tr>
+                            <th  class="w120">是否审核评论</th>
+                            <td>
+                            <label><input type="radio" name="COMMENT_CHECK" value="1" <eq name="CommentCheck" value="1">checked="checked"</eq> />审核</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="COMMENT_CHECK" value="0" <eq name="CommentCheck" value="0">checked="checked"</eq> />不审核</label>
+                            </td>
+                                            </tr>
+                                          <tr>
+                                          <th  class="w120">是否启用验证码</th>
+                            <td>
+                            <label><input type="radio" name="COMMENT_VERIFYCODE" value="1" <eq name="CommentVerifycode" value="1">checked="checked"</eq> />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="COMMENT_VERIFYCODE" value="0" <eq name="CommentVerifycode" value="0">checked="checked"</eq> />关闭</label>
+                            </td>
+                                          </tr>
+                            <tr>
+                            <th>评论分页条数</th>
+                            <td><input type="number" class="textinput" style="width:80px" id="COMMENT_PAGE_SIZE" name="COMMENT_PAGE_SIZE" value="{$CommentPageSize}" type="number"  />
+                            <span class='Caution'>前台每页显示的评论条数</span>
+                            </td>
+                            </tr>
+                                <tr>
+                                          <th>评论提示文字</th>
+                                           <td><textarea class="w450" style="height:80px; width:100%;" name="COMMENT_TIP">{$CommentTip}</textarea></td>
+                             </tr> 
+                </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"  type="submit" value="保存设置" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack('{$Group}/Comment/index')" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		 LoadBox();
+		return false;
+	 });
+});
+</script>

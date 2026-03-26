@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}"  enctype="multipart/form-data">              
+            <div class="box-header"><h4>批量替换图片地址</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th class="w120">搜索图像路径字符串</th>
+                        <td><input type="text" class="textinput" style="width:200px" id="Search" value="/Upload/" />
+                        	    <span class="Caution">当前网站的安装目录是：<b style="color:blue;">{$WebInstallDir}</b></span>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th class="w120">替换为</th>
+                        <td><input type="text" class="textinput" style="width:200px" id="Replace" value="{$WebInstallDir}Upload/" /></td>
+                    </tr>
+               </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="button" onclick="ReplaceImage()" value="开始图像替换" />
+                </div>
+            </div>
+        </form>
+    </div>            
+</div>
+</body>
+</html>
+<script>
+function ReplaceImage(){
+	var url = "{$Url}batch";	
+	var params = {
+		Action: 'replaceimage'	,
+		Search: $("#Search").val(),
+		Replace: $("#Replace").val()
+	};
+	LoadBox();
+	$.post(url, params, function(data){
+		CloseLoadBox();
+		if(data.status==1){
+			SucceedBox(data.info);
+		}else{
+			ErrorBox(data.info);
+		}
+	},"json");
+}
+</script>

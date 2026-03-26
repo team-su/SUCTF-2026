@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{$Title}-{$WebName}</title>
+<include file="Public:meta" />
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.form.js"></script>
+<script type=text/javascript>
+		$(document).ready(function(){
+			  $(".btnSmsCode").click(function(){
+				  var url = "{:SmsCodeUrl()}";
+				  $.post(url, null, function(data){
+						if(data.status == 1){
+							showTimer(99);
+							$("#SmsCode").focus();
+						}else{
+							if(data.data) $("input[name="+data.data+"]").focus();
+							alert(data.info);
+						}
+				  },"json");
+		 	  });
+		 
+		 //显示倒计时
+		 function showTimer(time){
+			 if(time > 0 ){
+				 $(".btnSmsCode").val(time+"{$Think.lang.AfterSeconds}");
+				 setTimeout(function(){ showTimer( --time ); },  1000);
+			 }else{
+				$(".btnSmsCode").val("{$Think.lang.GetSmsCode}");
+			 }
+		 }
+		 
+		$("#MemberCode").click( ChangeVerify );
+		
+		function ChangeVerify(){
+			var timenow = new Date().getTime();
+		    $("#MemberCode").attr("src", "{$Url}memberCode/d/" + timenow);
+		};
+		
+		$('#frmForget').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			if (data.status==0){  //用户不存在
+				ChangeVerify();
+				if(data.data) $("input[name="+data.data+"]").focus();
+				alert(data.info);
+            }else if(data.status==1){  //回答问题
+				$("#Step").val(2);
+				if( data.data["MemberQuestion"] ){
+					$(".PasswordQuestion").text( data.data["MemberQuestion"] );
+				}else{
+					$(".PasswordQuestion").text("{$Think.lang.QuestionNotExist}");
+					$(".PasswordQuestion").css("color", "red");
+				}
+				
+				//只有开启手机短信即可已经设置了手机号码，才使用手机找回密码
+				if( data.data['SmsEnable'] == 1 && data.data["MemberMobile"] ){
+					$(".MemberMobile").text(data.data["MemberMobile"]);
+				}else{
+					$("#FindPwdWay option:last").remove();
+				}
+				$("#Step1").hide();
+				$("#Step2").show();
+			}else if(data.status==2){  //密码已重置成功，转向登陆界面
+				alert(data.info);
+				window.location = "{:MemberLoginUrl()}";
+			}
+		};
+		
+		 $('#frmForget').submit(function(){
+	     	return false;
+	     });
+		 
+		 $("#FindPwdWay").change(function(){
+			  ChangeFindPwdWay($(this).val());
+		  });
+		  
+		  function ChangeFindPwdWay(type){
+			  if(type==1){
+				  $(".w1").show();
+				  $(".w2").hide();
+			  }else{
+				  $(".w1").hide();
+				  $(".w2").show();
+			  }
+		  }
+		 
+		 pageInit();
+		 function pageInit(){
+			 ChangeFindPwdWay(1);
+			 $("#MemberName").focus();
+		 }
+	});
+</script>
+</head>
+<body class="body_article">
+	<include file="Public:header" />
+    <!--主体部分 开始-->
+    <div class="forget">
+        <!--右侧区域 开始-->       
+        <div id="right">
+        	<div class="right_title">
+            	<include file="Public:location" />
+                <h2><img src="{$Images}titleleftbg.png" align="absmiddle"  />{$Think.lang.ForgetPassword}<img src="{$Images}titlerightbg.png"   align="absmiddle" /></h2>
+            </div>
+            <div class="right_body">
+                <form enctype="multipart/form-data" id="frmForget" method="post" action="{:MemberForgetUrl()}" >   
+                    <input id="Step" name="Step" type="hidden" value="1"/>        
+                    <div id="Step1">    
+                        <table  class="forget_table1">            
+                            <tr>
+                                <th>{$Think.lang.UserName}</th>
+                                <td><input name="MemberName" id="MemberName" type="text" class="form_text" placeholder="{$Think.lang.UserName} / {$Think.lang.REmail} / {$Think.lang.Mobile}"/></td>
+                            </tr>
+                            <tr>
+                                <th>{$Think.lang.Verifycode}</th>
+                                <td>
+                                    <input name="MemberCode" type="text" class="form_text_verifycode" maxlength="4" />&nbsp;
+                                    <img class="code_image" id="MemberCode" title="{$Think.lang.ChangeVerifycode}" src="{$Url}memberCode/" align="absMiddle" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <td class="operation">
+                                    <input class="form_button btn btn-small" type="submit" name="nextstep" value="{$Think.lang.NextStep}" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="Step2" class="hide">
+                        <table  class="forget_table2" >
+                            <tr>
+                                <th>{$Think.lang.FindPwdWay}</th>
+                                <td colspan="2">
+                                    <div class="FindPwdWay">
+                                        <select name="FindPwdWay" id="FindPwdWay">
+                                            <option value="1" selected="selected">{$Think.lang.FindPwdByQuestion}</option>
+                                            <option value="2">{$Think.lang.FindPwdByMobile}</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="w1">
+                                <th>{$Think.lang.PasswordQuestion}</th>
+                                <td colspan="2"><div class="PasswordQuestion">&nbsp;</div></td>
+                            </tr>
+                            <tr class="w1">
+                                <th>{$Think.lang.PasswordAnswer}</th>
+                                <td colspan="2"><input class="form_text" name="MemberAnswer"  type="text" /></td>
+                            </tr>
+                            
+                           <tr class="w2">
+                                <th>{$Think.lang.MobileNumber}</th>
+                                <td colspan="2"><div class="MemberMobile">&nbsp;</div></td>
+                            </tr>
+                            <tr class="w2">
+                                <th>{$Think.lang.SmsCode}</th>
+                                <td><input id="SmsCode" name="SmsCode" type="text" class="form_text" maxlength="4"/></td>
+                                <td><input class="btn btn-small btnSmsCode"  type="button"  value="{$Think.lang.GetSmsCode}" /></td>
+                            </tr>
+                            
+                            <tr>
+                                <th>{$Think.lang.NewPassword}</th>
+                                <td colspan="2"><input class="form_text" name="MemberPassword"   type="password" /></td>
+                            </tr>
+                            <tr>
+                                <th>{$Think.lang.ConfirmPassword}</th>
+                                <td colspan="2"><input class="form_text" name="MemberPassword1"  type="password" /></td>
+                            </tr>
+            
+                            <tr>
+                                <th></th>
+                                <td colspan="2" class="operation">
+                                    <input class="form_button btn btn-small" type="submit" name="submit8" value="{$Think.lang.ResetPwd}" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div class="right_bottom"></div>
+        </div>
+        <!--右侧区域 结束-->
+        <div class="clear"></div>
+    </div>
+    <!--主体部分 结束-->
+    <include file="Public:footer" />
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container  box-footer-fixed">
+    <div class="box">
+        <form  enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+			<div class="box-header"  id="c3"><h4>分页设置</h4></div>
+            <div class="box-content">
+				<table class="boxtable">
+			       <tr>
+                        <th>前台搜索页面分页大小</th>
+                        <td><input type="number" class="textinput" style="width:80px;" name="SearchPageSize" value="{$SearchPageSize}" />
+                        <span class='Caution'>默认为：20条，根据显示器屏幕高度设置适当值。</span></td>
+                    </tr>
+                    <tr>
+                        <th>前台分页条可见页码个数</th>
+                        <td><input type="number" class="textinput" style="width:80px;" name="HomeRollPage" value="{$HomeRollPage}" />
+                        <span class='Caution'>默认为：10条，根据显示器屏幕宽度设置适当值。</span></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>后台分页大小</th>
+                        <td><input type="number" class="textinput" style="width:80px;" name="ADMIN_PAGE_SIZE" value="{$AdminPageSize}" />
+                        <span class='Caution'>默认为：20条，根据显示器屏幕高度设置适当值。此外，当记录数很多时，设置更大的分页大小，更容易删除所有记录</span></td>
+                    </tr>
+                    <tr>
+                        <th>后台分页条可见页码个数</th>
+                        <td><input type="number" class="textinput" style="width:80px;" name="ADMIN_ROLL_PAGE" value="{$AdminRollPage}" />
+                        <span class='Caution'>默认为：30条，根据显示器屏幕宽度设置适当值。</span></td>
+                    </tr>
+				</table>
+			</div>
+			
+            <div class="box-header"  id="c3"><h4>内容编辑设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>富文本编辑器类型</th>
+                        <td>
+                            <label style="margin-right:10px;"><input type="radio" name="TextEditor" value="1"  <eq name="TextEditor" value="1">checked="checked"</eq>   />CKEditor</label>
+                            <label><input type="radio" name="TextEditor" value="2" <eq name="TextEditor" value="2">checked="checked"</eq> />百度Ueditor</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th nowrap="nowrap" style="width:20%">删除记录时是否同时删除图片和附件</th>
+                        <td style="width:80%"><label><input type="radio" name="AUTO_DEL_ENABLE" value="1" <eq name="AutoDelEnable" value="1">checked="checked"</eq> />是</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="AUTO_DEL_ENABLE" value="0" <eq name="AutoDelEnable" value="0">checked="checked"</eq> />否</label></td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap">是否自动上传远程图片</th>
+                        <td><label><input type="radio" name="AUTO_UPLOAD_ENABLE" value="1" <eq name="AutoUploadEnable" value="1">checked="checked"</eq> />是</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="AUTO_UPLOAD_ENABLE" value="0" <eq name="AutoUploadEnable" value="0">checked="checked"</eq> />否</label><span class='Caution'>启用后，将自动上传文章中的远程图片</span></td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap">是否删除非站内链接</th>
+                        <td><label><input type="radio" class="DelLinkEnable" name="DEL_LINK_ENABLE" value="1" <eq name="DelLinkEnable" value="1">checked="checked"</eq> />是</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" class="DelLinkEnable"  name="DEL_LINK_ENABLE" value="0" <eq name="DelLinkEnable" value="0">checked="checked"</eq> />否</label><span class='Caution'>启用后，将删除非站内链接，允许的站外链接除外</span></td>
+                    </tr>
+                    <tr class="AllowLink">
+                        <th>允许的站外链接</th>
+                        <td><input type="text" class="textinput" style="width:100%;" name="ALLOW_LINK" value="{$AllowLink}" />
+                        <span class='Caution'>链接以竖线“|”分割，如：google.com|baidu.com</span></td>
+                    </tr>
+					<tr>
+                        <th  style="width:20%">【内容】左侧树形频道宽度</th>
+                        <td>
+                            <input type="number" class="textinput" style="width:120px;" name="ChannelTreeWidth" value="{$ChannelTreeWidth}" />
+							<span class='Caution'>默认值：140px，建议取值范围：140-300，【内容】左侧频道树形列表的宽度</span></td>
+                        </td>
+                    </tr>
+					<tr>
+                        <th ></th>
+                        <td class="red">注意：修改后，请按F5刷新浏览器生效！</td>
+                    </tr>
+                </table>
+            </div>
+			
+			<div class="box-header"  id="c3"><h4>管理员登录通知设置</h4></div>
+            <div class="box-content">
+				<table class="boxtable">
+				  <tr>
+						<th nowrap="nowrap">管理员登录是否邮件通知</th>
+						<td>
+						<label><input type="radio" name="ADMIN_LOGIN_SENDEMAIL" value="1"  onclick="ChangeMail(1)"  />是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+						<label><input type="radio" name="ADMIN_LOGIN_SENDEMAIL" value="0"   onclick="ChangeMail(0)" />否</label>
+						</td>
+					</tr>
+				   <tr class="mail">
+						 <th class="w120">接收邮件帐号</th>
+						<td><input type="text" class="textinput" style="width:50%" name="ADMIN_LOGIN_EMAIL" value="{$ADMIN_LOGIN_EMAIL}" /></td>
+					</tr>
+				   <tr class="mail">
+						 <th class="w120"></th>
+						<td><span class='Caution'>多个邮箱以英文逗号隔开，留空为[管理首页]->[联系方式]设置的电子邮件</span></td>
+					</tr>
+					<tr class="mail">
+						 <th class="w120">通知邮件标题</th>
+						<td><input type="text" class="textinput"  style="width:50%"  id="ADMIN_LOGIN_EMAIL_TITLE"  name="ADMIN_LOGIN_EMAIL_TITLE" value="{$ADMIN_LOGIN_EMAIL_TITLE}" /></td>
+					</tr>
+					 <tr class="mail">
+							<th class="w120"></th>
+							<td>
+								<span class='Caution'>
+									<literal>
+										标题模板举例：{$Name}登录了【{$WebName}】管理后台
+										<div style="text-indent:23px">
+											支持模板变量：
+											<b onclick="insertAtCursorByID('ADMIN_LOGIN_EMAIL_TITLE','{$Name}')"  class="tplvar">{$Name}</b>表示简历投递人&nbsp;&nbsp;
+											<b onclick="insertAtCursorByID('ADMIN_LOGIN_EMAIL_TITLE','{$WebName}')"  class="tplvar">{$WebName}</b>表示网站名称&nbsp;&nbsp;
+										</div>
+									</literal>
+								</span>
+							</td>
+						</tr>
+				</table>
+			</div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function ShowBox(data){
+	var msg = "<div id='icon_warning' style='padding:0 8px 0 50px;'>"+data.info+"</div>";
+	d = dialog({
+		content:msg,
+		title:"友情提示", 
+		quickClose: true, 
+		okValue:"重新登录",
+		ok:function(){
+			location.href = data.data;
+		}, 
+		id:'tipAdmin', 
+		padding:8
+	});
+	d.show();
+}
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){ //修改了后台地址，需要重新登录
+			ShowBox(data);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		 LoadBox();
+		return false;
+	 });
+	 
+	 $(".DelLinkEnable").click(function(){
+		ChangeAllowLink( $(this).val() );
+	 });
+	
+	function ChangeAllowLink( type ){
+		if( type == 1 ){
+			$(".AllowLink").show();
+		}else{
+			$(".AllowLink").hide();
+		}
+	}
+
+	function pageInit(){
+		ChangeAllowLink('{$DelLinkEnable}');
+		$("input[name='ADMIN_LOGIN_SENDEMAIL'][value={$ADMIN_LOGIN_SENDEMAIL}]").attr("checked",'checked');
+		 ChangeMail("{$ADMIN_LOGIN_SENDEMAIL}"); 
+	}
+	pageInit();
+});
+
+function ChangeMail(type){
+	if( type == 1 ){
+		$(".mail").show();
+	}else{
+		$(".mail").hide();
+	}
+}
+</script>

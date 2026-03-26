@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form  enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">        
+            <div class="box-header"  id="c3">
+                <h4>百度翻译设置<span class="extra">主要用于在"内容管理"自动对文章进行中英互译！</span></h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th nowrap="nowrap">APP ID</th>
+                        <td>
+                        <input type="text" class="textinput w270" name="BAIDU_TRANSLATE_APPID" value="{$BaiduTranslateAppId}" />
+                        <span class='Caution'>还没有API Key，点击 <a href="http://api.fanyi.baidu.com" target="_blank" style="color:blue;">http://api.fanyi.baidu.com</a> 免费申请</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap">API Key</th>
+                        <td>
+                        <input type="text" class="textinput w270" name="BAIDU_TRANSLATE_APIKEY" value="{$BaiduTranslateApiKey}" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+			
+			<div class="box-header"  id="c3">
+				<h4>翻译测试<span class="extra">测试翻译前请先保存API Key</span></h4>
+			</div>
+            <div class="box-content">
+                <table class="boxtable">
+					<tr>
+                        <th>目标翻译语言</th>
+                        <td>
+							<select id="TargetLanguage">
+								<volist name="AllLanguage" id="a">
+									<option value="{$a.lang}">{$a.name}</option>
+								</volist>
+							</select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>翻译文字</th>
+                        <td>
+							<div style="margin-bottom:5px; ">
+								<textarea class="textinput" style="height:120px;width:100%;" name="TranslateText" id="TranslateText" />神马都是浮云</textarea>
+							</div>
+							<div><a class="btnSuccess btnSmall"  style="float:left; margin-top:2px;min-width:60px;"  onclick="TranslateTest()" id="btnPick">自动翻译</a></div>
+                        </td>
+                    </tr>
+					<tr>
+						<th></th>
+						<td><div id="tip"></div></td>
+					</tr>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		 LoadBox();
+		return false;
+	 });
+	 
+	function pageInit(){
+		$("#TargetLanguage").val("en");
+	}
+	pageInit();
+});
+
+function TranslateTest(){
+	msg = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>";
+	msg += "翻译中，请稍后...";
+	$("#tip").html(msg);
+	var content = $("#TranslateText").val();
+	var timenow = new Date().getTime();
+	var url = "{$Url}translateTest";
+	var p = {
+		content:$("#TranslateText").val(), 
+		to:$("#TargetLanguage").val(),
+		t:timenow
+	}
+	$.post(url, p, function(data){
+		var title = "<div style='color:blue;font-weight:bold;'>翻译结果：</div>";
+		if(data.status == 1){
+			$("#tip").html( title+"<span style='color:blue'>"+data.info+"</span>" );
+		}else{
+			$("#tip").html( title+"<span style='color:red'>"+data.info+"</span>" );
+		}
+	}, "json");
+}
+</script>

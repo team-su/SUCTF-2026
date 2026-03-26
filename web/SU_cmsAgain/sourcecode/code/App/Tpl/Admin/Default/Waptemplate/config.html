@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container  box-footer-fixed">
+    <eq name="HasConfig" value="1">
+        <div class="box">
+            <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmSave">
+                <volist name="Group" id="g">
+                    <div class="box-header"><h4>{$g.DisplayName}</h4></div>
+                    <div class="box-content">
+                        <table class="boxtable">
+                            <volist name="Attribute" id="a">
+                                <eq name="a.GroupID" value="$g.AttributeID">
+                                        <tr>
+                                            <th class="w120">{$a.DisplayName}</th>
+                                            <td>{$a.html}</td>
+                                        </tr>
+                                </eq>
+                            </volist>
+                        </table>
+                    </div>
+                </volist>               
+                <div class="box-footer">
+                    <div class="box-footer-inner">
+                        <input id="btnSubmit" class="marginright" type="submit" value="保存"   {$DisableText} />
+                        <eq name="IsWritable" value="0"><b style="color:red;">当前模板配置文件config.xml只读，不能修改</b></eq>
+                    </div>
+                </div>
+            </form>
+        </div>
+     <else/>
+          <div style="color:red; padding:10px; font-weight:bold">{$Tip}</div>
+    </eq>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	  /**
+	   * 初始化jscolor
+	   */
+	  function initJsColor(){
+			if(!jscolor)return;
+			jscolor.presets.default = {
+			  palette: [
+				'#00000000', '#7d7d7d', '#870014', '#ec1c23', '#ff7e26', '#fef100', '#22b14b', '#00a1e7', '#3f47cc', '#a349a4',
+				'#ffffff',       '#c3c3c3', '#b87957', '#feaec9', '#ffc80d', '#eee3af', '#b5e61d', '#99d9ea', '#7092be', '#c8bfe7',
+				'#000000',  '#333333', '#666666', '#999999', '#cccccc', '#dddddd', '#eeeeee', '#f0f0f0', '#f5f5f5', '#fafafa',
+			  ],
+			  alphaChannel:true,
+			  required:false,
+			  format:"AUTO",  //如果设置为hexa，会强制转为hexa格式，#000000会变成#000000FF
+			  //paletteCols: 12,
+			  //hideOnPaletteClick: true,
+			  //width: 200,
+			  //height: 120,
+			  //position: 'right',
+			  //previewPosition: 'right',
+			}
+			jscolor.install();
+	  }
+$(document).ready(function(){
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmSave').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmSave').submit(function(){
+			try{
+				LoadBox();
+				for ( s in CKEDITOR.instances ){
+				   CKEDITOR.instances[s].updateElement();
+				}
+			}catch(e){
+				;
+			}finally{
+				$(this).ajaxSubmit( {success: complete,dataType: 'json'} );
+				return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+			}
+	 });
+	 
+	<eq name="IsWritable" value="0">
+			$(".boxtable input,.boxtable select,.boxtable textarea,").attr("disabled","disabled");
+	</eq>
+	
+			 initJsColor();
+});
+</script>

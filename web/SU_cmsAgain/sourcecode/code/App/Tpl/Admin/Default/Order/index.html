@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.os1, .os2, .os3, .os4, .os5, .os6, .os7, .ps1, .ps2, .ss1, .ss2{ padding:0 3px;}
+		.os1{ color: black; }
+		.os2{ color: blue;}
+		.os3{ color: #F0F;}
+		.os4{ color:red;}
+		.os5{ color:#F90;}
+		.os6{ color:green;}
+		.os7{ color:#999;}
+		.ps1, .ss1{ color: blue; }
+		.ps2, .ss2{ color: red;}
+		.consignee{ display: none; background:#FFF;text-align:left;border:1px solid #ccc; padding:1px; min-width:200px;}
+		.consignee .consignee_title{ font-weight:bold; padding:3px 5px; background:#f0f0f0; color:#333; font-size:14px;border-bottom:1px solid #ccc;}
+		.consignee .consignee_body{  line-height:25px; padding:3px 5px;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p"  value="{$NowPage}" />
+        <div class="table">
+            <div class="toolbars">
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}orderLog" class="ydicon-shuxing" title="订单日志管理">订单日志管理</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar toolbarform">
+                <label>订单编号</label>
+                <input type="text" class='textinput' name="OrderNumber" style="width:180px" value="{$OrderNumber}" id="OrderNumber"/>
+                <label>收货人</label>
+                <input type="text" class='textinput' name="ConsigneeRealName"  style="width:70px"  value="{$ConsigneeRealName}" />
+                <label>订单状态</label>
+                <select name="OrderStatus" id="OrderStatus">
+                    <option value="-1">全部</option>
+                    <orderstatuslist id="os"><option value="{$os.OrderStatusID}">{$os.OrderStatusName}</option></orderstatuslist>
+                </select>
+                <a id="btnSeek" class="btnToolbarForm" onclick="Search()">查询</a>
+            </li>
+            </div>
+            <table class="datatable" id="datatable">
+            <tr>
+            <th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+            <th width="60px" >订单ID</th>
+            <th width="185px" >订单编号</th>
+            <th width="110px" >会员名称</th>
+            <th  width="85px">订单总金额</th>
+            <th  width="110px">付款方式</th>
+            
+            <th  width="95px">配送方式</th>
+            <th width="150px" >订单状态</th>
+            <th width="125px" >下单时间</th>
+            <th>订单备注</th>
+            <th width="150px">操作</th>
+            </tr>  
+            <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr id="tr{$d.OrderID}">
+                        <td>
+                            <in name="d.OrderStatus" value="7,8">
+                            	<input class="checkrow"  type="checkbox" name="id[]" value="{$d.OrderID}"  />
+                            </in>
+                        </td>
+                        <td>{$d.OrderID}</b>
+                        <td><b class="con" rel="c{$d.OrderID}">{$d.OrderNumber}</b>
+                            <div class="consignee" id="c{$d.OrderID}">
+                                <div class="consignee_title">收货人信息</div>
+                                <div class="consignee_body">
+                                    <b>姓名：</b>{$d.ConsigneeRealName|htmlspecialchars}<br/>
+                                    <b>性别：</b><eq name="d.ConsigneeGender" value="0">男<else/>女</eq><br/>
+                                    <b>电话：</b>{$d.ConsigneeMobile|htmlspecialchars}&nbsp;&nbsp;{$d.ConsigneeTelephone|htmlspecialchars}<br/>
+                                    <neq name="d.ConsigneeEmail" value=""><b>邮件：</b>{$d.ConsigneeEmail|htmlspecialchars}<br/></neq>
+                                    <neq name="d.ConsigneePostcode" value=""><b>邮编：</b>{$d.ConsigneePostcode|htmlspecialchars}<br/></neq>
+                                    <b>地址：</b>{$d.ConsigneeAddress|htmlspecialchars}<br/>
+                                    <neq name="d.ConsigneeRemark" value=""><b>备注：</b>{$d.ConsigneeRemark|htmlspecialchars}<br/></neq>
+                                </div>
+                            </div>
+                        </td>
+                        <td><empty name="d.MemberID"><b style="color:red;">游客</b><else/>{$d.MemberName|htmlspecialchars}  [{$d.MemberID}]</empty></td>
+                        <td  style="color:red; text-align:right; padding-right:10px;">{$CurrencySymbol}{$d.TotalOrderPrice}</td>
+                        <td>{$d.PayName|htmlspecialchars}</td>
+                        <td>{$d.ShippingName|htmlspecialchars}</td>
+                        <td>
+                            <span class="os{$d.OrderStatus}">{$d.OrderStatusName}</span>
+                            <eq name="d.PayStatus" value="1">
+                                <span class="ps1">已支付</span>
+                            <else/>
+                                <span class="ps2">未支付</span>
+                            </eq>
+                            <eq name="d.ShippingStatus" value="1">
+                                <span class="ss1">已发货</span>
+                            <else/>
+                                <span class="ss2">未发货</span>
+                            </eq>
+                        </td>
+                        <td>{$d.OrderTime|strtotime|yd_friend_date}</td>
+                        <td style="text-align:left;">{$d.OrderRemark|htmlspecialchars}</td>
+                        <td class="operator">
+                            <a style="float:left" id="btnEdit" name="btnEdit" href="{$Url}modify/id/{$d.OrderID}">详情</a>
+                            <in name="d.OrderStatus" value="7,8" comment="已作废或已取消可以删除订单">
+                                <div class="btn-sep"></div>
+                                <a style="float:left" onclick="Del({$d.OrderID})" class="btnDel">删除</a>
+                            </in>
+                        </td>
+                    </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="13" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                
+            </table>
+            <div class="tfoot">
+                <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//提示信息
+$(document).ready(function(){
+	pageInit();
+	$(".con").powerFloat({
+		reverseSharp:true,
+		position:"2-1"
+	});
+});
+
+function pageInit(){
+	$("#OrderStatus").val( "{$OrderStatus}");
+}
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}delOrder?id="+id+"&p={$NowPage}&OrderNumber={$OrderNumber}&ConsigneeRealName={$ConsigneeRealName}";
+		url += "&OrderStatus={$OrderStatus}";
+		location.href = url;
+	});
+}
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/delOrder");
+		$('#frm').submit();
+	});
+}
+
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}
+</script>

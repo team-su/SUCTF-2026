@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="wrap">
+    <div class="container">
+        <div id="main">
+            <div class="con box-green">
+                <form enctype="multipart/form-data" action="{$Action}" method="post" id="frm">
+                    <include file="common" />
+					<div class="box-footer">
+						<div class="box-footer-inner">
+							<input  id="btnSubmit"  type="submit" value="保存并继续添加" />&nbsp;&nbsp;
+							<input  id="btnSubmit"  type="button" value="返回" onclick="GoBack()" />
+						</div>
+					</div>
+                </form>
+            </div><!--/ con-->
+        </div>    
+    </div><!--/ container-->
+</div><!--/ wrap-->
+</body>
+</html>

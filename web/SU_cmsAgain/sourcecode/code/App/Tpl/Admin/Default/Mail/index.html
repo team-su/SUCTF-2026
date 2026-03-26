@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.mytip{	display:none; 	background-color:#FFF;	padding:8px; 	line-height:22px;	text-align:left;	border:1px solid #CCC;}
+		.Address{	cursor:pointer;	}
+	</style>
+</head>
+<body id="main_page">
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+      <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}Add"  title="添加邮箱帐号" target="_self">添加邮箱帐号</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar toolbarform">
+                <label>邮件订阅分类</label>
+                <select name="MailClassID" id="MailClassID">
+                    <option value="-1">全部</option>
+                    <volist name="MailClass" id="mc">
+                        <eq name="mc.MailClassID" value="$MailClassID">
+                            <option value="{$mc.MailClassID}" selected="selected">{$mc.MailClassName}</option>
+                        <else/>
+                            <option value="{$mc.MailClassID}">{$mc.MailClassName}</option>
+                        </eq>
+                    </volist>
+                </select>
+                <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+            </li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="40px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="45px" >邮箱ID</th>
+                <th width="150px" >邮箱帐号</th> 
+                <th width="100px" >订阅分类</th>
+                <th width="85px" >姓名</th>
+                
+                <th width="100px" >电话</th>
+                <th>地址</th>
+                <th width="120px" >添加时间</th>
+                <th width="60px" >是否启用</th>
+                <th width="150px">操作</th>
+            </tr>
+            <notempty name="Mail">  
+                <volist name="Mail" id="m">
+                    <tr id="tr{$m.MailID}">
+                        <td><input class="checkrow" type="checkbox" name="MailID[]" value="{$m.MailID}" /></td>
+                        <td>{$m.MailID}</td>
+                        <td  class="TipKey" style="text-align:left;">{$m.MailAccount|htmlspecialchars}</td>
+                        <td style="color:blue;font-weight:bold">{$m.MailClassName|htmlspecialchars}</td>
+                        <td>{$m.Name|htmlspecialchars}</td>   
+                         
+                        <td>{$m.Telephone|htmlspecialchars}</td> 
+                        <td><span class="Address" rel="des{$i}">{$m.Address|Left=15|htmlspecialchars}</span>
+                        <div class="mytip" id="des{$i}">{$m.Address|htmlspecialchars}</div>
+                        </td>
+                        <td>{$m.AddTime|strtotime|yd_friend_date}</td>
+                        <td>
+                            <eq name="m.IsEnable" value="1">
+                                <span style="color:black;cursor:pointer;"  onclick="toggleStatus(this,{$m.MailID},'mail')">启用</span>
+                            <else/>
+                                <span style="color:red;cursor:pointer;" onclick="toggleStatus(this,{$m.MailID},'mail')">禁用</span>
+                            </eq>
+                        </td>
+                        <td class="operator">
+                        	<a style="float:left" href="{$Url}Modify/MailID/{$m.MailID}" id="btnEdit">修改</a>
+                        	<div class="btn-sep"></div>
+                        	<a style="float:left" onclick="Del({$m.MailID})" class="btnDel">删除</a>
+                        </td>
+                    </tr>
+                </volist>
+            <else/>
+            	<tr><td colspan="10" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                 
+        </table>
+        <div class="tfoot">
+          <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+    </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function Del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#tr"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}del/MailID/"+id+"/MailClassID/{$MailClassID}/p/{$NowPage}";
+		location.href = url;
+	});
+}
+
+//回调函数
+function DelComplete(data, textStatus){
+	if (data.status == 1){
+		$(data.data).css("display","none");
+	}else{ 
+		//删除失败
+		ErrorBox(data.info);
+	}
+}
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='MailID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "{$Url}batchDel/MailClassID/{$MailClassID}");
+		$('#frm').submit();
+	});
+}
+
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}
+
+//提示信息
+$(document).ready(function(){
+	$(".Address").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+});
+</script>

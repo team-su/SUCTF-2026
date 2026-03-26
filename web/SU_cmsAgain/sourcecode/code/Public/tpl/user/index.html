@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>
+		.AvailableQuantity{ color:#F30;}
+	</style>
+</head>
+<body id="index" class="webapp">
+	<include file="./Public/tpl/user/header.html" />
+	<div class="usercenter">
+         <div class="MemberAvatar" >
+         	<notempty name="MemberAvatar"><img src="{$MemberAvatar}" /><else/><img src="{$Images}default.png" /></notempty>
+         </div>
+		<span class="MemberName">{$Think.session.MemberName}</span>
+		<span class="MemberGroupName">{$Think.session.MemberGroupName}</span>
+	</div>
+	
+    <volist name="MenuGroup" id="mg">
+    	<div class="weui-cells" <eq name="i" value="1">style='margin-top:0;'</eq> >
+            <volist name="Menu" id="m" key="j">
+                <eq name="m.MenuGroupID" value="$mg.MenuGroupID">
+                      <a class="weui-cell weui-cell_access" href="{$Url}{$m.MenuUrl}">
+                      		<div class="weui-cell__hd"><img src="{$Images}{$m.MenuID}.png" class="MenuIcon" /></div>
+                            <div class="weui-cell__bd"><p>{$m.MenuName}</p></div>
+                            <div class="weui-cell__ft">{$m.Count}</div>
+                      </a>
+                </eq>
+           </volist>
+       </div>
+	</volist>
+    
+    <!--插件 开始-->
+    <eq name="Think.session.MemberID|can_distribute" value="1">
+        <div class="weui-cells">
+              <a class="weui-cell weui-cell_access" href="{$Url}downline">
+                    <div class="weui-cell__hd"><img src="{$Images}tuiguang.png" class="MenuIcon" /></div>
+                    <div class="weui-cell__bd"><p>我的推广</p></div>
+                    <div class="weui-cell__ft"></div>
+              </a>
+              
+              <a class="weui-cell weui-cell_access" href="{$Url}income">
+                    <div class="weui-cell__hd"><img src="{$Images}shouyi.png" class="MenuIcon" /></div>
+                    <div class="weui-cell__bd"><p>我的收益</p></div>
+                    <div class="weui-cell__ft" style="color:red;">{$CurrencySymbol}{:TotalIncome()}</div>
+              </a>
+              
+              <a class="weui-cell weui-cell_access" href="{$Url}mylink">
+                    <div class="weui-cell__hd"><img src="{$Images}mylink.png" class="MenuIcon" /></div>
+                    <div class="weui-cell__bd"><p>我的推广链接</p></div>
+                    <div class="weui-cell__ft"></div>
+              </a>
+        </div>
+    </eq>
+    <!--插件 结束-->
+    
+    <div class="weui-cells">
+    	<a class="weui-cell weui-cell_access" href="{$Url}logout">
+        	  <div class="weui-cell__hd"><img src="{$Images}logout.png" class="MenuIcon" /></div>
+              <div class="weui-cell__bd"><p>安全退出</p></div>
+         </a>
+    </div>
+	<include file="./Public/tpl/user/footer.html" />
+</body>
+</html>
+<script>
+	function GoBack(){
+		location.href = "{:WapHomeUrl()}";
+	}
+</script>

@@ -1,0 +1,85 @@
+<div class="weui-cells weui-cells_form" style="margin-top:0;">
+       <div class="weui-cell">
+           <div class="weui-cell__hd"><label class="weui-label">收货人</label></div>
+           <div class="weui-cell__bd"><input type='text' class='weui-input' name = 'ConsigneeRealName'  value='{$Data.ConsigneeRealName}'  /></div>
+       </div>
+       
+       <div class="weui-cell">
+           <div class="weui-cell__hd"><label class="weui-label">手机</label></div>
+           <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'ConsigneeMobile'  value='{$Data.ConsigneeMobile}'  /></div>
+       </div>
+       
+       <div class="weui-cell">
+           <div class="weui-cell__hd"><label class="weui-label">座机</label></div>
+           <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'ConsigneeTelephone'  value='{$Data.ConsigneeTelephone}'  /></div>
+       </div>
+       
+       <div class="weui-cell">
+           <div class="weui-cell__hd"><label class="weui-label">Email</label></div>
+           <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Email'  value='{$Data.Email}'  /></div>
+       </div>
+       
+       <div class="weui-cell">
+           <div class="weui-cell__hd"><label class="weui-label">详细地址</label></div>
+           <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'ConsigneeAddress'  value='{$Data.ConsigneeAddress}'  /></div>
+       </div>
+       
+       <div class="weui-cell">
+           <div class="weui-cell__hd"><label class="weui-label">邮编</label></div>
+           <div class="weui-cell__bd"><input type='number'  class='weui-input' name = 'ConsigneePostcode'  value='{$Data.ConsigneePostcode}'  /></div>
+       </div>
+       
+       <div class="weui-cell">
+           <div class="weui-cell__hd"><label class="weui-label">地址别名</label></div>
+           <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'ConsigneeAddressAlias'  value='{$Data.ConsigneeAddressAlias}'  placeholder="如：家里、公司、父母家" /></div>
+       </div>
+</div>
+<script type="text/javascript">
+	function GoBack(){
+		location.href = "{$Url}consignee";
+	}
+	
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					focusFirstItem();
+				</empty>
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			 LoadBox();
+	     	return false;
+	     });
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 var idName = "#{$Think.const.MODULE_NAME}RealName";
+			 $(idName).focus();
+		 }
+		 
+		 //设置默认值
+		 function setDefault(){
+			 
+		 }
+		 
+		 //页面初始化
+		 function pageInit(){
+			focusFirstItem();
+			setDefault();
+		 }
+		 
+		 pageInit();
+	});
+</script>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$InfoTitle}|{$Title}-{$WebName}</title>
+    <include file="Public:meta" />
+</head>
+<body class="body_product infodetail">
+    <include file="Public:header" />
+    
+    <!--区块5088 开始-->
+<div id="n5088" class="component floor_detail2_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5088">
+    <style type="text/css">
+        #n5088{
+            {$TDetail2Bg5088|ParseBg}
+            padding: {$TDetail2Padding5088}px 0;
+        }
+        #n5088 .detail_table .InfoTitle h1{
+            {$TDetail2Title5088|ParseFont}
+        }
+        #n5088 .detail_table .InfoSContent{
+            {$TDetail2SubContent5088|ParseFont}
+        }
+        #n5088 .detail_table .InfoPrice{
+            {$TDetail2PriceFont5088|ParseFont}
+        }
+        #n5088 .detail_table .DiscountPrice{
+            {$TDetail2PriceFont5088|ParseFont}
+        }
+        #n5088 .InfoContent_main .InfoContent{
+            {$TDetail2Content5088|ParseFont}
+        }
+        #n5088 .info_previous_next_wrap{
+            {$TDetail2NextFont5088|ParseFont}
+        }
+        #n5088 .Next, #n5088 .Previous{
+            border-color: {$TDetail2NextBorderColor5088};
+        }
+
+        #n5088 .product_swiper .swiper-prev, #n5088 .product_swiper .swiper-next{
+            background-color: {$TDetail2BtnBgColor5088};
+        }
+
+        #n5088 .product_swiper .swiper-prev:before, #n5088 .product_swiper .swiper-next:before{
+            color: {$TDetail2BtnIconColor5088};
+        }
+    </style>
+    <div class="floor_detail2 full-width{$TDetail2FullWidth5088}" yd-animation>
+        <!--右侧区域 开始-->
+        <div class="component_body content_container">
+            <div class="content_title"></div>
+            <div class="content_body">
+                <div class="info_product_detail_wrap full-width{$TDetail2FullWidth5088}">
+                    <div class="product_swiper" yd-content="_info,{$InfoID},4">
+                        <notempty name="InfoAlbum">
+                            <div class="swiper-prev ydicon-left"></div>
+                            <div class="InfoSwiper swiper-container">
+                                <ul class="swiper-wrapper">
+                                    <infoalbumlist id="fa" infoid="$InfoID">
+                                        <li class="swiper-slide"><img src="{$fa.AlbumPicture}" alt="{$fa.AlbumTitle}" title="{$fa.AlbumTitle}" /></li>
+                                    </infoalbumlist>
+                                </ul>
+                            </div>
+                            <div class="swiper-next ydicon-right"></div>
+                            <div class="product_thumbnail swiper-container">
+                                <ul class="swiper-wrapper">
+                                <infoalbumlist id="fa" infoid="$InfoID">
+                                    <li class="swiper-slide"><img src="{$fa.AlbumPicture}" alt="{$fa.AlbumTitle}" title="{$fa.AlbumTitle}" data-index="{$i}" class="<eq name='i' value='1'>ThemeColorBg</eq> n{$i}" /></li>
+                                </infoalbumlist>
+                                </ul>
+                            </div>
+                            <else />
+                            <div class="InfoPicture"><img src="{$InfoPicture}" title="{$InfoTitle}" alt="{$InfoTitle}" /></div>
+                        </notempty>
+                    </div>
+                    <div class="detail_table" yd-content="_info,{$InfoID}">
+                        <div class="InfoTitle"><h1>{$InfoTitle}</h1></div>
+                        <div class="InfoSContent">{$InfoSContent}</div>
+                        <div class="InfoPrice">
+                            <gt name="DiscountPrice" value="0"><span class="DiscountPrice">{$CurrencySymbol}{$DiscountPrice}</span></gt>
+                            <gt name="MarketPrice" value="0"><span class="MarketPrice">{$CurrencySymbol}{$MarketPrice}</span><br/></gt>
+                        </div>
+                        <div class="info_previous_next_wrap">
+                            <div class="Previous">
+                                <eq name="HasPrevious" value="1">
+                                    <b>{$Think.lang.Previous}{$ChannelSName}：</b><a  href="{$PreviousInfoUrl}" title="{$PreviousInfoTitle}">{$PreviousInfoTitle}</a>
+                                <else/>
+                                    <b>{$Think.lang.Previous}{$ChannelSName}：</b>{$Think.lang.Nothing}
+                                </eq>
+                            </div>
+                            
+                            <div class="Next">
+                                <eq name="HasNext" value="1">
+                                    <b>{$Think.lang.Next}{$ChannelSName}：</b><a  href="{$NextInfoUrl}" title="{$NextInfoTitle}">{$NextInfoTitle}</a>
+                                <else/>
+                                    <b>{$Think.lang.Next}{$ChannelSName}：</b>{$Think.lang.Nothing}
+                                </eq>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <notempty name="InfoContent">
+                    <div class="InfoContent_main">
+                        <div class="ProductDescription ThemeColor full-width{$TDetail2FullWidth5088}">
+                            <span class="ThemeColorBorder">{$ChannelSName}{$Think.lang.ProductDescription}</span>
+                        </div>
+                        <div class="InfoContent full-width{$TDetail2FullWidth5088}" yd-content="_info,{$InfoID}">{$InfoContent}</div>
+                    </div>
+                </notempty>
+            </div>
+            <div class="content_bottom"></div>
+        </div>
+        <!--右侧区域 结束-->
+        <div class="clear"></div>
+    </div>
+    <script type="text/javascript">
+        $(window).load(function(){
+            var productSwiper = new Swiper('#n5088 .InfoSwiper',{
+                speed: 1000, //滑动速度
+                loop: true,
+                onSlideChangeStart: function(item){
+                    $('#n5088 .product_thumbnail img').removeClass('ThemeColorBg');
+                    $('#n5088 .product_thumbnail img.n' + (item.activeLoopIndex + 1)).addClass('ThemeColorBg');
+                    product_thumbnail.swipeTo(item.activeLoopIndex);
+                }
+            });
+            $('#n5088 .InfoSwiper').height($('#n5088 .InfoSwiper li:first-child img').height());
+            $(window).resize(function(){
+                $('#n5088 .InfoSwiper').height($('#n5088 .InfoSwiper li:first-child img').height());
+            })
+            $('#n5088 .swiper-prev').click(function(){
+                productSwiper.swipePrev()
+            })
+            $('#n5088 .swiper-next').click(function(){
+                productSwiper.swipeNext()
+            })
+            $('#n5088 .product_thumbnail img').click(function(){
+                $('#n5088 .product_thumbnail img').removeClass('ThemeColorBg');
+                $(this).addClass('ThemeColorBg');
+                productSwiper.swipeTo($(this).attr('data-index') - 1);
+            })
+
+            var product_thumbnail = new Swiper('#n5088 .product_thumbnail',{
+                slidesPerView: 'auto',
+            });
+            $('#n5088 .product_thumbnail').height($('#n5088 .product_thumbnail li:first-child').height());
+        })
+    </script>
+</div>
+<!--区块5088 结束--><!--区块5136 开始-->
+<div id="n5136" class="component floor_detail6_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5136" yd-content="_info,{$InfoID},4">
+    <notempty name="TDetail6Show5136">
+        <style type="text/css">
+            #n5136{
+                {$TDetail6Bg5136|ParseBg}
+                padding-top:{$TDetail6PaddingTop5136}px;
+                padding-bottom:{$TDetail6PaddingBottom5136}px;
+            }
+            #n5136 .InfoTitle{
+                {$TDetail6InfoTitleFont5136|ParseFont}
+            }
+            #n5136 .InfoSContent{
+                {$TDetail6InfoSContentFont5136|ParseFont}
+            }
+            #n5136 .InfoPrice{
+                {$TDetail6InfoPriceFont5136|ParseFont}
+            }
+            #n5136 .InfoTime{
+                {$TDetail6InfoTimeFont5136|ParseFont}
+            }
+            #n5136 .TitleIcon{
+                width: {$TDetail6TitleIconSize5136}px;
+            }
+            #n5136 li{
+                animation-duration: {$TDetail6AnimationTime5136}s;
+                animation-fill-mode: both;
+                yd-previewable-class: column column{$TDetail6ColumnCount5136};
+            }
+            #n5136 ul{
+                yd-previewable-class: list-style list-style{$TDetail6ShowStyle5136};
+                yd-previewable-class: -detail6 {$TDetail6Style5136}-detail6;
+            }
+        </style>
+        <div class="floor_detail6 display{$TDetail6Show5136} full-width{$TDetail6FullWidth5136}">
+            <div class="component_body">
+                <ul class="detail6 {$TDetail6Style5136}-detail6 list-style{$TDetail6ShowStyle5136}" yd-group="5136" yd-tab="列表设置">
+                    <inforelationlist id="f" infoid="$InfoID" length="$TDetail6Count5136">
+                        <li class="n{$mod} column{$TDetail6ColumnCount5136}" yd-animation="{$TDetail6AnimationType5136}">
+                            <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" class="{$TRoundCorner}-round-corner ThemeColorParent" yd-content="_info,{$f.InfoID}">
+                                <div class="InfoPicture">
+                                    <img src="{$f.InfoPicture|DefaultPicture}" title="{$f.InfoTitle}" alt="{$f.InfoTitle}" />
+                                </div>
+                                <div class="InfoWrap">
+                                    <div class="InfoTitle ThemeColorChild">
+                                        <eq name="TDetail6Style5136" value="text"><img class="TitleIcon" src="{$TDetail6TitleIcon5136}"/></eq>
+                                        {$f.InfoTitle}
+                                    </div>
+                                    <div class="InfoSContent"><notempty name="f.InfoSContent">{$f.InfoSContent}<else />{$f.InfoContent|strip_tags|Left=80}</notempty></div>
+                                    <div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div>
+                                    <div class="InfoTime ThemeColorChild ThemeColorBgChildAfter">{$f.InfoTime|strtotime| date="Y-m-d",###}</div>
+                                </div>
+                            </a>
+                        </li>
+                    </inforelationlist>
+                </ul>
+            </div>
+            <div class="component_bottom"></div>
+        </div>
+    </notempty>
+</div>
+<!--区块5136 结束--><include file="Public:footer" />
+</body>
+</html>

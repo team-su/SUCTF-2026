@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frmSave"  enctype="multipart/form-data">
+            <input type="hidden" name="ReplyID" value="{$Reply.ReplyID}" />
+            <input type="hidden" name="TypeID" value="5" />
+    
+            <div class="box-header"><h4>地理位置自动回复</h4></div>
+            <div class="box-content">
+            <table class="boxtable">
+            <tr>
+                <th class="w120">地理位置应用</th>
+                <td>
+                    <select name='a8' onchange="wxAppChannge(this)" id="wxapp" >
+                        <volist name="AppList" id="a">
+                            <option value="{$a.AppID},{$a.Keyword}"  des="{$a.Description}"  <eq name="a.AppID" value="$Reply.p1">selected="selected"</eq> >{$a.AppName}</option>
+                        </volist>
+                    </select>
+                </td>
+            </tr>
+            <tr  class="g5">
+    <th  class="w120">应用指令绑定</th>
+    <td><input type='text' style='width:350px;' class='textinput' name = 'a10'   value="{$Reply.p4}"  />
+    <span class='Caution'>无参数指令无需填写</span>
+    </td>
+    </tr>
+    <tr  class="g5">
+    <th  class="w120">应用指令绑定说明</th>
+    <td>[1]应用指令也就是在微信中录入的指令，指令格式详见应用帮助<br />
+    [2]如格式为"高(身高cm)重(体重kg)"，具体指令可以设置为：高175重60<br />
+    [3]备注：格式中的小括号"()"：表示必填参数，中括号"[]"：表示选填参数，若格式中没有小括号和中括号，表示无参指令
+    </td>
+    </tr>
+    <tr  class="g5">
+    <th  class="w120">应用帮助</th>
+    <td id="appdes" style="color:blue"></td>
+    </tr>
+            <tr>
+                <th class="w120">是否启用</th>
+                <td>
+                <input type='radio'  id='IsEnable'  name='IsEnable'    value='1' <eq name="Reply.IsEnable" value="1">checked="checked"</eq> />
+                启用&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type='radio'  id='IsEnable'  name='IsEnable'    value='0'  <eq name="Reply.IsEnable" value="0">checked="checked"</eq>  />
+                禁用&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+            </table>
+            
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" type="submit" value="保存" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="emotions" style="display:none;"></div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#a6').val(data.data);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#btnUpload').click(function(){
+		$('#frmSave').attr('action','__GROUP__/public/upload/addwater/no');
+	 });
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmSave').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmSave').submit(function(){
+		LoadBox();
+		return false;  
+	 });
+	 SelectType(5);
+});
+
+function SelectType(TypeID){
+	//显示应用帮助
+	if(TypeID==5){
+		var obj = document.getElementById("wxapp");
+		var i = obj.selectedIndex;
+		var des = obj.options[i].getAttribute("des");
+		if(des=="") des = "没有帮助";
+		$('#appdes').text(des);
+	}
+}
+
+function wxAppChannge(obj){
+	var i = obj.selectedIndex;
+	var des = obj.options[i].getAttribute("des");
+	if(des=="") des = "没有帮助";
+	$('#appdes').text(des);
+}
+</script>

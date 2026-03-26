@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p" id="p" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+           		<li class="toolbar"><a id="btnSaveAll" onclick="add()"  title="添加分销商" style="letter-spacing:2px; text-indent:5px;" target="_self">添加分销商</a></li>
+                <li  class="toolbar toolbarform">
+                    <label>关键词</label>
+                    <input type="text" class='textinput' name="Keywords" style="width:180px;" placeholder="Email 手机号码 昵称" value="{$Keywords}" id="Keywords" />
+                    <label style="margin:0 2px 0 10px;">分销商等级</label>
+                    <select name="DistributorLevelID" id="DistributorLevelID">
+                        <option value="-1">所有</option>
+                        <distributorlevellist id="dl">
+                               <option value="{$dl.DistributorLevelID}" <eq name="DistributorLevelID" value="$dl.DistributorLevelID">selected="selected"</eq> >{$dl.DistributorLevelName}</option>
+                        </distributorlevellist>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                     <th width="55px" >ID</th>
+                     <th>用户名称</th>
+                     <th width="100px">等级</th>
+                     <th width="80px">真实姓名</th>
+                     <th width="110px" >手机号码</th>
+                     <th width="150px" >Email</th>
+                     
+                     <th width="90px" >总分成金额</th>
+                     <th width="70px" >一级下线数</th>
+                     <th width="70px" >二级下线数</th>
+                     <th width="70px" >三级下线数</th>
+                     <th width="120px" >成为分销商的时间</th>
+                     <th width="110px" >操作</th>
+                </tr>
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td>{$d.MemberID}</td>
+                        <td style="padding-left:5px; text-align:left;">{$d.MemberName|htmlspecialchars}</td>
+                        <td>{$d.DistributorLevelName|htmlspecialchars}</td>
+                        <td>{$d.MemberRealName|htmlspecialchars}</td>
+                        <td>{$d.MemberMobile|htmlspecialchars}</td>
+                        <td>{$d.MemberEmail|htmlspecialchars}</td>
+                        
+                        <td style="color:red;">{$CurrencySymbol}{$d.TotalCommission}</td>
+                        <td>{$d.DownlineCount1} </td>
+                        <td>{$d.DownlineCount2}</td>
+                        <td>{$d.DownlineCount3}</td>
+                        <td>{$d.DistributorTime|strtotime|yd_friend_date}</td>
+                        <td class="operator">
+                        	<a id="btnSaveAll" onclick="set({$d.MemberID},{$d.IsDistributor},{$d.DistributorLevelID})"  title="设置分销等级" target="_self">设置分销等级</a>
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="12" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                  <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgAdd" title="">
+	<iframe src="{$Url}addDistributor" name="frmSend" id="frmSend" scrolling="no" frameborder="0"  height="540px" width="880px;"></iframe>
+</div>
+
+<div class="dialog" id="dlgSet" title="设置分销商等级">
+	<form enctype="multipart/form-data" action="{$Url}setDistributor" method="post" id="frmSet">
+    	<input type="hidden" id="MemberID" name="MemberID" value="" />
+        <table class="dlgtable" style="width:250px">
+                <tr>
+                    <th nowrap="nowrap">是否开启分销</th>
+                    <td>
+                    		<label><input type="radio" name="IsDistributor" value="1"  />是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="IsDistributor" value="0"  />否</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>分销商等级</th>
+                    <td>
+                    	<select name="DistributorLevelID" id="DistributorLevelID">
+                            <distributorlevellist id="dl">
+                                <option value="{$dl.DistributorLevelID}" >{$dl.DistributorLevelName}</option>
+                            </distributorlevellist>
+                        </select>
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+<script type="text/javascript">
+//天机分销商
+function add(){
+	if(checkSafeQuestion()) return;
+	var title = "添加分销商 ";
+	title += " 第1步：查找并选中会员；";
+	title += " 第2步：点击右侧 [ 设置 ] 按钮设置分销商等级";
+	var d = dialog({
+		title: title,
+		id: $("#dlgAdd").attr("id"),
+		lock: true,
+		padding: 8,
+		content: document.getElementById('dlgAdd'),
+	}).show();	
+}
+
+//设置分销等级
+function set(MemberID, IsDistributor, DistributorLevelID){
+	if(checkSafeQuestion()) return;
+	//初始化对话框数据
+	$("#dlgSet #MemberID").val(MemberID);
+	$("#dlgSet input[name='IsDistributor'][value="+IsDistributor+"]").attr("checked",'checked');
+	$("#dlgSet #DistributorLevelID").val(DistributorLevelID);
+	var d = dialog({
+		title: $("#dlgSet").attr("title"),
+		id: $("#dlgSet").attr("id"),
+		lock: true,
+		padding: 8,
+		content: document.getElementById('dlgSet'),
+		ok: function () {
+			d.close();
+			LoadBox();
+			$("#frmSet").ajaxSubmit({
+				success: function(data){
+					CloseLoadBox();
+					if(data.status == 1){
+						SucceedBox(data.info);
+						window.location.reload();
+					}else{
+						ErrorBox(data.info);
+						return false;
+					}
+				},
+				dataType: 'json'
+			});
+			return false;
+		},
+		okValue: '保存',
+		cancelValue: '关闭',
+		cancel: function () {
+			
+		}
+	}).show();	
+}
+
+//查询
+function search(){
+	$('#frm').attr("action", "{$Url}distributor");
+	$('#frm').submit();
+	return true;
+}
+
+$(document).ready(function(){
+	pageInit();
+});
+
+function pageInit(){
+	
+}
+</script>

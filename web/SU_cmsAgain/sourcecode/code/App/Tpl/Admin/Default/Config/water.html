@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+        <div style="display:none;background-color:#FFF; padding:5px; border:1px solid #CCC" id="fontlist">快速设置字体：
+            <a onclick="SetFont('msyh.ttf')">微软雅黑</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a onclick="SetFont('simhei.ttf')">黑体</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a onclick="SetFont('simkai.ttf')">楷体</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a onclick="SetFont('simsun.ttc')">宋体</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+        <div class="box">
+            <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+               <div class="box-header"  id="c10">
+                    <h4>水印设置</h4>
+                </div>
+                <div class="box-content">
+                    <table class="boxtable">
+                         <thead>
+						 <tr>
+                            <th>是否启用水印</th>
+                            <td><label><input type="radio" onclick="enableWater(1)" name="WATER_ENABLE" value="1" <eq name="WaterEnable" value="1">checked="checked"</eq> />是
+							</label>
+&nbsp;&nbsp;&nbsp;&nbsp;<label>
+<input type="radio" name="WATER_ENABLE" onclick="enableWater(0)" value="0" <eq name="WaterEnable" value="0">checked="checked"</eq> />否</label><span class='Caution'>启用后，上传图片将自动添加水印</span></td>
+                        </tr>
+						</thead>
+						<tbody style="display:none;">
+                        <tr>
+                            <th>水印类型</th>
+                            <td><label><input onclick="ChangeType(1)" type="radio" name="WATER_TYPE" value="1" <eq name="WaterType" value="1">checked="checked"</eq> />图片水印</label>
+&nbsp;&nbsp;&nbsp;&nbsp;<label><input onclick="ChangeType(2)" type="radio" name="WATER_TYPE" value="2" <eq name="WaterType" value="2">checked="checked"</eq> />文字水印</label></td>
+                        </tr>
+                        
+                        <tr class="pictype">
+                            <th>水印图片</th>
+                            <td>
+                            <input type="text" class="textinput w360" id="waterfileImage" name="WATER_PIC" value="{$WaterPic}" />
+                            <span class='UploadWrapper'>
+                                <input class='btnFileUpload' type='button' value='上传' />
+                                <input id='waterfile' name ='waterfile' type ='file'  size='60'  class='InputFile'  accept="image/*"/>
+                            </span>
+                            <input type="button" onclick="SelectPic()" value="{$Think.lang.SelectPicture}"  class="btnPadding" />
+                            <span class='Caution'>鼠标移动到文本框可以预览水印图片</span>
+                            </td>
+                        </tr>
+                        
+                        <tr  class="texttype">
+                          <th>水印文字</th>
+                          <td><textarea  id="WaterText" style="color:{$WaterTextColor}; height:40px; width:300px;"  class="textinput" name="WATER_TEXT" value="{$WaterText}"  >{$WaterText}</textarea>
+                          <span class='Caution'>若水印文字为中文，必须使用中文字体，否则显示乱码</span>
+                          </td>
+                        </tr>
+                        <tr  class="texttype">
+                          <th>水印字体文件</th>
+                          <td>
+                          <select name="WATER_FONT" id="WaterFont" class="textinput">
+                                <volist id="mf" name="MyFont">
+                                    <option value="{$mf.FontName}" <eq name="mf.FontName" value="$WaterFont">selected="selected"</eq>>{$mf.FontName} {$mf.FontAlias}</option>
+                                </volist>
+                          </select>
+                          <span class='Caution'>请将水印字体文件放在<b>Public/font/</b>目录下</span></td>
+                        </tr>
+                        <tr  class="texttype">
+                          <th>水印文字大小</th>
+                          <td><input type="number" class="textinput" style="width:120px;" name="WATER_TEXT_SIZE" value="{$WaterTextSize}"  />
+                          <span class='Caution'>水印文字大小，默认为12</span></td>
+                        </tr>
+                        <tr  class="texttype">
+                          <th>水印文字颜色</th>
+                          <td><input type="text" id="WaterTextColor" class="textinput" style="color:{$WaterTextColor};width:120px;" name="WATER_TEXT_COLOR" value="{$WaterTextColor}"  />
+                          <span class='Caution'>16进制表示，如黑色：#000000</span></td>
+                        </tr>
+                        <tr  class="texttype">
+                          <th>水印文字角度</th>
+                          <td><input type="number" class="textinput" style="width:120px;"  name="WATER_TEXT_ANGLE" value="{$WaterTextAngle}"  />
+                          <span class='Caution'>取值范围：0-360。0:表示水平，默认为0</span>
+                          </td>
+                        </tr>
+                        <tr  class="texttype">
+                          <th>水印文字水平X偏移量</th>
+                          <td><input type="number" class="textinput" style="width:120px;"  name="WATER_OFFSET_X" value="{$WaterOffsetX}"  />
+                          <span class='Caution'>水印文字相对当前位置水平方向的偏移量，负数表示向左偏移，默认为0</span>
+                          </td>
+                        </tr>
+                        <tr  class="texttype">
+                          <th>水印文字垂直Y偏移量</th>
+                          <td><input type="number" class="textinput" style="width:120px;"  name="WATER_OFFSET_Y" value="{$WaterOffsetY}"  />
+                          <span class='Caution'>水印文字相对当前位置垂直方向的偏移量，负数表示向上偏移，默认为0</span>
+                          </td>
+                        </tr>
+                       <tr>
+                            <th class="w120">水印位置</th>
+                            <td>
+                            <label><input type="radio" name="WATER_POSITION" value="1" <eq name="WaterPosition" value="1">checked="checked"</eq> />左上角</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="WATER_POSITION" value="2" <eq name="WaterPosition" value="2">checked="checked"</eq> />上居中</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="WATER_POSITION" value="3" <eq name="WaterPosition" value="3">checked="checked"</eq> />右上角</label><br />
+                            <label><input type="radio" name="WATER_POSITION" value="4" <eq name="WaterPosition" value="4">checked="checked"</eq> />左居中</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="WATER_POSITION" value="5" <eq name="WaterPosition" value="5">checked="checked"</eq> />正中间</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="WATER_POSITION" value="6" <eq name="WaterPosition" value="6">checked="checked"</eq> />右居中</label><br />
+                            <label><input type="radio" name="WATER_POSITION" value="7" <eq name="WaterPosition" value="7">checked="checked"</eq> />左下角</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="WATER_POSITION" value="8" <eq name="WaterPosition" value="8">checked="checked"</eq> />下居中</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="WATER_POSITION" value="9" <eq name="WaterPosition" value="9">checked="checked"</eq> />右下角</label>
+                            
+                            </td>
+                        </tr>
+						</tbody>
+                   </table>
+                </div>              
+                
+                <div class="box-footer">
+                    <div class="box-footer-inner">
+                        <input  id="btnSubmit" class="marginright"  type="submit" value="保存设置" />
+                        <input  id="btnSubmit" class="WaterPreview"  type="button" value="水印预览" />
+                        <span style="color:red;margin-left:1em;">水印预览前，请先保存设置！</span>
+                    </div>
+                </div>
+            </form>
+    	</div>
+</div>
+</body>
+</html>
+
+<script type='text/javascript'>
+function SelectPic(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SetFileField;
+	FileManager.popup(); 
+}
+
+function SetFileField(fileUrl){
+	document.getElementById('waterfileImage').value = fileUrl;
+}
+
+function ChangeType(type){
+		if(type == 1){
+			$(".pictype").show();	
+			$(".texttype").hide();	
+		}else{
+			$(".pictype").hide();	
+			$(".texttype").show();	
+		}
+}
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 //上传提交表单,注意：这里的上传地址不能实用$UploadAction因为和上传设置config/upload冲突
+	 $('#waterfile').change(function(){  
+		if( !$(this).val() ) return;
+		$('#frmConfig').attr('action','__GROUP__/public/upload/addwater/no/currentfile/waterfile');
+		$('#frmConfig').submit();
+	 });
+	 
+	 //保存提交
+	 $('#btnSubmit').click(function(){
+		$('#frmConfig').attr('action','{$Action}');
+	 });
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+     
+     /*
+    $(".WaterPreview").powerFloat({
+        targetMode: "ajax",
+        target: gPreviewUrl,
+        position: "5-7"
+    });
+    */
+    
+    $(".WaterPreview").click(function(){
+        var url = "{$Url}waterPreview?t="+Math.random()+"&wpimg=1.jpg";
+        var html = "<img style='width:350px;height:459px;' src="+url+" />";
+        $("#previewHtml").html(html);
+        dialog({
+			title: "水印预览",
+			id: 'dlgPreview',
+			padding: 0,
+			content: html,
+		}).show();
+    });
+	 
+	 function pageInit(){
+		ChangeType("{$WaterType}");
+		enableWater("{$WaterEnable}");
+	 }
+	 pageInit();
+});
+
+//提示信息
+$(document).ready(function(){
+	$("#waterfileImage").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	});
+	
+	$("#WaterTextColor").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#WaterText").css("color",color);
+		}
+	});
+});
+
+function SetFont(font){
+	$("#WaterFont").val(font);
+}
+
+//是否启用水印
+function enableWater(enable){
+	if(1==enable){
+		$("tbody").show();
+	}else{
+		$("tbody").hide();
+	}
+}
+</script>

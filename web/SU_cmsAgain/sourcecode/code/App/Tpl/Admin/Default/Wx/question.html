@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+      <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="btnBack" href="{$Url}research" title="返回">返回</a></li>  
+            <li class="toolbar"><a id="btnSaveAll" onclick="exportQuestion('{$Url}exportQuestion/AppID/{$AppID}')"  title="导出调查结果" target="_self">导出调查结果</a></li>
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}AddQuestion/AppID/{$AppID}"  title="添加调查题目" target="_self">添加调查题目</a></li>
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}suggest/AppID/{$AppID}"  title="查看用户建议" target="_self">查看用户建议</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar"><a id="sortall" onclick="BatchSort()" title="批量排序">排序</a></li>
+            <li class="toolbar"><a id="refresh" href="{$Url}question/AppID/{$AppID}" title="刷新">刷新</a></li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="40px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="45px" >题目ID</th>
+                <th width="55px" >排序</th>
+                <th width="260px" >题目名称</th> 
+                <th>题目选项</th>
+                <th width="50px" >属性</th>
+                <th  width="150px"  style="text-align:left;padding-left:20px">操作</th>
+            </tr>  
+            <notempty name="Question">
+                <volist name="Question" id="q">
+                    <tr>
+                        <td><input class="checkrow" type="checkbox" name="QuestionID[]" value="{$q.QuestionID}" /></td>
+                        <td>{$q.QuestionID}</td>
+                        <td>
+                        <input type="number" class='textinput' onclick="this.select()" style="width:55px" name="QuestionOrder[]" value="{$q.QuestionOrder}" />
+                        <input type="hidden" class='textinput' name="QuestionOrderID[]" value="{$q.QuestionID}" />
+                        </td>
+                        <td style="text-align:left;"><b style="color:blue">{$q.QuestionName|htmlspecialchars}</b></td>
+                        <td style="text-align:left;">
+                            <volist name="q.Item" id="it" key="j">
+                            <b>[{$j}]</b>&nbsp;{$it.ItemName|htmlspecialchars}
+                            （<b style="color:blue">{$it.VoteCount}</b>票&nbsp;&nbsp;&nbsp;占<b style="color:red">{$it.VotePercent}%</b>）
+                             <br/>
+                            </volist>
+                        </td>
+                       <td>
+                        <eq name="q.IsEnable" value="1">
+                        <span style="color:#000">启用</span><else/><span style="color:#F00">禁用</span>
+                        </eq>
+                        </td>
+                        <td class="operator">
+                            <a style="float:left" onclick="Edit({$q.QuestionID})" id="btnEdit">修改</a>
+                            <div class="btn-sep"></div>
+                            <a style="float:left" onclick="Del({$q.QuestionID})" class="btnDel">删除</a>
+                        </td>
+                    </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="7" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                  
+        </table>
+         <div class="tfoot">
+              <div id="notice">
+              	  <b>调查主题：</b>
+                  <span class="notice-item">{$AppName}</span>
+                  <b>参与调查人数：</b>
+                  <span class="notice-item">{$PeopleNumber}</span>
+                  <span class="notice-item"><a  href="{$Url}suggest/AppID/{$AppID}"  target="_self">[ 查看调查明细 ]</a></span>
+              </div>
+         </div>
+    </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function exportQuestion(url){
+	if(checkSafeQuestion()) return;
+	location.href = url;
+}
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}delQuestion/AppID/{$AppID}/QuestionID/"+id;
+		location.href = url;
+	});
+}
+
+function Edit(id){
+	var url = "{$Url}ModifyQuestion/AppID/{$AppID}/QuestionID/"+id;
+	location.href = url;
+}
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='QuestionID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/batchDelQuestion/AppID/{$AppID}");
+		$('#frm').submit();
+	});
+}
+
+//排序
+function BatchSort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "__URL__/batchSortQuestion/AppID/{$AppID}");
+		$('#frm').submit();
+	});
+}	
+</script>

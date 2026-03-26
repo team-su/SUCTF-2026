@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.MenuDepth1{padding-left:2px;}
+		.MenuDepth1 input{color:#00F; font-weight:bold}
+		.MenuDepth2{padding-left:25px}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" id="frm"  method="post">
+      <div class="table">
+        <div class="toolbars">
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}AddMenu" title="添加菜单" target="_self">添加二级菜单</a></li>
+            <li class="toolbar"><a id="btnSave" onclick="saveAll()"  title="保存所有修改">保存所有修改</a></li>
+            <li class="toolbar"><a id="btnSave" onclick="updateMenu()" class="ydicon-zhuanzhang" title="将本地菜单同步到微信">同步菜单到微信</a></li>
+            <li class="toolbar"><a id="btnCache" onclick="clearMenu()"  title="清除微信服务器菜单">清除微信菜单</a></li>
+            <eq name="EnableOpenSSL" value="0">
+                <li class="toolbar" style="color:#FF0000; font-weight:bold; padding-left:10px;">
+                    服务器不支持OpenSSL组件，请开启，否则无法使用微信菜单！
+                </li>
+            </eq>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="50" >菜单ID</th>
+                <th width="190" >菜单名称</th> 
+                 <th width="60">菜单排序</th>  
+                <th width="100" >回复消息类型</th>
+                <th>菜单内容</th>
+                <th width="65" >是否启用</th>
+                <th width="150">操作</th>
+            </tr>  
+            <notempty name="Menu">
+                <volist name="Menu" id="c">
+                    <tr id="row{$c.MenuID}">
+                        <td>{$c.MenuID}<input type="hidden" name="MenuID[]" value="{$c.MenuID}" /></td>
+                        <td  style="text-align:left" nowrap="nowrap">
+                            <div class="MenuDepth<eq name="c.Parent" value="0">1<else/>2</eq>" >
+                            <input type="text" class='textinput TipKey' style="width:160px" name="MenuName[]" maxlength="16" value="{$c.MenuName}" />
+                            </div>
+                        </td>
+                        <td><input type="number" class='textinput' onclick="this.select()" style="width:60px" name="MenuOrder[]" value="{$c.MenuOrder}" /></td>
+                        <td><b style="color:{$c.TypeID|WxMenuTypeColor}">{$c.TypeName}</b></td>
+                        <td style="text-align:left; padding-left:5px;">
+                            <switch name="c.TypeID">
+                                <case value="1">{$c.p1|Left=25}</case>
+                                <case value="2">显示<b style="color:green; padding:0 3px">{$c.p1|ChannelName}</b>频道前<b style="color:#00F; padding:0 3px">{$c.p2}</b>条信息</case>
+                                <case value="3">{$c.p1}</case>
+                                <case value="4">打开<b style="color:green; padding:0 3px">{$c.p1|ChannelName}</b>频道主页</case>
+                                <case value="5">
+                                    <empty name="c.p4">
+                                        <eq name="c.p1|is_numeric" value="1"><b style="color:{$c.TypeID|WxMenuTypeColor}">{$c.p1|WxAppName}</b><else/>{$c.p1}</eq>
+                                     <else/>
+                                        <b>{$c.p4}</b>
+                                    </empty>
+                                </case>
+                                <case value="6"><a href="{$c.p1}" target="_blank">{$c.p1}</a></case>
+                                <case value="7">
+                                	<eq name="c.p4" value="image">
+                                    	<img src="{$c.p3}" style="height:80px; width:auto;" />
+                                    </eq>
+                                    <eq name="c.p4" value="video">
+                                    	<video src="{$c.p3}" height="200" width="auto" controls="controls" >不支持视频</video>
+                                    </eq>
+                                    <eq name="c.p4" value="voice">
+                                    	<audio  src="{$c.p3}" controls="controls">不支持音频</audio>
+                                    </eq>
+                                </case>
+                                <case value="8">小程序Appid：{$c.p1} &nbsp;&nbsp;小程序页面路径：{$c.p2}</case>
+                            </switch>
+                        </td>
+                        <td>
+                            <eq name="c.IsEnable" value="1">
+                                <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$c.MenuID},'wx_menu')">启用</span>
+                            <else/>
+                                <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$c.MenuID},'wx_menu')">禁用</span>
+                            </eq>
+                        </td>
+                        <td class="operator">
+                            <a style="float:left;" href="{$Url}ModifyMenu/MenuID/{$c.MenuID}" id="btnEdit">修改</a>
+                            <neq name="c.Parent" value="0">
+                                <div class="btn-sep"></div>
+                                <a style="float:left" onclick="Del({$c.MenuID})" class="btnDel">删除</a>
+                            </neq>
+                        </td>
+                    </tr>
+                </volist> 
+            <else/>
+            	<tr><td colspan="7" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                               
+        </table>
+        <div class="tfoot">
+              <div id="notice">
+                   <b>说明：</b>
+                   <span class="notice-item"><i>[1]</i>你可以创建最多 3 个一级菜单，每个一级菜单下可以创建最多 5 个二级菜单</span>
+                   <span class="notice-item"><i>[2]</i>必须点击“同步菜单到微信”按钮才能更新微信自定菜单</span>
+              </div>
+        </div>
+    </div>
+  </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//保存所有修改
+function saveAll(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("确定保存所有修改吗?", function () {
+		$('#frm').attr("action", "{$Url}saveAllMenu");
+		$('#frm').submit();
+	});
+}
+
+//删除
+function Del(id){
+	var key = $("#row"+id+" .TipKey").val();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}delMenu/MenuID/"+id;
+		location.href = url;
+	});
+}
+
+//同步更新微信服务器菜单
+function updateMenu(){
+	ConfirmBox("确定同步菜单到微信吗?", function () {
+		LoadBox("正在同步菜单到微信，请稍后...");
+		url = "{$Url}updateMenu";
+		$.get(url, {}, UpdateMenuComplete, "json");
+		return true;
+	});
+}
+
+//回调函数
+function UpdateMenuComplete(data, textStatus){
+	CloseLoadBox();
+	if (data.status == 1){
+		SucceedBox(data.info);
+	}else{ 
+		ErrorBox(data.info);
+	}
+}
+
+function clearMenu(){
+	ConfirmBox("确定清除微信全部菜单吗?", function () {
+		LoadBox("正在清除微信全部菜单，请稍后...");
+		url = "{$Url}clearMenu";
+		$.get(url, {}, ClearMenuComplete, "json");
+		return true;
+	});
+}
+
+function ClearMenuComplete(data, textStatus){
+	CloseLoadBox();
+	if (data.status == 1){
+		SucceedBox(data.info);
+	}else{ 
+		ErrorBox(data.info);
+	}
+}
+</script>

@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page" style="padding-top:3px;">
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}" enctype="multipart/form-data" >
+            <div class="box-header" id="c1">
+                <h4>基本设置</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>是否启用阿里OSS</th>
+                        <td>
+                            <label><input type="radio" name="AliEnable" onclick="ChangeEnable(1)" value="1"/>是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="AliEnable" onclick="ChangeEnable(0)" value="0"/>否</label>
+                            <span class='Caution'>还没有阿里账号，请点击<a href="https://www.aliyun.com/product/oss" style="color:blue;" target="_blank">免费注册</a>
+                            </span>
+                        </td>
+                    </tr>
+                    <tbody class="ConfigWrapper">
+                        <tr>
+                            <th>AccessKey</th>
+                            <td><input type="text" class="textinput" style="width:380px;" name="AliAccessKeyID" id="AliAccessKeyID" value="{$AliAccessKeyID}"/></td>
+                        </tr>
+                        <tr>
+                            <th>SecretKey</th>
+                            <td><input type="text" class="textinput" style="width:380px;" name="AliAccessKeySecret" id="AliAccessKeySecret" value="{$AliAccessKeySecret}"/></td>
+                        </tr>
+                        <tr>
+                            <th>存储空间名</th>
+                            <td><input type="text" class="textinput" style="width:380px;" name="AliBucketName" id="AliBucketName" value="{$AliBucketName}"/>
+                            <span class='Caution'>设置阿里提供的空间名</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>访问域名</th>
+                            <td><input type="text" class="textinput" style="width:380px;" name="AliEndpoint" id="AliEndpoint" value="{$AliEndpoint}"/>
+                            <span class='Caution'>设置阿里绑定的域名，域名前面要加上http://或https://。如：http://www.xx.com</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+          <div class="box-footer">
+               <div class="box-footer-inner"><input id="btnSubmit" type="submit" value="保存设置" /></div>
+          </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function getAliEndpoint(){
+	var ak = $("#AliAccessKeyID").val();
+	if(ak.length==0){
+		ErrorBox("AccessKey不能为空！");
+		return;
+	}
+	var sk = $("#AliAccessKeySecret").val();
+	if(sk.length==0){
+		ErrorBox("SecretKey不能为空！");
+		return;
+	}
+	var bucket = $("#AliBucketName").val();
+	if(bucket.length==0){
+		ErrorBox("存储空间名不能为空！");
+		return;
+	}
+
+	msg = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>";
+	msg += "自动获取储存空间域名，请稍后...";
+	$("#tip").html(msg);
+	var timenow = new Date().getTime();
+	var url = "{$Url}getBucketDomain";
+	var p = {
+		ak:$("#AliAccessKeyID").val(),
+		sk:$("#AliAccessKeySecret").val(),
+		bucket:$("#AliBucketName").val(),
+		t:timenow
+	};
+	$.post(url, p, function(data){
+		if(data.status == 1){
+			$("#AliEndpoint").val(data.data);
+			$("#tip").html( "<span style='color:blue'>"+data.info+"</span>" );
+		}else{
+			$("#tip").html("<span style='color:red'>"+data.info+"</span>" );
+		}
+	}, "json");
+}
+
+function ChangeEnable(enable){
+    if(enable == 1){
+        $(".ConfigWrapper").show();
+    }else{
+        $(".ConfigWrapper").hide();
+    }
+}
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+
+	 //保存提交
+	 $('#btnSubmit').click(function(){
+		$('#frmConfig').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	 function pageInit(){
+         ChangeEnable("{$AliEnable}");
+		$("input[name='AliEnable'][value={$AliEnable}]").attr("checked",'checked');
+		$("input[name='QiniuInterlaceEnable'][value={$QiniuInterlaceEnable}]").attr("checked",'checked');
+	}
+	pageInit();
+});
+</script>

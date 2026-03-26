@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}"  enctype="multipart/form-data">    
+            <div class="box-header"><h4>邮箱设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th class="w120">发件人名称</th>
+                        <td><input type="text" class="textinput w360" id="EmailSender" name="EMAIL_SENDER" value="{$EmailSender}" />
+                            <span class="Caution">在收件方显示的名称</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>发件人邮箱帐号</th>
+                        <td><input type="text" class="textinput w360" id="EmailAccount" name="EMAIL_ACCOUNT" value="{$EmailAccount}"  />
+                        <span class="Caution">用于发送邮件的邮箱帐号</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">邮件SMTP服务器</th>
+                        <td><input type="text" class="textinput w360" id="EmailSmtp" name="EMAIL_SMTP" value="{$EmailSmtp}" />
+                            <span class="Caution">如：qq邮箱为：smtp.qq.com、163邮箱为：smtp.163.com</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">邮箱密码/授权码</th>
+                        <td><input type="text" class="textinput w360" id="EmailPassword" name="EMAIL_PASSWORD" value="{$EmailPassword}" />
+                            <span class="Caution">用于发送邮件的邮箱密码，qq邮箱请填写授权码！</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">邮件传输安全协议</th>
+                        <td>
+                            <label><input type="radio" name="EMAIL_WAY" onclick="SetWay('tls')" value="tls" <eq name="EmailWay" value="tls">checked="checked"</eq> />TLS传输层安全协议</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="EMAIL_WAY" onclick="SetWay('ssl')" value="ssl" <eq name="EmailWay" value="ssl">checked="checked"</eq> />SSL安全套接字层</label>
+                            <span class="Caution">请咨询服务商获得，默认服务方式为TLS。如果使用qq邮箱授权码，请选择SSL安全套接字层</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">邮件发送端口</th>
+                        <td><input type="number" class="textinput" style="width:120px" id="EmailPort" name="EMAIL_PORT" value="{$EmailPort}" />
+                            <span class="Caution">请咨询服务商获得，TLS默认为25，SSL默认为465</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">邮件发送测试</th>
+                        <td><a class="btnSuccess btnSmall" style="float:left" onclick="TestMail()" id="btnPick" target="_blank">邮件发送测试</a>
+                            &nbsp;<span id="tip"></span>
+                        </td>
+                    </tr>
+                </table>
+                <table class="warningtable">
+                    <th>说明</th>
+                    <td> 
+                        设置完成后，请点击“邮件发送测试”按钮测试邮箱设置是否正确，如果测试失败，请检查：<br/>
+                        【1】邮箱帐号和密码是否正确<br/>
+                        【2】邮件SMTP服务器是否正确<br/>
+                        【3】邮箱是否开启SMTP服务，qq邮箱默认没有开启SMTP，请开启，并设置qq邮箱授权码！
+                    </td>
+                </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 //保存提交
+	 $('#btnSubmit').click(function(){
+		$('#frmConfig').attr('action','{$Action}');
+	 });
+	 
+	 
+	 $('#frmConfig').submit(function(){
+		 LoadBox();
+		 return false;
+	 });
+});
+
+function TestMail(){
+	//GET方式在IE6.0下提交中文参数会出现乱码
+	msg = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>";
+	msg += "邮件发送测试中，请稍后...";
+	$("#tip").html(msg);
+	$.post("{$Url}testEmail",{
+		EmailSender: $('#EmailSender').val(),
+		EmailAccount: $('#EmailAccount').val(),
+		EmailSmtp: $('#EmailSmtp').val(),
+		EmailPort: $('#EmailPort').val(),
+		EmailWay: $("input[name='EMAIL_WAY']:checked").val(),
+		EmailPassword:$('#EmailPassword').val() 
+	},
+		MailComplete, 
+		"json"
+	);
+	return true;
+}
+
+//回调函数
+function MailComplete(data, textStatus){
+	if (data.status == 1){
+		$("#tip").html("发送测试邮件成功，邮箱配置正确！");
+	}else{
+		$("#tip").html( "<b style='color:red'>"+data.info+"</b>" );
+	}
+}
+
+//设置默认端口好
+function SetWay(type){
+	var port = (type=='ssl') ? '465' : '25';
+	$("#EmailPort").val( port );
+}
+</script>

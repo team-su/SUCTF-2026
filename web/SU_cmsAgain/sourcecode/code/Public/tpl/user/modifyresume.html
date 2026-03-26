@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+    <style>
+    	.Wdate{ border:0;}
+		.Detail{ font-size: 14px;}
+    </style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+	<form enctype="multipart/form-data" action="{$Action}" method="post" id="frm">
+        <input type="hidden" name="ResumeID" value="{$Resume.ResumeID}" />
+        <div class="weui-cells__title">应聘岗位：{$Resume.JobName}</div>
+        <div class="weui-cells weui-cells_form">
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">姓名</label></div>
+                   <div class="weui-cell__bd"><input type='text' class='weui-input' name = 'GuestName'  value='{$Resume.GuestName}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">性别</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Gender'  value='{$Resume.Gender}'  /></div>
+               </div>
+               
+                <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">出生年月</label></div>
+                    <div class="weui-cell__bd">
+                        <input type='text'  class='Wdate weui-input'  name = 'Birthday'  value='{$Resume.Birthday}' onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" readonly='readonly' />
+                     </div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">民族</label></div>
+                   <div class="weui-cell__bd"><input type='text' class='weui-input' name = 'Ethnic'  value='{$Resume.Ethnic}'  /></div>
+               </div>
+               
+                <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">籍贯</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Birthplace'  value='{$Resume.Birthplace}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">政治面貌</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Political'  value='{$Resume.Political}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">毕业院校</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'School'  value='{$Resume.School}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">所学专业</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Specialty'  value='{$Resume.Specialty}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">电子邮件</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Email'  value='{$Resume.Email}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">最高学历</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Education'  value='{$Resume.Education}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">联系电话</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Telephone'  value='{$Resume.Telephone}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">待遇要求</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Salary'  value='{$Resume.Salary}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">住址</label></div>
+                   <div class="weui-cell__bd"><input type='text'  class='weui-input' name = 'Address'  value='{$Resume.Address}'  /></div>
+               </div>
+               
+               <div class="weui-cell">
+                   <div class="weui-cell__hd"><label class="weui-label">详细介绍</label></div>
+               </div>
+               <div class="weui-cell">
+                   <div class="weui-cell__bd"><textarea class="weui-textarea Detail" rows="5"   name='Detail'>{$Resume.Detail}</textarea></div>
+               </div>
+         </div>
+         
+         <div class="weui-btn-area">
+                <input type="submit" id="btnSubmit"  class="weui-btn weui-btn_primary"   value="保存"/>
+          </div>
+	</form>
+</body>
+</html>
+<script>
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+	});
+
+	function GoBack(){
+		window.location.href = "{$Url}resume";
+	}
+</script>

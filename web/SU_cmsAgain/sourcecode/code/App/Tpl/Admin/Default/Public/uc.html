@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<meta content="zh-cn" http-equiv="content-language" />
+<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+</head>
+<body>
+<div style="text-align:center; margin-top:50px;">
+	<img src="{$Images}artdialog/succeed.png" />
+	<div style="margin-top:10px;font-size:16px; text-indent:1em;">登录用户中心成功！</div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	var TokenParams = "{$Think.get.token}";
+	if(TokenParams) {
+		window.localStorage.setItem("Token", TokenParams);
+	}
+</script>

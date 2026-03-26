@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		div.table  .datatable .stat td{ color:blue;}
+		div.table  .datatable td.m{$CurrentYear}{$CurrentMonth}{ color: #F30; background:#F2F4F6;}
+		div.table  .datatable th.m{$CurrentYear}{$CurrentMonth}{ color: #F30; }
+		
+		.group1{ color:#666666;}
+		.group2{ color:#F0F;}
+		.group101{ color:black;}
+		.group102{ color:red;}
+		.group110{ color:green;}
+		.group111{ color:blue;}
+		.group112{ color:#F30;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    	<input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar toolbarform" id="toolbarleft">
+                    <label class="first">统计项目</label>
+                    <select name="StatType" id="StatType">
+                        <option value="1">按业务员统计业绩</option>
+                        <option value="2">按项目类型统计业绩</option>
+                        <option value="3">模板使用量统计</option>
+                        <option value="4">按业务员统计工资</option>
+                        <option value="5">按付款方式统计业绩</option>
+                        <option value="6">按会员分组统计客户数</option>
+                        <option value="7">按省份统计代理数</option>
+                        <option value="8">按省份统计客户数</option>
+                    </select>
+                    <label>年份</label>
+                    <select name="year" id="year">
+                        <volist name="YearSpan" id="y">
+                            <option value="{$y.Year}" <eq name="y.Year" value="$Year">selected="selected"</eq>>{$y.Year}年</option>
+                        </volist>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="统计" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <switch name="StatType">
+                    <case value="1|2|4|5">
+                        <tr>
+                             <th width="50px" >序号</th>
+                             <th width="90px" >{$HeaderTitle1}</th>
+                             <th><span style="color:blue;">{$Year}</span>年{$HeaderTitle2}</th> 
+                             <th width="60px"  class="m{$Year}1">1月</th>
+                             <th width="60px"  class="m{$Year}2">2月</th>
+                             <th width="60px"  class="m{$Year}3">3月</th>
+                             <th width="60px"  class="m{$Year}4">4月</th>
+                             <th width="60px"  class="m{$Year}5">5月</th>
+                             <th width="60px"  class="m{$Year}6">6月</th>
+                             
+                             <th width="60px"  class="m{$Year}7">7月</th>
+                             <th width="60px"  class="m{$Year}8">8月</th>
+                             <th width="60px"  class="m{$Year}9">9月</th>
+                             <th width="60px"  class="m{$Year}10">10月</th>
+                             <th width="60px"  class="m{$Year}11">11月</th>
+                             <th width="60px"  class="m{$Year}12">12月</th>
+                        </tr>  
+                        <notempty name="Data">
+                        <volist name="Data" id="d">
+                            <tr>
+                                <td>{$i}</td>
+                                <td>{$d.MemberID}&nbsp;&nbsp;{$d.MemberRealName}</td>
+                                <td>{$d.Total|number_format=2}</td>
+                                <td class="m{$Year}1">{$d.M1|number_format=2}</td>
+                                <td class="m{$Year}2">{$d.M2|number_format=2}</td>
+                                <td class="m{$Year}3">{$d.M3|number_format=2}</td>
+                                <td class="m{$Year}4">{$d.M4|number_format=2}</td>
+                                <td class="m{$Year}5">{$d.M5|number_format=2}</td>
+                                <td class="m{$Year}6">{$d.M6|number_format=2}</td>
+                                <td class="m{$Year}7">{$d.M7|number_format=2}</td>
+                                <td class="m{$Year}8">{$d.M8|number_format=2}</td>
+                                <td class="m{$Year}9">{$d.M9|number_format=2}</td>
+                                <td class="m{$Year}10">{$d.M10|number_format=2}</td>
+                                <td class="m{$Year}11">{$d.M11|number_format=2}</td>
+                                <td class="m{$Year}12">{$d.M12|number_format=2}</td>
+                            </tr>
+                        </volist>
+                            <tr class="stat">
+                                <td colspan="2" style="text-align:right;font-weight:bold;">总计：</td>
+                                <td style="color:blue;font-weight:bold;">{$Total.Total|number_format=2}</td>
+                                <td class="m{$Year}1">{$Total.M1|number_format=2}</td>
+                                <td class="m{$Year}2">{$Total.M2|number_format=2}</td>
+                                <td class="m{$Year}3">{$Total.M3|number_format=2}</td>
+                                <td class="m{$Year}4">{$Total.M4|number_format=2}</td>
+                                <td class="m{$Year}5">{$Total.M5|number_format=2}</td>
+                                <td class="m{$Year}6">{$Total.M6|number_format=2}</td>
+                                <td class="m{$Year}7">{$Total.M7|number_format=2}</td>
+                                <td class="m{$Year}8">{$Total.M8|number_format=2}</td>
+                                <td class="m{$Year}9">{$Total.M9|number_format=2}</td>
+                                <td class="m{$Year}10">{$Total.M10|number_format=2}</td>
+                                <td class="m{$Year}11">{$Total.M11|number_format=2}</td>
+                                <td class="m{$Year}12">{$Total.M12|number_format=2}</td>
+                            </tr>
+                        <else/>
+                            <tr><td colspan="15" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                        </notempty>     
+                    </case>
+                    <case value="6|7|8">
+                        <tr>
+                             <th width="50px" >序号</th>
+                             <th width="90px" >{$HeaderTitle1}</th>
+                             <th><span style="color:blue;">{$Year}</span>年{$HeaderTitle2}</th> 
+                             <th width="60px"  class="m{$Year}1">1月</th>
+                             <th width="60px"  class="m{$Year}2">2月</th>
+                             <th width="60px"  class="m{$Year}3">3月</th>
+                             <th width="60px"  class="m{$Year}4">4月</th>
+                             <th width="60px"  class="m{$Year}5">5月</th>
+                             <th width="60px"  class="m{$Year}6">6月</th>
+                             
+                             <th width="60px"  class="m{$Year}7">7月</th>
+                             <th width="60px"  class="m{$Year}8">8月</th>
+                             <th width="60px"  class="m{$Year}9">9月</th>
+                             <th width="60px"  class="m{$Year}10">10月</th>
+                             <th width="60px"  class="m{$Year}11">11月</th>
+                             <th width="60px"  class="m{$Year}12">12月</th>
+                        </tr>  
+                        <notempty name="Data">
+                        <volist name="Data" id="d">
+                            <tr>
+                                <td>{$i}</td>
+                                <td><b  class="group{$d.MemberGroupID}">{$d.MemberRealName}</b></td>
+                                <td>{$d.Total}</td>
+                                <td class="m{$Year}1">{$d.M1}</td>
+                                <td class="m{$Year}2">{$d.M2}</td>
+                                <td class="m{$Year}3">{$d.M3}</td>
+                                <td class="m{$Year}4">{$d.M4}</td>
+                                <td class="m{$Year}5">{$d.M5}</td>
+                                <td class="m{$Year}6">{$d.M6}</td>
+                                <td class="m{$Year}7">{$d.M7}</td>
+                                <td class="m{$Year}8">{$d.M8}</td>
+                                <td class="m{$Year}9">{$d.M9}</td>
+                                <td class="m{$Year}10">{$d.M10}</td>
+                                <td class="m{$Year}11">{$d.M11}</td>
+                                <td class="m{$Year}12">{$d.M12}</td>
+                            </tr>
+                        </volist>
+                            <tr class="stat">
+                                <td colspan="2" style="text-align:right;font-weight:bold;">总计：</td>
+                                <td style="color:blue;font-weight:bold;">{$Total.Total}</td>
+                                <td class="m{$Year}1">{$Total.M1}</td>
+                                <td class="m{$Year}2">{$Total.M2}</td>
+                                <td class="m{$Year}3">{$Total.M3}</td>
+                                <td class="m{$Year}4">{$Total.M4}</td>
+                                <td class="m{$Year}5">{$Total.M5}</td>
+                                <td class="m{$Year}6">{$Total.M6}</td>
+                                <td class="m{$Year}7">{$Total.M7}</td>
+                                <td class="m{$Year}8">{$Total.M8}</td>
+                                <td class="m{$Year}9">{$Total.M9}</td>
+                                <td class="m{$Year}10">{$Total.M10}</td>
+                                <td class="m{$Year}11">{$Total.M11}</td>
+                                <td class="m{$Year}12">{$Total.M12}</td>
+                            </tr>
+                        <else/>
+                            <tr><td colspan="15" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                        </notempty>     
+                    </case>
+                    <case value="3">
+                        <tr>
+                             <th width="50px" >序号</th>
+                             <th  width="90px" >模板编号</th>
+                             <th  width="150px" >全部年份&nbsp;[单位：模板数]</th>
+                             <th  width="80px" >2014年</th>
+                             <th  width="80px" >2015年</th>
+                             
+                             <th  width="80px" >2016年</th>
+                             <th  width="80px" >2017年</th>
+                             <th  width="80px" >2018年</th>
+                             <th  width="80px" >2019年</th>
+                             <th  width="80px" >2020年</th>
+                             <th></th>
+                        </tr>
+                        <notempty name="Data">
+                            <volist name="Data" id="d">
+                                <tr>
+                                    <td>{$i}</td>
+                                    <td>{$d.PcNumber}</td>
+                                    <td>{$d.Total}</td>
+                                    <td>{$d.Y2014}</td>
+                                    <td>{$d.Y2015}</td>
+                                    <td><notempty name="d.Y2016">{$d.Y2016}<else/>-</notempty></td>
+                                    <td><notempty name="d.Y2017">{$d.Y2017}<else/>-</notempty></td>
+                                    <td><notempty name="d.Y2018">{$d.Y2018}<else/>-</notempty></td>
+                                    <td><notempty name="d.Y2019">{$d.Y2019}<else/>-</notempty></td>
+                                    <td><notempty name="d.Y2020">{$d.Y2020}<else/>-</notempty></td>
+                                    <td></td>
+                                </tr>
+                            </volist>
+                            <tr  class="stat">
+                                <td colspan="2" style="text-align:right;font-weight:bold;color:blue;">总计：</td>
+                                <td style="color:blue;font-weight:bold;">{$Total.Total}</td>
+                                <td class="m{$Year}1">{$Total.Y2014}</td>
+                                <td class="m{$Year}2">{$Total.Y2015}</td>
+                                <td class="m{$Year}3">{$Total.Y2016}</td>
+                                <td class="m{$Year}3">{$Total.Y2017}</td>
+                                <td class="m{$Year}3">{$Total.Y2018}</td>
+                                <td class="m{$Year}3">{$Total.Y2019}</td>
+                                <td class="m{$Year}3">{$Total.Y2020}</td>
+                                <td></td>
+                            </tr>
+                        <else/>
+                            <tr><td colspan="11" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                        </notempty>
+                    </case>
+                </switch>                         
+            </table>
+             <div class="tfoot">
+                  <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}stat");
+	$('#frm').submit();
+	return true;
+}
+
+$(document).ready(function() {
+	 $("#StatType").val( "{$StatType}" ); 
+	 ChangeStatType("{$StatType}");
+	 $("#StatType").change(function() {
+		  var StatType = $("#StatType").val();
+		  ChangeStatType( StatType );
+	 });
+	
+	function ChangeStatType(type){
+			if( type == 3){
+				$("#year").attr("disabled", true);
+			}else{
+				$("#year").attr("disabled", false);
+				$('#year').removeAttr("disabled");
+			}
+	}
+});
+</script>

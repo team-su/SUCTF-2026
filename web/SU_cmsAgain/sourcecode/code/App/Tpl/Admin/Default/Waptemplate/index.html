@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+		<style>
+		#datatable .filetype{margin:0 3px; border:0; width:16px;height:16px;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+      <div class="table">
+       <div class="toolbars">
+			<li class="toolbar"><a id="btnSaveAll" onclick="addTemplateFile('{$CurrentDir}')"  title="创建模板文件" target="_self">创建模板文件</a></li>
+            <li class="toolbar"><a id="btnParent" href="{$Url}Index/dir?dir={$ParentDir}" title="返回上一级目录">上级目录</a></li>
+            <li class="toolbar">
+            	<div  style="font-weight:bold; margin-left:20px;line-height:34px;">
+                       模板名称：<span style="color:red; margin-right:15px;">{$TemplateName|htmlspecialchars}</span>
+                       模板目录：<span style="color:red">{$CurrentDir}</span>
+                 </div>
+             </li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="310px" >文件夹/文件名</th>
+                <th width="125px" >文件类型</th>
+                <th width="130px" >文件大小</th>
+                <th width="170px" >修改时间</th>
+                <th style="text-align:left;padding-left:20px">操作</th>
+            </tr>
+            <notempty name="FileList">
+                <volist name="FileList" id="f">
+                    <eq name="f.isDir" value="1">
+                        <tr>
+                            <td style="text-align:left"><img class="filetype" src="{$f.ico}" />
+                            <a href="{$Url}Index?dir={$f.RelativePath}">{$f.filename}</a></td>
+                            <td>文件夹</td>
+                            <td>{$f.size}</td>
+                            <td>{$f.mtime}</td>
+                            <td style="text-align:left;padding-left:5px;"></td>
+                        </tr>
+                    <else/>
+                        <tr id="row{$i}">
+                            <td style="text-align:left">
+							<img class="filetype" src="{$f.ico}">
+							<span class="filename">{$f.filename}</span>
+							</td>
+                            <td>{$f.filetype}</td>
+                            <td>{$f.size}</td>
+                            <td>{$f.mtime}</td>
+                            <td class="operator">
+                            <switch name="f.ext">
+                                <case value="js|css|html|htm|xml|txt">
+                                    <a style="float:left" href="{$Url}Modify?file={$f.RelativePath}" id="btnEdit" name="btnEdit">编辑</a>
+                                </case>
+                                <case value="php">
+                                    <a style="float:left" href="{$Url}Lang" id="btnEdit" name="btnEdit">编辑</a>
+                                </case>
+                                <default/>
+                                    <a style="float:left" href="{$f.fileurl}" target="_blank" id="btnEdit" name="btnEdit">浏览</a>
+                            </switch>
+							<notin name="f.filename" value="template.xml,config.xml,index.png">
+							<a style="float:left; margin-left:8px;" onclick="deleteTemplateFile('{$i}','{$f.RelativePath}')" class="btnDel">删除</a>
+							</notin>
+                            </td>
+                        </tr>
+                    </eq>
+                </volist>
+            <else/>
+            <tr><td colspan="5" style="color:red;font-weight:bold;text-align:left;padding-left:10px">没有文件或文件夹!</td></tr>
+            </notempty>                               
+        </table>
+         <div class="tfoot">
+              <div id="notice">
+              		<b>说明：</b><span class="notice-item">点击“编辑”按钮可修改当前模板内容</span>
+              </div>
+         </div>
+       </div>
+   </form>
+</div>
+</body>
+</html>
+<div class="dialog" id="dlgAdd" title="创建模板文件">
+    <table>
+        <tr>
+           <th width="80px" nowrap="nowrap" align="right">
+				<span style="font-weight:bold;color:blue;padding-right:8px;">模板名称</span>
+			</th>
+           <th align="left">
+				<input type="text" class="textinput" style="width:160px;" value="" id="dlgTemplateName" />.html
+		   </th>
+        </tr>
+    </table>
+</div>
+<script>
+function deleteTemplateFile(n, fileName){
+	var key = $("#row"+n+" .filename").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		LoadBox();
+		var url = "{$Url}deleteTemplateFile";
+		var params={file:fileName};
+		$.post(url, params, function(data){
+			CloseLoadBox();
+			if(data.status==1){
+				$("#row"+n).remove();
+				SucceedBox(data.info);
+			}else{
+				ErrorBox(data.info);
+			}
+		},"json");
+	});
+}
+
+function addTemplateFile(CurrentDir){
+	dialog({
+		title: $("#dlgAdd").attr("title"),
+		id: "dlgAdd",
+		padding: 15,
+		content: document.getElementById("dlgAdd"),
+		ok: function () {
+			LoadBox();
+			var name = $("#dlgTemplateName").val();
+			var params = { 
+				"TemplateName":name,
+				"CurrentDir":CurrentDir
+			};
+			var url = "{$Url}addTemplateFile";
+			$.post(url, params, function(data){
+				CloseLoadBox();
+				if(data.status==1){
+					SucceedBox(data.info);
+					location.reload();
+				}else{
+					ErrorBox(data.info);
+				}
+			}, "json");
+			return false;
+		},
+		okValue: '创建',
+		cancelValue: '取消',
+		cancel: function () {
+			
+		}
+	}).show();
+}
+</script>

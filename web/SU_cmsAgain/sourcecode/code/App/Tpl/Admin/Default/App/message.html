@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+    	.AppMessageType1{ }
+		.AppMessageType2{ color:blue; }
+		#datatable .AppMessageContent{ text-align:left; padding-left:3px; }
+		#datatable .AppMessageTitle{ text-align:left;padding-left:3px;  }
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p" id="p" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}addMessage"  title="我要推送消息" target="_self">我要推送消息</a></li>
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="batchDel()" title="批量删除">删除</a></li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="45px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                     <th width="60px" >消息ID</th>
+                     <th width="320px" >标题</th>
+                     <th>内容</th>
+                     
+                     <th width="110px" >消息类型</th>
+                     <th width="125px" >推送时间</th>
+                </tr>  
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td><input class="checkrow" type="checkbox" name="id[]" value="{$d.AppMessageID}" /></td>
+                        <td>{$d.AppMessageID}</td>
+                        <td class="AppMessageTitle">
+                            <eq name="d.AppMessageType" value="1">
+                                {$d.AppMessageTitle|htmlspecialchars}
+                            <else/>
+                                <a href="{$d.AppMessageParameter|InfoUrl}" target="_blank">{$d.AppMessageTitle|htmlspecialchars}</a>
+                            </eq>
+                        </td>
+                        <td class="AppMessageContent">{$d.AppMessageContent|htmlspecialchars}</td>
+                        <td>
+                            <span class="AppMessageType{$d.AppMessageType}">
+                                <eq name="d.AppMessageType" value="1">通知消息<else/>文章链接消息</eq>
+                            </span>
+                        </td>
+                        <td>{$d.AppMessageTime|strtotime|yd_friend_date}</td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="6" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                  <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	function batchDel(){
+		if(checkSafeQuestion()) return;
+		var arrChk = $("input[name='id[]']");
+		var n = 0;
+		for(var i = 0; i < arrChk.length; i++){
+			if(arrChk[i].checked) n++;
+		}
+		
+		if( n == 0 ) {
+			WarnBox("{$Think.lang.CheckDeleteTip}");
+			return;
+		}
+		
+		ConfirmBox("{$Think.lang.DeleteTip}", function () {
+			$('#frm').attr("action", "__URL__/delMessage");
+			$('#frm').submit();
+		});
+	}
+</script>

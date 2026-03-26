@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$ChannelName}|{$Title}-{$WebName}</title>
+    <include file="Public:meta" />
+</head>
+<body class="body_job">
+    <include file="Public:header" />
+    
+    <!--区块5144 开始-->
+<div id="n5144" class="component floor_channel9_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5144" yd-content="job">
+    <style type="text/css">
+        #n5144{
+            {$TChannel9Bg5144|ParseBg}
+            padding-top:{$TChannel9PaddingTop5144}px;
+            padding-bottom:{$TChannel9PaddingBottom5144}px;
+        }
+        #n5144 li{
+            animation-duration: {$TChannel9AnimationTime5144}s;
+            animation-fill-mode: both;
+        }
+
+        #n5144 .sidebar_comtainer{
+            {$TChannel9SideBarBg5144|ParseBg}
+            width: {$TChannel9SideBarWidth5144}px;
+            yd-previewable-class: float_ float_{$TChannel9HasSideBar5144};
+        }
+        #n5144 .sidelist{
+            yd-previewable-class: -sidelist {$TChannel9SideBarStyle5144}-sidelist;
+            border-color: {$TChannel9SideBarBorderColor5144};
+        }
+        #n5144 .sidelist a{
+            border-color: {$TChannel9SideBarBorderColor5144};
+        }
+        #n5144 .sidebar_title h2{
+            {$TChannel9SideBarTitle5144|ParseFont}
+        }
+        #n5144 .sidelist .InfoTitle{
+            {$TChannel9SideBarInfoTitle5144|ParseFont}
+        }
+        #n5144 .sidelist .InfoPrice{
+            {$TChannel9SideBarInfoPrice5144|ParseFont}
+        }
+
+        #n5144 .content_container{
+            {$TChannel9InfoBg5144|ParseBg}
+        }
+        #n5144 .content_title h2{
+            {$TChannel9Title5144|ParseFont}
+        }
+        #n5144 .JobName h2, #n5144 .joblist th{
+            {$TChannel9InfoTitle5144|ParseFont}
+        }
+        #n5144 .RequirementDetail, #n5144 .joblist .t2{
+            {$TChannel9InfoSContent5144|ParseFont}
+        }
+        #n5144 .Requirement{
+            {$TChannel9InfoContent5144|ParseFont}
+        }
+        #n5144 .Salary{
+            {$TChannel9InfoSalary5144|ParseFont}
+        }
+    </style>
+    <div class="floor_channel9 full-width{$TChannel9FullWidth5144} floor_channel">
+        <neq name="TChannel9HasSideBar5144" value="0">
+            <div class="component_title sidebar_comtainer float_{$TChannel9HasSideBar5144}">
+                <div yd-slot="5144A"></div>
+                <notempty name="TChannel9SideBarChannel5144">
+                    <div class="sidebar" yd-group="5144" yd-tab="侧边栏设置">
+                        <div class="sidebar_title"><h2>{$TChannel9SideBarChannel5144|ChannelName}</h2></div>  
+                        <div class="sidebar_body">  
+                            <ul class="sidelist {$TChannel9SideBarStyle5144}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$TChannel9SideBarChannel5144" top="$TChannel9SideBarCount5144" timeformat="Y-m-d" labelid="$TChannel9SideBarLabel5144" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel9AnimationType5144}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </div>
+                </notempty>
+                <div yd-slot="5144B"></div>
+            </div>
+        </neq>
+        <div class="component_body content_container">
+            <div class="content_title">
+                <include file="Public:location" />
+                <h2 yd-content="_channel,{$ChannelID}">{$ChannelName}</h2>
+            </div>      
+            <div class="content_body">
+                <eq name="TChannel9Style5144" value="table">
+                    <ul class="joblist {$TChannel9Style5144}-joblist">
+                        <joblist id="j" nowpage="$NowPage">
+                            <li class="{$TRoundCorner}-round-corner" yd-animation="{$TChannel9AnimationType5144}">
+                                <table class="job_table InfoSContent">
+                                    <tr>
+                                        <th  class="t1">{$Think.lang.JobName}</th>
+                                        <td  colspan="2"  class="t2">{$j.JobName}</td>
+                                        <td><div class="operation"><a href="{$j.JobID|ResumeUrl}" ><span class="btn">{$Think.lang.WantJob}</span></a></div></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="">{$Think.lang.HiringNo}</th>
+                                        <td class="t2">{$j.Number}</td>
+                                        <th class="t3">{$Think.lang.ValidTime}</th>
+                                        <td class="t2">{$j.Expiration}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="">{$Think.lang.Education}</th>
+                                        <td class="t2">{$j.Education}</td>
+                                        <th class="t3">{$Think.lang.Gender}</th>
+                                        <td class="t2">{$j.Gender}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="">{$Think.lang.Age}</th>
+                                        <td class="t2">{$j.Age}</td>
+                                        <th class="t3">{$Think.lang.Salary}</th>
+                                        <td class="Salary t4">{$j.Salary}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="">{$Think.lang.Language}</th>
+                                        <td class="t2">{$j.Language}</td>
+                                        <th class="t3">{$Think.lang.Location}</th>
+                                        <td class="t2">{$j.Workplace}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{$Think.lang.Requirement}</th>
+                                        <td colspan="3" class="Requirement">{$j.Requirement}</td>
+                                    </tr>
+                                </table>
+                            </li>
+                        </joblist>
+                    </ul>
+                <else />
+                    <ul class="joblist {$TChannel9Style5144}-joblist">
+                        <joblist id="j" nowpage="$NowPage">
+                            <li class="{$TRoundCorner}-round-corner" yd-animation="{$TChannel9AnimationType5144}" yd-content="_job,{$j.JobID}">
+                                <div class="JobName"><h2>{$j.JobName}</h2><span class="Salary">{$j.Salary}</span></div>
+                                <div class="RequirementDetail">
+                                    <span>{$j.Workplace}</span>
+                                    <span>{$j.Education}</span>
+                                    <span>{$j.Gender}</span>
+                                    <span>{$Think.lang.HiringNo}：{$j.Number}</span>
+                                    <span>{$Think.lang.Age}：{$j.Age}</span>
+                                    <span>{$Think.lang.Language}：{$j.Language}</span>
+                                    <span>{$Think.lang.ValidTime}：{$j.Expiration}</span>
+                                </div>
+                                <div class="Requirement">{$j.Requirement}</div>
+                                <div class="operation"><a href="{$j.JobID|ResumeUrl}" ><span class="btn">{$Think.lang.WantJob}</span></a></div>
+                            </li>
+                        </joblist>
+                    </ul>
+                </eq>
+                <div class="page_main"><div class="page">{$Page}</div></div>
+            </div>
+            <div class="content_bottom"></div>
+        </div>
+    </div>
+</div>
+<!--区块5144 结束--><include file="Public:footer" />
+</body>
+</html>

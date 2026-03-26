@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<link href="{$Css}style.css" rel="stylesheet" type="text/css" />
+</head>
+<body id="main_page">
+<div class="container">
+    <form enctype="multipart/form-data"  method="post" id="frmRelation" action="{$Action}">
+        <input type="hidden" name="IsSingleSelect" value="{$Think.request.IsSingleSelect}" />
+        <div class="table">
+            <div class="toolbars">
+                <neq name="Think.request.IsSingleSelect" value="1"><li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li></neq>
+                <li class="toolbar toolbarform">
+                    <label>标题</label><input type="text" class='textinput' name="Keywords" style="width:120px" value="{$SearchWords}" id="Keywords"/>
+                    <input type="hidden" name="iid" value="{$InfoID}" />
+                    <select name="cid" id="cid">
+                        <option value="0">所有频道</option>
+                        <volist name="Channel" id="c">
+                            <option value="{$c.ChannelID}" <eq name="ChannelID" value="$c.ChannelID">selected="selected"</eq> >{$c.ChannelName}</option>
+                        </volist>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()" />
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                    <th width="120px" nowrap="nowrap">所属频道</th>
+                    <th>标题</th>
+                </tr>
+                <notempty name="Relation">
+                    <volist name="Relation" id="r">
+                    <tr>
+                        <neq name="r.InfoID" value="$InfoID">
+                            <td><input  type="checkbox" onclick="SelectOne(this)" class="rcb" name="InfoID[]" infotitle="{$r.InfoTitle}" infourl="{$r.InfoID|InfoUrl}" value="{$r.InfoID}" /></td>
+                            <td>{$r.ChannelName|htmlspecialchars}</td>
+                            <td style="text-align:left;"><a href="{$r.InfoID|InfoUrl}" target="_blank">{$r.InfoTitle|strip_tags|Left=40}</a></td>
+                        <else/>
+                            <td></td>
+                            <td>{$r.ChannelName|htmlspecialchars}</td>
+                            <td style="text-align:left;">
+                                <a href="{$r.InfoID|InfoUrl}" target="_blank" style="color:red;">{$r.InfoTitle|strip_tags|Left=40}</a>
+                                &nbsp;&nbsp;<b style="color:blue;">[当前信息]</b>
+                            </td>
+                        </neq>
+                    </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="3" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                
+            </table>
+            <div class="tfoot">
+                <div class="page"><span class="pagesize">每页<span class="pz">{$PageSize}</span>条</span>{$Page}</div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.min.js"></script>
+<script>
+function CheckAll(){
+	var title = $("#selectall").attr('title');
+	if(title == "全选"){
+		$(":checkbox").prop('checked', true);
+		$("#selectall").attr('title','取消');
+		$("#selectall").html('取消');
+	}else{
+		$(":checkbox").prop('checked', false);
+		$("#selectall").attr('title','全选');
+		$("#selectall").html('全选');
+	}
+}
+
+//只选择一个
+function SelectOne(obj){
+	var IsSingleSelect = "{$Think.request.IsSingleSelect}";
+	if( IsSingleSelect == 1){
+		$(".rcb").attr("checked",false); 
+		$(obj).attr("checked",'checked');
+	}
+}
+</script>

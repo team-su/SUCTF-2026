@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="{$AppCss}/vote.css?v=1" media="all">
+<link rel="stylesheet" type="text/css" href="{$AppCss}/flat.css" media="all">
+<script type="text/javascript" src="{$AppJs}/jquery.js"></script>
+<script type="text/javascript" src="{$AppJs}/jquery.icheck.min.js?v=1"></script>
+<include file="./Public/tpl/wx/meta.html" />
+<title></title>
+</head>
+<body id="vote-img">
+<form id="frm" name="frm"  method="post" action="{$AppID|WxVoteAddUrl}"  enctype="multipart/form-data">
+<votelist voteid="$AppID" id="v">
+    <div class="vote">
+            <div class="votecontent">
+                <h2 class="VoteName">{$v.VoteName}</h2>
+                <span class="date">{$v.StartTime}</span>
+                <notempty name="v.VotePicture">
+                	<div class="voteimg"><img src="{$v.VotePicture}" width="100%"></div> 
+                </notempty>
+                <p class="content"><span>{$v.VoteDescription}&nbsp;</span></p>
+                <p class="modus">
+                	<eq name="v.IsMultiple"  value="1">
+                    	多选投票<assign name="InputType" value="checkbox" />
+                    <else/>
+                    	单选投票<assign name="InputType" value="radio" />
+                    </eq>&nbsp;&nbsp;
+                	<span class="number">共有{$v.TotalPeople}人参与投票</span>
+               </p>
+               <php>
+                //判断投票结果是否可见
+                if( ($v['ShowResult']==1) || ($v['ShowResult']==2 && $HasVoted==1) || ($v['ShowResult']==3 && $v['VoteStatus']==2) ){
+                    $ShowNumber = 1;
+                }else{
+                	$ShowNumber = 0;
+                }
+               </php>
+                <ul class="list" id="list"> 
+                	<eq name="v.IsMultiple" value="1"></eq>
+                         <volist name="v.Item" id="it" key="j">
+                             <li>
+ 									<label for="square-{$InputType}-{$j}" class="mylabel" >
+                                        <input class="ckbx" tabindex="{$j}" name="item[]"  value="{$it.ItemID}" id="square-{$InputType}-{$j}" type="{$InputType}" />
+                                        <span>{$it.ItemName}</span>
+                                    </label>
+                                    <eq name="ShowNumber" value="1">
+                                            <div id="voteshow{$j}" class="votebar">
+                                                 <div class="pbg"><div style="width: {$it.Percent}%; background-color:#ffcc00" class="pbr"></div></div>
+                                                 <span class="percentage" style="color:#ffcc00">{$it.Percent}%<span class="user">({$it.Count})</span></span>
+                                            </div>
+                                    </eq>
+                              </li>
+                         </volist>
+                     <div class="clr"></div>
+                </ul>
+				<switch name="v.VoteStatus">
+                		<case value="1">
+                        	<input id="btnSubmit" class="pxbtn" type="submit" value="投票未开始！" name="btnSubmit" disabled="disabled" />
+                        </case>
+                        <case value="2">
+                        	 <input id="btnSubmit" class="pxbtn" type="submit" value="投票已经结束！" name="btnSubmit" disabled="disabled" />
+                        </case>
+                        <case value="3">
+                            <eq name="HasVoted" value="0">
+                                <input id="btnSubmit" class="pxbtn" type="submit" value="确认提交" name="btnSubmit" />
+                            <else/>
+                                <input id="btnSubmit" class="pxbtn" type="submit" value="你已经投过票了！" name="btnSubmit" disabled="disabled" />
+                            </eq>
+                        </case>
+                </switch>                
+
+            </div>
+    </div>
+</votelist>
+<div style="text-align:center; color:#ffd800; margin: 0px 0px 10px 0px">
+	<a href="{:HomeUrl()}">©{$WebName}</a>
+</div>
+</form>
+</body>
+</html>
+<script>
+$(document).ready(function () {
+	$("title").text( $(".VoteName").text() );
+	$('.ckbx').iCheck({
+		checkboxClass: 'icheckbox_flat'
+		,radioClass: 'iradio_flat'
+	});	
+});
+</script>
+<eq name="HasVoted" value="0">
+	<script type="text/javascript" src="{$WebPublic}jquery/jquery.form.js"></script>
+    <script>
+    $(document).ready(function () {
+            $('#frm').ajaxForm({
+                success: complete,
+                dataType: 'json',
+                beforeSubmit:check,
+            });
+            
+            function check(){
+                var i = 0;
+                $(".checked").each( function () {i++;} );
+                if(i>0){
+                    return true;
+                }else{
+                    alert("请选择一个投票！");
+                    return false;
+                }
+            };
+            
+            function complete(data){
+                if (data.status==1){
+                    alert("投票成功！"); 
+				    <neq name="ShowResult" value="3">
+						location.reload();
+					</neq>
+                }else if(data.status==0){
+                    alert("投票失败！");
+                }else if(data.status==2){
+                    alert("你已经投过票了！");
+                }
+            };
+            
+             $('#frm').submit(function(){
+                return false; 
+             });
+    });
+    </script>
+<else/>
+	<script>
+    	$(document).ready(function () {
+				$('.ckbx').iCheck('disable');
+		});
+    </script>
+</eq>

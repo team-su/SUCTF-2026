@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+    	table.datatable .trMenuTop{ background:#f0f0f0;  }
+		table.datatable .trMenuTop td, table.datatable .trMenuTop td input{ color:red; }
+		
+		table.datatable .trMenuGroup{  }
+		table.datatable .trMenuGroup td, table.datatable .trMenuGroup td input{ color:green; }
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" onclick="saveAll()"  title="保存所有修改" target="_self">保存所有修改</a></li>
+                <li class="toolbar toolbarform">
+                    <label>菜单类别</label>
+                    <select name="MenuOwner" id="MenuOwner">
+                        <option selected="selected" value="1">管理员后台</option>
+                        <option  value="0">会员后台</option>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                     <th width="55px" >序号</th>
+                     <th width="300px" >菜单名称</th>
+                     <th width="90px" >排序</th>
+                     <th width="80px" >是否启用</th>
+                     <th></th>
+                </tr>  
+                <notempty name="Data">
+                    <eq name="MenuOwner" value="1">
+                        <volist name="Data" id="d" key="j">
+                            <tr class="trMenuTop">
+                                <td>{$j}</td>
+                                <td style="text-align:left; padding-left:5px;"><input type="text" class='textinput' value="{$d.MenuTopName}" style="width:180px;" name="MenuTopName[]" /></td>
+                                <td><input type="number" class='textinput' onclick="this.select()" style="width:70px" name="MenuTopOrder[]" value="{$d.MenuTopOrder}" />
+                                    <input type="hidden" class='textinput' name="MenuTopID[]" value="{$d.MenuTopID}" />
+                                </td>
+                                <td>
+                                    <eq name="d.IsEnable" value="1">
+                                        <span style="color:black;cursor:pointer;"  onclick="toggleStatus(this,{$d.MenuTopID},'menu_top')">启用</span>
+                                    <else/>
+                                        <span style="color:red;cursor:pointer;"  onclick="toggleStatus(this,{$d.MenuTopID},'menu_top')">禁用</span>
+                                    </eq>
+                                </td>
+                                <td></td>
+                            </tr>
+                            <volist name="d.MenuGroup" id="dm">
+                                <notin name="dm.MenuGroupID" value="4,6,10,20,24">
+                                    <tr class="trMenuGroup">
+                                        <td></td>
+                                        <td style="text-align:left;"><input type="text" class='textinput' value="{$dm.MenuGroupName}" style="width:180px; margin-left:3em;" name="MenuGroupName[]" /></td>
+                                        <td><input type="number" class='textinput' onclick="this.select()" style="width:70px" name="MenuGroupOrder[]" value="{$dm.MenuGroupOrder}" />
+                                            <input type="hidden" class='textinput' name="MenuGroupID[]" value="{$dm.MenuGroupID}" />
+                                        </td>
+                                        <td>
+                                            <eq name="dm.IsEnable" value="1">
+                                                <span style="color:black;cursor:pointer;"  onclick="toggleStatus(this,{$dm.MenuGroupID},'menu_group')">启用</span>
+                                            <else/>
+                                                <span style="color:red;cursor:pointer;"  onclick="toggleStatus(this,{$dm.MenuGroupID},'menu_group')">禁用</span>
+                                            </eq>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <volist name="dm.Menu" id="dn">
+                                        <notin name="dn.MenuID" value="7,10,14,16,27,28,32,34,37,40,42,47,48,50,53,56,66,71,73,74,77,82,90,92,107,108,110,62">
+                                            <tr>
+                                                <td></td>
+                                                <td style="text-align:left;"><input type="text" class='textinput' value="{$dn.MenuName}" style="width:180px; margin-left:6em;" name="MenuName[]" /></td>
+                                                <td><input type="number" class='textinput' onclick="this.select()" style="width:70px" name="MenuOrder[]" value="{$dn.MenuOrder}" />
+                                                    <input type="hidden" class='textinput' name="MenuID[]" value="{$dn.MenuID}" />
+                                                </td>
+                                                <td>
+                                                    <eq name="dn.IsEnable" value="1">
+                                                        <span style="color:black;cursor:pointer;"  onclick="toggleStatus(this,{$dn.MenuID},'menu')">启用</span>
+                                                    <else/>
+                                                        <span style="color:red;cursor:pointer;"  onclick="toggleStatus(this,{$dn.MenuID},'menu')">禁用</span>
+                                                    </eq>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </notin>
+                                    </volist>
+                                </notin>
+                            </volist>
+                        </volist>
+                    <else/>
+                            <volist name="Data" id="d" key="j">
+                                <tr>
+                                    <td>{$j}</td>
+                                    <td style="text-align:left;padding-left:5px;"><input type="text" class='textinput' value="{$d.MenuName}" style="width:295px;" name="MenuName[]" /></td>
+                                    <td><input type="number" class='textinput' onclick="this.select()" style="width:70px" name="MenuOrder[]" value="{$d.MenuOrder}" />
+                                        <input type="hidden" class='textinput' name="MenuID[]" value="{$d.MenuID}" />
+                                    </td>
+                                    <td><eq name="d.IsEnable" value="1">
+                                            <span style="color:black;cursor:pointer;"  onclick="toggleStatus(this,{$d.MenuID},'menu')">启用</span>
+                                        <else/>
+                                            <span style="color:red;cursor:pointer;"  onclick="toggleStatus(this,{$d.MenuID},'menu')">禁用</span>
+                                        </eq>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </volist>
+                    </eq>
+                <else/>
+                    <tr><td colspan="6" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                  <div id="notice">
+                  		<b>说明：</b><span class="notice-item">点击"启用"可禁用菜单，点击"禁用"可启用菜单</span>
+                  </div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function saveAll(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("确定保存所有修改吗?", function () {
+		$('#frm').attr("action", "__URL__/saveAll");
+		$('#frm').submit();
+	});
+}
+
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}	
+
+$(document).ready(function(e) {
+	pageInit();
+	function pageInit(){
+		$("#MenuOwner").val("{$MenuOwner}");	
+	}
+});
+</script>

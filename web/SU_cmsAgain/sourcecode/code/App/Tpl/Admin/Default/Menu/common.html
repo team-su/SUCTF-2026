@@ -1,0 +1,226 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					paySelect( $("#PayTypeID").val() );
+					focusFirstItem();
+				</empty>
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			 LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 $("#PayTypeID").change(function(){
+			 paySelect( $(this).val() );
+		 });
+		 
+		 function paySelect(id){
+			 //只有paypal支付才显示货币
+			 if(id==4){
+				$("#trPayCurrency").show();
+			 }else{
+				 $("#trPayCurrency").hide();
+			 }
+			 
+			 if( id== 5 || id == 6 || id == 7 ){
+			 	$(".pt").hide();
+				return;
+			 }
+			 $(".pt").show();
+			 
+			 switch(id){
+				 case "1":   //支付宝
+				 	$("#trPayInterface").show();
+					$("#trAccountPassword").hide();
+				 	$("#trAccountName th").text("支付宝帐户");
+					$("#trAccountKey th").text("交易安全校验码Key");
+					$("#trAccountID th").text("合作者身份PID");
+					$("#trPayInterface th").text("支付接口类型");
+					$("#trAccountName .Caution").text("收款支付宝账号，通常收款账号就是签约账号");
+					$("#trAccountKey .Caution").text("安全检验码，数字和字母组成的32位字符。如：mvj6r9if13j8c98ddcdwomp1yahn8xgd");
+					$("#trAccountID .Caution").text("合作身份者id，2088开头的16位纯数字。如：2088211035693988");
+					$("#trPayInterface .Caution").text("请选择您跟支付宝签订的协议里面说明的接口类型");
+				 	break;
+				case "4":  //Paypal标准支付
+					$("#trAccountName th").text("商户帐户");
+					$("#trAccountName .Caution").html("商户帐户通常是电子邮件。还没有账号，<a href='https://www.paypal.com' target='_blank' style='color:blue'>立即申请</a>");
+					$("#trAccountKey").show();
+					$("#trAccountKey th").text("商户私钥");
+					$("#trAccountKey .Caution").text("请填写商户对应的AccessToken");
+					
+					$("#trPayInterface").hide();
+					$("#trAccountPassword").hide();
+					$("#trAccountID").hide();
+					break;
+				case "10":  //微支付
+					$("#trPayInterface").hide();
+					$("#trAccountPassword").show();
+					$("#trAccountName th").text("商户号");
+					$("#trAccountKey th").text("商户支付密钥Key");
+					$("#trAccountID th").text("微信公众账号AppId");
+					$("#trAccountPassword th").text("微信公众账号AppSecret");
+					$("#trAccountName .Caution").text("微信支付分配的商户号，如：1230000109");
+					$("#trAccountKey .Caution").text("商户支付密钥Key，通常是32个字符");
+					$("#trAccountID .Caution").text("如：wxd678efh567hg6787");
+					var msg = '使用微信公众号支付（微信手机客户端内支付）需配置AppSecret，还需登录 [ 微信公众平台 ] 配置下列参数<br/>';
+					msg += "[1] 支付授权目录：<span style='color:blue'>{:WeixinPayDir()} 和 {:WeixinRechargeDir()}</span>&nbsp;&nbsp;&nbsp;&nbsp;";
+					msg += "修改位置：[ 登录公众平台 ] - [ 微信支付 ] - [ 开发配置 ] - [ 公众号支付 ] - [ 支付授权目录 修改 ]<br/>";
+					msg += "[2] OAuth2.0网页授权回调页面域名：<span style='color:blue'>{:WeixinPayOAuthDomain()}</span>&nbsp;&nbsp;&nbsp;&nbsp;";
+					msg += "修改位置：[ 登录公众平台 ] - [ 接口权限 ] - [ 网页授权获取用户基本信息 修改 ]";
+					$("#trAccountPassword .Caution").html(msg);
+					break;
+			 }
+			 var online = $("#PayTypeID").children('option:selected').attr('isonline');
+			 var tip = (online==1) ? "是" : "否";
+			 $("#IsOnlineText").text(tip);
+		 }
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 var idName = "#{$Think.const.MODULE_NAME}Name";
+			 $(idName).focus();
+		 }
+		 
+		 //设置默认值
+		 function setDefault(){
+			 $("input[name='IsEnable'][value={$Data.IsEnable}]").attr("checked",'checked');
+			 $("#PayTypeID").val("{$Data.PayTypeID}");
+			 $("#PayInterface").val("{$Data.PayInterface}"); 
+			 $("#PayCurrency").val("{$Data.PayCurrency}");
+			 $("input[name='SiteType'][value={$Data.SiteType}]").attr("checked",'checked');
+		 }
+		 
+		 //页面初始化
+		 function pageInit(){
+			focusFirstItem();
+		 	paySelect( "{$Data.PayTypeID}" );
+			setDefault();
+		 }
+		 
+		 pageInit();
+	});
+</script>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+	<table class="table-font">
+			<tr>
+				<th class="w120">支付类别</th>
+				<td>
+					<select name="PayTypeID" class="textinput" id="PayTypeID">
+						<paytypelist id="p">
+							<option isonline="{$p.IsOnline}" value="{$p.PayTypeID}">{$p.PayTypeName}</option>
+						</paytypelist>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th class="w120">支付名称</th>
+				<td><input type="text" class="textinput w450" name="PayName" id="PayName" value="{$Data.PayName}" />
+				<span class='Caution'>如：支付宝、财付通、银行汇款等</span>
+				</td>
+			</tr>
+			<tr>
+				<th class="w120">支付排序</th>
+				<td><input type="text" class="textinput" style="width:80px;"  name="PayOrder" id="PayOrder" value="{$Data.PayOrder}" />
+				<span class='Caution'>请输入数字，值越小排名越靠前！</span>
+				</td>
+			</tr>
+			<tr>
+				<th class="w120">支付描述</th>
+				<td><textarea  style="width:100%; height:120px;" name="PayDescription" id="PayDescription" />{$Data.PayDescription}</textarea></td>
+			</tr>
+			<tr>
+				<th class="w120">支付手续费比例</th>
+				<td><input type="text" class="textinput"  style="width:80px;"  name="PayRate" id="PayRate" value="{$Data.PayRate}" />
+				<span class='Caution'>如果支付手续费比例是2%，则填写0.02。支付手续费 = 商品总额 × 支付手续费比例</span>
+				</td>
+			</tr>
+			<tbody id="pay1" class="pt" style="display:none;" comment="在线支付">
+                <tr id="trAccountName">
+                    <th class="w120"></th>
+                    <td><input type="text" class="textinput"  style="width:300px;"  name="AccountName" id="AccountName" value="{$Data.AccountName}" />
+                    <span class='Caution'></span></td>
+                </tr>
+                <tr id="trAccountKey">
+                    <th class="w120"></th>
+                    <td><input type="text" class="textinput"  style="width:300px;"  name="AccountKey" id="AccountKey" value="{$Data.AccountKey}" />
+                    <span class='Caution'></span></td>
+                </tr>
+                <tr id="trAccountID">
+                    <th class="w120"></th>
+                    <td><input type="text" class="textinput"  style="width:300px;"  name="AccountID" id="AccountID" value="{$Data.AccountID}" />
+                    <span class='Caution'></span></td>
+                </tr>
+                <tr id="trAccountPassword">
+                    <th class="w120"></th>
+                    <td><input type="text" class="textinput"  style="width:300px;"  name="AccountPassword" id="AccountPassword" value="{$Data.AccountPassword}" />
+                    <span class='Caution'></span></td>
+                </tr>
+                <tr id="trPayInterface">
+                    <th class="w120"></th>
+                    <td>
+                    <select name="PayInterface" id="PayInterface">
+                        <option value="1">即时到账接口</option>
+                        <!--
+                        <option value="2">担保交易接口</option>
+                        <option value="3">标准双接口</option>
+                        -->
+                    </select>
+                    <span class='Caution'></span>
+                    </td>
+                </tr>
+               <tr id="trPayCurrency">
+                    <th class="w120">交易货币</th>
+                    <td>
+                    <select name="PayCurrency" id="PayCurrency">
+                    	<option value="USD" selected="selected">美元</option>
+                        <option value="HKD">港元</option>
+                        <option value="EUR">欧元</option>
+                        <option value="GBP">英镑</option>
+                        <option value="JPY">日元</option>
+                    	<option value="AUD">澳元</option>
+                        <option value="CAD">加元</option>
+                    </select>
+                    <span class='Caution'>表示使用哪种货币付款</span>
+                	</td>
+                </tr>
+			</tbody>
+			<tr>
+				<th>是否在线支付</th>
+				<td><span id="IsOnlineText" style="color:blue;"></span></td>
+			</tr>
+			<tr>
+				<th>支持的网站类型</th>
+				<td>
+					<label><input type="radio" name="SiteType" value="2" checked="checked"  />电脑网站</label>
+					&nbsp;&nbsp;
+					<label><input type="radio" name="SiteType" value="3" />手机网站</label>
+					&nbsp;&nbsp;
+					<label><input type="radio" name="SiteType" value="1" />两者都可以</label>
+					<span class='Caution'>如果选择手机网站，则此支付方式仅在手机网站上使用。支付宝、财付通等有专门的手机网站支付版，需要单独申请！</span>
+				</td>
+			</tr>
+			<tr>
+				<th>是否启用</th>
+				<td>
+					<label><input type="radio" name="IsEnable" value="1" checked="checked"  />启用</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" name="IsEnable" value="0" />禁用</label>
+				</td>
+			</tr>
+	</table>
+</div>

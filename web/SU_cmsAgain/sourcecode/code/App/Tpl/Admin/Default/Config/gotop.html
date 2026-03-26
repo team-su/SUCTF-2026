@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.iconlist{}
+		.iconlist li{ 
+			float:left; padding: 5px 8px; background:#767d86; margin: 5px; border-radius:5px; cursor:pointer;
+		}
+		.iconlist li.active, .iconlist li:hover{ background:#2589ff;  }
+		.iconlist li i{ font-size:30px; color: #fff; font-style: normal; }
+		.preview{ 
+			position:absolute; top:0; right:30px; background:{$GoTopBgColor};
+			width:{$GoTopWidth}px; height:{$GoTopHeight}px; line-height:{$GoTopHeight}px;
+			border-radius:{$GoTopCornerSize}px; box-shadow: 0px 2px {$GoTopShadow}px rgba(0,0,0, 0.1);
+			text-align:center; cursor:pointer;
+		}
+		.preview:hover{ 
+			background:{$GoTopBgColorHover}; 
+		}
+		.preview i{ 
+			margin:auto; font-size:{$GoTopIconSize}px; color:{$GoTopIconColor}; font-style: normal;
+		}
+		.preview:hover i{ 
+			 color:{$GoTopIconColorHover};
+		}
+		.boxtable .td-slide{ padding:12px 6px; }
+		.cwidth{ width: 90px; }
+		.label{ margin-left:16px; margin-right:3px; font-weight:bold;}
+		.colorbox{ width:33px; border:1px solid #ccc; cursor:pointer;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+			<div class="box-header"  id="c2"><h4>回顶部图标设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+					 <tr>
+                        <th>图标样式</th>
+                        <td>
+							<input type="hidden" id="GoTopStyle" name="GoTopStyle"  value="{$GoTopStyle}" />
+							<ul class="iconlist">
+								<volist name="Icons" id="d">
+									<li <eq name="d" value="$GoTopStyle">class="active"</eq> ><i class="{$d}"></i></li>
+								</volist>
+							</ul>
+						</td>
+                    </tr>
+					<tr>
+						<th>图标大小</th>
+						<td class="td-slide"><input type="hidden" id="GoTopIconSize" name="GoTopIconSize" value="{$GoTopIconSize}" /></td>
+                    </tr>
+					<tr>
+						<th>图标颜色</th>
+						<td>
+							<input type="text" class="textinput cwidth" id="GoTopIconColor" name="GoTopIconColor" value="{$GoTopIconColor}"  />
+							<input type='text' class='textinput colorbox' style='background:{$GoTopIconColor}' id='GoTopIconColorBox' readonly='readonly'/>
+							
+							<span class="label">鼠标悬浮颜色</span>
+							<input type="text" class="textinput cwidth" id="GoTopIconColorHover" name="GoTopIconColorHover" value="{$GoTopIconColorHover}"  />
+							<input type='text' class='textinput colorbox' style='background:{$GoTopIconColorHover}' id='GoTopIconColorHoverBox' readonly='readonly'/>
+                        </td>
+                    </tr>
+				</table>
+			</div>
+			
+            <div class="box-header" id="c1">
+                <h4>回顶部背景设置</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>背景颜色</th>
+                        <td>
+							<input type="text" class="textinput cwidth" id="GoTopBgColor" name="GoTopBgColor" value="{$GoTopBgColor}"  />
+							<input type='text' class='textinput colorbox' style='background:{$GoTopBgColor}' id='GoTopBgColorBox' readonly='readonly'/>
+							
+							<span class="label">鼠标悬浮颜色</span>
+							<input type="text" class="textinput cwidth" id="GoTopBgColorHover" name="GoTopBgColorHover" value="{$GoTopBgColorHover}"  />
+							<input type='text' class='textinput colorbox' style='background:{$GoTopBgColorHover}' id='GoTopBgColorHoverBox' readonly='readonly'/>
+                        </td>
+                    </tr>
+                    <tr>
+						<th>背景圆角</th>
+						<td class="td-slide"  style="position:relative;">
+							<input type="hidden" id="GoTopCornerSize" name="GoTopCornerSize" value="{$GoTopCornerSize}" />
+							<div class="preview"><i class="{$GoTopStyle}"></i></div>
+						</td>
+                    </tr>
+					<tr>
+						<th>背景宽度</th>
+						<td>
+							<input type="text" class="textinput" style="width:60px;" id="GoTopWidth" name="GoTopWidth" value="{$GoTopWidth}" />
+							<span class="label">背景高度</span>
+							<input type="text" class="textinput" style="width:60px;" id="GoTopHeight" name="GoTopHeight" value="{$GoTopHeight}" />
+							<span class='Caution'>默认宽高48px，建议范围：40-120</span>
+						</td>
+                    </tr>
+					<tr>
+						<th>背景阴影</th>
+						<td class="td-slide"><input type="hidden" id="GoTopShadow" name="GoTopShadow" value="{$GoTopShadow}" /></td>
+                    </tr>
+					<tr>
+						<th>位置</th>
+						<td>
+							<span class="label">右边距</span>
+							<input type="text" class="textinput" style="width:60px;" id="GoTopRight" name="GoTopRight" value="{$GoTopRight}" />
+							<span class="label">底边距</span>
+							<input type="text" class="textinput" style="width:60px;" id="GoTopBottom" name="GoTopBottom" value="{$GoTopBottom}" />
+							<span class='Caution'>留空使用默认值</span>
+						</td>
+                    </tr>
+					<tr>
+                        <th>是否启用</th>
+                        <td>
+                            <label><input type="radio" name="GoTopEnable" value="1" <eq name="GoTopEnable" value="1">checked="checked"</eq> />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+							<label><input type="radio" name="GoTopEnable" value="0" <eq name="GoTopEnable" value="0">checked="checked"</eq> />禁用</label>
+                        </td>
+                    </tr>
+    			</table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner"><input id="btnSubmit" type="submit" value="保存设置" /></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	function previewGoTop(){
+		var icon = $(".iconlist li.active i").attr("class");
+		var wrapCss = {
+			"background": $("#GoTopBgColor").val(),
+			"width": $("#GoTopWidth").val()+"px",
+			"height": $("#GoTopHeight").val()+"px",
+			"line-height":$("#GoTopHeight").val()+"px",
+			"border-radius": $("#GoTopCornerSize").val()+"px",
+			"box-shadow":"0px 2px "+$("#GoTopShadow").val()+"px rgba(0,0,0, 0.1)"
+		};
+		var objIcon = $(".preview i");
+		objIcon.attr("class", icon);
+		var iconCss = {
+			"font-size": $("#GoTopIconSize").val()+"px",
+			"color": $("#GoTopIconColor").val(),
+		}
+		$(".preview").css(wrapCss);
+		objIcon.css(iconCss);
+		//鼠标悬浮样式设置
+		//$(".preview:hover").css('background', $("#GoTopBgColorHover").val() );
+		//$(".preview:hover i").css('color', $("#GoTopIconColorHover").val() );
+	};
+	$('.preview').hover(function(){
+			$('.preview').css('background', $("#GoTopBgColorHover").val() );
+			$('.preview i').css('color', $("#GoTopIconColorHover").val() );
+	},function(){
+			$('.preview').css('background', $("#GoTopBgColor").val() );
+			$('.preview i').css('color', $("#GoTopIconColor").val() );
+	});  
+		
+	
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){ 
+		LoadBox();
+		return false;
+	 });
+	 //背景颜色，图标颜色
+	 var selector = "#GoTopBgColor,#GoTopBgColorBox,#GoTopIconColor,#GoTopIconColorBox,#GoTopBgColorHover,";
+	 selector+="#GoTopBgColorHoverBox,#GoTopIconColorHover,#GoTopIconColorHoverBox";
+	 $(selector).colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			var name = o.attr("id");
+			name = name.replace(/Box/, ""); //去掉后面的Box
+			$("#"+name).val(color);
+			$("#"+name).css("color","#000");
+			//修改color，防止颜色值显示在Box里面
+			$("#"+name+"Box").css({
+				'background':color,
+				"color":color
+			});
+			previewGoTop();
+		}
+	});
+	//圆角大小
+	$("#GoTopCornerSize").jRange({
+		theme:'theme-blue',  snap: true,  showLabels: true, format: "%spx", 
+		showScale:true,from: 0, to: 50, step: 1,  width: 200,
+		onstatechange:function () { //数字变化的时候的回调函数
+			 previewGoTop();
+		},
+	});
+	//图标大小
+	$("#GoTopIconSize").jRange({
+		theme:'theme-blue',  snap: true,  showLabels: true, format: "%spx", 
+		showScale:true,from: 24, to: 64, step: 1,  width: 200,
+		onstatechange:function () { //数字变化的时候的回调函数
+			 previewGoTop();
+		},
+	});
+	//背景阴影
+	$("#GoTopShadow").jRange({
+		theme:'theme-blue',  snap: true,  showLabels: true, format: "%spx", 
+		showScale:true,from: 0, to: 18, step: 1,  width: 200,
+		onstatechange:function () { //数字变化的时候的回调函数
+			 previewGoTop();
+		},
+	});
+	
+	$(".iconlist li").click(function(){
+		$(".iconlist li").removeClass("active");
+		$(this).addClass("active");
+		var style = $(".iconlist li.active i").attr("class");
+		$("#GoTopStyle").val(style);
+		previewGoTop();
+	});
+	//宽度和高度改变
+	$("#GoTopWidth, #GoTopHeight").keyup(function(){
+		previewGoTop();
+	});
+});
+</script>

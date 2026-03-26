@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+      <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="btnBack" href="{$Url}card" title="返回">返回</a></li>                  
+            <li class="toolbar toolbarform">
+                <label>卡号/姓名/手机</label>
+                <input type="text" class='textinput' name="Keywords" style="width:130px" value="{$Keywords}" id="Keywords" placeholder="卡号/姓名/手机"/>
+                <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+            </li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="90px" >会员卡号</th>
+                <th width="85px" >姓名</th>
+                <th width="40px" >性别</th>
+                <th width="100px">手机号码</th>
+                
+                <th width="100px">消费类型</th>
+                <th width="90px">金额</th>
+                <th width="120px" >时间</th>
+                <th style="text-align:left; padding-left:10px">备注</th>
+            </tr>  
+            <notempty name="Consume">
+                <volist name="Consume" id="m">
+                    <tr>
+                        <td><b>{$m.CardNumber|htmlspecialchars}</b></td>
+                        <td>{$m.MemberRealName|htmlspecialchars}</td>
+                        <td><eq name="m.MemberGender" value="0">男<else/>女</eq></td>
+                        <td>{$m.MemberMobile|htmlspecialchars}</td>
+                            <switch name="m.ConsumeType">
+                                    <case value="1">
+                                    <td><b style="color:#060">会员充值</b></td>
+                                    <td><b style="color:#060">+{$m.ConsumeMoney}</b></td>
+                                    </case>
+                                    <case value="2">
+                                    <td><b style="color:#00F">余额消费</b></td>
+                                    <td><b style="color:#00F">-{$m.ConsumeMoney}</b></td>
+                                    </case>
+                                    <case value="3">
+                                    <td><b style="color:#CC0000">现金消费</b></td>
+                                    <td><b style="color:#CC0000">-{$m.ConsumeMoney}</b></td>
+                                    </case>
+                            </switch>
+                        <td>{$m.ConsumeTime|strtotime|yd_friend_date}</td>
+                        <td  style="text-align:left; padding-left:10px"><b>{$m.Remark|htmlspecialchars}</b></td>
+                    </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="8" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                  
+        </table>
+        <div class="tfoot">
+        	<div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+      </div>
+  </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/consume");
+	$('#frm').submit();
+	return true;
+}
+
+//提示信息
+$(document).ready(function(){		
+	//选中操作
+	$("#Keywords").focus();
+});
+</script>

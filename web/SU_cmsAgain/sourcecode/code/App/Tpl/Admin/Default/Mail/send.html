@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.mytip{display:none; 	background-color:#FFF;	padding:8px; 	line-height:22px;	text-align:left;	border:1px solid #CCC;}
+		.MailContent{	cursor:pointer;		font-weight:bold;	color:#F00;}
+		#SendResult a{	font-size:14px;	font-weight:bold;	color:#F60}
+		#SendResult a:hover{	font-size:14px;	font-weight:bold;	color:#F00;	text-decoration:none;}
+	</style>
+</head>
+<body id="main_page">
+<div class="container plugin_margin_top">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmSave">
+        <input type="hidden" name="MailSendID" value="{$MailSendID}" />
+        <div class="box-header"><h4>邮件内容</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+                <tr>
+                    <th class="w120">邮件主题</th>
+                    <td style="font-weight:bold; color:#00F">{$MailTitle|htmlspecialchars}</td>
+                </tr>
+                <tr>
+                    <th class="w120">邮件内容</th>
+                    <td><span class="MailContent" rel="mc">预览邮件内容</span>
+                    <div id="mc" class="mytip">{$MailContent}</div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="box-header"><h4>目标邮箱</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+            <tr>
+                <th class="w120">订阅分类邮箱</th>
+                <td>
+                <volist name="MailClass" id="s">
+                <input type="checkbox" name="MailClassID[]" value="{$s.MailClassID}" />
+                <b style="color:#C00">{$s.MailClassName}</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                </volist>
+                </td>
+            </tr>
+            <tr>
+                <th class="w120">会员分组邮箱</th>
+                <td>
+                <volist name="MemberGroup" id="g">
+                <input type="checkbox" name="MemberGroupID[]" value="{$g.MemberGroupID}" />
+                <b style="color:#C00">{$g.MemberGroupName|htmlspecialchars}</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                </volist>
+                <span class='Caution'>发送到选中会员分组的所有会员邮箱</span>
+                </td>
+            </tr>
+            <tr>
+                <th class="w120">自定义接收邮箱</th>
+                <td>
+                <textarea id="Other" name="Other" style="width:100%;height:55px"></textarea>
+                <span class='Caution'>多个邮箱以英文分号;分开，如123456@qq.com;wangzhan@163.com</span>
+                </td>
+            </tr>
+            </table>
+        </div>
+
+        <div class="box-header"><h4>发送结果</h4></div>
+        <div class="box-content">
+            <table class="boxtable" id="SendResult">
+                <tr>
+                    <th class="w120">&nbsp;</th>
+                    <td align="center">
+                        <span id="tip" style="font-size:14px"></span>
+                        <a style="display:none" id="sendlog" rel="{$Url}viewLog/MailSendID/{$MailSendID}">查看邮件发送日志...</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="box-footer">
+            <div class="box-footer-inner">
+                <input  id="btnSubmit" class="marginright" type="submit" value="开始邮件群发" />
+                <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		if (data.status==1){
+			var n1 = data.data['n1'];  //总数
+			var n2 = data.data['n2'];  //成功
+			var n3 = data.data['n3'];   //失败
+			var msg = "共发送<b style='color:blue'>"+n1+"</b>封邮件，";
+			msg += "其中<b style='color:red'>"+n2+"</b>封邮件发送成功，";
+			msg += "<b style='color:red'>"+n3+"</b>封邮件发送失败！";
+			$("#tip").html( msg );
+			$("#sendlog").show();
+		}else if(data.status==0){
+			$("#tip").html("<b style='color:red'>"+data.info+'</b>');
+			ErrorBox(data.info);
+		}
+	};
+	 
+	 $('#frmSave').submit(function(){
+		$("#sendlog").hide();
+		msg = "<img src='{$WebPublic}Images/loading/10.gif' border='0' align='absmiddle'/>";
+		msg += "&nbsp;&nbsp;邮件发送中，请不要关闭当前页面...";
+		$("#tip").html(msg);
+		return false;  
+	 });
+});
+
+function GoBack(){
+	window.location.href = "{$Url}SendIndex";
+}
+
+//提示信息
+$(document).ready(function(){
+	$(".MailContent").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+	
+	$("#sendlog").powerFloat({
+		targetMode: "ajax",
+		eventType: "click"
+	});
+	
+	/*
+	$("#pb").progressBar(0,	{ 
+		max:100,
+		barImage: '{$WebPublic}jquery/images/progressbg_green.gif', 
+		//boxImage: '{$WebPublic}jquery/images/progressbar.gif', 
+		showText: true,
+		textFormat: 'fraction'}
+	);
+	*/
+});
+</script>

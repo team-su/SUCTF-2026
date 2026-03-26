@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />	
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+   <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p"  value="{$NowPage}" />
+        <div class="table">
+            <div class="toolbars">      
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+                <li class="toolbar toolbarform">
+                    <label>反馈内容</label>
+                    <input type="text" class='textinput' name="AppFeedbackContent" style="width:95px" value="{$AppFeedbackContent}" id="AppFeedbackContent"/>
+                    <label>反馈人</label>
+                    <input type="text" class='textinput' name="MemberName" style="width:95px" value="{$MemberName}" id="MemberName"/>        		
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                    <th>反馈内容</th>
+                    <th style="width:80px">反馈图片</th>
+                    <th style="width:130px">联系方式</th>
+                    <th style="width:100px">反馈人</th>
+                    <th style="width:200px">手机唯一标识UUID</th>
+                    <th style="width:130px">反馈时间</th>
+                </tr>
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr>
+                            <td><input class="checkrow" type="checkbox" name="id[]" value="{$d.AppFeedbackID}" /></td>
+                            <td style="text-align:left;">{$d.AppFeedbackContent|htmlspecialchars}</td>
+                            <td>
+                            	<notempty name="d.AppFeedbackImage">
+                                	<span class="TagTip" alt="{$d.AppFeedbackImage|htmlspecialchars}" >
+										<img src="{$d.AppFeedbackImage|htmlspecialchars}" style="width:75px;" />
+									</span>
+                                 </notempty>
+                            </td>
+                            <td>{$d.AppFeedbackContact|htmlspecialchars}</td>
+                            <td>
+								{$d.MemberName|htmlspecialchars}
+								<eq name="d.MemberID" value="0">[&nbsp;游客&nbsp;]<else/><span style="color:red">[会员]</span></eq>
+							</td>
+                            <td>{$d.Uuid}</td>
+                            <td>{$d.AppFeedbackTime|strtotime|yd_friend_date}</td>                                    
+                      </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="7" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>
+            </table>
+          <div class="tfoot">
+                <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+           </div>
+        </div>
+     </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//提示信息
+$(document).ready(function(){
+	$(".TagTip").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "alt",
+		position: "2-1"
+	});
+});
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+			
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/delFeedback");
+		$('#frm').submit();
+	});
+}
+
+function Search(){
+	$('#frm').attr("action", "{$Url}feedback");
+	$('#frm').submit();
+	return true;
+}
+</script>

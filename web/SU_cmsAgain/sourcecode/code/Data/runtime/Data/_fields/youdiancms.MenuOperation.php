@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'MenuOperationID', 1 => 'MenuID', 2 => 'MenuOperationName', 3 => 'ActionName', 4 => 'ModuleName', 5 => 'GroupName', 6 => 'MenuOperationOrder', 7 => 'LogType', 8 => 'IsEnable', '_autoinc' => true, '_pk' => 'MenuOperationID', ); ?>

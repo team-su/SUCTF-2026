@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<include file="common" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container box-footer-fixed">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frm">
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                        <tr>
+                            <th class="w120" style="color:red;">采集规则名称</th>
+                            <td><input type="text" class="textinput"  style="width:280px;"  name="CollectName" id="CollectName" value="" />
+                            <span class='Caution'>如：搜狐国内新闻采集</span>
+                            </td>
+                        <tr>
+                        <tr>
+                            <th class="w120">采集的数据存入频道</th>
+                            <td>
+                                <select id="ChannelID" name="ChannelID">
+                                    <volist name="Channel" id="c">
+                                        <neq name="c.Html" value="index">
+                                            <option mid="{$c.ChannelModelID}" fn="{$c.FieldName}" aid="{$c.AttributeID}" dn="{$c.DisplayName}" value="{$c.ChannelID}">{$c.ChannelName}</option>
+                                        </neq>
+                                    </volist>
+                                </select>
+                                <span class='Caution'>不能选择单页频道、链接频道、有子频道的频道</span>
+                                <input type="hidden" value="" id="currentModelID" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="w120">采集列表页URL地址规则</th>
+                            <td><input type="text" class="textinput"  style="width:500px;" name="ListUrl" id="ListUrl"  value="http://www.xx.com/news.html?page={*}" />
+                            <span class='Caution'><span style="color:blue;">留空表示仅采集附加列表页。<literal>{*}</literal>表示通配符</span>
+                            以http://开头，如：http://www.xx.com/news.html?page=<literal>{*}</literal></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="w120"></th>
+                            <td>
+                            通配符变量从<input type="text" class="textinput"  style="width:50px;"  name="ListUrlStart"  id="ListUrlStart" value="1" />
+                            到
+                            <input type="text" class="textinput"  style="width:50px;"  name="ListUrlEnd"  id="ListUrlEnd" value="10" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            步长&nbsp;<input type="text" class="textinput"  style="width:30px;"  name="ListUrlStep"  id="ListUrlStep" value="1" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            通配符长度&nbsp;<input type="text" class="textinput"  style="width:30px;"  name="ListUrlLength"  id="ListUrlLength" value="1" />
+                            </td>
+                        <tr>
+                        <tr>
+                            <th class="w120"></th>
+                            <td><div id="UrlPreview" style="width:100%; overflow:hidden; color:#30C;" ></div>
+                            </td>	
+                        </tr>
+                        <tr>
+                            <th class="w120">附加列表页URL地址</th>
+                            <td><textarea id="ListUrlOther" name="ListUrlOther" style="width:100%; height:75px; " ></textarea>
+                            <span class='Caution'>主要用于填写一些不规则的列表页地址，多个URL地址以回车分隔，如果域名和列表页相同，则不要填写http://和域名前缀，如：/news.html</span>
+                            </td>	
+                        </tr>
+                        <tr>
+                            <th class="w120">列表页中详细页链接区域规则</th>
+                            <td><textarea id="ListUrlRegionRegex" name="ListUrlRegionRegex" style="width:100%; height:75px; " ></textarea>
+                            <span class='Caution'>格式：区域开始代码<literal>{*}</literal>区域结束代码，如：&lt;div id="right"&gt;<literal>{*}</literal>&lt;/div&gt;。在列表页中，进一步缩小详细页链接的区域范围，如果能正确识别链接区域，请留空</span>
+                            </td>	
+                        </tr>
+                        <tr>
+                            <th class="w120">采集详细页URL地址规则</th>
+                            <td><input type="text" class="textinput"  style="width:400px;" name="DetailUrlRegex"  id="DetailUrlRegex" value="" />
+                            <span class='Caution'>
+                            <literal><span style="color:blue;">留空表示将列表页作为详细页直接采集，适合采集固定的几个页面。</span>
+                            如果域名和列表页相同，则不要填写http://和域名前缀</literal>
+                            </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="w120"></th>
+                            <td><span class='Caution'><literal>
+                            采集到的详细页地址字符串为：整个地址规则匹配的文本（如：/news/1.html匹配地址规则/news/{*}.html，则返回整个匹配的文本：/news/1.html）<br/>
+                            通配符{*}表示匹配任何字符、{n}表示匹配任何数字，支持写多个通配符。举例：<br />
+                            [1] /news/{*}.html：表示匹配以 <span style="color:blue;">/news/</span> 开头和以 <span style="color:blue;">.html</span> 结尾的字符串，
+                            如：/news/abc.html、/news/xxx/20160120.html<br />
+                            [2] /news.asp?id={n}（数字在最后，必须用{n}）：
+                            表示匹配以 <span style="color:blue;">/news.asp?id=</span> 开头和以 <span style="color:blue;">数字</span> 结尾的字符串，
+                            如：/news.asp?id=8<br />
+                            [3] /news/{n}_{n}.html}：可以匹配如：/news/2018_1.html，不能匹配：/news/2018_all.html</literal>
+                            </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="w120">备注</th>
+                            <td><textarea name="CollectDescription" style="width:100%; height:50px; " ></textarea>
+                            </td>	
+                        </tr>
+                        <tr>
+                            <th class="w120">详细页地址采集测试</th>
+                            <td><a style="float:left;" onclick="testDetailUrl()"  id="btnSaveAll">详细页采集测试</a>
+                            &nbsp;
+                            <span id="testDetailUrlMsg"></span>
+                            <span class='Caution'>点击按钮测试获取所有详细页地址。如果测试结果不正确，请重新设置参数</span>
+                            </td>	
+                        </tr>
+                        <tr>
+                            <th class="w120"></th>
+                            <td><div id="testDetailUrlResult" style="height:200px;overflow-y:scroll;display:none;"></div></td>	
+                        </tr>
+                </table>
+            </div>
+            
+            <div class="box-header">
+                <h4>详细页内容替换规则<span class="extra">先按以下规则预处理（过滤、替换）详细页内容，然后再从详细页内容中采集字段数据</span></h4>
+            </div>
+            <div class="box-content">
+            	<table class="boxtable" >
+                    <tr>
+                        <th class="w120"></th>
+                        <td>
+                            <table border="0" class="table-replace">
+                                <thead>
+                                    <tr>
+                                        <th class="num">序号</th>
+                                        <th class="search">被替换文本规则<span class="h">如：&lt;div class="ad"&gt;<literal>{*}</literal>&lt;/div&gt;</span></th>
+                                        <th class="replace">替换成<span class="h">不支持写通配符<literal>{*}</literal></span></th>
+                                        <th class="op"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="num">1</td>
+                                        <td><textarea id="SearchText" name="SearchText[]" ></textarea></td>
+                                        <td><textarea id="ReplaceText" name="ReplaceText[]"></textarea></td>
+                                        <td><a onclick='delReplaceItem(this)'  class='btnDel'>删除</a></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td  colspan="4" class="add"><a onclick="addReplaceItem()"  id="btnSaveAll">添加替换规则</a></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </td>
+                    </tr>
+            </table>
+            </div>
+            
+            <div class="box-header"><h4>字段匹配规则</h4></div>
+            <div class="box-content">
+            	<table class="boxtable">
+                    <tr>
+                        <th class="w120"></th>
+                        <td>
+                            <table border="0" class="table-field">
+                                <thead>
+                                    <tr>
+                                        <th class="num">序号</th>
+                                        <th class="field">字段名称</th>
+                                        <th class="regex">匹配规则
+                                        <span class="h">如：&lt;div class="Title"&gt;<literal>{*}</literal>&lt;/div&gt;，不写<literal>{*}</literal>即设置字段默认值</span>
+                                        </th>
+                                        <th class="op"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td  colspan="2" class="add">
+                                        <a onclick="addItem()"  id="btnSaveAll" style="float:left;">添加字段规则</a>
+                                        </td>
+                                        <td colspan="2" style="text-align:left">
+                                        <span id="fieldMsg"><b>备注：</b>可在"采集设置"栏中设置用于字段采集测的详细页地址，
+                                        不设置表示从列表页中随机获取1个详细页</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="text-align:left">
+                                        <literal>
+                                        <span style="color:red;">匹配规则主要有4种类型：</span><br/>
+                                        [1]&nbsp;固定值：如果匹配规则没有{*}、也不是函数匹配，则直接返回设置值，相当于设置字段的默认值<br/>
+                                        [2]&nbsp;前后截取：格式：<span style="color:blue;">开始字符串{*}结束字符串</span>，匹配的内容为开始字符串和结束字符串之间的内容。如：&lt;div class="Title"&gt;{*}&lt;/div&gt;&lt;b&gt;<br/>
+                                        [3]&nbsp;标签对前后截取：格式：<span style="color:blue;">&lt;开始标签 [属性]&nbsp;&nbsp;{*}&lt;/结束标签&gt;</span>，比前后截取匹配更实用，
+                                        匹配的内容为与<span style="color:blue;">开始标签</span>对应的<span style="color:blue;">结束标签</span>之间的内容。
+                                        如：&lt;div class="Title"&gt;{*}&lt;/div&gt;<br/>
+                                        [4]&nbsp;选择器表达式：格式：<span style="color:blue;">$("jquery语法选择器").html|val|text|attr()</span>，主要用于采集网页中更复杂的数据，如：HTML标记、表单值、纯文本、标签属性。匹配速度最慢
+                                        </literal>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </td>
+                    </tr>
+            </table>
+            </div>
+            
+            <div class="box-header">
+                <h4>内容分页设置<span  class="extra">如果内容没有分页，则不需要设置"内容页码URL地址规则"</span></h4>
+            </div>
+            <div class="box-content">
+            	<table class="boxtable" >
+                    <tr>
+                        <th class="w120">内容分页类型</th>
+                        <td>
+                            <label><input type="radio" name="PageType" value="1"    checked="checked"/>全部列出的分页列表</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="PageType" value="2" />上下页形式或不完整的分页列表</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120"></th>
+                        <td style="color:red;">注意：仅支持对“详细内容InfoContent”字段进行分页采集</td>
+                    </tr>
+                    <tr>
+                        <th class="w120">内容分页区域规则</th>
+                        <td><textarea id="PageRegionRegex" name="PageRegionRegex" style="width:100%; height:60px; " ></textarea>
+                        <span class='Caution'>格式：分页区域开始代码<literal>{*}</literal>分页区域结束代码，如：&lt;div id="page"&gt;<literal>{*}</literal>&lt;/div&gt;。
+                        在详细页中，进一步缩小内容分页链接的区域范围，如果能正确识别分页链接区域，请留空</span>
+                        </td>	
+                    </tr>
+                    <tr class="trAllPageUrlRegex">
+                        <th class="w120">分页页码URL地址规则</th>
+                        <td><input type="text" class="textinput"  style="width:400px;" name="AllPageUrlRegex"  id="AllPageUrlRegex" value="" />
+                        <span class='Caution'>规则语法请参见【采集详细页URL地址规则】，如果内容没有分页，请留空</span>
+                        </td>
+                    </tr>
+                     <tr class="trNextPageUrlRegex">
+                        <th class="w120">下一页URL地址规则</th>
+                        <td><textarea  class="textinput"  style="width:100%;height:70px;" name="NextPageUrlRegex"  id="NextPageUrlRegex"></textarea>
+                        <span class='Caution'>规则语法请参见【字段匹配规则】</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">分页Url采集测试</th>
+                        <td><a style="float:left;" onclick="testPage()"  id="btnSaveAll">分页采集测试</a>&nbsp;<span id="testPageMsg"></span></td>
+                    </tr>
+                     <tr>
+                        <th class="w120"></th>
+                        <td><span id="testPageResult"></span></td>
+                    </tr>
+            </table>
+            </div>
+            
+            <div class="box-header"><h4>采集设置</h4></div>
+            <div class="box-content">
+            	<table class="boxtable">
+                    <tr>
+                        <th class="w120">字段采集测试用的详细页地址</th>
+                        <td><input type='text'  id='TestDetailUrl'  name='TestDetailUrl' style="width:470px"  class='textinput' value='' />
+                        <span class='Caution'>留空表示从列表页中随机获取1个详细页</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">浏览器标识User-Agent</th>
+                        <td>
+                        <select name="UserAgent" id="UserAgent">
+                            <option value="1">IE浏览器</option>
+                            <option value="2">Firefox浏览器</option>
+                            <option value="3">Chrome浏览器</option>
+                            <option value="4">Opera浏览器</option>
+                            <option value="5">Safari浏览器</option>
+                            <option value="8">微信手机浏览器</option>
+                            <option value="6">Android手机浏览器</option>
+                            <option value="7">iPhone手机浏览器</option>
+                            <option value="9">QQ手机浏览器</option>
+                            
+                            <option value="10">Baidu蜘蛛</option>
+                            <option value="11">Google蜘蛛</option>
+                            <option value="12">Sogou蜘蛛</option>
+                        </select>
+                        <span class='Caution'>当被采集网站对浏览器有要求时，可将采集程序伪装为某种浏览器，如伪装成一个手机浏览器，以便能采集手机网站数据</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">被采集网页编码</th>
+                        <td>
+                        <label><input type="radio" name="Charset" value="auto"    checked="checked"/>自动检测</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="Charset" value="utf-8" />utf-8</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="Charset" value="gb2312" />gb2312</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="Charset" value="big5" />big5</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="Charset" value="gb18030" />gb18030</label>&nbsp;&nbsp;&nbsp;&nbsp; 
+                        <label><input type="radio" name="Charset" value="gbk" />gbk</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="Charset" value="unicode" />unicode</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>采集顺序</th>
+                        <td>
+                            <label><input type="radio" name="CollectOrder" value="1"  />顺序采集</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="CollectOrder" value="2"  checked="checked"/>逆序采集</label>
+                            <span class='Caution'>逆序采集表示从最后一个Url开始采集，可以保证显示顺序和被采集的网站一样</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">最大采集数量</th>
+                        <td><input type="text" class="textinput"  style="width:50px;" name="MaxCount" id="MaxCount" value="0" />
+                        <span class='Caution'>0表示采集所有，否则仅采集前面指定数量的网页</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">2次采集时间间隔</th>
+                        <td><input type="text" class="textinput"  style="width:50px;" name="TimeTnterval" id="TimeTnterval" value="250" />
+                        <span class='Caution'>单位：毫秒，0表示没有时间间隔，如果被采集网站有访问频率限制（如：2次访问Url的时间间隔必须大于200毫秒），请设置此值</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>是否自动保存远程图片到服务器</th>
+                        <td>
+                            <label><input type="radio" name="AutoUploadImage" value="1"    checked="checked"/>是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="AutoUploadImage" value="0"/>否</label>
+                            <span class='Caution'>选择是，表示将被采集网页的图片保存到服务器上</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>是否将采集的第1张图片作为缩略图</th>
+                        <td>
+                            <label><input type="radio" name="AutoThumbFirst" value="1"    checked="checked"/>是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="AutoThumbFirst" value="0"/>否</label>
+                            <span class='Caution'>选择是，表示将采集的第1张图片作为缩略图
+                            <span id="thumbinfo"></span>，
+                            生成缩略图的参数见缩略图设置</span>
+                        </td>
+                    </tr>
+                    <tr style="display:none;">
+                        <th>是否自动保存远程Flash到服务器</th>
+                        <td>
+                            <label><input type="radio" name="AutoUploadFlash" value="1"    checked="checked"/>是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="AutoUploadFlash" value="0"/>否</label>
+                            <span class='Caution'>选择是，表示将被采集网页的Flash保存到服务器上</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>是否保存重复标题</th>
+                        <td>
+                            <label><input type="radio" name="EnableTitle" value="1"   />是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="EnableTitle" value="0" checked="checked"/>否</label>
+                            <span class='Caution'>选择否，表示如果采集的标题在目标频道已经存在，则不保存</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>是否审核采集的数据</th>
+                        <td>
+                            <label><input type="radio" name="EnableCheck" value="1"   />是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="EnableCheck" value="0" checked="checked"/>否</label>
+                            <span class='Caution'>选择是，表示采集入库的数据是未审核状态</span>
+                        </td>
+                    </tr>
+            </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"  type="submit" value="保存并继续添加" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			$('#frm').resetForm();
+			focusFirstItem();
+		}else{
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		LoadBox(); 
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 //选中表单第一项
+	 function focusFirstItem(){
+		 var idName = "#{$Think.const.MODULE_NAME}Name";
+		 $(idName).focus();
+	 }
+	 
+	 //频道选择
+	 $("#ChannelID").change( channelSelect );
+	  
+	  //页面初始化
+	  function pageInit(){
+		  $("#currentModelID").val("");
+		  focusFirstItem();
+		  channelSelect();
+		  $("#thumbinfo").html("（宽高：{$ThumbWidth} x {$ThumbHeight}）");
+	   }
+	  pageInit();
+});
+</script>

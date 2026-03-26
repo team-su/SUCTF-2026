@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{$Title}-{$WebName}</title>
+<include file="Public:meta" />
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.form.js"></script>
+<script type=text/javascript>
+	$(document).ready(function(){
+		$("#MemberCode").click( ChangeVerify );
+		function ChangeVerify(){
+			var timenow = new Date().getTime();
+		    $("#MemberCode").attr("src", "{$Url}memberCode/d/" + timenow);
+		};
+		
+		$('#frmReg').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		<eq name="MemberRegCheck" value="3">
+		$(".btnSmsCode").click(function(){
+			  var url = "{:SmsCodeUrl()}";
+			  var mobile = $("#MemberMobile").val();
+			  var MemberCode = $("#MyMemberCode").val();
+			  $.post(url, {mobile:mobile, MemberCode:MemberCode, check:1}, function(data){
+					if(data.status == 1){
+						showTimer(99);
+						$("#SmsCode").focus();
+					}else{
+						ChangeVerify();
+						if(data.data) $("input[name="+data.data+"]").focus();
+						alert(data.info);
+					}  
+			  },"json");
+		 });
+		 
+		 //显示倒计时
+		 function showTimer(time){
+			 if(time > 0 ){
+				 $(".btnSmsCode").val(time+"{$Think.lang.AfterSeconds}");
+				 setTimeout(function(){ showTimer( --time ); },  1000);
+			 }else{
+				$(".btnSmsCode").val("{$Think.lang.GetSmsCode}");
+			 }
+		 }
+		 </eq>
+		
+		function complete(data){
+			if (data.status==0){ //登录失败
+				ChangeVerify();
+				if(data.data) $("input[name="+data.data+"]").focus();
+				alert(data.info);
+            }else{
+				alert(data.info);
+				window.location = "{:MemberLoginUrl()}";
+			}
+		};
+		
+		 $('#frmReg').submit(function(){
+	     	return false;
+	     });
+		 
+		 pageInit();
+		 function pageInit(){
+			 var regCheck = "{$MemberRegCheck}";
+			 if(regCheck=="2"){
+			 	 $("#MemberEmail").focus();
+			 }else if(regCheck=="3"){
+				 $("#MemberMobile").focus();
+			 }else{
+				 $("#MemberName").focus();
+			 }
+		 }
+	});
+</script>
+</head>
+<body class="body_reg">
+	<include file="Public:header" />
+    <!--主体内容 开始-->
+    <div id="reg">
+        <div id="right">
+	    	<div class="right_title">
+	        	<include file="Public:location" />
+	            <h2><img src="{$Images}titleleftbg.png" align="absmiddle"  />{$Think.lang.UserReg}<img src="{$Images}titlerightbg.png"   align="absmiddle" /></h2>
+	        </div>
+	        <div class="right_body">
+	        	<form enctype="multipart/form-data" id="frmReg" method="post" action="{:MemberRegAction()}" >
+	                <table class="reg_table">
+	                    <switch name="MemberRegCheck">
+	                        <case value="2">
+	                            <tr>
+	                                <th>{$Think.lang.REmail}</th>
+	                                <td colspan="2"><input class="form_text" id="MemberEmail" name="MemberEmail"   type="text" /></td>
+	                            </tr>
+	                        </case>
+	                        <case value="3">
+	                            <tr>
+	                                <th>{$Think.lang.MobileNumber}</th>
+	                                <td colspan="2"><input class="form_text" id="MemberMobile" name="MemberMobile"   type="text" /></td>
+	                            </tr>
+	                              <eq name="MemberRegVerifyCode" value="1">
+	                                    <tr>
+	                                        <th>{$Think.lang.Verifycode}</th>
+	                                        <td class="MemberCode"><input id="MyMemberCode" name="MemberCode" type="text" class="form_text_verifycode" maxlength="4" /></td>
+	                                        <td><img  class="code_image" id="MemberCode" title="{$Think.lang.ChangeVerifycode}" src="{$Url}memberCode/" align="absMiddle" /></td>
+	                                    </tr>
+	                                </eq>
+	                                <tr>
+	                                    <th>{$Think.lang.SmsCode}</th>
+	                                    <td><input id="SmsCode" name="SmsCode" type="text" class="form_text" maxlength="4"/></td>
+	                                    <td><input class="btn btn-small btnSmsCode"  type="button"  value="{$Think.lang.GetSmsCode}" /></td>
+	                                </tr>
+	                        </case>
+	                        <default/>
+	                            <tr>
+	                                <th>{$Think.lang.UserName}</th>
+	                                <td colspan="2"><input name="MemberName" id="MemberName" type="text" class="form_text" /></td>
+	                            </tr>
+	                    </switch>
+	                    <tr>
+	                        <th>{$Think.lang.Password}</th>
+	                        <td colspan="2"><input class="form_text" name="MemberPassword"   type="password" /></td>
+	                    </tr>
+	                    <tr>
+	                        <th>{$Think.lang.ConfirmPassword}</th>
+	                        <td colspan="2"><input class="form_text" name="MemberPassword1"  type="password" /></td>
+	                    </tr>
+	                    <if condition="($MemberRegCheck neq 3) AND ($MemberRegVerifyCode eq 1)">
+	                        <tr>
+	                            <th>{$Think.lang.Verifycode}</th>
+	                            <td class="MemberCode"><input id="MyMemberCode"  name="MemberCode" type="text" class="form_text_verifycode" maxlength="4" /></td>
+	                            <td><img  class="code_image" id="MemberCode" title="{$Think.lang.ChangeVerifycode}" src="{$Url}memberCode/" align="absMiddle" /></td>
+	                        </tr>
+	                    </if>
+	                    <tr>
+	                        <td class="operation" colspan="3">
+	                            <input class="form_button btn btn-large" type="submit" name="submit8" value="{$Think.lang.Reg}" />
+	                        </td>
+	                    </tr>
+	                </table>
+	        	</form>
+	        </div>
+	        <div class="right_bottom"></div>
+	    </div>
+    </div>
+    <div class="clear"></div>
+    <!--主体内容 结束-->   
+	<include file="Public:footer" />
+</div>
+</body>
+</html>

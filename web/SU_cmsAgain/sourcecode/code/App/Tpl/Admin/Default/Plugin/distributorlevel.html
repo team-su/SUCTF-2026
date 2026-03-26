@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<div class="container">
+    <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="btnSaveAll" onclick="add()"  title="添加分销商等级" target="_self">添加分销商等级</a></li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                 <th width="50px" >ID</th>
+                 <th width="140px">等级名称</th>
+                 <th width="70px">总人数</th>
+                 
+                 <th width="90px">一级佣金比例</th>
+                 <th width="90px" >二级佣金比例</th>
+                 <th width="90px" >三级佣金比例</th>
+                 
+                 <th width="210px" >升级条件</th>
+                 <th>备注</th>
+                 <th width="140px" >操作</th>
+            </tr>  
+            <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr id="row{$d.DistributorLevelID}">
+                        <input type="hidden" class="DistributorLevelName" value="{$d.DistributorLevelName}" />
+                        <input type="hidden" class="CommissionRate1" value="{$d.CommissionRate1}" />
+                        <input type="hidden" class="CommissionRate2" value="{$d.CommissionRate2}" />
+                        <input type="hidden" class="CommissionRate3" value="{$d.CommissionRate3}" />
+                        <input type="hidden" class="CommissionThreshold" value="{$d.CommissionThreshold}" />
+                        <input type="hidden" class="DistributorLevelRemark" value="{$d.DistributorLevelRemark}" />
+                        <td>{$d.DistributorLevelID}</td>
+                        <td>{$d.DistributorLevelName}</td>
+                        <td style="color:red;">{$d.DistributorCount}</td>
+                        <td>{$d.CommissionRate1}%</td>
+                        <td>{$d.CommissionRate2}%</td>
+                        <td>{$d.CommissionRate3}%</td>
+                        
+                        <td  style="text-align:left; padding-left:5px;">分销获佣金额满 <span style="color:red;">{$CurrencySymbol}{$d.CommissionThreshold}</span>自动升级</td>
+                        <td style="text-align:left; padding-left:5px;">{$d.DistributorLevelRemark}</td>
+                        <td class="operator">
+                            <a style="float:left" onclick="modify({$d.DistributorLevelID})" id="btnEdit">修改</a>
+                            <eq name="d.DistributorCount" value="0">
+                                <div class="btn-sep"></div>
+                                <a style="float:left" onclick="del({$d.DistributorLevelID})" class="btnDel">删除</a>
+                            </eq>
+                        </td>
+                    </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="9" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                  
+        </table>
+    </div>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgAdd" title="">
+	<form enctype="multipart/form-data" method="post" id="frm">
+    	<input type="hidden" name="DistributorLevelID" id="DistributorLevelID" value="" />
+        <table class="dlgtable" style="width:500px">
+                <tr>
+                    <th>等级名称</th>
+                    <td><input type="text" class="textinput" style="width:150px;" name="DistributorLevelName" id="DistributorLevelName" value="" /></td>
+                </tr>
+                <tr>
+                    <th>一级佣金比例</th>
+                    <td><input type="text" class="textinput" style="width:70px;margin-right:3px;"  name="CommissionRate1" id="CommissionRate1" value="" />%</td>
+                </tr>
+                <tr>
+                    <th>二级佣金比例</th>
+                    <td><input type="text" class="textinput" style="width:70px;margin-right:3px;"  name="CommissionRate2" id="CommissionRate2" value="" />%</td>
+                </tr>
+                <tr>
+                    <th>三级佣金比例</th>
+                    <td><input type="text" class="textinput" style="width:70px;margin-right:3px;"  name="CommissionRate3" id="CommissionRate3" value="" />%</td>
+                </tr>
+                <tr>
+                    <th>升级条件</th>
+                    <td>分销获佣金额满<input type="text" class="textinput" style="width:70px; margin:0 3px" value="0"  name="CommissionThreshold" id="CommissionThreshold"/>元自动升级</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td><span class='Caution' style="margin-left:0;">分销商自动升级条件，不填写或填0表示不自动升级</span></td>
+                </tr>
+                <tr>
+                    <th>备注</th>
+                    <td><input type="text" class="textinput" style="width:99%"  name="DistributorLevelRemark" id="DistributorLevelRemark" value="" /></td>
+                </tr>
+        </table>
+    </form>
+</div>
+
+<script type="text/javascript">
+function del(id){
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		LoadBox();
+		var url = "{$Url}delDistributorLevel?id="+id;
+		$.get(url, null, function(data){
+			CloseLoadBox();
+			if(data.status==1){
+				$("#row"+id).remove();
+			}else{
+				ErrorBox(data.info);	
+			}
+		},"json");
+	});
+}
+
+function add(){
+	$('#frm').attr('action','{$Url}addDistributorLevel');
+	$('#frm').resetForm();
+	dialog({
+		title: "添加分销商等级",
+		id: 'dialog',
+		lock: true,
+		padding: 8,
+		content: document.getElementById('dlgAdd'),
+		ok: function () {
+			LoadBox();
+			$("#frm").ajaxSubmit({
+				success: function(data){
+					CloseLoadBox();
+					if(data.status == 1){
+						SucceedBox(data.info);
+						window.location.reload();
+					}else{
+						ErrorBox(data.info);
+						return false;
+					}
+				},
+				dataType: 'json'
+			});
+			return false;
+		},
+		okValue: '保存',
+		cancelValue: '关闭',
+		cancel: function () {
+			
+		}
+	}).show();	
+}
+
+function modify(id){
+	$('#frm').attr('action','{$Url}modifyDistributorLevel');
+	loadData(id);
+	dialog({
+		title: "修改分销商等级",
+		id: 'dialog',
+		lock: true,
+		padding: 8,
+		content: document.getElementById('dlgAdd'),
+		ok: function () {
+			LoadBox();
+			$("#frm").ajaxSubmit({
+				success: function(data){
+					CloseLoadBox();
+					if(data.status == 1){
+						SucceedBox(data.info);
+						window.location.reload();
+					}else{
+						ErrorBox(data.info);
+						return false;
+					}
+				},
+				dataType: 'json'
+			});
+			return false;
+		},
+		okValue: '保存',
+		cancelValue: '关闭',
+		cancel: function () {
+			
+		}
+	}).show();	
+}
+
+//加载表单数据
+function loadData(id){
+	var DistributorLevelName = $("#row"+id+" .DistributorLevelName").val();
+	var CommissionRate1 = $("#row"+id+" .CommissionRate1").val();
+	var CommissionRate2 = $("#row"+id+" .CommissionRate2").val();
+	var CommissionRate3 = $("#row"+id+" .CommissionRate3").val();
+	var CommissionThreshold = $("#row"+id+" .CommissionThreshold").val();
+	var DistributorLevelRemark = $("#row"+id+" .DistributorLevelRemark").val();
+	
+	$("#dlgAdd #DistributorLevelID").val(id);
+	 
+	$("#dlgAdd #DistributorLevelName").val(DistributorLevelName);
+	$("#dlgAdd #CommissionRate1").val(CommissionRate1);
+	$("#dlgAdd #CommissionRate2").val(CommissionRate2);
+	$("#dlgAdd #CommissionRate3").val(CommissionRate3);
+	$("#dlgAdd #CommissionThreshold").val(CommissionThreshold);
+	$("#dlgAdd #DistributorLevelRemark").val(DistributorLevelRemark);
+}
+
+$(document).ready(function(){
+	pageInit();
+});
+
+function pageInit(){
+}
+</script>

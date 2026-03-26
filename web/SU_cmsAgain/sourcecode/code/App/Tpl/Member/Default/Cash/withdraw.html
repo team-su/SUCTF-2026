@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+	.trBank{ display:none; margin-left:12px;     background: #f5f5f5;padding: 8px 18px; border-radius: 5px;}
+	.trBank .item{ padding: 2px 0;}
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+    	<form enctype="multipart/form-data" action="{$Action}" method="post" id="frm">
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th class="w120">提现金额</th>
+                        <td><input type="text" class="textinput"  style="width:80px;" maxlength="8"  name="CashQuantity" id="CashQuantity" value="" />
+                            <span class='Caution'>
+                                最低提现额度：<span style="color:red;margin-right:10px;">{$CurrencySymbol}{$MinWithdraw}</span>
+                                账户余额：<span style="color:red; ">{$CurrencySymbol}{$AvailableQuantity}</span>
+                             </span>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="w120">收款银行</th>
+                        <td valign="top">
+                        	<volist id="b" name="Bank">
+                            	<label >
+                                	<input type="radio" value="1" name="bank" BankName="{$b.BankName}" BankAccount="{$b.BankAccount}" OwnerName="{$b.OwnerName}" />
+                                	{$b.BankName|htmlspecialchars}<span style="margin:0 10px;">{$b.BankAccount|htmlspecialchars}</span>{$b.OwnerName|htmlspecialchars}
+                                 </label><br/>
+                            </volist>
+                            <label><input type="radio" value="0" name="bank" /> 添加一个新银行</label>
+                        </td>
+                    </tr>
+                    
+                     <tr>
+                        <th class="w120"></th>
+                        <td valign="top">
+                        	<div class="trBank">
+                            		<div class="item">
+                                        收款银行：<input type="text" class="textinput"  style="width:300px; margin-left:1em;"  name="BankName" id="BankName" value="" />
+                                        <span class='Caution'>填写详细的开户银行分行名称、支付宝、微信</span>
+                                    </div>
+                                    <div class="item">
+                                        收款账号：<input type="text" class="textinput"  style="width:300px;margin-left:1em;"  name="BankAccount" id="BankAccount" value="" />
+                                        <span class='Caution'>银行账号、支付宝、微信等</span>
+                                    </div>
+                                    <div class="item">
+                                        开户人姓名：<input type="text" class="textinput"  style="width:90px;" name="OwnerName" id="OwnerName" value="" />
+                                        <span class='Caution'>收款账号的开户人姓名</span>
+                                    </div>
+                            </div>
+                        </td>
+                     </tr>
+                    
+                     <tr>
+                        <th class="w120">提现密码</th>
+                        <td><input type="password" class="textinput"  style="width:180px;" name="CashPassword" id="CashPassword" value="" />
+                        <span class='Caution'>请填写提现密码！</span>
+                        </td>
+                    </tr>
+            	</table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"  type="submit" value="确认提现" />
+                    <input  id="btnSubmitBack"  type="button" value="返回" class="GoBack" onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function GoBack(){
+	window.location.href = "{$Url}index";
+}
+
+function pageInit(){
+	$("#CashQuantity").focus();
+	var obj = $("input[name='bank']:first");
+	obj.attr("checked",'checked');
+	$("#BankName").val( obj.attr("BankName") );
+	$("#BankAccount").val( obj.attr("BankAccount") );
+	$("#OwnerName").val( obj.attr("OwnerName") );
+}
+
+$(document).ready(function(e) {
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			location.href = "{$Url}index";
+		}else{
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		 LoadBox();
+		 return false;
+	 });
+	 
+	 $("input[name='bank']").click(function(){
+		 	 var type = $(this).val();
+			 if( type == 0 ){
+				 $("#BankName").val("");
+				$("#BankAccount").val("");
+				$("#OwnerName").val("");
+				$(	".trBank").show();
+			 }else{
+				$("#BankName").val( $(this).attr("BankName") );
+				$("#BankAccount").val( $(this).attr("BankAccount") );
+				$("#OwnerName").val( $(this).attr("OwnerName") );
+				$(".trBank").hide();
+			 }
+	  });
+	pageInit();
+});
+</script>

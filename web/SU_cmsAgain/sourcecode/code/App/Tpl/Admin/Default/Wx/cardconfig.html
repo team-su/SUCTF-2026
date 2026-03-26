@@ -1,0 +1,533 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.cardimg{ width:90px; float:left; margin:4px; cursor:pointer; border:1px solid white}
+		#cnumber{	text-align: right;	color: #000;	text-shadow: 0px 1px 3px rgba(255, 255, 255, 0.2);
+			margin-top: -50px;	margin-right: 10px;	font-weight: bold;	font-size: 20px;}
+		#cnumber em { display: block; line-height: 13px; font-size: 12px; font-weight: normal; font-style: normal;}
+		#cname {   position: absolute; top: 10px;  right: 10px;  text-shadow: 0px 1px 3px rgba(255, 255, 255, 0.2);  color: #000;}
+		#ciconwrap{      	position: absolute;  top: 10px;  left: 20px;}
+		#cicon{ max-width:80px;}
+		/*分店样式*/
+		.fengdian{ width:100%}
+		.fengdian .name, .fengdian .tel, .fengdian .addr, .fengdian .op{ padding:5px; float:left; padding:3px 5px; text-align:center}
+		.fengdian .name{ width:180px; }
+		.fengdian .tel{ width:150px; }
+		.fengdian .addr{ width:300px;}
+		.fengdian .op{ width:50px;}
+		.fdbody{ }
+		.fditem{ clear:both;}
+		.fdfooter{ clear:both;}
+		
+		/*业务演示*/
+		.link{}
+		.link .name,  .link .type,  .link .url, .link .op{ padding:5px; float:left; padding:3px 5px; text-align:center}
+		.link .name{ width:180px; }
+		.link .type{ width:80px;}
+		.link .url{ width:370px;}
+		.link .op{ width:50px;}
+		.linkbody{ }
+		.linkitem{ clear:both;}
+		.linkfooter{ clear:both;}
+		.link select, .link input{ width:100%; }
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container box-footer-fixed">
+	<div style="display:none;background-color:#FFF; padding:5px; border:1px solid #CCC;" id="t1">
+    <div style="width:405px;">
+        <b>点击选择会员卡背景：</b><br />
+        <for start="1" end="24">
+            <img src="{$WebPublic}Images/card/bg{$i}.png" class="cardimg" onclick="sc({$i})" />
+        </for>
+    </div>
+</div>
+
+    <div id="main">
+        <div class="box">
+            <form action="{$Action}" method="post" id="frm" enctype="multipart/form-data">
+                <input type="hidden" name="AppID" value="{$AppID}"  />
+                <div class="box-header"><h4>版面设置</h4></div>
+                <div class="box-content">
+                        <table class="boxtable">
+                          <tr>
+                            <th nowrap="nowrap">会员卡名称</th>
+                            <td style="border:0px solid red; width:450px;"><input type="text" class="textinput w450"  id="CardName" name="CardName" value="{$c.CardName}" /></td>
+                            <td rowspan="4" valign="top">
+                                <div style="width:330px; height:197px; position:relative; padding-left:10px;">
+                                    <img id="cbg"  src="{$c.CardBackground}" style="width:330px; height:196px;" />
+                                    <div id="cname" style="color: {$c.CardNameColor}">{$c.CardName}</div>
+                                    <div id="ciconwrap" ><notempty name="c.CardIcon">
+                                    <img id="cicon"  src="{$c.CardIcon}"   />
+                                    </notempty></div>
+                                    <div id="cnumber" style="color:{$c.CardNumberColor}">
+                                        <em>会员卡号</em>1000000
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>触发关键词</th>
+                            <td  colspan="2">
+                            <input type="text" class="textinput" style="230px"  id="AppKeyword" name="AppKeyword" value="{$c.AppKeyword}" />
+                            <span class='Caution'>在微信输入此关键词，将返回当前应用的图文消息！</span>
+                            </td>
+                        </tr>
+                            <tr>
+                                <th>会员卡图标</th>
+                                <td colspan="2">
+                                    <input type="text" id="CardIcon" class="textinput w450" style="margin-bottom:8px;" name="CardIcon" value="{$c.CardIcon}"  /><br/>
+                                    <span class='UploadWrapper' style="margin-left:0; ">
+                                        <input class='btnFileUpload' type='button' value='上传' />
+                                        <input id='iconfile' name ='iconfile' type ='file'  class='InputFile'  accept="image/*" />
+                                    </span>
+                                    <input id='btnServer' onclick='BrowserServer(3)' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'    class="btnPadding" />
+                                    <span class='Caution'>建议上传尺寸为152x70的png透明图标</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>会员卡背景</th>
+                                <td   colspan="2" >
+                                    <input type="text" id="CardBackground" class="textinput w450" style="margin-bottom:8px;" name="CardBackground" value="{$c.CardBackground}"   rel="t1"  /><br/>
+                                    <span class='UploadWrapper' style="margin-left:0; ">
+                                        <input class='btnFileUpload' type='button' value='上传' />
+                                        <input id='bgfile' name ='bgfile' type ='file'   class='InputFile'  accept="image/*" />
+                                    </span>
+                                    <input id='btnServer' onclick='BrowserServer(4)' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'   class="btnPadding"  />
+                                     <span class='Caution'>建议尺寸：560x330</span>
+                                </td>
+                            </tr>
+                          
+                           <tr>
+                                <th>图文消息封面</th>
+                                <td colspan="2">
+                                    <input type="text" id="CardPicture" class="textinput w450" name="CardPicture" value='<empty name="c.CardPicture">{$WebPublic}Images/card/cover.jpg<else/>{$c.CardPicture}</empty>'  />
+                                    <span class='UploadWrapper'>
+                                        <input class='btnFileUpload' type='button' value='上传' />
+                                        <input id='picturefile' name ='picturefile' type ='file'   class='InputFile'  accept="image/*"/>
+                                    </span>
+                                    <input id='btnServer' onclick='BrowserServer(5)' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'   class="btnPadding"  />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>封面消息</th>
+                                <td   colspan="2" ><input type="text" class="textinput w450" name="CardTip" value="{$c.CardTip}"  />
+                                <span class='Caution'>建议不要超过100个字，如：微时代会员卡，方便携带收藏，永不挂失</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>会员卡名称文字颜色</th>
+                                <td   colspan="2" >
+                                <input type="text" class="textinput" style="width:80px;color:{$c.CardNameColor}" name="CardNameColor" id="CardNameColor" value="{$c.CardNameColor}"  />
+                                <span class='Caution'>颜色十六进制值，如：#00FF00</span>
+                                </td>
+                            </tr>
+                             <tr>
+                                <th>会员卡号文字颜色</th>
+                                <td   colspan="2" >
+                                <input type="text" class="textinput" style="width:80px;color:{$c.CardNumberColor}" name="CardNumberColor" id="CardNumberColor" value="{$c.CardNumberColor}"  />
+                                <span class='Caution'>颜色十六进制值，如：#00FF00</span>
+                                </td>
+                            </tr>
+                         <tr>
+                            <th nowrap="nowrap">是否启用</th>
+                            <td    colspan="2" >
+                                <label><input type="radio" name="IsEnable" value="1" <eq name="c.IsEnable" value="1">checked="checked"</eq>  />启用</label>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <label><input type="radio" name="IsEnable" value="0"  <eq name="c.IsEnable" value="0">checked="checked"</eq>/>禁用</label>
+                            </td>
+                        </tr>
+                          </table>
+                </div>
+                
+                <div class="box-header"><h4>积分策略</h4></div>
+                <div class="box-content">
+                    <table class="boxtable">
+                        <tr>
+                            <th>会员卡使用说明</th>
+                            <td>
+                            <textarea class="w450" style="height:45px; width:100%" name="CardDescription">{$c.CardDescription}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>积分规则说明</th>
+                            <td><textarea class="w450" style="height:45px; width:100%" name="ScoreDescription">{$c.ScoreDescription}</textarea></td>
+                        </tr>
+                        <tr>
+                            <th>每天签到奖励</th>
+                            <td><input type="number" class="textinput" style="width:90px;margin-right:3px;" name="SignAward" value="{$c.SignAward}"  />积分
+                            <span class='Caution'>可以为小数，设为0表示不奖励积分</span></td>
+                        </tr>
+                       <tr>
+                            <th>每消费1元奖励</th>
+                            <td><input type="number" class="textinput"  style="width:90px;margin-right:3px;" name="ConsumeAward" value="{$c.ConsumeAward}"  />积分
+                            <span class='Caution'>可以为小数，设为0表示不奖励积分</span></td>
+                        </tr>
+                    </table>
+               </div>
+               
+                <div class="box-header"><h4>商家设置</h4></div>
+                <div class="box-content">
+                    <table class="boxtable">
+                        <tr>
+                            <th>商家名称 </th>
+                            <td>
+                            <input type="text" class="textinput"  style="width:200px" name="MerchantName" value="{$c.MerchantName}"  />
+                            </td>
+                        </tr>
+                       <tr>
+                            <th>商家简介</th>
+                            <td><textarea class="w450" style="height:45px; width:100%" name="MerchantDescription">{$c.MerchantDescription}</textarea></td>
+                        </tr>
+                        <tr>
+                            <th>联系方式</th>
+                            <td><input type="text" class="textinput" style="width:200px" name="MerchantTelephone" value="{$c.MerchantTelephone}"  />
+                            <span class='Caution'>如：13588889999、010-88889999</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>商家地址</th>
+                            <td>
+                            <input type="text" class="textinput"  style="width:390px" name="MerchantAddress" value="{$c.MerchantAddress}"  />&nbsp;
+                            <input type="text" class="textinput"  style="width:90px; display:none" name="Longitude" value="{$c.Longitude}"  />&nbsp;
+                            <input type="text" class="textinput"  style="width:90px; display:none" name="Latitude" value="{$c.Latitude}"  />
+                            </td>
+                        </tr>
+                         <tr>
+                                <th>商家确认消费密码</th>
+                                <td   colspan="2" >
+                                <input type="text" class="textinput"  style="width:150px" name="CardPassword" value="{$c.CardPassword}"  />
+                                <span class='Caution'>不便用电脑操作后台时，直接在手机端输入此密码来确认使用优惠券、礼品券、代金券等</span>
+                                </td>
+                            </tr>
+                    </table>
+               </div>
+               
+               <div class="box-header"><h4>分店管理</h4></div>
+               <div class="box-content">
+                    <table class="boxtable">
+                        <tr>
+                            <th></th>
+                            <td class="fengdian">
+                                <div class="fdheader">
+                                    <div class="name"><b>分店名称</b></div>
+                                    <div class="tel"><b>联系电话</b></div>
+                                    <div class="addr"><b>详细地址</b></div>
+                                    <div class="op"><b>操作</b></div>
+                                </div>
+                                <div  class="fdbody">
+                                      <volist id="it" name="c.Store">
+                                          <div class="fditem">
+                                              <div class="name"><input type="text" class="textinput" style="width:100%" name="StoreName[]" value="{$it.StoreName}" /></div>
+                                              <div class="tel"><input type="text" class="textinput" style="width:100%" name="StoreTelephone[]" value="{$it.StoreTelephone}" /></div>
+                                              <div class="addr"><input type="text" class="textinput" style="width:100%" name="StoreAddress[]" value="{$it.StoreAddress}" />
+                                              <input type='hidden'  name='StoreID[]' value="{$it.StoreID}" /></div>
+                                              <div class="op"><a  onclick="delItem(this)">[-删除]</a></div>
+                                          </div>
+                                      </volist>
+                                </div>
+                                <div  class="fdfooter">
+                                    <a style="padding:5px" onclick="addItem()">[+添加]</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+               <div class="box-header">
+				<h4>业务关联
+				<span  class="extra">关联后的业务将显示在会员卡首页；&nbsp;&nbsp;业务名称留空，则默认显示为链接目标/地址名称！</span>
+               </h4></div>
+               <div class="box-content">
+                    <table class="boxtable">
+                        <tr>
+                            <th></th>
+                            <td class="link" style="width:100%;">
+                                <div class="linkheader">
+                                    <div class="name"><b>业务名称</b></div>
+                                    <div class="type"><b>链接类型</b></div>
+                                    <div class="url"><b>链接目标/地址</b></div>
+                                    <div class="op"><b>操作</b></div>
+                                </div>
+                                <div  class="linkbody">
+                                      <volist id="lk" name="c.Link" key="x">
+                                          <div class="linkitem">
+                                              <div class="name"><input type="text" class="textinput" style="width:100%" name="LinkName[]" value="{$lk.LinkName}" /></div>
+                                              <div class="type">
+                                                  <select name="LinkType[]"  onchange="changeLinkType(this)">
+                                                        <option value="1" <eq name="lk.LinkType" value="1">selected="selected"</eq> >内部频道</option>
+                                                        <option value="2" <eq name="lk.LinkType" value="2">selected="selected"</eq> >微应用</option>
+                                                        <option value="3" <eq name="lk.LinkType" value="3">selected="selected"</eq> >外部链接</option>
+                                                  </select>
+                                              </div>
+                                              <div class="url">
+                                                  <switch name="lk.LinkType">
+                                                          <case value="1">
+                                                                <select name='LinkUrl[]'>
+                                                                    <volist name="Channel" id="ch">
+                                                                        <eq name="ch.ChannelID" value="$lk.LinkUrl">
+                                                                            <option value="{$ch.ChannelID}" selected="selected">{$ch.ChannelName}</option>
+                                                                        <else/>
+                                                                            <option value="{$ch.ChannelID}">{$ch.ChannelName}</option>
+                                                                        </eq>
+                                                                    </volist>
+                                                                </select>
+                                                          </case>
+                                                          <case value="2">
+                                                                <select name='LinkUrl[]' >
+                                                                    <volist name="UrlApp" id="ua">
+                                                                        <eq name="ua.AppID" value="$lk.LinkUrl">
+                                                                            <option value="{$ua.AppID}"   selected="selected">[{$ua.AppTypeName}] {$ua.AppName}</option>
+                                                                        <else/>
+                                                                            <option value="{$ua.AppID}" >[{$ua.AppTypeName}] {$ua.AppName}</option>
+                                                                        </eq>
+                                                                    </volist>
+                                                                </select>
+                                                          </case>
+                                                          <case value="3">
+                                                                <input type='text' class='textinput'  name='LinkUrl[]' value="{$lk.LinkUrl}" />
+                                                          </case>
+                                                  </switch>
+                                              </div>
+                                              <div class="op"><a  onclick="delLinkItem(this)">[-删除]</a></div>
+                                          </div>
+                                      </volist>
+                                </div>
+                                <div  class="linkfooter">
+                                    <a style="padding:5px" onclick="addLinkItem()">[+添加]</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+               
+                <div class="box-footer">
+                    <div class="box-footer-inner">
+                        <input  id="btnSubmit" class="marginright" type="submit"  value="保存" />
+                        <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+//添加一个项目
+function addItem(){
+    var oTh = $(".fdbody");
+    var i = oTh.length + 1;
+    var item="<div class='fditem'>";
+    item += "<div class='name'><input type='text' class='textinput' style='width:100%' name='StoreName[]' value='' /></div>";
+    item += "<div class='tel'><input type='text' class='textinput' style='width:100%' name='StoreTelephone[]' value='' /></div>";
+    item += "<div class='addr'><input type='text' class='textinput' style='width:100%' name='StoreAddress[]' value='' />";
+    item += "<input type='hidden'  name='StoreID[]' value='0' /></div>";
+    item += "<div class='op'><a  onclick='delItem(this)'>[-删除]</a></div>";
+    item += "</div>";
+    $(".fdbody").append(item);
+    $(".fdbody input[name='StoreName[]']").last().focus();
+}
+
+function delItem(obj){
+    $(obj).parent().parent().remove();
+}
+
+function BrowserServer(type){
+	if(checkSafeQuestion()) return;
+	switch( type){
+		case 3:
+			FileManager.selectActionFunction = SetCardIconField;
+			break;
+		case 4:
+			FileManager.selectActionFunction = SetCardBackgroundField;
+			break;
+		case 5:
+			FileManager.selectActionFunction = SetCardPictureField;
+			break;
+	}
+	FileManager.popup(); 
+}
+function SetCardIconField(fileUrl){
+	$("#cicon").attr("src", fileUrl);
+	$('#CardIcon').val(fileUrl);
+}
+function SetCardBackgroundField(fileUrl){
+	$("#cbg").attr("src", fileUrl);
+	$('#CardBackground').val(fileUrl);
+}
+function SetCardPictureField(fileUrl){
+	$('#CardPicture').val(fileUrl);
+}
+
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#CardIcon').val(data.data.Path);
+			$("#cicon").attr("src", data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}else if(data.status==4){
+			$('#CardBackground').val(data.data.Path);
+			$("#cbg").attr("src", data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}else if(data.status==5){
+			$('#CardPicture').val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 //会员卡图标
+	 $('#iconfile').change(function(){  
+		if( !$(this).val() ) return;
+		$('#frm').attr('action','__GROUP__/public/upload/addwater/no/currentfile/iconfile');
+		$('#frm').submit();
+	 });
+	 //会员卡背景
+	$('#bgfile').change(function(){  
+		if( !$(this).val() ) return;
+		$('#frm').attr('action','__GROUP__/public/upload/addwater/no/flag/4/currentfile/bgfile');
+		$('#frm').submit();
+	 });
+	 //图文消息封面
+	$('#picturefile').change(function(){  
+		if( !$(this).val() ) return;
+		$('#frm').attr('action','__GROUP__/public/upload/addwater/no/flag/5/currentfile/picturefile');
+		$('#frm').submit();
+	 });
+	 
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frm').attr('action','{$Action}');
+	 });
+	 
+	$('.cardimg').mouseover(function(){
+		$(this).css('border',  '1px solid green' );
+	 });
+	 
+	 $('.cardimg').mouseout(function(){
+		$(this).css('border',  '1px solid white' );
+	 });
+	 
+	 $('#CardName').keyup(function(){
+		$("#cname").text( $('#CardName').val() );
+	 });
+	 
+	 $("#CardIcon").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	 });
+	 $("#CardPicture").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	 });
+	 
+	$("#CardBackground").powerFloat({
+		reverseSharp:true,
+		position:"3-2"
+	});
+	 
+	$("#CardNumberColor").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#cnumber").css("color",color);
+		}
+	});
+	
+	$("#CardNameColor").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#cname").css("color",color);
+		}
+	});
+	 
+	 $('#CardName').focus();
+	 
+});
+
+function GoBack(){
+	window.location.href = "{$Url}card";
+}
+
+function sc(id){
+	var pic ="{$WebPublic}Images/card/bg"+id+".png";
+	$("#CardBackground").val(pic);
+	$("#cbg").attr("src", pic);
+}
+
+function getString(LinkType){
+		if(LinkType=="1"){
+			var str = 	"<select name='LinkUrl[]'>";
+			<volist name="Channel" id="ch">
+			 str += "<option value='{$ch.ChannelID}'>{$ch.ChannelName}</option>";
+			</volist>
+			str += "</select>";
+		}else{
+			 str = "<select name='LinkUrl[]' >";
+			<volist name="UrlApp" id="ua">
+			str += "<option value='{$ua.AppID}' >[{$ua.AppTypeName}] {$ua.AppName}</option>";
+			</volist>
+			str += "</select>";
+		}
+		return str;
+}
+
+	
+function changeLinkType(obj){
+	var LinkType = $(obj).val();
+	switch(LinkType){
+		case '1':  //内部频道
+			html = getString(1);
+			break;
+		case '2':  //微应用
+			html = getString(2);
+			break;
+		case '3':  //外部链接
+			 html = "<input type='text' class='textinput'  name='LinkUrl[]' value='http://' />";
+			break;
+	}
+	$(obj).parent().next().html(html);
+}
+	
+//添加一个项目
+function addLinkItem(){
+		var item="<div class='linkitem'>";
+		item += "<div class='name'><input type='text' class='textinput' style='width:100%' name='LinkName[]' value='' /></div>";
+		item += "<div class='type'>";
+		item += "<select name='LinkType[]'  onchange='changeLinkType(this)'>";
+		item += "<option value='1' >内部频道</option><option value='2' >微应用</option><option value='3' >外部链接</option>";
+		item += "</select>";
+		item += "</div>";
+		item += "<div class='url'>"+getString(1)+"</div>";
+		item += "<div class='op'><a  onclick='delLinkItem(this)'>[-删除]</a></div>";
+		item += "</div>";
+		$(".linkbody").append(item);
+		$(".linkbody input[name='LinkName[]']").last().focus();
+}
+
+function delLinkItem(obj){
+	$(obj).parent().parent().remove();
+}
+</script>

@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container box-footer-fixed">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}" enctype="multipart/form-data" >
+        <div class="box-header" id="c1"><h4>基本设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+               <tr>
+                    <th>App Logo</th>
+                    <td><input type="text" id="AppLogoFileImage" class="textinput w450" name="APP_LOGO" value="{$AppLogo}"  />
+                    <span class='UploadWrapper'>
+                            <input class='btnFileUpload' type='button' value='上传' />
+                            <input id='AppLogoFile' name ='AppLogoFile' type ='file'  size='70'   class='InputFile'  accept="image/*" />
+                     </span>
+                    <input id='btnAppLogoServer' onclick="BrowserServer('AppLogoFileImage')" name ='btnAppLogoServer'  type ='button' value='{$Think.lang.SelectPicture}'     class="btnPadding" />
+                    <span class='Caution'>在App标题栏显示的Logo，建议使用png透明格式图片</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>App主题颜色</th>
+                    <td><input type="text" class="textinput" style="width:80px;" id="AppThemeColor" name="APP_THEME_COLOR" value="{$AppThemeColor}" />
+                    <span class='Caution'>格式：16进制颜色格式。设置App标题栏、按钮、底部选项卡等颜色。留空表示使用默认主题颜色！</span></td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="box-header" id="c2"><h4>极光推送接口</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+                <tr>
+                    <th>AppKey</th>
+                    <td><input type="text" class="textinput" style="width:260px;" id="AppSecretJiguang" name="APP_KEY_JIGUANG" value="{$AppSecretJiguang}" />
+                    <span class='Caution'>注册极光推送插件后，登陆后台查询。
+                    注册地址：<a href="https://www.jiguang.cn/" target="_blank" style="color:red;">https://jiguang.cn</a></span></td>
+                </tr>
+                <tr>
+                    <th>Master Secret</th>
+                    <td><input type="text" class="textinput" style="width:260px;" id="AppMasterSecretJiguang" name="APP_MASTER_SECRET_JIGUANG" value="{$AppMasterSecretJiguang}" />
+                    <span class='Caution'>用于服务器端 API 调用时与 AppKey 配合使用达到鉴权的目的，请保管好 Master Secret 防止外泄。</span></td>
+                </tr>
+            </table>
+        </div>
+        
+       <div class="box-header" id="c2"><h4>将App分享给朋友设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+                <tr>
+                    <th>分享标题</th>
+                    <td><input type="text" class="textinput" style="width:200px;" id="AppShareTitle" name="APP_SHARE_TITLE" value="{$AppShareTitle}" />
+                    <span class='Caution'>建议12个字内，如：某某App下载</span></td>
+                </tr>
+                <tr>
+                    <th>分享描述</th>
+                    <td><input type="text" class="textinput" style="width:450px;" id="AppShareDescription" name="APP_SHARE_DESCRIPTION" value="{$AppShareDescription}" />
+                    <span class='Caution'>请填写分享简短描述，建议35个字内</span></td>
+                </tr>
+                <tr>
+                    <th>安卓应用apk下载地址</th>
+                    <td><input type="text" id="AppApkShareUrl" class="textinput w450" name="APP_APK_SHARE_URL" value="{$AppApkShareUrl}"  />
+                    <span class='Caution'>注意：必须为app在应用商店的下载地址，不能直接连接到apk。如果是苹果app，则直接以"苹果应用ipa下载地址"作为分享下载地址</span></td>
+                </tr>
+            </table>
+        </div>
+            
+        <div class="box-header" id="c2"><h4>下载与在线升级</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+                <tr>
+                    <th>App版本</th>
+                    <td><input type="text" class="textinput" style="width:60px;" name="APP_VERSION" value="{$AppVersion}" />
+                    <span class='Caution'>当客户App比当前设置的版本低时，会提示自动升级。格式：主版本.次版本.修订号，如：8.3.12</span></td>
+                </tr>
+                <tr>
+                    <th>App大小</th>
+                    <td><input type="text" class="textinput" style="width:60px;" name="APP_APK_SIZE" value="{$AppApkSize}" />
+                    <span class='Caution'>如：5.18M，主要用于在APP在线升级时显示文件大小！</span></td>
+                </tr>
+                <tr>
+                    <th>App版本说明</th>
+                    <td><textarea name="APP_VERSION_DESCRIPTION" style="width:360px; height:100px;">{$AppVersionDescription}</textarea>
+                    <span class='Caution'>APP升级界面提示的版本升级说明</span></td>
+                </tr>
+                <tr>
+                    <th>安卓应用apk本地下载地址</th>
+                    <td><input type="text" id="AppApkUrlFileImage" class="textinput w450" name="APP_APK_URL" value="{$AppApkUrl}"  />
+                    <span class='UploadWrapper'>
+                            <input class='btnFileUpload' type='button' value='上传' />
+                            <input id='AppApkUrlFile' name ='AppApkUrlFile' type ='file'  size='70'  class='InputFile' accept=".apk" />
+                    </span>
+                    <input id='btnAppApkUrlServer' onclick="BrowserServer('AppApkUrlFileImage')" name ='btnAppApkUrlServer'  type ='button' value='{$Think.lang.SelectPicture}'  class="btnPadding"  />
+                     <span class='Caution'>请上传apk文件，用于App在线升级！<br/></span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>安卓应用apk本地下载地址二维码</th>
+                    <td><input type="text" id="AppApkQrcodeFileImage" class="textinput w450" name="APP_APK_QRCODE" value="{$AppApkQrcode}"  />
+                    <span class='UploadWrapper'>
+                            <input class='btnFileUpload' type='button' value='上传' />
+                            <input id='AppApkQrcodeFile' name ='AppApkQrcodeFile' type ='file'  size='70'   class='InputFile'  accept="image/*" />
+                    </span>
+                    <input id='btnAppApkQrcodeServer' onclick="BrowserServer('AppApkQrcodeFileImage')" name ='btnAppApkQrcodeServer'  type ='button' value='{$Think.lang.SelectPicture}'  class="btnPadding"  />
+                    <span class='Caution' style="color:#F30">二维码在线制作网址：<a href="http://cli.im/url" target="_blank">http://cli.im/url</a><br/></span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>苹果应用商店下载地址</th>
+                    <td><input type="text" id="AppIpaUrlFileImage" class="textinput w450" name="APP_IPA_URL" value="{$AppIpaUrl}"  />
+                            <span class='Caution'>请填写App在苹果应用商店的地址</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>苹果应用商店下载地址二维码</th>
+                    <td><input type="text" id="AppIpaQrcodeFileImage" class="textinput w450" name="APP_IPA_QRCODE" value="{$AppIpaQrcode}"  />
+                    <span class='UploadWrapper'>
+                            <input class='btnFileUpload' type='button' value='上传' />
+                            <input id='AppIpaQrcodeFile' name ='AppIpaQrcodeFile' type ='file'  size='70'   class='InputFile'  accept="image/*" />
+                     </span>
+                    <input id='btnAppIpaQrcodeServer' onclick="BrowserServer('AppIpaQrcodeFileImage')" name ='btnAppIpaQrcodeServer'  type ='button' value='{$Think.lang.SelectPicture}'  class="btnPadding"  />
+                    <span class='Caution' style="color:#F30">二维码在线制作网址：<a href="http://cli.im/url" target="_blank">http://cli.im/url</a></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="box-header" id="c1"><h4>底部工具栏设置</h4></div>
+        <div class="box-content">
+            <style>
+                .item1, .item2, .item3, .item4{ float:left;  text-align:center; padding:0px 5px;}
+                .item1{ width:300px; }
+                .item2{  width:80px; }
+                .item3{  width:180px; }
+                .item4{ width:180px; }
+            </style>
+            <table class="boxtable">
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class="item1">调用频道</div>
+                        <div class="item2">显示名称</div>
+                        <div class="item3">选中前图标字体字符串</div>
+                        <div class="item4">选中后图标字体字符串</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>第2个选项卡</th>
+                    <td>
+                        <div class="item1">
+                           <select name='APP_TAB2_CHANNELID' style="width:99%;">
+                                <volist name="Channel" id="c">
+                                    <eq name="c.ChannelID" value="$AppTab2ChannelID">
+                                        <option value="{$c.ChannelID}" selected="selected">{$c.ChannelName}</option>
+                                    <else/>
+                                        <option value="{$c.ChannelID}">{$c.ChannelName}</option>
+                                    </eq>
+                                </volist>
+                            </select>
+                        </div>
+                        <div class="item2"><input type="text" class="textinput" style="width:99%;" name="APP_TAB2_TITLE" value="{$AppTab2Title}" /></div>
+                        <div class="item3"><input type="text" class="textinput" style="width:99%;" name="APP_TAB2_ICON" value="{$AppTab2Icon}" /></div>
+                        <div class="item4"><input type="text" class="textinput" style="width:99%;" name="APP_TAB2_ICON_ACTIVE" value="{$AppTab2IconActive}" /></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>第3个选项卡</th>
+                    <td>
+                        <div class="item1">
+                           <select name='APP_TAB3_CHANNELID' style="width:99%;">
+                                <volist name="Channel" id="c">
+                                    <eq name="c.ChannelID" value="$AppTab3ChannelID">
+                                        <option value="{$c.ChannelID}" selected="selected">{$c.ChannelName}</option>
+                                    <else/>
+                                        <option value="{$c.ChannelID}">{$c.ChannelName}</option>
+                                    </eq>
+                                </volist>
+                            </select>
+                        </div>
+                        <div class="item2"><input type="text" class="textinput" style="width:99%;" name="APP_TAB3_TITLE" value="{$AppTab3Title}" /></div>
+                        <div class="item3"><input type="text" class="textinput" style="width:99%;" name="APP_TAB3_ICON" value="{$AppTab3Icon}" /></div>
+                        <div class="item4"><input type="text" class="textinput" style="width:99%;" name="APP_TAB3_ICON_ACTIVE" value="{$AppTab3IconActive}" /></div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th></th>
+                    <td>
+                        <span class='Caution'>图标字体字符串，如：ion-ios-home、ion-ios-home-outline
+                            &nbsp;&nbsp;图标字体详见：<a href="http://ionicons.com/" target="_blank">http://ionicons.com</a>
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+                 
+        <div class="box-footer">
+            <div class="box-footer-inner"><input id="btnSubmit" type="submit" value="保存设置" /></div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type='text/javascript'>
+	function BrowserServer(type){
+		if(checkSafeQuestion()) return;
+		FileManager.selectActionFunction = function(fileUrl){ 
+			document.getElementById(type).value = fileUrl; 
+		};
+		FileManager.popup(); 
+	}
+	
+	//上传
+	function StartUpload(type){
+		var url = $("#"+type).val();
+		var ext = "";
+		if(url){
+			pos = url.lastIndexOf(".")+1;
+			ext = url.substring(pos).toLowerCase();
+		}
+		if(type=="AppApkUrlFile"){
+			if(url == ""){ ErrorBox("文件不能为空！"); return false; }
+			if( ext != "apk"){ ErrorBox("必须为apk格式文件！"); return false; }
+		}else if(type=="AppIpaUrlFile"){
+			if(url == ""){ ErrorBox("文件不能为空！"); return false; }
+			if( ext != "ipa"){ ErrorBox("必须为ipa格式文件！"); return false; }
+		}
+		$('#frmConfig').attr('action','__GROUP__/public/upload/addwater/no/currentfile/'+type);
+		$('#frmConfig').submit();
+	}
+	
+	$(document).ready(function(){
+		$('#frmConfig').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+            }else if(data.status==0){
+				ErrorBox(data.info);
+			}else if(data.status==2){
+				ErrorBox(data.info); //上传失败
+			}else if(data.status==3){
+				$('#'+data.data.ImageField).val(data.data.Path);
+				SucceedBox(data.info); //上传成功
+			}
+		};
+			 
+		 $('#AppLogoFile').change(function(){ 
+		 	if( !$(this).val() ) return;
+		 	return StartUpload("AppLogoFile"); 
+		 });
+		 
+		 $('#AppApkUrlFile').change(function(){ 
+		 	if( !$(this).val() ) return;
+		 	return StartUpload("AppApkUrlFile"); 
+		});
+		
+		 $('#AppApkQrcodeFile').change(function(){ 
+		 	if( !$(this).val() ) return;
+		 	return StartUpload("AppApkQrcodeFile");
+		 });
+		 
+		 $('#AppIpaUrlFile').change(function(){ 
+		 	if( !$(this).val() ) return;
+		 	return StartUpload("AppIpaUrlFile"); 
+		  });
+		  
+		 $('#AppIpaQrcodeFile').change(function(){ 
+			 if( !$(this).val() ) return;
+		 	return  StartUpload("AppIpaQrcodeFile"); 
+		  });
+		 
+		 //保存提交
+		 $('#btnSubmit').click(function(){
+		 	$('#frmConfig').attr('action','{$Action}');
+	     });
+		 
+		 $('#frmConfig').submit(function(){
+		 	LoadBox();
+	     	return false;
+	     });
+		 
+		 $("#AppThemeColor").colorpicker({
+			fillcolor:true,
+			success:function(o,color){
+				//$("#WaterText").css("color",color);
+			}
+		});
+		
+	   function pageInit(){
+			$("#AppLogoFileImage").powerFloat({ targetMode: "ajax",	 targetAttr: "value", position: "5-7" });
+			$("#AppApkQrcodeFileImage").powerFloat({targetMode: "ajax",targetAttr: "value",position: "5-7"});
+			$("#AppIpaQrcodeFileImage").powerFloat({targetMode: "ajax",targetAttr: "value",position: "5-7"});
+		}
+		pageInit();
+	});
+</script>

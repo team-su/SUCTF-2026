@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<include file="./Public/tpl/wx/meta.html" />
+<title>{$LotteryName}</title>
+<link href="{$AppCss}wheel.css" rel="stylesheet" type="text/css">
+</head>
+<body class="activity-lottery-winning">
+<div class="main">
+
+<eq name="LotteryStatus" value="3">
+    <eq name="LotteryRepeat" value="0">
+        <div id="outercont">
+            <div id="outer-cont">
+                <div id="outer" style="-webkit-transform: <empty name="Think.get.d">rotate(2136deg)<else/>{$Think.get.d}</empty>;">
+                <img src="{$AppImages}activity-lottery-1.png" width="310px">
+                </div>
+            </div>
+            <div id="inner-cont">
+                <div id="inner"><img src="{$AppImages}activity-lottery-2.png"></div>
+            </div>
+        </div>
+    </eq>
+</eq>
+
+<!--活动已结束 start-->
+<eq name="LotteryStatus" value="2">
+    <div id="outercont" style="width:100%; border:0px solid red; text-align:center">
+    <img src="{$AppImages}activity-lottery-end2.jpg" >
+    </div>
+</eq>
+<!--活动已结束 end-->
+
+<!--content start-->
+<div class="content">
+    <!--活动未开始 start-->
+    <eq name="LotteryStatus" value="1">
+    <div class="boxcontent boxwhite">
+        <div class="box">
+            <div class="title-brown"><span>活动未开始：</span></div>
+            <div class="Detail">
+                <p style="color:red">亲，活动尚未开始哦！</p>
+                <p style="color:red">活动时间：{$LotteryStartTime}到{$LotteryEndTime}</p>
+            </div>
+        </div>
+    </div>
+    </eq>
+    <!--活动未开始 end-->
+    
+    <!--重复抽奖说明 start-->
+    <eq name="LotteryStatus" value="3">
+        <eq name="LotteryRepeat" value="1">
+            <div class="boxcontent boxwhite">
+                <div class="box">
+                    <div class="title-red"><span>重复抽奖说明</span></div>
+                    <div class="Detail">
+                    <p>本次活动每天允许转<b style="color:red">{$LotteryDayMax}</b>次奖，
+                    总共能转<b style="color:red">{$LotteryMax}</b>次，今天已经转完了！
+                    <gt name="LotteryNumberLeft" value="0">明天再来吧！</gt>
+                    </p>
+                    </div>
+                </div>
+            </div>
+        </eq>
+    </eq>
+    <!--重复抽奖说明 end-->
+                
+    <div class="boxcontent boxyellow" id="result" style="display:none">
+        <div class="box">
+            <div class="title-orange"><span>恭喜你中奖了</span></div>
+            <div class="Detail">
+                <p>你中了：<span class="red">{$LotteryAwardText}</span></p>
+                <p>您的兑奖SN码：<span class="red" id="sncode">{$AwardSN}</span></p>
+				<notempty name="LotteryTip"><p>{$LotteryTip}</p></notempty>
+                <p class="red">本次兑奖码已关联你的微信号，你可以向公众号发送"兑奖"进行查询！</p>
+                <p><input name="username" class="px" id="username" type="text" value="{$MemberRealName}" placeholder="输入您的姓名"></p>
+                <p><input name="mobile" class="px" id="mobile" type="text"  value="{$MemberMobile}" placeholder="输入您的手机号码"></p>
+                <p><input name="pwd" class="px" id="pwd" type="password" value="" placeholder="商家输入兑奖密码"></p>
+                <p><input class="pxbtn" id="btnSave" name="提 交" type="button" value="提 交"></p>
+            </div>
+        </div>
+    </div>
+    
+     <!--没有中奖 start-->
+    <div id="wzj" style="display:none" class="boxcontent boxwhite">
+        <div class="box">
+            <div class="title-red"><span>谢谢参与</span></div>
+            <div class="Detail">
+            	<gt name="LotteryDayNumberLeft" value="1">
+                    <p>呜呜呜~~，您今天已经转了<span class="red">{$LotteryDayNumber+1}</span>次奖，还没有中奖哦！
+							<gt name="LotteryNumberLeft" value="1">
+								还有<span class="red">{$LotteryDayNumberLeft-1}</span>次机会，祝你好运哦！<br/>
+								<input name="btnTry" class="pxbtn" id="btnTry" type="button" value="我要再转一次奖">
+							<else/>
+								等待下一次机会吧，祝下次好运！
+							</gt>
+                    </p>
+                <else/>
+                	<p>呜呜呜~~，您今天已经转了<span class="red">{$LotteryDayNumber+1}</span>次奖，还没有中奖哦！
+						<gt name="LotteryNumberLeft" value="1">
+							每天允许转<span style="color:red">{$LotteryDayMax}</span>次奖，
+							总共能转<span style="color:red">{$LotteryMax}</span>次，今天转完了，明天再来吧！
+						<else/>
+							等待下一次机会吧，祝下次好运！
+						</gt>
+                    </p>
+                </gt>
+            </div>
+        </div>
+    </div>
+    <!--没有中奖 end-->
+
+    <div class="boxcontent boxyellow">
+        <div class="box">
+            <div class="title-green"><span>奖项设置：</span></div>
+            <div class="Detail">
+                    <p><b>一等奖：</b> {$LotteryAward1}&nbsp;&nbsp;数量：<span style="color:red">{$LotteryAward1Num}</span></p>
+                    <p><b>二等奖：</b>{$LotteryAward2}&nbsp;&nbsp;数量：<span style="color:red">{$LotteryAward2Num}</span></p>
+                    <p><b>三等奖：</b>{$LotteryAward3}&nbsp;&nbsp;数量：<span style="color:red">{$LotteryAward3Num}</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="boxcontent boxyellow">
+        <div class="box">
+            <div class="title-green">活动说明：</div>
+            <div class="Detail">
+                    <p><b>活动名称：</b>{$LotteryName}</p>
+                    <p><b>活动时间：</b>{$LotteryStartTime}到{$LotteryEndTime}</p>
+                    <p>每天能转<span style="color:red">{$LotteryDayMax}</span>次奖，
+					总共允许转<span style="color:red">{$LotteryMax}</span>次奖！
+					</p>
+                    <notempty name="LotteryDescription"><p>{$LotteryDescription}</p></notempty>
+            </div>
+        </div>
+    </div>
+</div>
+<!--content end-->
+</div>
+<eq name="LotteryStatus" value="3">
+<eq name="LotteryRepeat" value="0">
+<script src="{$AppJs}jquery.js" type="text/javascript"></script>
+<script src="{$AppJs}alert.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+	window.requestAnimFrame=(function(){
+		return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(callback){window.setTimeout(callback,1000/60)}
+			})();
+			
+			var totalDeg=360*3+0;
+			var steps=[];
+			var lostDeg=[36,66,96,156,186,216,276,306,336];
+			var prizeDeg=[6,126,246];
+			var prize;
+			var sncode;
+			var count=0;
+			var now=0;
+			var a=0.1;
+			var outter,inner,timer,running=false;
+			
+			function countSteps(){
+					var t=Math.sqrt(2*totalDeg/a);
+					var v=a*t;
+					for(var i=0;i<t;i++){
+						steps.push((2*v*i-a*i*i)/2)
+					}
+					steps.push(totalDeg)
+			}
+			
+			function step(){
+				outter.style.webkitTransform='rotate('+steps[now++]+'deg)';
+				outter.style.MozTransform='rotate('+steps[now++]+'deg)';
+				if(now<steps.length){
+					requestAnimFrame(step)
+				}else{
+					running=false;
+					setTimeout(function(){
+						if(prize!=null){
+								$("#result").slideToggle(500);
+								$("#outercont").slideUp(500);
+						}else{
+								$("#wzj").slideToggle(500);
+								$("#outercont").slideUp(500);
+								//刷新以后，如何记住上一次指针的位置
+								//d = (outter.style.webkitTransform).toString();
+								//location.href = "__URL__/lottery?appid={$AppID}&d="+d;
+								//alert();
+						}
+				},200)
+				} //else
+			}
+							
+			function start(deg){
+				deg=deg||lostDeg[parseInt(lostDeg.length*Math.random())];
+				running=true;
+				clearInterval(timer);
+				totalDeg=360*5+deg;
+				steps=[];
+				now=0;
+				countSteps();
+				requestAnimFrame(step)
+			}
+			
+			window.start=start;
+			outter=document.getElementById('outer');
+			inner=document.getElementById('inner');
+			i=10;
+								
+		$("#inner").click(function(){
+				if(running) return;
+				<in name="LotteryAward" value="1,2,3">
+					prize={$LotteryAward};  //1:一等奖，2：二等奖，3：三等奖，null:没有中奖
+				<else/>
+					prize=null;
+				</in>
+				sncode='{$AwardSN}';  //sn编码
+				$.post("__URL__/registerLottery", {action:"register",sn: sncode }, null);
+				start(prizeDeg[prize-1]);
+		});
+								
+		//再刮一次奖
+		$("#btnTry").click(function() {
+			var url = location.href.toString();
+			var timenow = new Date().getTime();
+			window.location.href = url+"&time="+timenow;
+			//location.reload(true); //在微信里无效，必须加timenow
+		});
+			
+		$("#btnSave").bind("click",function(){
+			var mobile = $("#mobile").val();
+			if (mobile == '') { alert("请输入手机号"); return; }
+	
+			var username= $("#username").val();
+			if (username == '') { alert("请输入姓名"); return;}
+			
+			var postdata = {
+				appid: "{$AppID}",
+				sn: $("#sncode").text(),
+				mobile: mobile,
+				username:username,
+				pwd: $("#pwd").val(),
+				action: "set"
+			};
+			$.post("__URL__/registerMobile", postdata, function(data) {  
+				alert(data.info); 
+			},  "json");
+		});
+});
+</script>
+</eq>
+</eq>
+</body>
+</html>

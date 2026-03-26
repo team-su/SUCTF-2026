@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'AttributeValueID', 1 => 'TypeAttributeID', 2 => 'InfoID', 3 => 'AttributeValue', 4 => 'AttributePicture', 5 => 'AttributePrice', '_autoinc' => true, '_pk' => 'AttributeValueID', ); ?>

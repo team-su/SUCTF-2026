@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+      <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+        </div>
+        <table class="datatable" id="datatable">
+        <tr>
+            <th width="35px"  nowrap="nowrap">选中</th>
+            <th width="60px" >简历编号</th>
+            <th>应聘职位</th>
+            <th width="100px" >姓名</th>
+            <th width="50px" >性别</th>
+            
+            <th width="140px" >联系电话</th>
+            <th width="170px" >电子邮件</th>  
+            <th width="135px" >投递时间</th>
+            <th width="150px">操作</th>
+        </tr>
+        <notempty name="Resume">
+            <volist name="Resume" id="m">
+                <tr id="tr{$m.ResumeID}">
+                    <td><input class="checkrow" type="checkbox" name="ResumeID[]" value="{$m.ResumeID}" /></td>
+                    <td><span id="ResumeID{$m.ResumeID}">{$m.ResumeID}</span></td>
+                    <td>{$m.JobName|htmlspecialchars}</td> 
+                    <td>{$m.GuestName|htmlspecialchars}</td>
+                    <td>{$m.Gender|htmlspecialchars}</td>
+                    <td>{$m.Telephone|htmlspecialchars}</td>
+                    <td>{$m.Email|htmlspecialchars}</td>
+                    <td>{$m.Time|strtotime|yd_friend_date}</td> 
+                    <td class="operator">
+                        <a style="float:left" id="btnAnswer" name="btnAnswer" href="{$Url}Modify/ResumeID/{$m.ResumeID}">修改</a>
+                        <div class="btn-sep"></div>
+                        <a style="float:left" onclick="Del({$m.ResumeID})" class="btnDel">删除</a>
+                    </td>
+                </tr>
+            </volist> 
+         <else/>
+             <tr><td colspan="9"  id="NoData">{$Think.lang.NoDataTip}</td></tr>
+        </notempty>                                
+        </table>
+        <div class="tfoot"><div class="page">{$Page}</div></div>
+    </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function Del(id){
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}delResume/ResumeID/"+id+"/p/{$NowPage}";
+		location.href = url;
+	});
+}
+
+//批量删除
+function BatchDel(){
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='ResumeID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/batchDelResume");
+		$('#frm').submit();
+	});
+}
+</script>

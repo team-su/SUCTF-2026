@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    	<title>{$LotteryName}</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<include file="./Public/tpl/wx/meta.html" />
+        <link href="{$AppCss}scratch.css" rel="stylesheet" type="text/css">
+	</head>
+	<body data-role="page" class="activity-scratch-card-winning">
+		<div class="main">
+        	<eq name="LotteryStatus" value="3">
+            <eq name="LotteryRepeat" value="0">
+                <div class="cover">
+                    <img src="{$AppImages}activity-scratch-card-bannerbg.png">
+                    <div id="prize"></div>
+                    <div id="scratchpad"></div>
+                </div>
+            </eq>
+            </eq>
+            
+			<!-- content start-->
+            <div class="content">
+                <!--活动未开始 start-->
+                <eq name="LotteryStatus" value="1">
+            	<div class="boxcontent boxwhite">
+					<div class="box">
+						<div class="title-brown"><span>活动未开始：</span></div>
+						<div class="Detail">
+                        	<p style="color:red">亲，活动尚未开始哦！</p>
+                        	<p style="color:red">活动时间：{$LotteryStartTime}到{$LotteryEndTime}</p>
+                        </div>
+					</div>
+				</div>
+                </eq>
+                <!--活动未开始 end-->
+            
+            	<!--活动结束 start-->
+                <eq name="LotteryStatus" value="2">
+                    <div class="boxcontent boxwhite">
+                        <div class="box">
+                            <div class="title-brown"><span>{$LotteryEndTitle}：</span></div>
+                            <div class="Detail"><p  style="color:red">{$LotteryEndDescription}</p></div>
+                        </div>
+                    </div>
+                </eq>
+                <!--活动结束 end-->
+                
+                <!--重复抽奖说明 start-->
+                <eq name="LotteryStatus" value="3">
+                <eq name="LotteryRepeat" value="1">
+                    <div class="boxcontent boxwhite">
+                        <div class="box">
+                            <div class="title-red"><span>重复刮奖说明</span></div>
+                            <div class="Detail">							
+								<p>本次活动每天允许刮奖<b style="color:red">{$LotteryDayMax}</b>次，
+									总共能刮<b style="color:red">{$LotteryMax}</b>次，今天已经刮完了！
+									<gt name="LotteryNumberLeft" value="0">明天再来吧！</gt>
+								</p>
+                            </div>
+                        </div>
+                    </div>
+                </eq>
+                </eq>
+                <!--重复抽奖说明 end-->
+                
+            	<!--抽奖结果 start-->
+				<div id="zjl" style="display:none" class="boxcontent boxwhite">
+					<div class="box">
+						<div class="title-red"><span>您刮到奖了</span></div>
+						<div class="Detail">
+							<p>你中了：<span class="red">{$LotteryAwardText}</span></p>
+							<p>您的兑奖SN码：<span class="red" id="sncode">{$AwardSN}</span></p>
+							<notempty name="LotteryTip"><p>{$LotteryTip}</p></notempty>
+							<p class="red">本次兑奖码已关联你的微信号，你可以向公众号发送 兑奖 进行查询！</p>
+                            <p><input name="username" class="px" id="username" type="text"  value="{$MemberRealName}" placeholder="输入您的姓名"></p>
+							<p><input name="mobile" class="px" id="mobile"  type="text"  value="{$MemberMobile}" placeholder="用户请输入您的手机号"></p>
+							<p><input name="pwd" class="px" id="pwd" type="password" value="" placeholder="商家输入兑奖密码"></p>
+                            <p><input name="btnSave" class="pxbtn" id="btnSave" type="button" value="用户提交"></p>
+						</div>
+					</div>
+				</div>
+                <!--抽奖结果 end-->
+                
+                <!--没有中奖 start-->
+				<div id="wzj" style="display:none" class="boxcontent boxwhite">
+					<div class="box">
+						<div class="title-red"><span>谢谢参与</span></div>
+						<div class="Detail">
+                             <gt name="LotteryDayNumberLeft" value="1">
+								<p>呜呜呜~~，您今天已经刮了<span class="red">{$LotteryDayNumber+1}</span>次奖，还没有刮到奖哦！
+									<gt name="LotteryNumberLeft" value="1">
+										还有<span class="red">{$LotteryDayNumberLeft-1}</span>次机会，祝你好运哦！<br/>
+										<input name="btnTry" class="pxbtn" id="btnTry" type="button" value="我要再刮一次奖">
+									<else/>
+										等待下一次机会吧，祝下次好运！
+									</gt>
+								</p>
+                            <else/>
+									<p>呜呜呜~~，您今天已经刮了<span class="red">{$LotteryDayNumber+1}</span>次奖，还没有刮到奖哦！
+										<gt name="LotteryNumberLeft" value="1">
+											每天允许刮奖<span style="color:red">{$LotteryDayMax}</span>次，
+											总共能刮奖<span style="color:red">{$LotteryMax}</span>次，今天刮完了，明天再来吧！
+										<else/>
+											等待下一次机会吧，祝下次好运！
+										</gt>
+									</p>
+                            </gt>
+						</div>
+					</div>
+				</div>
+                <!--没有中奖 end-->
+                
+                <!--奖项设置 start-->
+				<div class="boxcontent boxwhite">
+					<div class="box">
+						<div class="title-brown"><span>奖项设置：</span></div>
+						<div class="Detail">
+							<p><b>一等奖：</b>{$LotteryAward1}&nbsp;&nbsp;数量：<span style="color:red">{$LotteryAward1Num}</span></p>
+							<p><b>二等奖：</b>{$LotteryAward2}&nbsp;&nbsp;数量：<span style="color:red">{$LotteryAward2Num}</span></p>
+							<p><b>三等奖：</b>{$LotteryAward3}&nbsp;&nbsp;数量：<span style="color:red">{$LotteryAward3Num}</span></p>
+						</div>
+					</div>
+				</div>
+                <!--奖项设置 end-->
+                
+                <!--活动说明 start-->
+				<div class="boxcontent boxwhite">
+					<div class="box">
+						<div class="title-brown">活动说明：</div>
+						<div class="Detail">
+                        	<p><b>活动名称：</b>{$LotteryName}</p>
+							<p><b>活动时间：</b>{$LotteryStartTime}到{$LotteryEndTime}</p>
+							<p>每天能刮<span style="color:red">{$LotteryDayMax}</span>次奖，
+							总共允许刮<span style="color:red">{$LotteryMax}</span>次奖！
+							</p>
+                            <p>{$LotteryDescription}</p>
+						</div>
+					</div>
+				</div>
+                <!--活动说明 end-->
+                
+          </div>
+          <!-- content end-->
+			<div style="clear:both;"></div>
+		</div>
+	</body>
+</html>
+<eq name="LotteryStatus" value="3">
+<eq name="LotteryRepeat" value="0">
+        <script src="{$AppJs}jquery.js" type="text/javascript"></script>
+		<script src="{$AppJs}wScratchPad.js" type="text/javascript"></script>
+		<script src="{$AppJs}alert.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			window.sncode = "null";
+			window.prize = "{$LotteryAwardText}";
+			document.getElementById('prize').innerHTML = "{$LotteryAwardText}";
+			var zjl = "{$LotteryAward}";  //是否中奖
+			var goon = true;   //是否继续
+			$(function() {
+				$("#scratchpad").wScratchPad({
+					width: 150,
+					height: 40,
+					color: "#a9a9a7",
+					scratchMove: function(e, percent) {
+						if ( percent > 20 && goon) {
+							if( zjl !="0" ){ //表示中奖了
+ 								$("#zjl").fadeIn();
+							}else{
+								$("#wzj").fadeIn();
+							}
+							goon = false;
+							$.post("__URL__/registerLottery", {action:"register",sn: $("#sncode").text(),}, function(data) {});
+							//$("#zjl").slideToggle(500);
+							//$("#outercont").slideUp(500)
+						}
+					}
+				});
+				//$("#prize").html("谢谢参与");
+				//loadingObj.hide();
+				//$(".loading-mask").remove();
+				
+				//再刮一次奖
+				$("#btnTry").bind("click", function() {
+					var url = location.href.toString();
+					var timenow = new Date().getTime();
+					window.location.href = url+"&time="+timenow;
+					//location.reload(true); //在微信里无效，必须加timenow
+				});
+	
+				//保存用户手机号码
+				$("#btnSave").bind("click", function() {
+					var mobile = $("#mobile").val();
+					if (mobile == '') {
+						alert("请输入手机号");
+						return;
+					}
+					
+					var username= $("#username").val();
+					if (username == '') {
+						alert("请输入姓名");
+						return;
+					}
+	
+					var postdata = {
+						appid: "{$AppID}",
+						sn: $("#sncode").text(),
+						mobile: mobile,
+						username:username,
+						pwd: $("#pwd").val(),
+						action: "set"
+					};
+					$.post("__URL__/registerMobile", postdata, function(data) {  
+						alert(data.info); 
+					},  "json");
+				});
+			
+			});
+		</script>
+</eq>
+</eq>

@@ -1,0 +1,181 @@
+<!--区块5078 开始-->
+<div id="n5078" class="component floor_foot2_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5078">
+	<style type="text/css">
+		#n5078{ 
+			{$TFoot2Bg5078|ParseBG}
+		}
+		#n5078 .component_title,#n5078 .component_body,#n5078 .component_bottom{
+			padding-top:{$TFoot2Padding5078}px;
+		}
+		#n5078 .component_body{
+			padding-bottom:{$TFoot2Padding5078}px;
+		}
+		#n5078 .component_body:before,#n5078 .component_body:after{
+			background-color:{$TFoot2BorderColor5078};
+		}
+		#n5078 .floor_foot2{
+			animation-duration: {$TFoot2AnimationTime5078}s;
+			animation-fill-mode: both;
+		}
+		#n5078 .foot2_title { 
+			{$TFoot2TitleFont5078|ParseFont}
+		}
+		#n5078 .foot2_WeChat .LogoText{ 
+			{$TFoot2QrcodeTextFont5078|ParseFont}
+		}
+		#n5078 .foot2_contact_wrap p{ 
+			{$TFoot2ContactFont5078|ParseFont}
+		}
+		#n5078 .foot2_contact_wrap .Telephone{
+			{$TFoot2TelephoneFont5078|ParseFont}
+		}
+		#n5078 .foot2_navigation .channel1{ 
+			{$TFoot2Channel1Font5078|ParseFont}
+		}
+		#n5078 .foot2_Content img {
+			width:{$TFoot2LogoWidth5078}px;
+		}
+		#n5078 .foot2_Content .foot2_right_text {
+			{$TFoot2LogoTextFont5078|ParseFont}
+		}
+		@media screen and (max-width: 768px) {
+			#n5078 .component_bottom {
+				padding-bottom:{$TFoot2Padding5078}px;
+			}
+		}
+	</style>
+	<div class="floor_foot2 full-width{$TFoot2FullWidth5078}" yd-animation="{$TFoot2AnimationType5078}">
+		<div class="component_title" yd-group="5078" yd-tab="左侧栏设置">
+			<notempty name="TFoot2LeftTitle5078"><div class="foot2_title">{$TFoot2LeftTitle5078}</div></notempty>
+			<div class="foot2_WeChat">
+				<notempty name="TFoot2Qrcode5078"><img src="{$TFoot2Qrcode5078}" title="{$TFoot2QrcodeText5078}" alt="{$TFoot2QrcodeText5078}" /><span class="LogoText">{$TFoot2QrcodeText5078}</span></notempty>
+			</div>
+			<div yd-slot="5078Afoot"></div>
+		</div>
+		<div class="component_body" yd-group="5078" yd-tab="中间栏设置">
+			<notempty name="TFoot2CenterTitle5078"><div class="foot2_title">{$TFoot2CenterTitle5078}</div></notempty>
+			<div class="foot2_contact_wrap" yd-content="contact">
+				<div class="Telephone">{$Telephone}</div>
+				<notempty name="TFoot2ContactText5078"><p>{$TFoot2ContactText5078}</p></notempty>
+				<notempty name="Contact"><p>{$Think.lang.Contact}：{$Contact}</p></notempty>
+				<notempty name="Mobile"><p>{$Think.lang.Mobile}：{$Mobile}</p></notempty>
+				<notempty name="Email"><p>{$Think.lang.Email}：{$Email}</p></notempty>
+				<notempty name="Address"><p>{$Think.lang.Address}：{$Address}</p></notempty>
+			</div>
+			<div yd-slot="5078Bfoot"><!--区块5079 开始-->
+<div id="n5079" class="component floor_child5_main" yd-group="5079" yd-delete="1" yd-animation="{$TChild5AnimationType5079}">
+	<style type="text/css">
+		#n5079{
+			animation-duration: {$TChild5AnimationTime5079}s;
+			animation-fill-mode: both;
+		}
+		#n5079 .floor_child5{
+			padding: {$TChild5Padding5079};
+		}
+		#n5079 .Picture{
+			width: {$TChild5PictureSize5079}px;
+			height: {$TChild5PictureSize5079}px;
+			padding: {$TChild5PicturePadding5079}px;
+			{$TChild5PictureBorder5079|ParseBorder}
+		}
+		#n5079 .Picture:hover{
+			background: {$TChild5HoverBgColor5079} !important;
+		}
+		#n5079 .SubPicture img{
+			width: {$TChild5SubPictureSize5079}px;
+		}
+		#n5079 ul{
+			text-align: {$TChild5FloorAlign5079};
+		}
+		#n5079 li{
+			margin: 0 {$TChild5PictureMargin5079}px;
+		}
+		#n5079 li .Title{
+			{$TChild5TitleFont5079|ParseFont}
+			yd-previewable-class: align align{$TChild5TitleAlign5079};
+		}
+	</style>
+	<ul class="floor_child5">
+		<datalist field="1" id="d" value="$TChild5DataList5079">
+			<li yd-animation="{$TChild5AnimationType5079}">
+				<a href="{$d.LinkUrl}" target="{$d.LinkTarget}">
+					<img class="Picture" src="{$d.Picture}" alt="{$d.Title}" style="background-color: {$d.SubTitle}" title="{$d.Title}" alt="{$d.Title}" />
+					<div class="Title align{$TChild5TitleAlign5079}">{$d.Title}</div>
+				</a>
+				<notempty name="d.SubPicture"><div class="SubPicture"><img src="{$d.SubPicture}" title="{$d.Title}" alt="{$d.Title}" /></div></notempty>
+			</li>
+		</datalist>
+	</ul>
+</div>
+<!--区块5079 结束--></div>
+		</div>
+		<div class="component_bottom" yd-group="5078" yd-tab="右侧栏设置">
+			<notempty name="TFoot2RightTitle5078"><div class="foot2_title">{$TFoot2RightTitle5078}</div></notempty>
+			<ul class="foot2_navigation" yd-content="channel">
+				<channellist id="c1" idlist="$TFoot2Channel5078" offset="0">
+					<li>
+						<a class="channel1 ThemeColorHover" href="{$c1.ChannelUrl}" target="{$c1.ChannelTarget}" >{$c1.ChannelName}</a>
+					</li>
+				</channellist>
+			</ul>
+			<div class="foot2_Content">
+				<notempty name="TFoot2Logo5078"><img src="{$TFoot2Logo5078}" title="{$c1.TFoot2LogoText5078}" alt="{$c1.TFoot2LogoText5078}"/></notempty><div class="foot2_right_text">{$TFoot2LogoText5078|nl2br}</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--区块5078 结束--><!--区块5015 开始-->
+<div id="n5015" class="component floor_support1_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5015">
+	<notempty name="TSupport1Show5015">
+		<style type="text/css">
+			#n5015{ 
+				{$TSupport1Bg5015|ParseBG}
+			}
+			#n5015 .component_body {
+				padding:{$TSupport1Padding5015}px 0;border-top:{$TSupport1BorderHeight5015}px solid {$TSupport1BorderColor5015};
+			}
+			#n5015 .component_body .footer_text{ 
+				text-align:{$TSupport1ExtraTextPosition5015};
+				{$TSupport1ExtraTextFont5015|ParseFont}
+			}
+			#n5015 .WebInfo,#n5015 .WebInfo a{ 
+				text-align:{$TSupport1WebInfoStyle5015};
+				{$TSupport1WebInfoFont5015|ParseFont}
+			}
+			#n5015 .support1_text{
+				{$TSupport1ExtraTextFont5015|ParseFont}
+				{$TSupport1ExtraTextPosition5015}
+			}
+		</style>
+		<div class="floor_support1 full-width{$TSupport1FullWidth5015}">
+			<div class="component_title"></div>
+			<div class="component_body">
+				<notempty name="TSupport1ExtraText5015"><div class="footer_text">{$TSupport1ExtraText5015|nl2br}</div></notempty>
+				<div class="WebInfo support1_{$TSupport1WebInfoStyle5015}" yd-content="basic">
+					<span class="support1_left"><a  href="{$WebUrl}" target="_self">{$Company}</a>&nbsp;{$Think.lang.Copyright}&nbsp;{$WebICP}&nbsp;{$Stat}</span>
+			        <eq name="Think.server.HTTP_HOST|stripos='31'" value="0">
+			            <span class="support1_right">{$Think.lang.TechnicalSupport}：<a href="{$CompanyUrl}" target="_blank">{$Think.lang.YouDianSoftware}</a></span>
+			        </eq>
+				</div>
+			</div>
+			<div class="component_bottom"></div>
+		</div>
+	</notempty>
+</div>
+<!--区块5015 结束-->
+<notempty name="TShowToolbar">
+	<div class="tool_back"></div>
+	<div id="tool" yd-group="2">
+		<ul class="toollist" style="background-color: {$TToolbarBgColor};">
+            <notempty name="TToolbarName1"><li><a  href="{:ChannelUrl($TToolbarChannel1)}" ><img src="{$TToolbarIcon1}"><p>{$TToolbarName1}</p></a></li></notempty>
+            <notempty name="TToolbarName2"><li><a  href="{$TToolbarChannel2}" ><img src="{$TToolbarIcon2}"><p>{$TToolbarName2}</p></a></li></notempty>
+            <notempty name="TToolbarName3"><li><a  href="{:ChannelUrl($TToolbarChannel3)}" ><img src="{$TToolbarIcon3}"><p>{$TToolbarName3}</p></a></li></notempty>
+			<notempty name="TToolbarName4"><li><a  href="{:ChannelUrl($TToolbarChannel4)}" ><img src="{$TToolbarIcon4}"><p>{$TToolbarName4}</p></a></li></notempty>
+		</ul>
+	</div>
+</notempty>
+
+<include file="Public:code" /><gotop id="yd-gotop"  />
+<online id="online" />
+<online3 />
+<baidushare />

@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    {$XUaCompatible}
+    <title>&nbsp;&nbsp; </title>
+    <link href="{$Css}style.css" rel="stylesheet" type="text/css" />
+	<style>
+		body{ font-family:黑体;}
+		#main{ font-size:16px;}
+		.product_table, .item_table{ width:900px; margin:0 auto; text-align:center; }
+		.product_table, .product_table tr{ border:1px solid #999; }
+		.product_table caption{ text-align:left; padding:3px 0;}
+		.product_table caption .OrderNumber{ margin-right:3em;}
+		.product_table th, .product_table td{ padding:8px 5px; text-align:center; border:0px solid #E3E6EB; }
+		.product_table th{  font-weight:bold; background:#fff; }
+		.product_table td{  }
+
+		.product_table .totaltitle{ text-align: right; padding-right:5px; color:#333; }
+		.product_table .totalvalue{ text-align: center; font-weight:normal; color:#333;  }
+		.product_table #DiscountPrice{ color:#333; width:50px; text-align:center;}
+		.product_table #TotalOrderPrice{ font-size:28px; font-weight:bold;}
+		.product_table .ProductAttributes{ color:#666; font-size:14px;}
+		
+		.item_table{ border:0px solid #E3E6EB; margin-bottom:8px; margin-top:8px;}
+		.item_table th, .item_table td{ padding:5px 8px; text-align:center; border:0px solid #E3E6EB;}
+		.item_table th{  font-weight:bold; background:#fff; }
+		.item_table td{ text-align:left; vertical-align:top;}
+		.item_table .thPay{ width:33%;}
+		.item_table .thConsignee{ width:34%;}
+		.item_table .thShipping{ width:33%;}
+		
+		.btnReturn{ background: #f5f5f5;border: 1px solid #ddd; color: #666; padding: 7px 30px; border-radius: 3px;CURSOR: pointer;min-width: 100px; outline: 0; }
+		.btnReturn:hover{ background: #f0f0f0;border-color:#ccc; color: #000;  }
+		
+		/*打印样式*/
+		@page {size: A4 portrait;}
+		@page{ margin:1.2cm; /*设置页边距*/}
+		@media print { 
+		 	.noprint{ display:none;} 
+		}
+	</style>
+</head>
+<body id="main_page">
+<div class="container">
+    <div class="box">
+        <table class="product_table">
+                <caption>
+                    <b>订单编号：</b><span class="OrderNumber">{$Data.OrderNumber}</span>
+                    <b>下单时间：</b>{$Data.OrderTime}
+                </caption>
+                <tr>
+                    <th>商品信息</th>
+                    <th style="width:110px;">产品价格</th>
+                    <th style="width:70px;">购买数量</th>
+                    <th style="width:130px;">小计</th>
+                </tr>
+                <notempty name="Product">
+                    <volist name="Product" id="p">
+                        <tr>
+                            <td style="text-align:left;">
+                                {$p.ProductName}<br/>
+                                <span class="ProductAttributes">
+                                    <volist id="pa" name="p.ProductAttributes">{$pa.TypeAttributeName}：{$pa.AttributeValue}；&nbsp;&nbsp;</volist>
+                                </span>
+                            </td>
+                            <td>{$CurrencySymbol}{$p.ProductPrice}</td>
+                            <td>{$p.ProductQuantity}</td>
+                            <td>{$CurrencySymbol}{$p.TotalPrice}</td>
+                        </tr>
+                    </volist>
+                        <tr>
+                            <td colspan="3"  class="totaltitle">商品总金额：</td>
+                            <td class="totalvalue">{$CurrencySymbol}{$Data.TotalPrice}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"  class="totaltitle">运费：</td>
+                            <td class="totalvalue">{$CurrencySymbol}{$Data.ShippingPrice}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"  class="totaltitle">（商品总金额 + 运费）x  支付手续费比例（{$Data.PayRate}%） = 支付手续费：</td>
+                            <td class="totalvalue">{$CurrencySymbol}<span id="PayPrice">{$Data.PayPrice}</span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"  class="totaltitle">使用优惠券：</td>
+                            <td class="totalvalue">- {$CurrencySymbol}{$Data.CouponPrice}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"  class="totaltitle">积分抵扣：</td>
+                            <td class="totalvalue">- {$CurrencySymbol}{$Data.PointPrice}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="totaltitle">人工调价（正数表示涨价，负数表示跌价）：</td>
+                            <td class="totalvalue">{$CurrencySymbol}{$Data.DiscountPrice}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"  class="totaltitle">实际支付总金额：</td>
+                            <td class="totalvalue">{$CurrencySymbol}<span id="TotalOrderPrice">{$Data.TotalOrderPrice}</span></td>
+                        </tr>
+                <else/>
+                    <tr><td colspan="4"  id="NoData">暂无商品！</td></tr>
+                </notempty>
+            </table>
+                
+            <table class="item_table">
+                    <tr>
+                         <th class="thPay">付款信息</th>
+                         <th class="thShipping">配送信息</th>
+                        <th class="thConsignee">收货人信息</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            支付方式：{$Data.PayName}<br/>
+                            支付总金额：{$CurrencySymbol}{$Data.TotalOrderPrice}
+                        </td>
+                        <td>
+                            配送方式：{$Data.ShippingName}<br/>
+                            运费：{$CurrencySymbol}{$Data.ShippingPrice}<br/>
+                            送货时间：<deliverytimelist id="d"><eq name="d.DeliveryTimeID" value="$Data.DeliveryTimeID">{$d.DeliveryTimeName}</eq></deliverytimelist><br/>
+                            <notempty name="Data.ConsigneeRemark">买家留言：{$Data.ConsigneeRemark}</notempty>
+                        </td>
+                        <td>
+                                姓名：{$Data.ConsigneeRealName}<br/>
+                                电子邮件：{$Data.ConsigneeEmail}<br/>
+                                手机：{$Data.ConsigneeMobile}<br/>
+                                电话：{$Data.ConsigneeTelephone}<br/>
+                                地址：{$Data.ConsigneeAddress}<br/>
+                                <notempty name="Data.ConsigneePostcode">邮编：{$Data.ConsigneePostcode}</notempty>
+                        </td>
+                    </tr>
+            </table>
+        
+            <div class="box-footer noprint">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"  type="button" value="立即打印" onclick="startPrint()" />
+                    <input class="btnReturn" type="button" value="返回" onclick="GoBack()" />
+               </div>
+            </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+function GoBack(){
+	window.location.href = "{$Url}index";
+}
+
+function startPrint(){
+	window.print();
+}
+</script>

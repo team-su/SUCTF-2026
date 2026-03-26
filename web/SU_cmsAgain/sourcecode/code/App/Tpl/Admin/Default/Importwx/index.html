@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="version" content="1.3">
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" method="post"  action="{$Action}" id="frm">
+            <div class="box-header" id="c1">
+                <h4>一键导入微信文章</h4>
+            </div>
+            <div class="box-content">
+				<table class="boxtable">
+					<tr>
+						<th class="w120">微信文章链接</th>
+						<td>
+							<!--测试链接：
+								https://mp.weixin.qq.com/s/JDXVD1zicEssWZ2lkHBmCQ 
+								https://mp.weixin.qq.com/s/r5Kn_vDVM7MGc87eQYlx_Q（带视频）
+								https://mp.weixin.qq.com/s/77anK1I7HyOeEZmiCNfXtA【文章有特殊字符，保存时会截断】
+							-->
+							<input type="text" style="width:50%;float:left; margin-right:10px;" class="textinput" name="WxUrl" id="WxUrl" value="">
+							<input type="button" onclick="importWxArticle()" id="btnSaveAll" class="ImportWx" value="立即导入" />
+							<input type="hidden" name="InfoID" id="InfoID" value="" />
+						</td>
+					</tr>
+					<tr>
+						<th class="w120">文章标题</th>
+						<td><input type="text" style="width:50%;" class="textinput" name="InfoTitle" id="InfoTitle" value=""></td>
+					</tr>
+					<tr>
+						<th class="w120">所属频道</th>
+						<td>
+							<select id="ChannelID" name="ChannelID">
+								<volist name="Channel" id="c">
+									<option mid="{$c.ChannelModelID}" value="{$c.ChannelID}">
+										{$c.ChannelName}
+									</option>
+								</volist>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th class="w120">文章内容</th>
+						<td>
+							<textarea id='InfoContent' name='InfoContent' style="display:none;"></textarea>
+							{:CkEditor('InfoContent', 550)}
+						</td>
+					</tr>
+					<tr>
+						<th class="w120"></th>
+						<td class="red">备注：如需编辑文章缩略图、SEO设置、点击次数等其他属性，请在左侧【内容】里修改</td>
+					</tr>
+				</table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//导入微信文章
+function importWxArticle(){
+	var url="{$Url}import";
+	var wxUrl = $("#WxUrl").val();
+	if(!wxUrl){
+		 $("#WxUrl").focus();
+		ErrorBox("微信文章链接不能为空！");
+		return;
+	}
+	LoadBox("导入中，请稍后...");
+	var params = {"WxUrl": wxUrl};
+	disableButton();
+	$.ajax({
+		url: "{$Url}import", 
+		type: "POST",
+		timeout: 600*1000,  //超时时间10分钟
+		data: params,
+		dataType:"json",
+		success: function(data){
+			enableButton();
+			CloseLoadBox();
+			if (data.status==1){
+				var info = data.data;
+				var TextEditor = 1; //只能为ck "{$TextEditor}";
+				$("#InfoID").val(0); //每次新导入，就重置
+				$("#InfoTitle").val(info["InfoTitle"]);
+				$("#InfoContent").val(info["InfoContent"]);
+				if(1==TextEditor){ //CKEDITOR编辑器
+					for ( s in CKEDITOR.instances ) {
+						CKEDITOR.instances[s].setData( info["InfoContent"] );
+					}
+				}else{ //百度编辑器
+					UE.getEditor('InfoContent').setContent(info["InfoContent"] );
+				}
+				SucceedBox(data.info);
+			}else{
+				ErrorBox(data.info);
+			}
+		},
+		error:function errorCallback(obj, textStatus, errorThrown){
+			enableButton();
+			CloseLoadBox();
+			var errmsg = (textStatus == "timeout") ? "操作超时" :"发生错误 "+obj.statusText;
+			ErrorBox(errmsg);
+		}
+	});
+}
+
+function  disableButton(){
+	$(".ImportWx").attr('disabled',true);
+	$(".ImportWx").css({
+		"background-color":"#ccc",
+		"border-color": "#ccc"
+	});
+}
+
+function  enableButton(){
+	$(".ImportWx").removeAttr("style");
+	$(".ImportWx").removeAttr("disabled");
+}
+
+//提示信息
+$(document).ready(function(){
+    function complete(data){
+		CloseLoadBox();
+        if (data.status==1){
+			$("#InfoID").val(data.data);
+            SucceedBox(data.info);
+        }else if(data.status==0){
+            ErrorBox(data.info);
+        }
+    };
+
+	 $('#frm').click(function(){
+		$('#frm').attr('action','{$Action}');
+	 });
+	 
+    $('#frm').submit(function(){  // 提交表单
+		try{
+			LoadBox();
+			var TextEditor = 1; //只能为ck "{$TextEditor}";
+			if(1==TextEditor){
+				for ( s in CKEDITOR.instances ) {
+					CKEDITOR.instances[s].updateElement();
+				}
+			}else{
+				$("#InfoContent").val( UE.getEditor('container').getContent() );
+			}
+		}catch(e){
+			console.log(e);
+		}finally{
+			$(this).ajaxSubmit( {success: complete,dataType: 'json'} );
+			return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+		}
+    });
+});
+</script>

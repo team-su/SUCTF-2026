@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+       <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+       <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="btnBack" href="{$Url}gift" title="返回">返回</a></li>                  
+            <li></li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="45px" >编号</th>
+                <th width="260px" >礼品名称</th>
+                <th width="100px" >会员卡号</th>
+                <th width="90px" >姓名</th>
+                
+                <th width="40px" >性别</th>
+                <th width="110px">手机号码</th>
+                <th width="70px">花费积分</th>
+                <th style="padding-left:30px; text-align:left">兑换时间</th>
+            </tr>  
+            <notempty name="GiftMember">
+                <volist name="GiftMember" id="m">
+                    <tr>
+                        <td><b>{$i}</b></td>
+                        <td><b style="color:blue">{$m.Remark|htmlspecialchars}</b></td>
+                        <td><b>{$m.CardNumber|htmlspecialchars}</b></td>
+                        <td>{$m.MemberRealName|htmlspecialchars}</td>
+                        
+                        <td><eq name="m.MemberGender" value="0">男<else/>女</eq></td>
+                        <td>{$m.MemberMobile|htmlspecialchars}</td>
+                        <td><b style="color:red">{$m.ScoreNumber|htmlspecialchars}</b></td>
+                        <td style="padding-left:15px; text-align:left">{$m.ScoreTime|strtotime|yd_friend_date}</td>
+                    </tr>
+                </volist>
+            <else/>
+            	<tr><td colspan="8" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                  
+        </table>
+        <div class="tfoot"><div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div></div>
+     </div>
+   </form>
+</div>
+</body>
+</html>

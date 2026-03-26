@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		#backuptip{ padding-left:10px; font-weight:bold; color:#000; line-height: 32px; }
+		#backuptip .down{ 
+			display:inline; padding:0px 3px;margin: 0; vertical-align:middle; 
+			border:0; color:#f30;
+		}
+		#datatable .TipKey{text-align:left; padding-left:5px;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+       <form enctype="multipart/form-data" method="post" id="frm">
+              <div class="table">
+               <div class="toolbars">
+                    <li class="toolbar"><a id="btnSaveAll" class="ydicon-beifen" onclick="backupDb()"  title="一键备份全站">一键备份全站</a></li>
+                    <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                    <li class="toolbar"><a id="del" onclick="BatchDel()" title="删除选中备份文件">删除</a></li>
+                    <li class="toolbar"><span id="backuptip"></span></li>
+                </div>
+              <table class="datatable" id="datatable">
+                    <thead>
+                        <tr>
+                     		<th width="60px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                            <th>备份文件</th>
+                            <th width="140px" >文件大小</th>
+                            <th width="220" >备份时间</th>
+                            <th style="width:120px;padding-left:30px">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <notempty name="SqlFile"> 
+                            <volist name="SqlFile" id="s">
+                            <tr>
+                                <td><input class="checkrow" type="checkbox" name="file[]" value="{$s.Name}" /></td>
+                                <td class="TipKey">{$s.Name}</td>
+                                <td>{$s.Size|byte_format}</td>
+                                <td>{$s.Time|yd_friend_date}</td>
+                                <td class="operator">
+                                    <a style="float:left" onclick="DelZip('{$s.Name}')" class="btnDel">删除</a>
+                                    <div class="btn-sep"></div>
+                                    <a style="float:left"  onclick="DownloadZip('{$s.Name}')" id="btnBackup">下载</a>
+                                </td>
+                            </tr>
+                            </volist>
+                        <else/>
+                            <tr id="NoDataTr"><td colspan="5"  id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                        </notempty>
+                    </tbody>
+                    <tfoot id="warning">
+                        <tr>
+                            <th>备注</th>
+                            <td colspan="4">
+                                【1】一键备份全站包含网站所有资料的备份（包括数据库、程序、上传的资料），但不包含历史备份zip文件；不支持达梦、人大金仓等国产数据库备份<br/>
+                                【2】还原的步骤和安装相同：先将备份文件上传到服务器并解压，然后输入网址自定进入安装程序，按步骤操作即可；<br/>
+                                【3】为了节约空间，可以删除部分和全部的zip备份文件；<br/>
+                                【4】在【模板管理】-【模板选择】里备份的模板也在这里显示，备份文件以<b>home_</b>开头表示电脑模板；<b>wap_</b>开头表示手机模板。
+                            </td>
+                        </tr>
+                    </tfoot>                         
+             </table>
+             <div class="tfoot">
+             	  <div id="notice">
+                      <b>备份数据总大小：<span id="TotalSize" style="color:red;font-weight:bold; margin-right:8px;">{$SqlFileTotalSize|byte_format}</span>
+                      共<span id="FileCount" style="color:red;font-weight:bold">{$SqlFileCount}</span>个备份文件</b>
+                  </div>
+             </div>
+            </div>
+       </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function DownloadZip(name){
+	LoadBox("请求下载，请稍后...");
+	var dir = "{$WebInstallDir}{$Think.const.APP_DATA_PATH}zip/";
+	var url = "{$Url}getZipDownloadUrl";
+	var params = {ZipName:name};
+	$.post(url, params, function(res){
+		setTimeout(function(){
+			CloseLoadBox();
+		}, 700);
+		if(res.status==1){
+			location.href = dir+res.data;
+		}else{
+			ErrorBox(res.info);
+		}
+	}, "json");
+}
+
+//备份所有数据
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	var arrChk = $("input[name='file[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("请选中要删除备份文件!");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/delZip");
+		$('#frm').submit();
+	});
+}
+
+function DelZip(file){
+	if(checkSafeQuestion()) return;
+	var tip = DeleteTip(file);
+	ConfirmBox(tip, function () {
+		url = "{$Url}DelZip/file/"+file;
+		location.href = url;		
+	});
+}
+
+function backupDb(){
+	var title = "<div id='icon_common'>确定一键备份全站吗?</div>";
+	title += "<div style='color:blue;font-size:14px;font-weight:bold;text-indent:50px;'>";
+	title += "备注：如果网站过大导致备份失败，请修改php.ini将脚本最大执行时间调大";
+	title += "<div style='color:red;'>当前脚本最大执行时间 = {:get_cfg_var('max_execution_time')}秒</div>";
+	title += "</div>";
+	var params = {
+		"StatusBar": '<label><input type="checkbox" id="NoUpload">不备份上传目录/Upload</label>',
+		"QuickClose": false
+	};
+	ConfirmBox(title, function () {
+		var  NoUpload = $("#NoUpload").is(':checked') ? 1 : 0;
+		url = "{$Url}backupData"; //备份数据库
+		showtip("正在备份数据库...", true);
+		var data = {NoUpload:NoUpload};
+		$.get(url, data, DbComplete, "json");
+		return true;
+	}, null, params);
+}
+
+	//数据库回调函数
+function DbComplete(data, textStatus){
+	if (data.status == 1){ //备份数据库成功
+		showtip("数据库备份成功，正在压缩全站...", true);
+		/*
+		url = "{$Url}doBackupAll"; //压缩整站
+		$.get(url, null, ZipComplete, "json");
+		*/
+		$.ajax({
+			url: "{$Url}doBackupAll", 
+			type: "POST",
+			timeout: 900*1000,
+			data: {"t":1, "NoUpload": data.data["NoUpload"]},
+			dataType:"json",
+			success: ZipComplete,
+			error:function(obj, textStatus, errorThrown){		
+				console.log(obj, textStatus, errorThrown);
+				var errmsg = "备份失败，";
+				if (textStatus == "timeout") {
+					errmsg += "请求数据超时";
+				}else{
+					errmsg += "请求数据时发生错误"+textStatus;
+				}
+				showtip("", false);
+				ErrorBox(errmsg);
+			}
+		});
+		
+	}else{  //备份数据库失败
+		showtip("", false);
+		ErrorBox(data.info);
+	}
+}
+
+//回调函数
+function ZipComplete(data, textStatus){
+	if (data.status == 1){ //备份数据库成功
+		var str = "压缩全站成功，准备自动下载！如果你的浏览器不支持自动下载，请";
+		str += "<a href='{$WebInstallDir}{$Think.const.APP_DATA_PATH}zip/"+data.data['ZipName']+"'";
+		str += " target='_self' class='down'>点击这里</a>下载！"
+		showtip(str, false);
+		addRow(data.data);
+		var url = "{$WebInstallDir}{$Think.const.APP_DATA_PATH}zip/"+data.data['ZipName'];
+		location.href = url;
+	}else{  //压缩全站失败
+		showtip("", false);
+		ErrorBox(data.info);
+	}
+}
+
+function addRow(obj){
+	var zipName = obj['ZipName'];
+	var zipSize = obj['ZipSize'];
+	var zipTime = obj['ZipTime'];
+	var totalSize = obj['TotalSize'];
+	var fileCount = obj['FileCount'];
+	var html = "<tr>";
+	html += "<td><input type='checkbox' name='file[]' value='"+zipName+"' /></td>";
+	html += "<td style='text-align:left; padding-left:5px;'>"+zipName+"</td>";
+	html += "<td><b>"+zipSize+"</b></td>";
+	html += "<td>"+zipTime+"</td>";
+	html += "<td class='operator'  style='text-align:left; padding-left:5px;'>";
+	html += '<a style="float:left" onclick="DelZip';
+	html +=  "('"+zipName+"')";
+	html += '" class="btnDel">删除</a>';
+	html += "<div style='float:left;width:3px'>&nbsp;</div>";
+	html += "<a style='float:left' href='{$WebInstallDir}{$Think.const.APP_DATA_PATH}zip/"+zipName+"' id='btnBackup'>下载</a>";
+	html += "</td>";
+	html += "</tr>";
+	$(".datatable tbody").prepend(html);
+	$("#TotalSize").html( totalSize );
+	$("#FileCount").html( fileCount );
+	$("#NoDataTr").hide();
+}
+
+function showtip(str, isanimation){
+	html = "";
+	if( isanimation ){
+		html = "<img src='{$WebPublic}Images/loading/9.gif' border='0' align='absmiddle'/>";
+	}
+	html += str;
+	$("#backuptip").html(html);		
+}
+</script>

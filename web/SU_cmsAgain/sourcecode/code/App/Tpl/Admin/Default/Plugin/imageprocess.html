@@ -1,0 +1,834 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+			body{padding-top:3px; background:#fff;font-family:"Microsoft Yahei"; overflow-y:hidden;}
+			.selectedlist{overflow:hidden;}
+			.selectedlist li{  overflow:hidden; padding:5px 10px; margin:5px; float:left; text-align:center; overflow:hidden; border:1px solid #fff; background:#fff; cursor:pointer;}
+			.selectedlist li:hover{ border-color:#ddd; background-color:#f0f0f0;}
+			.selectedlist li.add{ background:none; border:0;}
+			.selectedlist li.active{ border-color:#ca141d; background:url("{$Images}selected.png") bottom right no-repeat #f0f0f0;}
+			
+			.selectedlist li img{ width:100px; height:auto; max-height:100px; vertical-align:middle; }
+			.selectedlist li .img{ width:100px; height:100px; line-height:100px; padding:0px; }
+			.selectedlist li .name{ font-size:12px; color:#666; margin-top:10px; }
+			.selectedlist li .size{ font-size:12px; color:#333; margin-top:3px;}
+			
+			.selectedlist li .AddImage{ height:82px; width:82px; border:1px dashed #ccc; padding:8px; cursor:pointer; }
+			.selectedlist li .AddImage:hover{ border-color:#999; background-color:#fafafa;}
+			
+			.mytable{ width:100%; }
+			.mytable th.left-th{ width:405px; vertical-align:top; }
+			.mytable td{ vertical-align:top; }
+			
+			.pannel{ border:0px solid #87A34D; border-radius:5px 5px 0 0; margin-bottom:8px; overflow:hidden;}
+			.pannel_title{ height:46px; line-height:46px; font-size:16px; text-align:left; padding:0 8px;
+			 border-bottom: 0px solid #ddd;  background:#d5d5d5; color:#000}
+			.ImageCount{ color:#333; display:none; }
+			.ImageCount i{ font-style:normal; padding:0 2px; color:#FF3300;}
+			.ClearAll{ float:right; color:#F00; cursor:pointer;}
+			.ClearAll:hover{ color:#F0F;}
+			.DeleteImage{ float:right; color:blue; cursor:pointer; margin-right:10px; }
+			.DeleteImage:hover{ color:#0066FF;}
+			.pannel_body{ background-color:#f2f2f2; padding:10px 1px; overflow:hidden;}
+			
+			#SizeBody,#WaterBody,#FormatBody{ display:none; }
+			
+			.tdImageProcess{ padding:0 8px; }
+			.ImageProcessWrapper{ overflow:hidden;}
+			.ImageProcessWrapper .pannel_body{ display:none; }
+			.rightmargin{ margin-right: 15px;}
+			.WaterPreview{ padding:8px 20px; background: #F9C; border-radius: 5px;text-align: center;user-select: none; 
+			font-size:16px; color:#fff; cursor:pointer;}
+			.WaterPreview:hover{ color:#eee;}
+			
+			.operator{ text-align:center; padding:10px 3px;}
+			.operator a{font-weight:bold;font-size: 16px;padding: 10px 25px; border-radius: 5px;text-align: center;user-select: none;}
+			.btnStart {color: #fff;background-color: #FF4351; }
+			.btnStart:hover{  color:#fff; background-color:#ff7680;}
+			.btnStop {color: #fff;background: #fec04e;}
+			.btnStop:hover{ color:#fff; background-color:#f3ab26;}
+			.btnSave{color: #fff;background: #b9e563;}
+			.btnSave:hover{ color:#fff; background-color:#a1d243;}
+			
+			/*进度条*/
+			#progress{ line-height: 1.8em; font-size:14px; padding:3px 0 10px 0; width:90%; margin:0 auto;}
+			#lblSuccess{ color:green; font-weight:bold; padding-right:12px;}
+			#lblFail{ color:red; font-weight:bold; padding-right:12px;}
+			#lblTime{ color:blue; font-weight:bold;}
+			
+			/*错误日志*/
+			.errorlist{}
+			.errorlist li{ display:block; line-height:1.6em; overflow:hidden; padding:1px 5px; color:#FF0000;}
+    </style>
+</head>
+<body id="main_page">
+<div class="container">
+<form id="frm" method="post" action="{$Action}" enctype="multipart/form-data" >
+   <table class="mytable">
+    	<tr>
+        	<th class="left-th">
+            	<div class="pannel">
+                	<div class="pannel_title">请选择要处理的图像<span class="ImageCount">(<i></i>)</span>
+                    <span class="ClearAll" onclick="ClearAll()">[清空]</span>
+                    <span class="DeleteImage" onclick="DeleteImage()">[删除]</span>
+                    </div>
+                    <div class="pannel_body fullheight">
+                        <ul class="selectedlist">
+                            <span></span>
+                            <li class="add"><img src="{$Images}addimage.png" class="AddImage" onclick="OpenImageBrowser()" /></li>
+                        </ul>
+                    </div>
+                </div>
+            </th>
+            <td class="tdImageProcess">
+            	<div class="ImageProcessWrapper">
+                    <div class="pannel">
+                        <div class="pannel_title"><label><input class="ProcessItem" type="checkbox" name="Size" id="Size" value="1" onclick="Toggle('Size')" /> 调整尺寸</label></div>
+                        <div class="pannel_body" id="SizeBody">
+                            <table class="boxtable">
+                                <tr>
+                                    <th>调整方式</th>
+                                    <td>
+                                        <label class="rightmargin"><input type="radio" name="ThumbType" value="2" />自动留白（推荐）</label>
+                                        <label class="rightmargin"><input type="radio" name="ThumbType" value="6" />固定尺寸缩放</label>
+                                        <label class="rightmargin"><input type="radio" name="ThumbType" value="3" />居中裁剪</label>
+                                        <label class="rightmargin"><input type="radio" name="ThumbType" value="4" />左上角裁剪</label>
+                                        <label><input type="radio" name="ThumbType" value="5" />右下角裁剪</label>
+                                </td>
+                                </tr>
+                                <tr>
+                                    <th>宽度</th>
+                                    <td>
+                                        <input type="number" class="textinput" style="width:80px" name="ThumbWidth" value="{$ThumbWidth}" />
+                                        <span class='Caution'>单位：像素。填写0，表示根据高度，按比例自动计算宽度</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>高度</th>
+                                    <td>
+                                        <input type="number" class="textinput"  style="width:80px" name="ThumbHeight" value="{$ThumbHeight}" />
+                                        <span class='Caution'>单位：像素。填写0，表示根据宽度，按比例自动计算高度</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="pannel">
+                        <div class="pannel_title"><label><input class="ProcessItem" type="checkbox" name="Water" id="Water" value="1" onclick="Toggle('Water')"/> 加水印</label></div>
+                        <div class="pannel_body" id="WaterBody">
+                            <table class="boxtable">
+                            <tr>
+                                <th>水印类型</th>
+                                <td>
+                                    <label class="rightmargin"><input onclick="ChangeWaterType(1)" type="radio" name="WaterType" value="1" />图片水印</label>
+                                    <label><input onclick="ChangeWaterType(2)" type="radio" name="WaterType" value="2" />文字水印</label>
+                                </td>
+                            </tr>
+                            
+                            <tr class="pictype">
+                                <th>水印图片</th>
+                                <td>
+                                <input type="text" class="textinput w360" id="waterfileImage" name="WaterPic" value="{$WaterPic}" />
+                                <span class='UploadWrapper'>
+                                    <input class='btnFileUpload' type='button' value='上传' />
+                                    <input id='waterfile' name ='waterfile' type ='file'  size='60'  class='InputFile'  accept="image/*"/>
+                                </span>
+                                <input type="button" onclick="SelectWaterPic()" value="{$Think.lang.SelectPicture}"  class="btnPadding" />
+                                </td>
+                            </tr>
+                            
+                            <tr  class="texttype">
+                              <th>水印文字</th>
+                              <td><textarea  id="WaterText" style="color:{$WaterTextColor}; height:30px; width:220px;"  class="textinput" name="WaterText" value="{$WaterText}"  >{$WaterText}</textarea>
+                              <span class='Caution'>若水印文字为中文，必须使用中文字体，否则显示乱码</span>
+                              </td>
+                            </tr>
+                            <tr  class="texttype">
+                              <th>水印字体文件</th>
+                              <td>
+                                  <select name="WaterFont" id="WaterFont" class="textinput">
+                                        <volist id="mf" name="MyFont">
+                                            <option value="{$mf.FontName}">{$mf.FontName} {$mf.FontAlias}</option>
+                                        </volist>
+                                  </select>
+                                  <span class='Caution'>请将水印字体文件放在<b>Public/font/</b>目录下</span>
+                              </td>
+                            </tr>
+                            <tr  class="texttype">
+                              <th>水印文字大小</th>
+                              <td><input type="number" class="textinput" style="width:80px;" name="WaterTextSize" id="WaterTextSize" value="{$WaterTextSize}"  />
+                              <span class='Caution'>水印文字大小，默认为12</span></td>
+                            </tr>
+                            <tr  class="texttype">
+                              <th>水印文字颜色</th>
+                              <td><input type="text" id="WaterTextColor" class="textinput" style="color:{$WaterTextColor};width:80px;" name="WaterTextColor" value="{$WaterTextColor}"  />
+                              <span class='Caution'>16进制表示，如黑色：#000000</span></td>
+                            </tr>
+                            <tr  class="texttype">
+                              <th>水印文字角度</th>
+                              <td><input type="number" class="textinput" style="width:80px;"  name="WaterTextAngle" id="WaterTextAngle" value="{$WaterTextAngle}"  />
+                              <span class='Caution'>取值范围：0-360。0:表示水平，默认为0</span>
+                              </td>
+                            </tr>
+                            <tr  class="texttype">
+                              <th>水印文字水平X偏移</th>
+                              <td><input type="number" class="textinput" style="width:80px;"  name="WaterOffsetX" id="WaterOffsetX" value="{$WaterOffsetX}"  />
+                              <span class='Caution'>水印文字相对当前位置水平方向的偏移量，负数表示向左偏移，默认为0</span>
+                              </td>
+                            </tr>
+                            <tr  class="texttype">
+                              <th>水印文字垂直Y偏移</th>
+                              <td><input type="number" class="textinput" style="width:80px;"  name="WaterOffsetY"  id="WaterOffsetY" value="{$WaterOffsetY}"  />
+                              <span class='Caution'>水印文字相对当前位置垂直方向的偏移量，负数表示向上偏移，默认为0</span>
+                              </td>
+                            </tr>
+                           <tr>
+                                <th class="w120">水印位置</th>
+                                <td>
+                                    <label class="rightmargin"><input type="radio" name="WaterPosition" value="1"  />左上角</label>
+                                    <label class="rightmargin"><input type="radio" name="WaterPosition" value="2"  />上居中</label>
+                                    <label class="rightmargin"><input type="radio" name="WaterPosition" value="3"  />右上角</label><br />
+                                    
+                                    <label class="rightmargin"><input type="radio" name="WaterPosition" value="4"  />左居中</label>
+                                    <label class="rightmargin"><input type="radio" name="WaterPosition" value="5"  />正中间</label>
+                                    <label class="rightmargin"><input type="radio" name="WaterPosition" value="6"  />右居中</label><br />
+                                    
+                                    <label class="rightmargin"><input type="radio" name="WaterPosition" value="7" />左下角</label>
+                                    <label class="rightmargin"><input type="radio" name="WaterPosition" value="8"  />下居中</label>
+                                    <label class="rightmargin"><input type="radio" name="WaterPosition" value="9"  />右下角</label>
+                                </td>
+                            </tr>
+                            <tr style="display:none;">
+                            	<th class="w120"></th>
+                                <td style="padding-top:10px;"><span class="WaterPreview">水印预览</span></td>
+                            </tr>
+                       </table>
+                        </div>
+                    </div>
+                    <div class="pannel">
+                        <div class="pannel_title"><label><input class="ProcessItem" type="checkbox" name="Format"  id="Format" onclick="Toggle('Format')" value="1" /> 格式转换</label></div>
+                        <div class="pannel_body" id="FormatBody">
+                            <table class="boxtable">
+                                <tr>
+                                    <th>目标图像格式</th>
+                                    <td>
+                                        <label class="rightmargin"><input type="radio" name="ImageFormat" value="jpg"  onclick="ChangeImageFormat('jpg')"/>jpg格式</label>
+                                        <label class="rightmargin"><input type="radio" name="ImageFormat" value="png" onclick="ChangeImageFormat('png')"/>png格式</label>
+                                        <label class="rightmargin"><input type="radio" name="ImageFormat" value="gif" onclick="ChangeImageFormat('gif')"/>gif格式</label>
+                                        <label><input type="radio" name="ImageFormat" value="bmp" onclick="ChangeImageFormat('bmp')"/>bmp格式</label>
+                                    </td>
+                               </tr>
+                               <tr class="trJpegQuality">
+                                    <th>图像品质</th>
+                                    <td><input type="number" class="textinput" style="width:70px" min="0" max="100" name="JpegQuality" value="{$JpegQuality}" />
+                                    <span class='Caution'>取值范围：0-100，值越大，图像越清晰，但图像大小也越大，建议设置为：80</span></td>
+                               </tr>
+                          </table>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="width:300px;">
+            	<div class="pannel">
+                	<div class="pannel_title">图像处理输出设置</div>
+                    <div class="pannel_body">
+                        <table class="boxtable">
+                            <tr>
+                                <th style="width:65px;">输出设置</th>
+                                <td style="width:auto;">
+                                    <label class="rightmargin"><input type="radio" name="SaveType" value="1" onclick="ChangeSaveType(1)" />覆盖原文件</label>
+                                    <label><input type="radio" name="SaveType" value="2" onclick="ChangeSaveType(2)"/>输出到指定目录</label>
+                                </td>
+                           </tr>
+                           <tr class="trSaveType2">
+                                <th style="width:65px;">输出目录</th>
+                                <td style="width:auto;">
+                                	<input type="text" class="textinput" style="width:165px" name="SavePath" id="SavePath" value="{$SavePath}" placeholder="如：out，支持多级目录" />
+                                    <input type="button" id="ChoosePath" onclick="SelectImageOutputDir()" style="padding:2px 5px; cursor:pointer;" value="选择" />
+                                </td>
+                           </tr>
+                           <tr class="trSaveType1">
+                           		<th style="width:65px;color:red;">备注：</th>
+                                <td colspan="2" style="width:auto;color:red;">
+                                	<div>处理后直接覆盖源文件，不可恢复，请在处理前先备份图像文件</div>
+                                </td>
+                           </tr>
+                           <tr class="trSaveType2">
+                           		<th style="width:65px;color:red;">备注：</th>
+                                <td colspan="2" style="width:auto;color:red;">
+                                	<div>[1] 填out，表输出到目录：<span style="color:#0066CC">/Upload/out</span></div>
+                                    <div>[2] 若目录不存在，则会自动创建</div>
+                                </td>
+                           </tr>
+                       </table>
+					</div>
+                </div>
+                
+                <div class="pannel">
+                	<div class="pannel_title">操作</div>
+                    <div class="pannel_body">
+                    	<div id="progress">
+                            <div>处理进度：<span class='progressBar' id='pb'></span></div>
+                            <div>成功：<span id='lblSuccess'>0</span>失败：<span id='lblFail'>0</span>耗时：<span id='lblTime'>0&nbsp;秒</span></div>
+                        </div>
+                    	<div class="operator">
+                            <a class="btnStart marginright" t onclick="start()">开始处理</a>
+                    		<a class="btnStop marginright"  onclick="stop()">停止处理</a>
+                        </div>
+					</div>
+                </div>
+                
+                <div class="pannel">
+                	<div class="pannel_title">错误日志</div>
+                    <div class="pannel_body ErrorLogWrapper">
+                    	<ul class="errorlist"></ul>
+					</div>
+                </div>
+            </td>
+        </tr>
+   </table>
+</form>
+</div>
+</body>
+</html>
+<style>
+	.dirlist{ overflow-y:scroll; height: 230px; width:480px;}
+	.dirlist li { padding:3px 5px; font-size:14px; color:#000; cursor:pointer;}
+	.dirlist li.odd{ background:#f0f0f0;}
+	.dirlist li.even{ }
+	.dirlist li.odd:hover, .dirlist li.even:hover{ background:#ddd;}
+	
+	.dirlist li.parent{ color:blue; text-align:right; /*上一级目录*/; background:#f0f0f0;}
+	.dirlist li.parent .current{float:left;color:#333;}
+	.dirlist li.parent .up{ color:#F30; }
+	.dirlist li.parent .up:hover{ color:#F00;}
+	.dirlist li.no{ color:red; /*没有子目录目录*/ text-align:left; cursor:default;}
+	.dirlist li img{ margin-right:5px;}
+</style>
+<div class="dialog" id="dlgDir" title="请选择图像输出目录">
+<ul class="dirlist"></ul>
+</div>
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.progressbar.min.js"></script>
+<script type="text/javascript" src="{$WebPublic}jquery/jscroll.js"></script>
+<script type='text/javascript'>
+//全局变量
+var g_AllImages = [];  //待处理图像对象数组
+var gCurrent = 0; //当前正在处理的图像
+var gFail = 0; //处理失败数
+var gSuccess = 0; //处理成功数
+var gStop = true; //true: 停止，false：没有停止
+var gTimerID = 0; //定时器，用于统计总处理时间
+var gTime = 0;  //图像处理总时间
+//开始处理
+function start(){
+	//如果没有停止，就不能点击开始
+	if(!gStop){
+		return false;
+	}
+	var n = g_AllImages.length;
+	if(n==0){
+		ErrorBox("请先选则要处理的图像！");
+		return false;
+	}
+	var hasItem = $(".ProcessItem:checked").length;
+	if(hasItem==0){
+		ErrorBox("请至少选择一个图像处理项目！");
+		return false;
+	}
+	
+	var SaveType = $("input[name='SaveType']:checked").val();
+	var tip = "<div id='icon_common'>已选择<span style='color:red;padding:0 2px;'>"+n+"</span>个图像，";
+	if(SaveType==1){
+		tip += "<span style='color:red;'>处理会覆盖原文件且不可恢复(建议备份)</span>，";
+	}else{
+		if("" == $("#SavePath").val()){
+			ErrorBox("输出目录不能为空！");
+			return false;
+		}
+	}
+	tip += "确定开始吗？</div>";
+	//图像处理，先保存当前配置
+	ConfirmBox(tip, function () {
+		$("#lblSuccess").text(0);
+		$("#lblFail").text(0);
+		$("#lblTime").html("0&nbsp;秒&nbsp;");
+		clearErrorLog();
+				
+		LoadBox("初始化中，请稍后...");
+		$("#frm").ajaxSubmit({
+			url: "{$Action}",
+			success: function(data){
+				CloseLoadBox();
+				if(data.status == 1){
+					//初始化变量
+					gCurrent = 0;
+					gFail = 0;
+					gSuccess = 0;
+					gStop = false;
+					gTimerID = 0;
+					gTime = 0;
+					$("#pb").progressBar(1, { max : n } );
+					clearErrorLog(); //清空日志
+					$(".btnStart").css("cursor", 'not-allowed');
+					$(".btnStart").text("图像处理中...");
+					clearCount(); //时间重置
+					startCount(); //开始计时
+					startImageProcess();
+				}else{
+					ErrorBox(data.info);
+					return false;
+				}
+			},
+			dataType: 'json'
+		});
+	});
+}
+
+//开始处理
+function startImageProcess(){
+	var p = {
+		FileName:	g_AllImages[gCurrent].ImageUrl
+	}
+	$.ajax({
+		url: "{$Url}startImageProcess", 
+		type: "POST",
+		timeout: 60*1000,
+		data: p,
+		dataType:"json",
+		success: function(data){
+			if( gStop ) return;
+			gCurrent++; 
+			$("#pb").progressBar( gCurrent );
+			if (data.status == 1){
+				gSuccess++;
+				$("#lblSuccess").text( gSuccess );
+			}else{  //警告，不算错误
+				gFail++;
+				$("#lblFail").text( gFail );
+				showErrorLog(data.info);
+			}
+			if(gCurrent >= g_AllImages.length ){
+				stop();	
+			}else{
+				startImageProcess();
+			}
+		},
+		error:function(obj, textStatus, errorThrown){
+			if( gStop ) return;
+			gCurrent++; 
+			$("#pb").progressBar( gCurrent );
+			
+			var errmsg = "请求数据时发生错误";
+			if (textStatus == "timeout") {
+				errmsg = "请求数据超时";
+			}
+			gFail++;
+			$("#lblFail").text( gFail );
+			showErrorLog(errmsg);
+			startImageProcess(); //继续采集
+		}
+	});
+}
+
+//显示错误日志
+function showErrorLog(msg){
+	var date = new Date();
+	var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+	var minute = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+	var second = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+	var time = hour+":"+minute+":"+second;
+	var content = "<li><span style='color:blue;'>["+time+"]</span> "+msg+"</li>"
+	$(".errorlist").append(content);
+	enableErrorLogScroll();
+}
+
+//清除错误日志
+function clearErrorLog(){
+	$(".errorlist").html("");
+	enableErrorLogScroll();
+}
+
+//停止处理
+function stop(){
+	clearTimeout( gTimerID );
+	gStop = true;
+	$(".btnStart").css("cursor","pointer");
+	$(".btnStart").text("开始处理");
+}
+
+function startCount(){
+   var hour = parseInt( gTime/3600 );
+   var min = parseInt( gTime/60 );
+	if(min >= 60){
+		min = min%60;
+	}
+	var sec = gTime % 60;
+	
+	var time = sec + "&nbsp;秒&nbsp;";
+	if( min > 0 || hour > 0){
+		time = min + "&nbsp;分&nbsp;" + time;
+	}
+	
+	if( hour > 0 ){
+		time = hour + "&nbsp;时&nbsp;" + time;
+	}
+	$("#lblTime").html( time );
+	gTime++;
+	gTimerID=setTimeout(function(){startCount();}, 1000);
+}
+
+function clearCount(){
+	gTime = 0;
+	gTimerID = 0;
+	$("#lblTime").html( "0&nbsp;秒" );
+}
+
+function OpenImageBrowser(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SelectMultiImage;
+	FileManager.setConfig({dataSource:1});
+	FileManager.popup(); 
+}
+
+function SelectMultiImage(url, currentfile, allfiles){
+		console.log(url, currentfile, allfiles);
+		for(var i = 0; i < allfiles.length; i++){
+			if(!allfiles[i].isImage) continue;
+			var info = {
+				ImageUrl: allfiles[i].url,
+				ImageName:allfiles[i].name,
+				ImageSize:allfiles[i].size
+			}
+			pushImageList(info);
+		}
+		showAllImage();
+		$("#pb").progressBar(0, { max : g_AllImages.length } );
+}
+
+//添加图像
+function pushImageList(info){
+	var isExist = false;
+	for(var i = 0; i<g_AllImages.length; i++){
+		if( info.ImageUrl==	g_AllImages[i].ImageUrl ){
+			isExist = true;
+			break;
+		}
+	}
+	if(!isExist){
+		g_AllImages.push(info);
+	}
+}
+
+//清空所有图像
+function ClearAll(){
+	g_AllImages = [];
+	showAllImage();
+}
+
+//删除指定的图像
+function DeleteImage(){
+	if($(".selectedlist li.active").length==0){
+		SucceedBox("请先选择图像！");
+	}else{
+		$(".selectedlist li.active").each(function(index, element) {
+			var currentUrl = $(this).data("url");
+			var len = g_AllImages.length;
+			for (var i = 0; i < len; i++) {
+				if(currentUrl == g_AllImages[i].ImageUrl){
+					g_AllImages.splice(i, 1);
+					break;
+				}
+			}
+		});
+		showAllImage();
+	}
+}
+
+//更新图片
+function showAllImage(){
+	var html = "";
+	var len = g_AllImages.length;
+	for(var i = 0; i < len; i++){
+		var url = g_AllImages[i].ImageUrl;
+		var name = g_AllImages[i].ImageName;
+		var size = g_AllImages[i].ImageSize/1024.0;
+		size = Math.round(size*10)/10; //保留1位小数
+		html += '<li onclick="selectImage(this)" data-url="'+url+'">';
+		html += '<div class="img"><img src="'+url+'" /></div>';
+		html += '<div class="name">'+name+'</div><div class="size">'+size+' KB</div>';
+		html += '</li>';
+	}
+	if(len>0){
+		$(".ImageCount i").text(len);
+		$(".ImageCount").show();
+	}else{
+		$(".ImageCount").hide();
+	}
+	$(".selectedlist span").html(html);
+	enableAllScroll();
+}
+
+//选择和取消选择当前图像
+function selectImage(obj){
+	$(obj).toggleClass("active");
+}
+
+//启用所有滚动
+function enableAllScroll(){
+	enableImageScroll();
+	enableImageProcessScroll();
+	enableErrorLogScroll();
+}
+
+//启用图片列表窗滚动条
+function enableImageScroll(){
+	var windowHeight = $(window).height(); 
+	var height = windowHeight - 10 - parseInt( $(".pannel_title").height() );
+	enableScroll(".fullheight", height);
+}
+
+//中间图像处理算法
+function enableImageProcessScroll(){
+	/*
+	var windowHeight = $(window).height(); 
+	var height = windowHeight - 10;
+	enableScroll(".ImageProcessWrapper", height);
+	*/
+}
+
+//错误日志
+function enableErrorLogScroll(){
+	var windowHeight = $(window).height(); 
+	var height = windowHeight - 420;
+	enableScroll(".ErrorLogWrapper", height);
+}
+
+function enableScroll(selector, height){
+	$(selector).css("height", height);
+	$(selector).jscroll({
+		W:"6px",
+		BgUrl:"",//设置滚动条背景图片地址
+		Bg:"#d8e899",//设置滚动条背景图片position,颜色等
+		Bar:{  Pos:"up",//设置滚动条初始化位置在底部
+			   Bd:{Out:"#eaf1d6",Hover:"#eaf1d6"},//设置滚动滚轴边框颜色：鼠标离开(默认)，经过
+			   Bg:{Out:"#87a34d",Hover:"#677c3b",Focus:"#677c3b"}
+		}, //设置滚动条滚轴背景：鼠标离开(默认)，经过，点击
+		Btn:{  btn: false, //是否显示上下按钮 false为不显示
+			   uBg:{Out:"#9bb055",Hover:"#9bb055",Focus:"#9bb055"},//设置上按钮背景：鼠标离开(默认)，经过，点击
+			   dBg:{Out:"#9bb055",Hover:"#9bb055",Focus:"#9bb055"}
+		}  //设置下按钮背景：鼠标离开(默认)，经过，点击
+	});	
+}
+
+function ChangeWaterType(type){
+	if(type == 1){
+		$(".pictype").show();	
+		$(".texttype").hide();	
+	}else{
+		$(".pictype").hide();	
+		$(".texttype").show();	
+	}
+	enableAllScroll();
+}
+
+function ChangeImageFormat(format){
+	if(format == "jpg"){
+		$(".trJpegQuality").show();
+	}else{
+		$(".trJpegQuality").hide();	
+	}
+	enableAllScroll();
+}
+
+function ChangeSaveType(type){
+	$(".trSaveType1").hide();
+	$(".trSaveType2").hide();
+	$(".trSaveType"+type).show();
+	enableAllScroll();
+}
+
+function Toggle(name){
+	if( $("#"+name).is(':checked') ){
+		$("#"+name+"Body").show();
+	}else{
+		$("#"+name+"Body").hide();
+	}
+	enableAllScroll();
+}
+
+function SelectWaterPic(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = function(fileUrl){
+		$('#waterfileImage').val(fileUrl);	
+	};
+	FileManager.popup(); 
+}
+
+//获取输出目录
+function getImageOutputDir(dir){
+	var url = "{$Url}getImageOutputDir";
+	var p = {
+		dir: dir
+	}
+	$.get(url, p, function(data){
+		var html = '<li class="parent">';
+		html += '<span class="current">当前目录：<span id="CurrentSavePath">'+dir+'</span></span>';
+		html += '<span class="up"onclick=getImageOutputDir("'+data.info+'")>返回上级目录</span>';
+		html += '</li>';
+		if(data.data && data.data.length>0){
+			for(var i= 0; i < data.data.length; i++){
+				var mod =( i % 2==0) ? 'even' : 'odd';
+				var FullDir = data.data[i].FullDir;
+				var DirName = data.data[i].DirName;
+				html += '<li class="'+mod+'" onclick=getImageOutputDir("'+FullDir+'")>';
+				html += '<img src="{$WebPublic}Images/FileICO/folder.gif"  align="absmiddle" />';
+				html += DirName;
+				html += '</li>';
+			}
+		}else{
+			html += '<li class="no">没有子目录了！</li>';
+		}
+		$(".dirlist").html(html);
+	},"json");
+}
+
+function SelectImageOutputDir(){
+	var d = dialog({
+		title: $("#dlgDir").attr("title"),
+		id: $("#dlgDir").attr("id"),
+		lock: true,
+		padding: 3,
+		content: document.getElementById('dlgDir'),
+		onshow:function(){
+			getImageOutputDir('');
+		},
+		ok: function () {
+			var path = $("#CurrentSavePath").text();
+			$("#SavePath").val(path);
+			d.close();
+			return true;
+		},
+		okValue: '确定',
+		cancelValue: '取消',
+		cancel: function () {
+			
+		}
+	}).show();	
+}
+	 
+function pageInit(){
+	//改变大小
+	$("input[name='Size'][value={$Size}]").attr("checked",'checked');
+	Toggle("Size");
+	$("input[name='ThumbType'][value={$ThumbType}]").attr("checked",'checked');
+	
+	//水印
+	$("input[name='Water'][value={$Water}]").attr("checked",'checked');
+	Toggle("Water");
+	$("input[name='WaterType'][value={$WaterType}]").attr("checked",'checked');
+	ChangeWaterType("{$WaterType}");
+	$("input[name='WaterPosition'][value={$WaterPosition}]").attr("checked",'checked');
+	$("#WaterFont").val("{$WaterFont}");
+	
+	//格式转换
+	$("input[name='Format'][value={$Format}]").attr("checked",'checked');
+	Toggle("Format");
+	$("input[name='ImageFormat'][value={$ImageFormat}]").attr("checked",'checked');
+	ChangeImageFormat("{$ImageFormat}");
+	
+	//图像输出
+	$("input[name='SaveType'][value={$SaveType}]").attr("checked",'checked');
+	ChangeSaveType("{$SaveType}");
+	
+	enableAllScroll();
+	
+	//初始化进度条
+	$("#pb").progressBar(0, {
+		textFormat: 'fraction',
+		boxImage: '{$WebPublic}jquery/images/progressbar.gif', 
+		barImage: '{$WebPublic}jquery/images/progressbg_green.gif', 
+		showText: true,
+		max:0
+	});	
+	
+	//WaterPreview();
+	//$(".WaterPreview").mouseover(function(e) {
+	//	WaterPreview();
+   // });
+}
+
+function WaterPreview(){
+	var WaterType = $("input[name='WaterType']:checked").val();
+	var WaterPosition = $("input[name='WaterPosition']:checked").val();
+	var params = "?t="+Math.random()+"&wpimg=1.jpg&WaterType="+WaterType+"&WaterPosition="+WaterPosition;
+	//图像水印
+	if(WaterType==1){
+		var WaterPic = $("#waterfileImage").val();
+		params += "&WaterPic="+WaterPic;
+	}
+	//文字水印
+	if(WaterType==2){ 
+		var WaterText = $("#WaterText").val();
+		var WaterFont = $("#WaterFont").val();
+		var WaterTextSize = $("#WaterTextSize").val();
+		var WaterTextColor = $("#WaterTextColor").val();
+		var WaterTextAngle = $("#WaterTextAngle").val();
+		var WaterOffsetX = $("#WaterOffsetX").val();
+		var WaterOffsetY = $("#WaterOffsetY").val();
+		
+		params += "&WaterText="+WaterText;
+		params += "&WaterFont="+WaterFont;
+		params += "&WaterTextSize="+WaterTextSize;
+		params += "&WaterTextColor="+WaterTextColor;
+		params += "&WaterTextAngle="+WaterTextAngle;
+		params += "&WaterOffsetX="+WaterOffsetX;
+		params += "&WaterOffsetY="+WaterOffsetY;
+	}
+	var url = "{$Url}waterPreview"+params;
+	$(".WaterPreview").powerFloat({
+		targetMode: "ajax",
+		target: url,
+		position: "5-7"
+	});
+}
+
+$(document).ready(function(e) {
+	  $(window).resize(function() {
+		    enableAllScroll();
+	  });
+	
+	$("#waterfileImage").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	});
+	
+	$("#WaterTextColor").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#WaterText").css("color",color);
+		}
+	});
+	
+	 $('#waterfile').change(function(){
+		if( !$(this).val() ) return;
+		$("#frm").ajaxSubmit({
+			url: "__GROUP__/public/upload/addwater/no/currentfile/waterfile",
+			success: function(data){
+				$('#waterfile').val(''); //必须置空，否则重新选择同一个文件不会相应channge事件
+				CloseLoadBox();
+				if(data.status==2){
+					ErrorBox(data.info); //上传失败
+				}else if(data.status==3){
+					$('#'+data.data.ImageField).val(data.data.Path);
+					SucceedBox(data.info); //上传成功
+				}
+			},
+			dataType: 'json'
+		});
+	 });
+	pageInit();
+});
+</script>

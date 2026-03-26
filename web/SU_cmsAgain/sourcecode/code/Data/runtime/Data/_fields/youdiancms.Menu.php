@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'MenuID', 1 => 'MenuGroupID', 2 => 'MenuName', 3 => 'MenuContent', 4 => 'MenuType', 5 => 'MenuOrder', 6 => 'SubMenu', 7 => 'IsEnable', '_autoinc' => true, '_pk' => 'MenuID', ); ?>

@@ -1,0 +1,43 @@
+<script type="text/javascript">
+	function changetext(type){
+		var objTitle = $("#SupportNumberFileImage").parent().parent().find(".w120");
+		type = parseInt(type);
+		switch(type){
+			case 7:
+				title = "自定义HTML代码";
+				break;
+			case 8:
+				title = "电话号码";
+				break;
+			case 9:
+				title = "二维码";
+				break;
+			case 10:
+				title = "链接";
+				break;
+			case 11: //FaceBook
+				title = "号码";
+				break;
+			default:
+				title = "客服号码";
+		}
+		objTitle.html(title);
+		showUploadButton(type);
+	}
+	
+	function showUploadButton(type){
+		if(9 == type){ //显示
+			$(".UploadWrapper,.btnUpload").show();
+		}else{ //隐藏
+			$(".UploadWrapper,.btnUpload").hide();
+		}
+	}
+		
+	$(document).ready(function(){
+		$("#SupportTypeID").change(function(e) {
+			var type = $("#SupportTypeID").val();
+			changetext(type);
+		});
+		changetext("{$SupportTypeID}");
+	});
+</script>

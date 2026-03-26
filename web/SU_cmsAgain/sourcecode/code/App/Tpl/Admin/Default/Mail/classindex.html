@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.mytip{ display:none; background-color:#FFF;padding:8px; line-height:22px;text-align:left;border:1px solid #CCC; }
+		.Description{cursor:pointer;	}
+		#datatable .TipKey{text-align:center; word-break : break-all}
+	</style>
+</head>
+<body id="main_page">
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+       <div class="table">                   
+       <div class="toolbars">
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}AddClass"  title="添加邮件订阅分类" target="_self">添加订阅分类</a></li>
+            <li class="toolbar"><a id="btnSave" onclick="Export(-1)"  title="一键导出所有邮箱" target="_self">导出所有邮箱</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar"><a id="sortall" onclick="BatchSort()" title="批量排序">排序</a></li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="45px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="75px" >订阅分类ID</th>
+                <th width="170px" align="center">订阅分类名称</th> 
+                <th width="70px" align="center">订阅邮箱数</th>
+                <th width="70px" >分类排序</th>
+                <th>订阅分类描述</th>
+                <th width="55px" >属性</th>
+                <th width="425px">操作</th>
+            </tr>  
+            <notempty name="MailClass">
+                <volist name="MailClass" id="lc">
+                    <tr id="tr{$lc.MailClassID}">
+                        <td><input class="checkrow" type="checkbox" name="MailClassID[]" value="{$lc.MailClassID}" /></td>
+                        <td>{$lc.MailClassID}</td>
+                        <td class="TipKey">{$lc.MailClassName|htmlspecialchars}</td>
+                        <td style="font-weight:bold; color:#00F">{$lc.MailCount}</td>
+                        
+                        <td><input type="number" class='textinput' onclick="this.select()" style="width:60px" name="MailClassOrder[]" value="{$lc.MailClassOrder}" />
+                        <input type="hidden" class='textinput' name="MailClassOrderID[]" value="{$lc.MailClassID}" />
+                        </td>
+                        <td><span class="Description" rel="des{$i}">{$lc.MailClassDescription|Left=15}</span>
+                        <div class="mytip" id="des{$i}">{$lc.MailClassDescription|htmlspecialchars}</div>
+                        </td>
+                        <td>
+                        <eq name="lc.IsEnable" value="1">
+                            <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$lc.MailClassID},'mail_class')">启用</span>
+                        <else/>
+                            <span style="color:#F00;cursor:pointer;" onclick="toggleStatus(this,{$lc.MailClassID},'mail_class')">禁用</span>
+                        </eq>
+                        </td>
+                        <td class="operator">
+                            <a style="float:left" href="{$Url}Index?MailClassID={$lc.MailClassID}&p=1" target="_self" id="btnSaveAll">查看订阅邮箱</a>        
+                            <div class="btn-sep"></div>
+                            <a style="float:left" href="{$Url}ModifyClass/MailClassID/{$lc.MailClassID}" id="btnEdit">修改</a>
+                            <div class="btn-sep"></div>
+                            <a style="float:left" onclick="Import('{$lc.MailClassID}')" id="btnBack">导入</a>
+                            <div class="btn-sep"></div>
+                            <a style="float:left" onclick="Export('{$lc.MailClassID}')" id="btnCheckDb">导出</a>
+                            <div class="btn-sep"></div>
+                            <eq name="lc.MailCount" value="0">
+                                <a style="float:left" onclick="Del({$lc.MailClassID})" class="btnDel">删除</a>
+                            </eq>
+                        </td>
+                    </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="8" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                  
+        </table>
+        <div class="tfoot">
+            <div id="notice">
+                <b>当前订阅邮件总数：</b><span class="notice-item">{$MailTotal}</span>
+             </div>
+        </div>
+   </div>
+ </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function Del(id){
+	var key = $("#tr"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}delClass/MailClassID/"+id;
+		$.get(url, {}, DelComplete, "json");
+	});
+}
+
+//回调函数
+function DelComplete(data, textStatus){
+	if (data.status == 1){
+		$(data.data).css("display","none");
+	}else{ 
+		//删除失败
+		ErrorBox(data.info);
+	}
+}
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='MailClassID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/batchDelClass");
+		$('#frm').submit();
+	});
+}
+
+//排序
+function BatchSort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "__URL__/batchSortClass");
+		$('#frm').submit();
+	});
+}	
+
+//导入
+function Import(MailClassID){
+	var url = "{$Url}import/MailClassID/"+MailClassID;
+	location.href = url;
+}
+
+//导出
+function Export(MailClassID){
+	if(checkSafeQuestion()) return;
+	var url = "{$Url}ExportMail/MailClassID/"+MailClassID;
+	location.href = url;
+}
+
+//提示信息
+$(document).ready(function(){
+	$(".Description").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+});
+</script>

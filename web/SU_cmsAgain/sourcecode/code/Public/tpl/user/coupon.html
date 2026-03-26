@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>
+		.weui-form-preview__item{ text-align:left;}
+		.CouponName{ color:green; font-weight:bold;}
+		.CouponMoney{ color:#FF0000; }
+		.status3{ /*已过期*/
+			 background:url("{$Images}expired.png") #fff no-repeat right 20px;
+			 background-size: 80px; 
+	    }
+		.status2{ /*已使用*/
+			 background:url("{$Images}used.png") #fff no-repeat right 20px;
+			 background-size: 80px; 
+	    }
+		.status3 .CouponName{ color:#CCC;}
+		.status2 .CouponName{ color:#C00;}
+    </style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+   
+    <notempty name="Data">
+        <volist name="Data" id="d">
+            <div class='weui-form-preview status{$d.CouponStatus}' id="row{$d.CouponSendID}" style='margin-bottom:10px;'>
+              <div class="weui-form-preview__hd">
+                  <label class="weui-form-preview__label CouponName">{$d.CouponName}</label>
+                  <em class="weui-form-preview__value">&nbsp;</em>
+              </div>
+              <div class="weui-form-preview__bd">
+              		<div class="weui-form-preview__item">发放时间：{$d.CouponSendTime}</div>
+              	    <div class="weui-form-preview__item">面额：{$CurrencySymbol}{$d.CouponMoney}</div>
+                    <div class="weui-form-preview__item">最低消费金额：{$CurrencySymbol}{$d.ConsumeMoney}</div>
+              	   <notempty name="d.StartTime">
+                      <div class="weui-form-preview__item">开始时间：{$d.StartTime}</div>
+                      <div class="weui-form-preview__item">结束时间：{$d.EndTime}</div>
+                  </notempty>
+              </div>
+              <empty name="d.OrderID">
+                  <div class="weui-form-preview__ft">
+                      <a class="weui-form-preview__btn weui-form-preview__btn_primary  color-danger"  onClick="del({$d.CouponSendID})">删除</a>      
+                  </div>
+              </empty>
+            </div>
+        </volist>
+    <else/>
+        <div class="weui-msg">
+            <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+            <div class="weui-msg__text-area">
+                <p class="weui-msg__desc">{$Think.lang.NoInformation}</p>
+            </div>
+        </div>
+    </notempty>
+</body>
+</html>
+<script>
+	function del(id){
+		$.confirm("确定删除吗?", function() {
+			LoadBox();
+			var url = "{$Url}delCoupon";
+			var p = {"id": id};
+			$.get(url, p,function(data){
+				CloseLoadBox();
+				if (data.status == 1){
+					$("#row"+id).remove();
+				}else{ 
+					ErrorBox(data.info);
+				}	
+			}, "json");
+		});
+	}
+	
+	function GoBack(){
+		location.href = "{$Url}index";
+	}
+</script>

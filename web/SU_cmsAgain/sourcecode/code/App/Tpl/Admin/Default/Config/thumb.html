@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form  enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">    
+        <div class="box-header"  id="c3">
+            <h4>缩略图设置</h4>
+        </div>
+        <div class="box-content">
+            <table class="boxtable">
+                <tr>
+                    <th nowrap="nowrap">是否提取内容第一个图片作为缩略图</th>
+                    <td><label><input type="radio" name="THUMB_FIRST" value="1" <eq name="ThumbFirst" value="1">checked="checked"</eq> />是</label>
+&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="THUMB_FIRST" value="0" <eq name="ThumbFirst" value="0">checked="checked"</eq> />否</label>
+<span class='Caution'>启用后，当添加信息时，自动获取内容第一个图片作为缩略图。如果启用了自动生成缩略图，会将第一个图片按指定方式生成缩略图</span></td>
+                </tr>
+                 <tr>
+                    <th nowrap="nowrap" style="width:350px">是否按指定方式自动生成缩略图</th>
+                    <td><label><input onclick="ThumbEnable(1)" type="radio" name="THUMB_ENABLE" value="1" <eq name="ThumbEnable" value="1">checked="checked"</eq> />是</label>
+&nbsp;&nbsp;&nbsp;&nbsp;<label><input onclick="ThumbEnable(0)" type="radio" name="THUMB_ENABLE" value="0" <eq name="ThumbEnable" value="0">checked="checked"</eq> />否</label>
+<span class='Caution'>启用后，上传缩略图时，自动按指定生成方式、宽度、高度生成缩略图</span></td>
+                </tr>
+                <tr class="fs">
+                    <th>缩略图生成方式</th>
+                    <td><label><input type="radio" name="THUMB_TYPE" value="2" <eq name="ThumbType" value="2">checked="checked"</eq> />自动留白</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="THUMB_TYPE" value="6" <eq name="ThumbType" value="6">checked="checked"</eq> />固定尺寸缩放</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="THUMB_TYPE" value="3" <eq name="ThumbType" value="3">checked="checked"</eq> />居中裁剪</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="THUMB_TYPE" value="4" <eq name="ThumbType" value="4">checked="checked"</eq> />左上角裁剪</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="THUMB_TYPE" value="5" <eq name="ThumbType" value="5">checked="checked"</eq> />右下角裁剪</label><span class='Caution'>推荐设置为自动留白</span>
+</td>
+                </tr>
+                <tr class="fs">
+                    <th>缩略图宽度</th>
+                    <td><input type="number" class="textinput" style="width:80px" name="THUMB_WIDTH" value="{$ThumbWidth}" />
+                    <span class='Caution'>宽度默认为160像素</span></td>
+                </tr>
+                <tr class="fs">
+                    <th>缩略图高度</th>
+                    <td><input type="number" class="textinput"  style="width:80px" name="THUMB_HEIGHT" value="{$ThumbHeight}" />
+                    <span class='Caution'>高度默认为160像素</span></td>
+                </tr>
+                <tr>
+                    <th nowrap="nowrap">缩略图是否添加水印</th>
+                    <td><label><input type="radio" name="THUMB_WATER_ENABLE" value="1" <eq name="ThumbWaterEnable" value="1">checked="checked"</eq> />是</label>
+&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="THUMB_WATER_ENABLE" value="0" <eq name="ThumbWaterEnable" value="0">checked="checked"</eq> />否</label><span class='Caution'>必须同时启用“水印设置”菜单中“是否启用水印”选项才有效</span></td>
+                </tr>
+            </table>
+        </div>                
+        
+        <div class="box-footer">
+            <div class="box-footer-inner">
+                <input  id="btnSubmit"  type="submit" value="保存设置" />
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 ThumbEnable("{$ThumbEnable}");
+});
+
+function ThumbEnable(b){
+	if(b == 1){
+		$(".fs").show();	
+	}else{
+		$(".fs").hide();	
+	}
+}
+</script>

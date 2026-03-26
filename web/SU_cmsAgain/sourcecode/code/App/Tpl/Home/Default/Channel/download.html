@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$ChannelName}|{$Title}-{$WebName}</title>
+    <include file="Public:meta" />
+</head>
+<body class="body_download">
+	<include file="Public:header" />
+    
+    <!--区块5143 开始-->
+<div id="n5143" class="component floor_channel8_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5143">
+    <style type="text/css">
+        #n5143{
+            {$TChannel8Bg5143|ParseBg}
+            padding-top:{$TChannel8PaddingTop5143}px;
+            padding-bottom:{$TChannel8PaddingBottom5143}px;
+        }
+        #n5143 li{
+            animation-duration: {$TChannel8AnimationTime5143}s;
+            animation-fill-mode: both;
+        }
+
+        #n5143 .sidebar_comtainer{
+            {$TChannel8SideBarBg5143|ParseBg}
+            width: {$TChannel8SideBarWidth5143}px;
+            yd-previewable-class: float_ float_{$TChannel8HasSideBar5143};
+        }
+        #n5143 .sidelist{
+            yd-previewable-class: -sidelist {$TChannel8SideBarStyle5143}-sidelist;
+            border-color: {$TChannel8SideBarBorderColor5143};
+        }
+        #n5143 .sidelist a{
+            border-color: {$TChannel8SideBarBorderColor5143};
+        }
+        #n5143 .sidebar_title h2{
+            {$TChannel8SideBarTitle5143|ParseFont}
+        }
+        #n5143 .sidelist .InfoTitle{
+            {$TChannel8SideBarInfoTitle5143|ParseFont}
+        }
+        #n5143 .sidelist .InfoPrice{
+            {$TChannel8SideBarInfoPrice5143|ParseFont}
+        }
+
+        #n5143 .content_container{
+            {$TChannel8InfoBg5143|ParseBg}
+        }
+        #n5143 .content_container .InfoTitle{
+            {$TChannel8InfoTitleFont5143|ParseFont}
+        }
+        #n5143 .content_container .InfoSContent{
+            {$TChannel8InfoSContentFont5143|ParseFont}
+        }
+        #n5143 .content_container .InfoTime span{
+            {$TChannel8InfoTimeFont5143|ParseFont}
+        }
+        #n5143 .grid-downloadlist .InfoWrap, #n5143 .thumb-downloadlist li, #n5143 .text-downloadlist li{
+            border-color: {$TChannel8InfoListBorderColor5143};
+        }
+        #n5143 .content_container li{
+            yd-previewable-class: column column{$TChannel8ColumnCount5143};
+        }
+        #n5143 .content_title h2{
+            {$TChannel8TitleFont5143|ParseFont}
+        }
+        #n5143 .thumb-downloadlist li .InfoPicture{
+            width: {$TChannel8InfoPictureSize5143}%;
+        }
+        #n5143 .downloadlist{
+            yd-previewable-class: -downloadlist {$TChannel8Style5143}-downloadlist;
+            yd-previewable-class: list-style list-style{$TChannel8ShowStyle5143};
+        }
+        #n5143 .text-downloadlist .TitleIcon{
+            width: {$TChannel8TitleIconSize5143}px;
+        }
+    </style>
+    <div class="floor_channel8 full-width{$TChannel8FullWidth5143} floor_channel">
+        <neq name="TChannel8HasSideBar5143" value="0">
+            <div class="component_title sidebar_comtainer float_{$TChannel8HasSideBar5143}">
+                <div yd-slot="5143A"></div>
+                <div class="sidebar" yd-group="5143" yd-tab="侧边栏设置">
+                    <neq name="TChannel8SideBarLabel5143|strpos='1'" value="0">
+                        <div class="sidebar_title"><h2>{$Think.lang.Hot}{$ChannelSName}</h2></div>
+                        <div class="sidebar_body">
+                            <ul class="sidelist {$TChannel8SideBarStyle5143}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$ChannelID" top="$TChannel8SideBarCount5143" timeformat="Y-m-d" labelid="hot" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel8AnimationType5143}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img class="{$TRoundCorner}-round-corner" src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </neq>
+
+                    <neq name="TChannel8SideBarLabel5143|strpos='2'" value="0">
+                        <div class="sidebar_title"><h2>{$Think.lang.Recommend}{$ChannelSName}</h2></div>  
+                        <div class="sidebar_body">  
+                            <ul class="sidelist {$TChannel8SideBarStyle5143}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$ChannelID" top="$TChannel8SideBarCount5143" timeformat="Y-m-d" labelid="recommend" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel8AnimationType5143}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img class="{$TRoundCorner}-round-corner" src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </neq>
+                </div>
+                <div yd-slot="5143B"></div>
+            </div>
+        </neq>
+
+        <div class="component_body content_container">
+            <div class="content_title">
+                <include file="Public:location" />
+                <h2 yd-content="_channel,{$ChannelID}">{$ChannelName}</h2>
+            </div>
+            <div class="content_body" yd-content="info,{$ChannelID}" yd-group="5143" yd-tab="列表设置">
+                <ul class="downloadlist {$TChannel8Style5143}-downloadlist">
+                    <infolist id="f" channelid="$ChannelID" keywords="$Think.request.keywords" timeformat="Y-m-d"  NowPage="$NowPage"  empty="$Think.lang.NoInformation">
+                        <li class="column{$TChannel8ColumnCount5143}" yd-animation="{$TChannel8AnimationType5143}">
+                            <a class="InfoWrap {$TRoundCorner}-round-corner ThemeColorParent" href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                <eq name="TChannel8Style5143" value="text"><img class="TitleIcon" src="{$TChannel8TitleIcon5143}" /><else /><div class="InfoPicture"><img src="{$f.InfoPicture}" title="{$f.InfoTitle}" alt="{$f.InfoTitle}" /></div></eq>
+                                <div class="InfoTitle ThemeColorChild">{$f.InfoTitle}</div>
+                                <div class="InfoSContent">{$f.InfoContent|strip_tags|left="50"}</div>
+                                <p class="InfoTime"><span>{$f.f1}</span><span>{$f.InfoTime}</span></p>
+                            </a>
+                            <a class="btn btn-small" href="{$f.InfoAttachment}" target="_self">{$Think.lang.Download}</a>
+                        </li>
+                    </infolist>
+                </ul>
+                <div class="page_main"><div class="page">{$Page}</div></div>
+            </div>
+            <div class="content_bottom"></div>
+        </div>
+    </div>
+</div>
+<!--区块5143 结束--><include file="Public:footer" />
+</body>
+</html>

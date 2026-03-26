@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">    
+            <div class="box-header"  id="c2">
+                <h4>搜索引擎优化设置</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                 <tr>
+                        <th>页面标题Title</th>
+                        <td><input type="text" class="textinput wFull" name="TITLE" value="{$Title}"  />
+                        	<span class='Caution'>设置页面标题！建议在多个关键词之间以竖线"|"分隔，并且最好不要超过80个字符！如：软件开发|网站建设</span></td>
+                    </tr>
+                       <tr>
+                        <th>页面关键词Keywords</th>
+                        <td><input type="text" class="textinput wFull" name="KEYWORDS" value="{$Keywords}"  />
+                        	<span class='Caution'>设置页面关键词！建议在多个关键词之间以英文逗号","分隔，并且最好不要超过100个字符！如：软件开发,网站建设</span></td>
+                    </tr>
+                   
+                    <tr>
+                        <th  style="vertical-align:top;">页面描述Description</th>
+                        <td><textarea class="wFull" name="DESCRIPTION">{$Description}</textarea>
+                        	<span class='Caution'>设置页面描述！建议不要超过200个字符！</span></td>
+                    </tr>
+                    <tr>
+                        <th  style="vertical-align:top; font-weight:bold;color:red;">说明：</th>
+                        <td style="vertical-align:top;color:red;" >
+                        	这里是搜索引擎优化全局设置，也可以单独设置某个频道（内容管理->频道管理）或某篇文章（内容管理->信息管理）
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+});
+</script>

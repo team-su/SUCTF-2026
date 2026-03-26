@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header"  id="c5"><h4>自动生成关键词内链</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th  class="w120">是否启用生成关键词内链</th>
+                        <td>
+                            <label><input type="radio" name="LINK_ENABLE" value="1" onclick="changeType(1)" />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="LINK_ENABLE" value="0" onclick="changeType(0)" />禁用 </label>
+                            <span class="Caution">启用后，网站发布的文章中，如果包含关键词，将自动生成第一个关键词链接！</span>
+                        </td>
+                    </tr>
+                    <tr class="trWrap">
+                        <th>关键词对应链接设置</th>
+                        <td><textarea style="width:100%;height:350px" id="LinkKeyword" name="LINK_KEYWORD">{$LinkKeyword}</textarea>
+                            <span class="Caution">格式：“关键词=链接”，如：网站建设=http://www.baidu.com</span>
+                        </td>
+                    </tr>
+                    <tr class="trWrap">
+                        <th>自动获取系统页面关键词</th>
+                        <td><a onclick="GetTitle()" class="btnWarning btnSmall" target="_blank">点击自动获取</a>
+                            <span class="Caution">自动获取系统页面关键词，并以网站域名作为链接！</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+		
+	 $('#frmConfig').submit(function(){
+		 LoadBox();
+		return false;
+	 });
+
+	 function pageInit(){
+		 $("input[name='LINK_ENABLE'][value={$LinkEnable}]").attr("checked",'checked');
+		 changeType("{$LinkEnable}");
+	 }
+	 pageInit();
+});
+
+function GetTitle(){
+	var Keywords = "{$Keywords}";
+	var WebUrl = "{:get_web_url()}";
+	var words= new Array(); //定义一数组
+	words=Keywords.split(",");
+	if( words.length <= 0 ) return true;
+	var link = "\r\n";
+	for(var i = 0; i < words.length; i++){
+		link += (words[i]+'='+WebUrl+'\r\n');
+	}
+	var temp = $("#LinkKeyword").val();
+	$("#LinkKeyword").val(temp+link);
+	return true;
+}
+
+function changeType(type){
+	if(type==0){
+		$(".trWrap").hide();
+	}else{
+		$(".trWrap").show();
+	}
+}
+</script>

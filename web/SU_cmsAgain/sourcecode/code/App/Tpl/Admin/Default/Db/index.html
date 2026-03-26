@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.dlgfield_table { border:1px solid #E3E6EB; padding:0 0 0 0; width:610px}
+		.dlgfield_table td { color:#000; border:1px solid #E3E6EB; text-align:center; padding:2px; padding-left:5px;}
+		.dlgfield_table tr:hover { background-color:#F3F3F3}
+		.dlgfield_table th { border:1px solid #E3E6EB;background-color:#F2F4F6; border-right-color:#E3E6EB;text-align:center; height:32px; font-weight:bold}
+		.dlgfield_table td.NO{color:red;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">  
+   <form enctype="multipart/form-data" method="post" id="frm">
+              <div class="table">
+               <div class="toolbars">
+                    <li class="toolbar"><a id="btnSaveAll" class="ydicon-beifen" onclick="BackupAll()"  title="备份所有数据">备份所有数据</a></li>
+                    <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                    <li class="toolbar"><a id="btnBackup" onclick="Db('backup')" title="备份选中表">备份</a></li>
+                    
+                    <li class="toolbar"><a id="btnAnalysis" onclick="Db('analyze')" title="批量分析">分析</a></li>
+                    <li class="toolbar"><a id="btnCheckDb" onclick="Db('check')" title="批量检查">检查</a></li>
+                    <li class="toolbar"><a id="btnOptimizeDb" onclick="Db('optimize')" title="批量优化">优化</a></li>
+                    <li class="toolbar"><a id="btnRepair" onclick="Db('repair')" title="批量修复">修复</a></li>
+                    <li class="toolbar toolbarform">
+                        数据库总大小：<span style="color:red;font-weight:bold; margin-right:15px;">{$DbSize|byte_format}</span>
+                        共<span style="color:red;font-weight:bold">{$TableCount}</span>个表
+                    </li>
+                </div>
+                <table class="datatable" id="datatable">
+                    <tr>
+                     	<th width="45px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                        <th>表名称</th>
+                        <th width="160px" >表编码</th>
+                        <th width="80px" >记录总数</th>
+                        
+                        <th width="100px" >表大小</th>
+                        <th width="100px" >碎片大小</th>
+                        <th width="90px" >表类型</th>
+                        <th width="100px" >表状态</th>
+                        <th width="75px">操作</th>
+                    </tr>  
+                    <volist name="Db" id="d">
+                        <tr>
+                            <td><input class="checkrow" type="checkbox" name="tables[]" value="{$d.Name}" /></td>
+                            <td style="text-align:left;padding-left:6px">{$d.Name}</td>
+                            <td>{$d.Collation}</td>
+                            <td>{$d.Rows}</td>
+                            
+                            <td>{$d.Data_length|byte_format}</td>
+                            <td>{$d.Data_free|byte_format}</td>
+                            <td>{$d.Engine}</td>
+                            <td><eq name="d.Status" value="OK">{$d.Status}<else/><span style="color:red">{$d.Status}</span></eq>
+                            </td>
+                            <td class="operator" style="padding-left:5px; text-align:left;"><a style="float:left" onclick="ShowColumns('{$d.Name}')" id="btnEdit">字段</a></td>
+                        </tr>
+                    </volist>
+                </table>
+                 <div class="tfoot">
+                      <div id="notice">
+                            <b>说明：</b><span class="notice-item">数据库备份后，请在[系统管理]-[数据库还原]菜单中管理备份和还原数据库！</span>
+                      </div>
+                 </div>
+            </div>
+      </form>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgField">
+	<table class="dlgfield_table"></table>
+</div>
+
+<script type="text/javascript">	
+//备份所有数据
+function BackupAll(){
+	ConfirmBox("确定备份所有数据吗?", function () {
+		LoadBox("数据备份中，请稍后...");
+		url = "{$Url}backup";
+		$.get(url, {}, DbComplete, "json");
+	});
+}
+
+//显示表列信息
+function ShowColumns(tableName){
+	LoadBox("加载中，请稍后...");
+	url = "{$Url}columns";
+	$.get(url, {TableName:tableName}, DbComplete, "json");
+}
+
+//备份所有数据回调函数
+function DbComplete(data, textStatus){
+	CloseLoadBox();
+	if (data.status == 1){
+		SucceedBox(data.info);//备份成功
+	}else if(data.status == 3){ //显示列信息
+		var title = data.info+"表字段信息";
+		var obj = eval(data.data);
+		var str = "<tr><th width='105px'  nowrap='nowrap'>字段名称</th>";
+		str += "<th width='155px'>字段类型</th><th width='75px'>是否为空</th>";
+		str += "<th width='65px'>主键</th><th width='80px'>默认值</th><th width='100px'>其它信息</th></tr>";
+		for(var i=0; i<obj.length;i++){
+			str += "<tr>";
+			str += "<td style='text-align:left'>"+obj[i]['Field']+"</td>";
+			str += "<td>"+obj[i]['Type']+"</td>";
+			str += "<td class="+obj[i]['Null']+">"+obj[i]['Null']+"</td>";
+			str += "<td>"+obj[i]['Key']+"</td>";
+			str += "<td>"+obj[i]['Default']+"</td>";
+			str += "<td>"+obj[i]['Extra']+"</td>";
+			str += "</tr>";				
+		}
+		$(".dlgfield_table").html(str);
+		dialog({
+			title: title,
+			id: 'fields',
+			padding: 8,
+			content: document.getElementById('dlgField'),
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+	}else{ 
+		ErrorBox(data.info);//备份失败
+	}
+}
+
+//数据库维护操作(备份，分析，检查，优化，修复)
+function Db(type){
+	var arrChk = $("input[name='tables[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("请先选中至少一个表!");
+		return;
+	}
+	
+	switch(type){
+	  case 'backup':
+		ConfirmBox("确定备份指定表数据吗?", function () {
+			$('#frm').attr("action", "{$Url}backup");	
+			LoadBox();
+			$('#frm').submit();
+		});
+		break;
+	  case 'analyze':
+		ConfirmBox("确定要分析指定表吗?", function () {
+			$('#frm').attr("action", "{$Url}analyze");
+			LoadBox();
+			$('#frm').submit();
+		});
+		break;
+	  case 'check':
+		ConfirmBox("确定要分析检查指定表吗?", function () {
+			$('#frm').attr("action", "{$Url}check");
+			LoadBox();
+			$('#frm').submit();
+		});
+		break;
+	  case 'optimize':
+		ConfirmBox("确定要优化指定表吗?", function () {
+			$('#frm').attr("action", "{$Url}optimize");
+			LoadBox();
+			$('#frm').submit();
+		});
+		break;
+	  case 'repair':
+		ConfirmBox("确定要修复指定表吗?", function () {
+			$('#frm').attr("action", "{$Url}repair");
+			LoadBox();
+			$('#frm').submit();
+		});
+		break;
+	}
+}
+
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else{ //添加频道失败
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+});
+</script>

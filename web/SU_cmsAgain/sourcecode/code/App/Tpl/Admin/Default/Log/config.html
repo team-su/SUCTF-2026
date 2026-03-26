@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>.boxtable .item{ float: left; width:80px;}</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}"  enctype="multipart/form-data">    
+            <div class="box-header"><h4>设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>是否保存操作日志</th>
+                        <td>
+                            <label><input type="radio" name="LOG_STATUS" value="1" <eq name="LogStatus" value="1">checked="checked"</eq> />是</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="LOG_STATUS" value="0" <eq name="LogStatus" value="0">checked="checked"</eq> />否</label>
+                            <span class='Caution'>启用后，将记录用户所做的操作</span>
+                            </td>
+                    </tr>   
+                    <tr>
+                        <th class="w120">记录的日志类型</th>
+                        <td>
+                                <div class="item"><label><input type="checkbox" value="2" id="a2" name="LOGTYPE_ALLOW[]" checked="checked" />添加</label></div>
+                                <div class="item"><label><input type="checkbox" value="3" id="a3" name="LOGTYPE_ALLOW[]" checked="checked" />删除</label></div>
+                                <div class="item"><label><input type="checkbox" value="4" id="a4" name="LOGTYPE_ALLOW[]" checked="checked" />修改</label></div>
+                                <div class="item"><label><input type="checkbox" value="5" id="a5" name="LOGTYPE_ALLOW[]" checked="checked" />排序</label></div>
+                                <div style="clear:both"></div>
+                                <div class="item"><label><input type="checkbox" value="6" id="a6" name="LOGTYPE_ALLOW[]" checked="checked" />导出</label></div>
+                                <div class="item"><label><input type="checkbox" value="7" id="a7" name="LOGTYPE_ALLOW[]" checked="checked" />清除缓存</label></div>
+                                <div class="item"><label><input type="checkbox" value="8" id="a8" name="LOGTYPE_ALLOW[]" checked="checked" />登录/退出</label></div>
+                                <div class="item"><label><input type="checkbox" value="9" id="a9" name="LOGTYPE_ALLOW[]" checked="checked" />发送短信</label></div>
+                                <div class="item"><label><input type="checkbox" value="1" id="a1" name="LOGTYPE_ALLOW[]" checked="checked" />其它操作</label></div>
+                            <span class='Caution'>系统仅仅记录选中的日志类型</span>
+                            <script>
+                                var allow = "{$LogTypeAllow}";
+                                if( allow == '' ){
+                                    $(":checkbox").prop('checked', false);	//所有的均不选中
+                                }else{
+                                    for(var i = 1; i <= 9; i++){
+                                        if ( allow.indexOf( i.toString() ) >= 0 ){
+                                            $("#a"+i).prop('checked', true);
+                                        }else{
+                                            $("#a"+i).prop('checked', false);
+                                        }
+                                    }
+                                }
+                            </script>
+                        </td>
+                    </tr>
+               </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"  type="submit" value="保存设置" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frmConfig').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+            }else if(data.status==0){
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frmConfig').submit(function(){
+			 LoadBox();
+	     	return false;
+	     });
+	});
+</script>

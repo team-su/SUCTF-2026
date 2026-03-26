@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <include file="common" />
+	<style>
+		div.table .datatable{ margin-bottom:2em;}
+		div.table .datatable .OrderTime{ margin-right:20px;}
+		.datatable .OrderTime b, .datatable .OrderNumber b{ font-weight:normal; color:#999;}
+		
+		div.table .datatable .InfoPicture{ width:100px; margin:3px 5px; float:left;}
+		div.table .datatable .MemberOrderStatusName{ color:#FF3300;}
+		div.table .datatable  tr:hover { background-color:#fff;}
+		
+		 div.table .datatable .ProductAttributes{ color:#999;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+    	<input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+        <div class="table">
+             <div class="toolbars">
+                <li class="toolbar toolbarform" id="toolbarleft">
+                    <label class="first">订单编号</label>
+                    <input type="text" class='textinput' name="OrderNumber" style="width:180px" value="{$OrderNumber}" id="OrderNumber"/>
+                    <label>订单状态</label>
+                    <select name="OrderStatus" id="OrderStatus">
+                        <option value="-1">全部</option>
+                        <orderstatuslist id="os"><option value="{$os.OrderStatusID}">{$os.MemberOrderStatusName}</option></orderstatuslist>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <notempty name="Data">
+                <volist name="Data" id="d">                
+                    <table class="datatable" id="datatable">
+                            <tr>
+                                <th style="text-align:left; padding-left:5px;">
+                                    <span class="OrderTime"><b>下单时间：</b>{$d.OrderTime|strtotime|yd_friend_date}</span>
+                                    <span class="OrderNumber"><b>订单编号：</b>{$d.OrderNumber|htmlspecialchars}</span>
+                                </th>
+                                <th style="width:90px;">单价</th>
+                                <th style="width:75px;">购买数量</th>
+                                
+                                <th style="width:90px;">订单总金额</th>
+                                <th style="width:90px;">订单状态</th>
+                                <th style="width:130px;">操作</th>
+                            </tr>  
+                            <volist name="d.Product" id="p" key="j">
+                                <tr>
+                                    <td style="text-align:left;">
+                                        <a href="{$p.ProductID|InfoUrl}" target="_blank"><img src="{$p.ProductID|InfoPicture|DefaultPicture}" class="InfoPicture" /></a>
+                                        <a href="{$p.ProductID|InfoUrl}" target="_blank">{$p.ProductName}</a>
+                                        <br/>
+                                        <span class="ProductAttributes">
+                                        <volist id="pa" name="p.ProductAttributes">{$pa.TypeAttributeName}：{$pa.AttributeValue}；&nbsp;&nbsp;</volist>
+                                        </span>
+                                    </td>
+                                    <td>{$CurrencySymbol}{$p.ProductPrice}</td>
+                                    <td>x {$p.ProductQuantity}</td>
+                                    
+                                    <eq name="j" value="1">
+                                        <td rowspan="{$d.ProductCount}">{$CurrencySymbol}{$d.TotalOrderPrice}</td>
+                                        <td rowspan="{$d.ProductCount}" class="MemberOrderStatusName">{$d.MemberOrderStatusName}</td>
+                                        <td rowspan="{$d.ProductCount}" class="OrderOperator">
+                                            <eq name="d.OrderStatus" value="1">
+                                                <div class="item"><a class="btnPay" target="_blank" href="{$d.PayUrl}">立即付款</a></div>
+                                                <div class="item"><a class="btnCancel" onclick="Cancel({$d.OrderID})">取消订单</a></div>
+                                            </eq>
+                                            <eq name="d.OrderStatus" value="3">
+                                                <div class="item"><a class="btnReceive" onclick="Receive({$d.OrderID})">确认收货</a></div>
+                                            </eq>
+                                            <eq name="d.OrderStatus" value="8">
+                                                <div class="item"><a class="btnDelOrder" onclick="Del({$d.OrderID})">删除订单</a></div>
+                                            </eq>
+                                            <div class="item"><a class="btnView" href="{$Url}view/id/{$d.OrderID}" target="_self">查看详情</a></div>
+                                            <div class="item"><a class="btnPrint" target="_self" href="{$Url}printing?id={$d.OrderID}">打印订单</a></div>
+                                        </td>
+                                    </eq>
+                                </tr>
+                            </volist>
+                     </table>
+                </volist> 
+             <else/>
+                  <table class="datatable" id="datatable">
+                    <tr>
+                        <th>商品信息</th>
+                        <th style="width:100px;">单价</th>
+                        <th style="width:80px;">购买数量</th>
+                        
+                        <th style="width:90px;">订单总金额</th>
+                        <th style="width:100px;">订单状态</th>
+                        <th style="width:150px;">操作</th>
+                    </tr>
+                    <tr><td colspan="6"  id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </table>
+            </notempty>
+            <div class="tfoot"><div class="page">{$Page}</div></div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function Del(id){
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}del?id="+id+"&p={$NowPage}&OrderNumber={$OrderNumber}&OrderStatus={$OrderStatus}";
+		location.href = url;
+	});
+}
+
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}
+
+$(document).ready(function(){
+	pageInit();
+});
+
+function pageInit(){
+	$("#OrderStatus").val( "{$OrderStatus}");
+}
+</script>

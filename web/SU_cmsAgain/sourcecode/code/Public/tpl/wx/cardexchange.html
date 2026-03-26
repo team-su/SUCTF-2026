@@ -1,0 +1,210 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>会员卡</title>
+<include file="./Public/tpl/wx/meta.html" />
+<link href="{$AppCss}card.css" rel="stylesheet" type="text/css">
+<script src="{$AppJs}jquery.js" type="text/javascript"></script>
+<script src="{$AppJs}accordian.js" type="text/javascript"></script>
+<script src="{$AppJs}alert.js" type="text/javascript"></script>
+<style type="text/css">
+.window {
+	width:290px;
+	position:fixed;
+	display:none;
+	bottom:30px;
+	left:50%;
+	 z-index:9999;
+	margin:-50px auto 0 -145px;
+	padding:2px;
+	border-radius:0.6em;
+	-webkit-border-radius:0.6em;
+	-moz-border-radius:0.6em;
+	background-color: #ffffff;
+	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	-o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	font:14px/1.5 Microsoft YaHei,Helvitica,Verdana,Arial,san-serif;
+}
+.window .title {
+	background-color: #A3A2A1;
+	line-height: 26px;
+    padding: 5px 5px 5px 10px;
+	color:#ffffff;
+	font-size:16px;
+	border-radius:0.5em 0.5em 0 0;
+	-webkit-border-radius:0.5em 0.5em 0 0;
+	-moz-border-radius:0.5em 0.5em 0 0;
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #585858 ), to( #565656 )); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient(#585858, #565656); /* Chrome 10+, Saf5.1+ */
+	background-image:    -moz-linear-gradient(#585858, #565656); /* FF3.6 */
+	background-image:     -ms-linear-gradient(#585858, #565656); /* IE10 */
+	background-image:      -o-linear-gradient(#585858, #565656); /* Opera 11.10+ */
+	background-image:         linear-gradient(#585858, #565656);
+	
+}
+.window .content {
+	/*min-height:100px;*/
+	overflow:auto;
+	padding:10px;
+	background: linear-gradient(#FBFBFB, #EEEEEE) repeat scroll 0 0 #FFF9DF;
+    color: #222222;
+    text-shadow: 0 1px 0 #FFFFFF;
+	border-radius: 0 0 0.6em 0.6em;
+	-webkit-border-radius: 0 0 0.6em 0.6em;
+	-moz-border-radius: 0 0 0.6em 0.6em;
+}
+.window #txt {min-height:30px;font-size:16px; line-height:22px;}
+.window .txtbtn {
+	background: #f1f1f1;
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #DCDCDC ), to( #f1f1f1 )); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient( #ffffff , #DCDCDC ); /* Chrome 10+, Saf5.1+ */
+	background-image:    -moz-linear-gradient( #ffffff , #DCDCDC ); /* FF3.6 */
+	background-image:     -ms-linear-gradient( #ffffff , #DCDCDC ); /* IE10 */
+	background-image:      -o-linear-gradient( #ffffff , #DCDCDC ); /* Opera 11.10+ */
+	background-image:         linear-gradient( #ffffff , #DCDCDC );
+	border: 1px solid #CCCCCC;
+	border-bottom: 1px solid #B4B4B4;
+	color: #555555;
+	font-weight: bold;
+	text-shadow: 0 1px 0 #FFFFFF;
+	border-radius: 0.6em 0.6em 0.6em 0.6em;
+	display: block;
+	width: 100%;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	cursor: pointer;
+	text-align: windowcenter;
+	font-weight: bold;
+	font-size: 18px;
+	padding:6px;
+	margin:10px 0 0 0;
+}
+.window .txtbtn:visited {
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #ffffff ), to( #cccccc )); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient( #ffffff , #cccccc ); /* Chrome 10+, Saf5.1+ */
+	background-image:    -moz-linear-gradient( #ffffff , #cccccc ); /* FF3.6 */
+	background-image:     -ms-linear-gradient( #ffffff , #cccccc ); /* IE10 */
+	background-image:      -o-linear-gradient( #ffffff , #cccccc ); /* Opera 11.10+ */
+	background-image:         linear-gradient( #ffffff , #cccccc );
+}
+.window .txtbtn:hover {
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #ffffff ), to( #cccccc )); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient( #ffffff , #cccccc ); /* Chrome 10+, Saf5.1+ */
+	background-image:    -moz-linear-gradient( #ffffff , #cccccc ); /* FF3.6 */
+	background-image:     -ms-linear-gradient( #ffffff , #cccccc ); /* IE10 */
+	background-image:      -o-linear-gradient( #ffffff , #cccccc ); /* Opera 11.10+ */
+	background-image:         linear-gradient( #ffffff , #cccccc );
+}
+.window .txtbtn:active {
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #cccccc ), to( #ffffff )); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient( #cccccc , #ffffff ); /* Chrome 10+, Saf5.1+ */
+	background-image:    -moz-linear-gradient( #cccccc , #ffffff ); /* FF3.6 */
+
+	background-image:     -ms-linear-gradient( #cccccc , #ffffff ); /* IE10 */
+	background-image:      -o-linear-gradient( #cccccc , #ffffff ); /* Opera 11.10+ */
+	background-image:         linear-gradient( #cccccc , #ffffff );
+	border: 1px solid #C9C9C9;
+	border-top: 1px solid #B4B4B4;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+
+.window .title .close {
+	float:right;
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACTSURBVEhL7dNtCoAgDAZgb60nsGN1tPLVCVNHmg76kQ8E1mwv+GG27cestQ4PvTZ69SFocBGpWa8+zHt/Up+IN+MhgLlUmnIE1CpBQB2COZibfpnXhHFaIZkYph0SOeeK/QJ8o7KOek84fkCWSBtfL+Ny2MPpCkPFMH6PWEhWhKncIyEk69VfiUuVhqJefds+YcwNbEwxGqGIFWYAAAAASUVORK5CYII=");
+	width:26px;
+	height:26px;
+	display:block;	
+}
+</style>
+</head>
+<body id="cardpower" onLoad="new Accordian('basic-accordian',2,'header_highlight');" class="mode_webapp2">
+<div class="qiandaobanner"> <a href="javascript:history.go(-1);"><img src="{$AppImages}vippower.jpg"></a> </div>
+<div id="basic-accordian">
+	<volist name="Gift" id="g">
+        <div id="test{$i}-header" class="accordion_headings">
+            <div class="tab gift">
+            	<span class="title">{$g.GiftName}<b style="color:red">&nbsp;&nbsp;{$g.Score}积分</b>
+                <p>有效期至{$g.EndTime}</p></span>
+            </div>
+            <div id="test{$i}-content" style="display: block; overflow: hidden; opacity: 1;">
+            <div class="accordion_child">
+                 <p class="num" onClick="exchange({$i})" >点击这里兑换礼品</p>
+                 <div id="queren{$i}" style="display:none">
+                 		 <notempty name="CardNumber">
+                             <p style=" margin:8px 0"><input name=""  class="px" id="username{$i}" value="{$MemberRealName}"  placeholder="输入您的姓名" type="text"></p>
+                             <p style=" margin:8px 0"><input  name=""  class="px" id="mobile{$i}" value="{$MemberMobile}" placeholder="输入您的电话" ></p>
+                            <p style=" margin:8px 0"><input  name=""   class="px" id="pwd{$i}" value="" placeholder="商家输入确认密码" type="password"></p> 
+                            <p style=" margin:8px 0"><a id="showcard{$i}" class="submit" href="javascript:void(0)" onClick="gift({$g.GiftID},{$i})">确定兑换</a></p>
+                        <else/>
+                        	<p style=" margin:8px 0; color:red; font-weight:bold; text-align:center">您的会员卡被冻结或还没有领取会员卡！</p>
+                        </notempty>
+                 </div>
+                <b>详情说明</b>
+                <ul><div style="text-align:center"><img  src="{$g.GiftPicture}" style="max-width:220px;" /></div>
+                    <br/>{$g.Remark}
+                </ul>
+            </div>
+            </div>
+        </div>
+    </volist>
+</div>
+
+
+<div class="window" id="windowcenter">
+	<div id="title" class="title">消息提醒<span class="close" id="alertclose"></span></div>
+	<div class="content">
+	 <div id="txt"></div>
+	 <input value="确定" id="windowclosebutton" name="确定" class="txtbtn" type="button">	
+	</div>
+</div>
+<script>
+	function exchange(id){
+		window.jQuery('#test'+id+'-content').height('auto');
+		window.jQuery('#queren'+id).toggle();
+		//document.getElementById('queren'+id).style.display='';
+	}
+	
+	function gift(gid,id){
+		var username =  document.getElementById('username'+id).value;
+		if (username.length<2) {
+			alert("请输入姓名！");
+			return;
+		}
+		
+		var mobile =  document.getElementById('mobile'+id).value;
+		var regu =/^[0-9]{7,11}$/;
+		var re = new RegExp(regu);
+		if(!re.test(mobile)){
+			alert("请输入正确的手机号码!");
+			return  ;
+		}
+		
+		var pwd =  document.getElementById('pwd'+id).value;
+		if (pwd=='') {
+			alert("请输入商家密码！");
+			return;
+		}
+		var MemberID = '{$MemberID}';
+		var CardNumber = '{$CardNumber}';
+		var submitData = {username:username, mobile:mobile, pwd:pwd, gid:gid, mid:MemberID, cn:CardNumber};
+		window.jQuery.post('{$Url}exchangeGift', submitData, function(data) {
+			if (data.status == 1) {
+				alert("兑换成功！");
+				document.getElementById('queren'+id).style.display='none';
+				document.getElementById('pwd'+id).value = '';
+			} else if (data.status == 2){
+			    alert("商家密码错误！");
+			}else if (data.status == 3){
+			    alert("积分不足！您的剩余积分:"+data.info);
+			}else if (data.status == 0){
+			    alert(data.info);
+			}
+		}, "json");
+	}
+</script>
+<include file="./Public/tpl/wx/cardfooter.html" />
+</body>
+</html>

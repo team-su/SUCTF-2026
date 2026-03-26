@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.logtype1{ color:blue;}
+		.logtype2{ color:red;}
+		.logtype3{ color:green;}
+		.logtype4{ color:#F0F;}
+		.logtype5{ color:black;}
+		.logtype6{ color:gray;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="batchDel()" title="批量删除">删除</a></li>
+                <li  class="toolbar toolbarform">
+                    <label>订单编号</label>
+                    <input type="text" class='textinput' name="OrderNumber" style="width:180px" value="{$OrderNumber}" id="OrderNumber"/>
+                    <label>订单状态</label>
+                    <select name="OrderLogType" id="OrderLogType">
+                        <option value="-1">全部</option>
+                        <option value="2">付款</option>
+                        <option value="3">发货</option>
+                        <option value="4">退款</option>
+                        <option value="5">退货</option>
+                        <option value="6">结单</option>
+                        <option value="7">作废</option>
+                    </select>
+                    <a id="btnSeek" class="btnToolbarForm" onclick="Search()">查询</a>
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="40px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                     <th width="70px" >日志ID</th>
+                     <th width="220px" >订单编号</th>
+                     <th width="80px" >操作员</th>
+                     
+                     <th width="100px" >日志类别</th>
+                     <th>备注</th>
+                     <th width="150px" >时间</th>
+                     <th width="150px">操作</th>
+                </tr>  
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td><input class="checkrow" type="checkbox" name="id[]" value="{$d.OrderLogID}" /></td>
+                        <td>{$d.OrderLogID}</td>
+                        <td>{$d.OrderNumber|htmlspecialchars}</td>
+                        <td>{$d.Operator|htmlspecialchars}</td>
+                        <td>										
+                        <span class="logtype{$d.OrderLogType}">
+                            <switch name="d.OrderLogType">
+                                <case value="2">付款</case>
+                                <case value="3">发货</case>	
+                                <case value="4">退款</case>
+                                <case value="5">退货</case>
+                                <case value="6">结单</case>
+                                <case value="7">作废</case>
+                            </switch>
+                        </span>
+                        </td>
+                        <td style="text-align:left;">
+                        <in name="d.OrderLogType" value="2,4">金额：{$d.PayPrice}&nbsp;&nbsp;&nbsp;&nbsp;</in>
+                        <in name="d.OrderLogType" value="3,5">物流单号：{$d.ShippingNumber|htmlspecialchars}&nbsp;&nbsp;&nbsp;&nbsp;</in>
+                        {$d.OrderLogRemark|htmlspecialchars}
+                        </td>
+                        <td>{$d.OrderLogTime|strtotime|yd_friend_date}</td>
+                        <td class="operator">
+                            <a style="float:left" href="{$Url}modifyOrderLog/id/{$d.OrderLogID}" id="btnEdit">修改</a>
+                            <div class="btn-sep"></div>
+                            <a style="float:left" onclick="del({$d.OrderLogID})" class="btnDel">删除</a>
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="8" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	pageInit();
+});
+
+//页面初始化
+function pageInit(){
+	$("#OrderLogType").val( "{$OrderLogType}");
+}
+
+function del(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}delOrderLog?id="+id+"&OrderNumber={$OrderNumber}&p={$NowPage}&OrderLogType={$OrderLogType}";
+		location.href = url;
+	});
+}
+
+function batchDel(){
+	if(checkSafeQuestion()) return;
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/delOrderLog");
+		$('#frm').submit();
+	});
+}
+
+function Search(){
+	$('#frm').attr("action", "{$Url}orderLog");
+	$('#frm').submit();
+	return true;
+}
+</script>

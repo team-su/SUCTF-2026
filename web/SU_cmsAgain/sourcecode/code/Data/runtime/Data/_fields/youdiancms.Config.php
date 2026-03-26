@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'ConfigID', 1 => 'ConfigName', 2 => 'ConfigValue', 3 => 'ConfigDescription', 4 => 'ConfigFile', 5 => 'IsEnable', 6 => 'LanguageID', '_autoinc' => true, '_pk' => 'ConfigID', ); ?>

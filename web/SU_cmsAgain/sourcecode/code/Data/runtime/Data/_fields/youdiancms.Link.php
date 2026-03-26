@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'LinkID', 1 => 'LinkClassID', 2 => 'LinkName', 3 => 'LinkType', 4 => 'LinkUrl', 5 => 'LinkLogo', 6 => 'LinkOrder', 7 => 'LinkDescription', 8 => 'IsEnable', 9 => 'LanguageID', '_autoinc' => true, '_pk' => 'LinkID', ); ?>

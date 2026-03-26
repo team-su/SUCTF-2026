@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frm" enctype="multipart/form-data">
+             <input type="hidden" name="{$HiddenName}" value="{$HiddenValue}" />
+            <input type="hidden" name="CouponID" value="{$CouponID}" />
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>优惠卷名称</th>
+                        <td><input type="text" class="textinput w450"  id="CouponName" name="CouponName" value="{$c.CouponName}" /></td>
+                    </tr>
+                    <tr>
+                        <th>最多使用次数</th>
+                        <td><input type="text" class="textinput" style="width:80px"  id="CouponNumber" name="CouponNumber" value="{$c.CouponNumber}" />
+                        <span class='Caution'>用于限制每个优惠卷最多使用次数</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>排序</th>
+                        <td><input type="text" class="textinput" style="width:80px"  id="CouponOrder" name="CouponOrder" value="{$c.CouponOrder}" />
+                        <span class='Caution'>请输入数字，值越小排名越靠前！</span></td>
+                    </tr>
+                   <tr>
+                        <th>有效期</th>
+                        <td><script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+                        <input name='StartTime' type='text' class='Wdate' id='StartTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value='{$c.StartTime}' /><span style="padding:0px 5px">到</span><input name='EndTime' type='text' class='Wdate' id='EndTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value='{$c.EndTime}' />
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>使用描述</th>
+                        <td><textarea class="w450" style="height:60px; width:100%" name="Remark">{$c.Remark}</textarea>
+                        <span class='Caution'>说明优惠卷的使用方式，如最低消费金额，优惠券打折信息，不与其他优惠同时使用、节假日不可使用等。</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap">是否启用</th>
+                        <td>
+                            <label><input type="radio" name="IsEnable" value="1" <eq name="c.IsEnable" value="1">checked="checked"</eq>  />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="IsEnable" value="0"  <eq name="c.IsEnable" value="0">checked="checked"</eq>/>禁用</label>
+                        </td>
+                    </tr>
+                  </table>
+            </div>
+
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright" type="submit"  value="保存" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			//alert(data.data);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frm').attr('action','{$Action}');
+	 });
+	 
+	 $('#CouponName').focus();
+});
+
+function GoBack(){
+	window.location.href = "{$Url}coupon";
+}
+</script>

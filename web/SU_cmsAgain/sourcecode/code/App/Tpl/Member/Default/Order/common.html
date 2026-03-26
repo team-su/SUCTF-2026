@@ -1,0 +1,67 @@
+<style>
+	.os1, .os2, .os3, .os4, .os5, .os6, .os7, .ps1, .ps2, .ss1, .ss2{ padding:0 3px;}
+	.os1{ color: black; }
+	.os2{ color: blue;}
+	.os3{ color: #F0F;}
+	.os4{ color:red;}
+	.os5{ color:#F90;}
+	.os6{ color:green;}
+	.os7{ color:#999;}
+	.ps1, .ss1{ color: blue; }
+	.ps2, .ss2{ color: red;}
+		
+	.OrderOperator .item{ line-height:40px; height:40px;}
+	.btnPay{  padding:5px 18px; border:1px solid #C00; color:#C00; }
+	.btnPay:hover{ color:#F30; border:1px solid #F30; }
+	.btnCancel{  padding:5px 18px;  border:1px solid #999; color:#999;}
+	.btnCancel:hover{ color:#666; border-color:#666;}
+	.btnView{  padding:5px 18px;  border:1px solid #333; color:#333;}
+	.btnView:hover{ color:#390; border-color:#390;}
+	.btnDelOrder{  padding:5px 18px; border:1px solid #C00; color:#F00; }
+	.btnDelOrder:hover{ color:#F30; border:1px solid #C00; }
+	.btnReceive{  padding:5px 18px;  border:1px solid #333; color:#333;}
+	.btnReceive:hover{ color:#000; border-color:#000;}
+	
+	.btnPrint{  padding:5px 18px;  border:1px solid #F0C; color:#F0C;}
+	.btnPrint:hover{ color:#F6C; border-color:#F6C;}
+</style>
+<script type="text/javascript">
+//取消订单
+function Cancel(OrderID, type){
+	ConfirmBox("确定要取消订单吗?", function () {
+		var url = "{$Url}cancel/OrderID/"+OrderID;
+		$.get(url, null, function(data){
+			if(data.status == 1){
+				SucceedBox(data.info);
+				if(type==1){
+					location.reload();
+				}else{
+					location.href  = "{$Url}index?p={$NowPage}&OrderNumber={$OrderNumber}&OrderStatus={$OrderStatus}";
+				}
+			}else{
+				ErrorBox(data.info);
+			}
+		},"json");
+	});
+}
+
+function Receive(id, type){
+	ConfirmBox("确认收货吗?", function () {
+		var url = "{$Url}receive/OrderID/"+id;
+		$.get(url, null, function(data){
+			if(data.status == 1){
+				SucceedBox(data.info);
+				if(type==1){
+					location.reload();
+				}else{
+					location.href  = "{$Url}index?p={$NowPage}&OrderNumber={$OrderNumber}&OrderStatus={$OrderStatus}";
+				}
+			}else{
+				ErrorBox(data.info);
+			}
+		},"json");
+	}, function () {
+		return true;
+	});
+}
+</script>

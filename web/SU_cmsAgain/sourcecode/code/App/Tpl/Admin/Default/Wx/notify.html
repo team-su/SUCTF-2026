@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		#InfoHit{color:#00F;font-weight:bold;}
+		label{color:#00F; line-height:21px; font-weight:bold; height:21px; vertical-align:middle;font-size:12px;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data"  method="post" id="frm">
+    <input type="hidden" name="Keywords" id="Keywords" value="{$Keywords}" />
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+    <div class="table">
+        <div class="toolbars">
+            <li class="toolbar"><a id="btnBack" href="{$Url}card" title="返回">返回</a></li>   
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}AddNotify"  title="发布会员通知" target="_self">发布会员通知</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar toolbarform">
+                <label>通知标题</label><input type="text" class='textinput' id="Keywords"  name="Keywords" style="width:150px" value="{$Keywords}" />
+                <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+            </li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="280px" nowrap="nowrap">通知标题</th>
+                <th>通知内容</th>
+                <th  width="130px">通知时间</th>
+                <th width="150px">操作</th>
+            </tr>  
+            <notempty name="Notify">                
+                    <volist name="Notify" id="n">
+                    <tr>
+                    <td><input class="checkrow" type="checkbox" name="NotifyID[]" value="{$n.NotifyID}" /></td>
+                    <td   style="text-align:left"><b>{$n.NotifyName|htmlspecialchars}</b></td>
+                    <td   style="text-align:left">{$n.NotifyContent|htmlspecialchars}</td>
+                    <td>{$n.NotifyTime|strtotime|yd_friend_date}</td>
+                    <td class="operator">
+                        <a style="float:left" onclick="Edit({$n.NotifyID})" id="btnEdit">修改</a>
+                        <div class="btn-sep"></div>
+                        <a style="float:left" onclick="Del({$n.NotifyID})" class="btnDel">删除</a>
+                    </td>
+                    </tr>
+                    </volist>
+            <else/>
+                <tr><td colspan="5" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                
+        </table>
+        <div class="tfoot">
+            <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+     </div>
+  </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/notify");
+	$('#frm').submit();
+	return true;
+}	
+
+function Edit(id){
+	url = "{$Url}modifyNotify/NotifyID/"+id;
+	location.href = url;
+}
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}delNotify/NotifyID/"+id+"/NowPage/{$NowPage}/Keywords/{$Keywords}";
+		location.href = url;
+	});
+}
+
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='NotifyID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/DelNotify");
+		$('#frm').submit();
+	});
+}
+
+//提示信息
+$(document).ready(function(){
+	$(".TagTip").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "alt"
+	});
+	//选中操作
+	$("#Keywords").focus();
+});
+</script>

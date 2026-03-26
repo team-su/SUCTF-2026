@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header"  id="c5"><h4>基本设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th  class="w120">是否启用百度自动推送</th>
+                        <td>
+                            <label><input type="radio" name="BaiduPushEnable" value="1" onclick="changeType(1)" />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="BaiduPushEnable" value="0" onclick="changeType(0)" />禁用 </label>
+                            <span class="Caution">启用后，当发布网站内容时，会将内容的网址自动推送给百度，通知百度收录！</span>
+                        </td>
+                    </tr>
+                    <tr class="trWrap">
+                        <th>百度推送Token</th>
+                        <td><input type="text" style="width:200px;" class="textinput" name="BaiduPushToken" value="{$BaiduPushToken}" />
+                            <span class="Caution">网站Token，先在<a href="https://ziyuan.baidu.com/" style="color:blue;" target="_blank">百度资源搜索平台</a>
+                            登记网站，然后依次点击顶部【网站支持】、左侧【链接提交】找到【修改准入密钥】获取网站的Token</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+            <span  class="trWrap">
+                <div class="box-header"  id="c5">
+					<h4>人工百度推送网址<span class="extra">请先点击【保存设置】按钮保存，然后再推送！</span></h4>
+				</div>
+                <div class="box-content">
+                    <table class="boxtable">
+                        <tr>
+                            <th>网址列表</th>
+                            <td>
+                            <textarea style="width:100%; height:220px;"  class="textinput" id="BaiduPushUrl"></textarea>
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>
+                                <span class="Caution" style="margin-left:0;">支持批量推送多个网址，一行一个网址！</span>
+                                <b id="tip" style="margin-left:10px;color:blue;"></b>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="box-footer">
+                    <div class="box-footer-inner">
+                        <input  id="btnSubmit"  type="button" onclick="pushTest()"  value="立即推送到百度" />
+                    </div>
+                </div>
+            </span>
+
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function changeType(type){
+	if(type==0){
+		$(".trWrap").hide();
+	}else{
+		$(".trWrap").show();
+	}
+}
+
+//百度推送测试
+function pushTest(){
+	if(checkSafeQuestion()) return;
+	var url="{$Url}startBaiduPush";
+	var params = {
+			BaiduPushUrl: $("#BaiduPushUrl").val()
+	}
+	var html = "<img src='{$WebPublic}Images/loading/21.gif' border='0' align='absmiddle'/>";
+	html += " 发送中，请稍后...";
+	$("#tip").html(html);
+	$.post(url,params,function(data){
+		if(data.status == 1){
+			$("#tip").html("<b style='color:blue'>"+data.info+"</b>");
+		}else{
+			$("#tip").html("<b style='color:red'>"+data.info+"</b>");
+		}
+	},"json");
+}
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+		
+	 $('#frmConfig').submit(function(){
+		 LoadBox();
+		return false;
+	 });
+
+	 function pageInit(){
+		 $("input[name='BaiduPushEnable'][value={$BaiduPushEnable}]").attr("checked",'checked');
+		 changeType("{$BaiduPushEnable}");
+	 }
+	 pageInit();
+});
+</script>

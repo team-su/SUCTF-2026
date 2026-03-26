@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.mark{ 
+			width:32px; height: 20px; vertical-align:middle;  	
+		}
+		.default{ 
+			background:red;color:#fff; padding: 2px 6px; font-size:12px; border-radius: 3px;
+		}
+		#datatable #btnSave {background: #5cb85c;border: 1px solid #4cae4c;color: #fff;float: left;}
+		
+		.packlist{ width:590px; height: 400px; overflow-y:auto; padding: 8px; background:#FFF;}
+		.packlist li{ display: block; padding: 8px 0; border-bottom: 1px solid #ccc; overflow:hidden;}
+		.packlist li.first{ background:#f0f0f0;}
+		.packlist li.first .name, .packlist li.first .value{ color: #000; font-weight:bold; text-align:center;}
+		
+		.packlist li:hover{ background:#f0f0f0;}
+		.packlist li:hover .name, .packlist li:hover .value{ color: red; }
+		.packlist .name{ float:left; width: 40%; text-align:right; color: #aaa; font-weight:bold;}
+		.packlist .value{ float:left; width: 60%; text-align:left; color: #000;}
+		.packlist .no{ text-align:center; color: red; padding: 8px 0; font-weight:normal; margin-top: 20%; line-height: 1.8em; font-size: 16px;}
+		.btnMakePack{
+			background: {$AdminThemeColor}; color:#fff;  border-radius: 5px; padding: 5px 8px;
+		}
+		
+		/*语言包生成*/
+		.make-dlg{ width: 310px; height: 80px; overflow:hidden; padding: 8px;}
+		.make-dlg .make-bottom{ color: red; font-size:14px; padding: 5px 0;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}add"  title="添加网站语言" target="_self">添加网站语言</a></li>
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="batchDel()" title="批量删除">删除</a></li>
+                <li class="toolbar"><a id="sortall" onclick="sort()" title="批量排序">排序</a></li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="45px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                     <th width="70px" >语言ID</th>
+                     <th width="160px" >语言名称</th>
+                     <th  width="80px" >排序</th>
+					 
+					 <th width="100px" >语言英文标识</th>
+					 <th>国旗标志</th>
+                     <th>独立域名</th>
+					 <th>是否默认</th>
+                     <th>是否启用</th>
+                     <th width="200px">操作</th>
+                </tr>  
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr id="row{$d.LanguageID}">
+                        <td><input class="checkrow" type="checkbox" name="id[]" value="{$d.LanguageID}" /></td>
+                        <td>{$d.LanguageID}</td>
+                        <td class="TipKey">{$d.LanguageName|htmlspecialchars}</td>
+						<td><input type="number" class='textinput' onclick="this.select()" style="width:65px" name="OrderNumber[]" value="{$d.LanguageOrder}" />
+                            <input type="hidden" class='textinput' name="OrderID[]" value="{$d.LanguageID}" />
+                        </td>
+                        
+						<td>{$d.LanguageMark|htmlspecialchars}</td>
+						<td><img class="mark" src="{$WebPublic}Images/mark/{$d.LanguageMark}.png" /></td>
+                        <td>{$d.LanguageDomain|htmlspecialchars}</td>
+						<td><eq name="d.IsDefault" value="1"><span class="default">默认</span></eq></td>
+                        <td>
+                            <eq name="d.IsEnable" value="1">
+                                <span style="color:black;">启用</span>
+                            <else/>
+                                <span style="color:red;">禁用</span>
+                            </eq>
+                        </td>
+                        <td class="operator">
+							<a onclick="showLangPack('{$d.LanguageMark}', '{$d.LanguageName}')" id="btnSave">语言包</a>
+							<div class="btn-sep"></div>
+                            <a style="float:left" href="{$Url}modify/id/{$d.LanguageID}" id="btnEdit">修改</a>
+							<notin name="d.LanguageMark" value="cn">
+								<div class="btn-sep"></div>
+								<a style="float:left" onclick="del({$d.LanguageID})" class="btnDel">删除</a>
+							</notin>
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="9" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#row"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}del?id="+id;
+		location.href = url;
+	});
+}
+
+function batchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/del");
+		$('#frm').submit();
+	});
+}
+
+function sort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "__URL__/sort");
+		$('#frm').submit();
+	});
+}
+
+var gDlg = null;
+//显示语言包
+function showLangPack(mark, LanguageName){
+	var url = "{$Url}getLangPack";
+	var params = { LanguageMark : mark };
+	LoadBox();
+	$.post(url, params, function(res){
+		CloseLoadBox();
+		if (res.status==1){
+			ShowLangPackData(res.data, mark, LanguageName);
+		}else{ //添加频道失败
+			ErrorBox(res.info);
+		}
+	}, "json");
+}
+
+function ShowLangPackData(data, mark, LanguageName){
+	var html = "<ul class='packlist'>";
+	html += "<li class='first'><div class='name'>语言包项</div><div class='value'>语言包值</div></li>";
+	if(data){
+		for(var k in data){
+			var value = data[k];
+			html += "<li><div class='name'>"+k+"：</div><div class='value'>"+value+"</div></li>";
+		}
+	}else{
+		html += "<div class='no'>当前语言暂无语言包！<br/>请点击左下角【自动生成语言包】按钮生成！</div>";
+	}
+	html += "</ul>";
+	var myTitle = "【"+LanguageName+"】语言包 ";
+	myTitle += " （语言包文件 App/Lang/"+mark+"/common.php）";
+	var statusbarHtml = "";
+	if(mark!="cn"){ //中文版不显示自动翻译
+		statusbarHtml = '<span class="btnSuccess" onclick="makeLangPack(\''+mark+'\', \''+LanguageName+'\')">自动生成语言包</span>';
+	}
+	closeLangDialog();
+	gDlg = dialog({title: myTitle, id: 'dlgPack', padding: 0, content: html,
+		ok: function () {
+			closeLangDialog();
+		},
+		statusbar: statusbarHtml,
+		okValue: '确定',
+		cancelDisplay: false,
+		cancelValue:"取消",
+		cancel: function () {
+			closeLangDialog();
+		}
+	}).show();
+}
+
+function closeLangDialog(){
+	if(gDlg){
+		gDlg.close().remove();
+		gDlg = null;
+	}
+}
+
+//生成语言包
+function makeLangPack(mark, LanguageName){
+	var url = "{$Url}makeLangPack";
+	var html = "<div class='make-dlg'>";
+	html += "<div>语言包文件：App/Lang/"+mark+"/common.php</div>";
+	html += "<div class='make-bottom'>备注：本操作调用【应用】-【百度翻译】接口生成目标语言包！自动翻译不准确的，请人工翻译！</div>";
+	html += "</div>";
+	var myTitle = "自动生成【"+LanguageName+"】语言包";
+	var d = dialog({title: myTitle, id: 'dlgMakePack', padding: 0, content: html,
+		ok: function () {
+			var params = { LanguageMark : mark };
+			LoadBox();
+			$.post(url, params, function(res){
+				CloseLoadBox();
+				if (res.status==1){
+					d.close().remove();
+					SucceedBox(res.info);
+					showLangPack(mark, LanguageName);
+				}else{
+					ErrorBox(res.info);
+				}
+			}, "json");
+			return false;
+		},
+		okValue: '立即生成',
+		cancelValue:"取消",
+		cancel: true
+	});
+	d.show();
+}
+</script>

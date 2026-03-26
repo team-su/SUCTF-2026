@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>
+    	.payqrcode{width:180px;height:180px;display:block;margin:0 auto;}
+		.PayRate{ color:#999; }
+    </style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+    <empty name="Think.get.out_trade_no">
+        <div class="weui-cells weui-cells_form"  style="margin-top:0;">
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">充值金额</label></div>
+                    <div class="weui-cell__bd"><input type="number" class="weui-input"  maxlength="8"  name="CashQuantity"  id="CashQuantity" placeholder="请输入充值金额" /></div>
+                </div>
+                
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">支付方式</label></div>
+                    <div class="weui-cell__bd weui-cells_radio">
+                            <paylist id="p" isonline="1" sitetype="2">
+                                <label class="weui-cell weui-check__label" for="f{$p.PayID}" >
+                                     <div class="weui-cell__bd">
+                                         <p>{$p.PayName}<span class="PayRate">(手续费：<gt name="p.PayRate" value="0">{$p["PayRate"]*100}%<else/>0</gt>)</span></p>
+                                     </div>
+                                     <div class="weui-cell__ft">
+                                         <input type="radio" onclick="ChangePay()" redirect="{$p.PayTypeID|IsRedirectPay}" name="PayID" class="weui-check" id="f{$p.PayID}"  value="{$p.PayID}" />
+                                         <span class="weui-icon-checked"></span>
+                                     </div>
+                                </label>
+                            </paylist>
+                    </div>
+                </div>
+                
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">备注</label></div>
+                    <div class="weui-cell__bd"><input type="number" class="weui-input"  name="CashRemark"  id="CashRemark" value="" placeholder="请填写充值备注" /></div>
+                </div>
+        </div>
+        <div class="weui-btn-area"><a id="PayNow"   class="weui-btn weui-btn_primary"  onclick="PayNow(this)" >充值</a></div>
+     <else/>
+     		<div class="weui-msg">
+                  <div class="weui-msg__icon-area"><i class="weui-icon-success weui-icon_msg"></i></div>
+                  <div class="weui-msg__text-area"><h2 class="weui-msg__title">充值成功</h2></div>
+             </div>
+     </empty>
+</body>
+</html>
+<script>
+	$(document).ready(function(){
+		 pageInit();
+	});
+	
+	function pageInit(){
+			//默认选中第一个支付方式
+			$("input[name='PayID']:first").attr("checked",'checked');	
+	}
+
+	function GoBack(){
+		window.location.href = "{$Url}cash";
+	}
+
+	//改变支付方式
+	function ChangePay(){
+		var isRedirect = $("input[name='PayID']:checked").attr("redirect");
+		 if(isRedirect==0){
+			 $("#PayNow").attr("href","javascript:void(0)");
+		 }
+	}
+	
+	//立即支付
+	function PayNow(obj){
+		var PayID = $("input[name='PayID']:checked").val();
+		var CashQuantity = parseFloat($("#CashQuantity").val());
+		if(CashQuantity <= 0){
+			ErrorBox("充值金额必须大于0");
+			return;
+		}
+		var CashRemark = $("#CashRemark").val();
+		var isRedirect = $("input[name='PayID']:checked").attr("redirect");
+		var url = "{$Url}payNow?PayID="+PayID+"&CashQuantity="+CashQuantity+"&CashRemark="+CashRemark;
+		var openid = "{$OpenID}"; 
+		if(openid) url +="&openid="+openid;
+		if(isRedirect==1){
+			obj.target = "_blank";
+			obj.href = url;
+		}else{
+			LoadBox();
+			$.get(url, null, function(data){
+					CloseLoadBox();
+					if (data.status == 1){
+						if( data.data["PayTypeID"] == 10){  //微信公众号支付
+							var params = $.parseJSON( data.data["PayJson"] );
+							WeixinJSBridge.invoke('getBrandWCPayRequest', params, function(res){
+									if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+										SucceedBox("{$Think.lang.OrderOnlinePayFinish}");
+									}else{
+										ErrorBox("{$Think.lang.PayFail} "+res.err_msg);
+									}
+								}
+							);
+						}else{
+							$.alert(data.data["PayContent"], data.data["PayTip"]);
+						}
+					}else{
+						ErrorBox(data.info);
+					}
+			},"json");
+		}
+	}
+</script>

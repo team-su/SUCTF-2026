@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container box-footer-fixed">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frmSave" enctype="multipart/form-data">
+            <input type="hidden" name="{$HiddenName}" value="{$HiddenValue}" />
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>投票名称</th>
+                        <td><input type="text" class="textinput w450"  id="VoteName" name="VoteName" value="{$Data.AppName}" /></td>
+                    </tr>
+                     <tr>
+                        <th>触发关键词</th>
+                        <td><input type="text" class="textinput" style="230px"  id="AppKeyword" name="AppKeyword" value="{$Data.AppKeyword}" />
+                        <span class='Caution'>在微信输入此关键词，将返回当前应用的图文消息！</span>
+                        </td>
+                    </tr>
+                <tr>
+                    <th>图文消息封面</th>
+                    <td><input type="text" id="wxvotepictureImage" class="textinput w450" name="VotePicture" value="{$Data.VotePicture}"  />
+                    <span class='UploadWrapper'>
+                        <input class='btnFileUpload' type='button' value='上传' />
+                        <input id='wxvotepicture' name ='wxvotepicture' type ='file'  size='70'  class='InputFile'  accept="image/*" />
+                    </span>
+                    <input id='btnServer' onclick='BrowserServer(1)' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'  class='btnUpload' />
+                    </td>
+                </tr>
+                    <tr>
+                        <th>投票简介</th>
+                        <td>
+                        <textarea class="w450" style="height:50px; width:100%" name="Description">{$Data.AppDescription}</textarea>
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>起止时间</th>
+                        <td><script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+                        <input name='StartTime' type='text' class='Wdate' id='StartTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value='{$Data.StartTime}' /><span style="padding:0px 5px">到</span><input name='EndTime' type='text' class='Wdate' id='EndTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value='{$Data.EndTime}' />
+                        </td>
+                    </tr>
+                <tr>
+                    <th nowrap="nowrap">是否多选</th>
+                    <td>
+                        <label><input type="radio" name="IsMultiple" value="1" <eq name="Data.IsMultiple" value="1">checked="checked"</eq>  />多选</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="IsMultiple" value="0"  <eq name="Data.IsMultiple" value="0">checked="checked"</eq> />单选</label>
+                    </td>
+                </tr>
+                
+                    <tr>
+                        <th nowrap="nowrap">投票结果</th>
+                        <td>
+                            <label><input type="radio" name="ShowResult" value="1" <eq name="Data.ShowResult" value="1">checked="checked"</eq>  /> 投票前可见</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="ShowResult" value="2" <eq name="Data.ShowResult" value="2">checked="checked"</eq>  />投票后可见</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="ShowResult" value="3"  <eq name="Data.ShowResult" value="3">checked="checked"</eq> />投票结束可见</label> &nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                    <th nowrap="nowrap">是否启用</th>
+                    <td>
+                            <label><input type="radio" name="IsEnable" value="1" <eq name="Data.IsEnable" value="1">checked="checked"</eq>  />启用</label>&nbsp;&nbsp;
+                            <label><input type="radio" name="IsEnable" value="0"  <eq name="Data.IsEnable" value="0">checked="checked"</eq>/>禁用</label>
+                    </td>
+                    </tr>
+                  </table>
+            </div>
+            
+            <div class="box-header"><h4>投票项</h4></div>
+            <div class="box-content">
+                <table class="boxtable"   id="allitems">
+                    <volist id="it" name="Data.Item">
+                        <tr>
+                            <th>投票项{$i}</th>
+                            <td>
+                            <input type="hidden" class="textinput w450" name="ItemID[]" value="{$it.ItemID}" />
+                            <input type="text" class="textinput w450" name="ItemName[]" value="{$it.ItemName}" />
+                            &nbsp;<a onclick="delItem(this)">[-删除投票项]</a></td>
+                        </tr>
+                    </volist>
+                </table>
+                 <table class="boxtable" id="addItem">
+                    <tr>
+                        <th></th>
+                        <td><a onclick="addItem()">[+添加投票项]<a></td>
+                    </tr>
+                </table>
+           </div>
+
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright" type="submit"  value="保存" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type='text/javascript'>
+function BrowserServer(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SetPictureField;
+	FileManager.popup(); 
+}
+
+function SetPictureField(fileUrl){
+	document.getElementById('wxvotepictureImage').value = fileUrl;
+}
+
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#frmSave').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 $('#wxvotepicture').change(function(){
+		 if( !$(this).val() ) return;
+		$('#frmSave').attr('action','{$UploadAction}/currentfile/wxvotepicture');
+		$('#frmSave').submit();
+	 });
+	 
+	 $('#btnSubmit').click(function(){
+		$('#frmSave').attr('action','{$Action}');
+	 });
+	 
+	 $("#wxvotepictureImage").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "value",
+		position: "5-7"
+	 });
+	 
+	 $('#VoteName').focus(); 
+});
+
+function GoBack(){
+	window.location.href = "{$Url}vote";
+}
+//添加一个项目
+function addItem(){
+	var oTh = $("#allitems th");
+	var i = oTh.length + 1;
+	var item="<tr><th>投票项"+i+"</th><td>";
+	item += "<input type='text' class='textinput w450' name='ItemName[]' value='' />";
+	item += "<input type='hidden'  name='ItemID[]' value='0' />";
+	item += "&nbsp;<a onclick='delItem(this)'>[-删除投票项]</a></td></tr>";
+	$("#allitems").append(item);
+	$("#allitems input[name='ItemName[]']").last().focus();
+}
+
+function delItem(obj){
+	$(obj).parent().parent().remove();
+	var oTh = $("#allitems th");
+	for(var i=0; i< oTh.length; i++){
+		var txt ="投票项目"+(i+1).toString();
+		$(oTh[i]).text(txt);
+	}
+}
+</script>

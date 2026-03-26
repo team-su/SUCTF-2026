@@ -1,0 +1,589 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		#InfoHit{	color:#00F;	font-weight:bold;}
+		label{	color:#00F; 		font-weight:bold; 	vertical-align:middle;}
+		#datatable .InfoTitle{ text-align:left ; padding-left:5px;}
+		#dlgTranslate, #dlgTranslate table{ width:100%;}
+		#dlgTranslate th{  width:115px; font-weight:bold;color:blue; text-align:right; padding:5px;}
+		#dlgTranslate td{ text-align:left; padding: 2px 0;}
+		#dlgTranslate #translateLog{ width:420px; height:130px; overflow:auto;}
+		#dlgTranslate #lblTotal{ font-weight:bold; color:#0000FF; padding-right:3px;}
+		#dlgTranslate #lblSuccess{ font-weight:bold; color:#090;padding-right:3px;}
+		#dlgTranslate #lblFail{ font-weight:bold; color:#F00;padding-right:3px;}
+		#dlgTranslate #lblPass{ font-weight:bold; color:#F0F;padding-right:3px;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data"  method="post" id="frmInfo">
+    <input type="hidden" name="ChannelID" id="ChannelID" value="{$ChannelID}" />
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+    <input type="hidden" name="ChannelModelID" id="ChannelModelID" value="{$ChannelModelID}" />
+	<div class="table">
+        <div class="toolbars">
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}Add/ChannelID/{$ChannelID}"  title="添加信息内容" target="_self">添加信息内容</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar"><a id="btnCheck" onclick="BatchCheck(1)" title="批量通过审核">审核</a></li>
+            <li class="toolbar"><a id="btnUnCheck" onclick="BatchCheck(0)" title="批量取消审核">取消审核</a></li>
+            <li class="toolbar"><a id="sortall" onclick="BatchSort()" title="批量排序">排序</a></li>
+            <li class="toolbar"><a id="move" title="批量移动">移动</a></li>
+            <li class="toolbar"><a id="attr" title="属性批量设置">属性</a></li>
+			<notempty name="IsInstall">
+            <li class="toolbar"><a id="btnTranslate"  title="翻译">翻译</a></li>
+			</notempty>
+			<!--
+			<li class="toolbar"><a id="btnWeixin"  title="">微信群<span>发<span></a></li>
+			-->
+            <li class="toolbar toolbarform">
+                <label>标题</label><input type="text" class='textinput' name="Keywords" style="width:95px" value="{$Keywords}" id="Keywords"/>
+                <label>会员ID</label><input type="text" class='textinput' name="MemberID"  style="width:35px"  value="{$MemberID}" />
+                <label>是否审核</label>
+                <select name="IsCheck" id="IsCheck">
+                    <option value="-1">全部</option>
+                    <option value="1">已审核</option>
+                    <option value="0">未审核</option>
+                </select>
+                <label>是否启用</label>
+                <select name="IsEnable" id="IsEnable">
+                    <option value="-1">全部</option>
+                    <option value="1">启用</option>
+                    <option value="0">禁用</option>
+                </select>
+                <a id="btnSeek" class="btnToolbarForm" onclick="Search()">查询</a>
+            </li>
+        </div>
+                   
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="50px" nowrap="nowrap">ID</th>
+                <th width="60px" nowrap="nowrap">排序</th>
+                <th>标题</th>
+                <th width="120px" nowrap="nowrap">所属频道</th>
+                <th width="65px" nowrap="nowrap">点击次数</th>
+                <th width="90px" >会员[ID]</th>
+                <th width="130px" >属性</th>
+                <th width="125px" nowrap="nowrap">发布时间</th>
+                <th width="130px">操作</th>
+            </tr>  
+            <notempty name="Info">                
+            <volist name="Info" id="f" key="j">
+            <tr id="t{$f.InfoID}">
+                <td><input class="checkrow" type="checkbox" name="InfoID[]" value="{$f.InfoID}" /></td>
+                <td>{$f.InfoID}</td>
+                <td><input type="number" class='textinput' onclick="this.select()" style="width:60px" name="InfoOrder[]" value="{$f.InfoOrder}" />
+                <input type="hidden" class='textinput' style="width:50px" name="InfoOrderID[]" value="{$f.InfoID}" /></td>   
+                <td class="InfoTitle">
+                    <a href="{$f.InfoUrl}" title="{$f.InfoTitle|htmlspecialchars}" target="_blank">{$f.InfoTitle|htmlspecialchars}</a>
+                    <notempty name="f.InfoPicture"><b class="TagTip" alt="{$f.InfoPicture|htmlspecialchars}" style="color:#F00; margin:0 3px;">[图]</b></notempty>
+						{$f.LabelHtml}
+                    <notempty name="f.IsTime"><b style="color:#60F; margin:0 3px;">[定时]</b></notempty>
+                </td>
+                <td><a href="{$f.ChannelID|ChannelUrl}" target="_blank"><b>{$f.ChannelName|htmlspecialchars}</b></a></td>
+                <td id="InfoHit">{$f.InfoHit}</td>
+                <td>{$f.MemberName|htmlspecialchars}&nbsp;<b style="color:#F00">[{$f.MemberID}]</b></td>
+                <td>
+                <eq name="f.IsHtml" value="1"><span style="color:#F0F">HTML</span></eq>&nbsp;
+                <eq name="f.IsCheck" value="0">
+                    <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$f.InfoID},'info','未审核',0,'#F00','已审核',1,'#000','IsCheck')">未审核</span>
+                <else/>
+                    <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$f.InfoID},'info','未审核',0,'#F00','已审核',1,'#000','IsCheck')">已审核</span>
+                </eq>
+                &nbsp;
+                <eq name="f.IsEnable" value="1">
+                    <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$f.InfoID},'info')">启用</span>
+                <else/>
+                    <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$f.InfoID},'info')">禁用</span>
+                </eq>
+                </td>
+                
+                <td>{$f.InfoTime|strtotime|yd_friend_date}</td>
+                <td class="operator">
+                    <a onclick="Edit({$f.InfoID})" id="btnEdit">修改</a>
+                    <div class="btn-sep"></div>
+                    <a onclick="Del({$f.InfoID})" class="btnDel">删除</a>
+                </td>
+            </tr>
+            </volist>
+            <else/>
+                <tr><td colspan="10" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                
+        </table>
+         <div class="tfoot">
+              <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+         </div>
+</div>
+</form>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dialog" title="批量移动信息">
+    <table>
+        <tr>
+           <th width="80px" nowrap="nowrap" align="right"><span style="font-weight:bold;color:blue;padding-right:3px;">所属频道</span></th>
+           <th align="left"><channelselect selectvalue="$ChannelID" name="cid" id="cid" hasSingleChannel="1" groupid="$AdminGroupID"  menuowner="1" /></th>
+        </tr>
+        <tr>
+            <th nowrap="nowrap" align="right"><span style="font-weight:bold;color:blue;padding-right:3px;">专题</span></th>
+            <td align="left" style="padding-top:5px;">
+            <specialselect  size="8" style='width:300px' name="sid[]" id="sid"/>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="dialog" id="dlgTranslate" title="自动翻译">
+    <table border="0" >
+		<tr>
+            <th>源语言</th>
+            <td style="color:red;font-weight:bold;">{:get_language_name()}</td>
+        </tr>
+		<tr>
+            <th>目标语言</th>
+            <td>
+				<select id="TargetLanguage" onchange="changeTargetLanguage()">
+					<option value="">请选择</option>
+					 <volist name="Language" id="l">
+							<neq name="l.LanguageMark" value="$Think.const.LANG_SET">
+								<option value="{$l.LanguageMark}">{$l.LanguageName}</option>
+							</neq>
+					 </volist>
+				 </select>
+			</td>
+        </tr>
+        <tr>
+           <th>将译文添加到频道</th>
+           <td id="TargetChannelTd"></td>
+        </tr>
+        <tr>
+            <th>翻译进度</th>
+            <td><span class="progressBar" id="pb"></span></td>
+        </tr>
+        <tr><th>翻译错误日志</th>
+        <td style="text-align:left;">
+            翻译总数：<span id="lblTotal"></span>&nbsp;
+            成功： <span id="lblSuccess"></span>&nbsp;
+            跳过： <span id="lblPass"></span>&nbsp;
+            失败：<span id="lblFail"></span>&nbsp;
+        </td>
+        </tr>
+        <tr><td style="color:blue;" colspan="2"><textarea id="translateLog"></textarea></td></tr>
+        <tr><td style="color:red; font-weight:bold;" colspan="2">翻译说明：</td></tr>
+        <tr><td style="color:red;"  colspan="2">[1] 使用前，请在[管理首页]->[其它设置]设置百度翻译接口参数</td></tr>
+        <tr><td style="color:red;"  colspan="2">[2] 若译后的标题已经存在，则不翻译此条信息</td></tr>
+        <tr><td style="color:red;"  colspan="2">[3] 内容翻译后，会去除原文所有HTML标记和样式（img和br标签除外）</td></tr>
+    </table>
+</div>
+
+<div class="dialog" id="dlgAttr" title="批量设置属性">
+    <table>
+        <tr>
+			<th width="80px" nowrap="nowrap" style="text-align:right;font-weight:bold;color:blue;padding-right:5px">属性标记</th>
+			<th align="left">{$ChannelModelID|get_labelcheckbox}</th>
+        </tr>
+        <tr>
+            <td nowrap="nowrap" style="text-align:right;font-weight:bold;color:blue;padding-right:5px">是否启用</th>
+            <td align="left">
+                <label><input type="radio" name="DlgIsEnable" value="1" checked="checked"/>启用</label>
+                <label><input type="radio" name="DlgIsEnable" value="0" />禁用</label>
+            </th>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.progressbar.min.js"></script>
+<script type="text/javascript">
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='InfoID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frmInfo').attr("action", "__URL__/batchDel");
+		$('#frmInfo').submit();
+	});
+}
+
+//排序
+function BatchSort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frmInfo').attr("action", "__URL__/batchSort");
+		$('#frmInfo').submit();
+	});  
+}	
+
+//查询
+function Search(){
+	$('#frmInfo').attr("action", "__URL__/index/ChannelID/{$ChannelID}");
+	$('#frmInfo').submit();
+	return true;
+}
+
+//批量审核
+function BatchCheck(bCheck){
+	if(checkSafeQuestion()) return;
+	//先必须选中记录==============================================
+	var arrChk = $("input[name='InfoID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	if( n == 0 ) {
+		WarnBox("请先选中记录!");
+		return;
+	}
+	//=========================================================
+	if( bCheck == 1 ){
+		ConfirmBox("确定审核通过吗?", function () {
+			$('#frmInfo').attr("action", "{$Url}batchCheck/Check/1");
+			$('#frmInfo').submit();
+		});
+	}else{
+		ConfirmBox("确定取消审核吗?", function () {
+			$('#frmInfo').attr("action", "{$Url}batchCheck/Check/0");
+			$('#frmInfo').submit();
+		});
+	}
+}
+
+$(document).ready(function(e) {
+	$("#pb").progressBar({
+		textFormat: 'fraction',
+		boxImage: '{$WebPublic}jquery/images/progressbar.gif', 
+		barImage: '{$WebPublic}jquery/images/progressbg_green.gif', 
+		showText: true
+	});
+});
+
+$(function(){
+	var gStartTranslate = true;
+	var gFailCount = 0;
+	var gSuccessCount = 0;
+	var gPassCount = 0;
+	var gTotalCount = 0;
+
+	//翻译初始化
+	function TranslateInit(){
+		gStartTranslate = true;
+		gFailCount = 0;
+		gSuccessCount = 0;
+		gPassCount = 0;
+		gTotalCount = 0;
+		
+		$("#lblFail").text( gFailCount );
+		$("#lblSuccess").text( gSuccessCount );
+		$("#lblPass").text( gPassCount );
+	}
+	
+	function TranslateComplete(data){
+			//状态码：0：严重错误（弹窗显示），1：成功，2：跳过，3：翻译失败
+			if( data.status == 0 ){ 
+				ErrorBox(data.info);
+			}else{
+				if( gStartTranslate ){
+					if( data.status == 2 ){
+						AddTranslateLog(data.info.ErrorMessage);
+						gPassCount++;
+						$("#lblPass").text( gPassCount );
+					}else if( data.status == 3){
+						AddTranslateLog(data.info.ErrorMessage);
+						gFailCount++;
+						$("#lblFail").text( gFailCount );
+					}else if( data.status == 1){
+						gSuccessCount++;
+						$("#lblSuccess").text( gSuccessCount );
+					}
+					var num = parseInt(data.data.Number) + 1;
+					$("#pb").progressBar(num);
+					var arr = $("input[name='InfoID[]']:checked");
+					if( num < arr.length  ){
+						var url = "{$Url}translate";
+						var data = { 
+							Number:num, 
+							InfoID: $(arr[num]).val(), 
+							ChannelID:$("#TargetChannel").val(), //目标频道
+							TargetLanguage: $("#TargetLanguage").val()  //目标语言
+						};
+						$.post(url, data, TranslateComplete, "json");
+					}else{
+						var logText = "翻译完成  ";
+						logText += "翻译总数："+gTotalCount+"  成功："+gSuccessCount;
+						logText += "  跳过："+gPassCount+"  失败："+gFailCount;
+						AddTranslateLog( logText );
+					}
+				}
+			}
+	}
+	
+	//插入翻译日志
+	function AddTranslateLog(msg){
+		var obj = document.getElementById("translateLog");
+		var content = $("#translateLog").val();
+		if( content.length > 1){
+			insertAtCursor( obj, "\r\n>>"+msg);
+		}else{
+			insertAtCursor( obj, ">>"+msg);
+		}
+		var scrollTop = $("#translateLog")[0].scrollHeight;  
+		$("#translateLog").scrollTop(scrollTop);  
+	}
+	
+	//批量翻译
+	$('#btnTranslate').click (function(){
+		if(checkSafeQuestion()) return;
+		var arrChk = $("input[name='InfoID[]']");
+		var n = 0;
+		for(var i = 0; i < arrChk.length; i++){
+			if(arrChk[i].checked) n++;
+		}
+		if( n == 0 ) {
+			WarnBox("请先选中记录!");
+			return false;
+		}
+		var nTotal = $("input[name='InfoID[]']:checked").length;
+		TranslateInit();
+		$("#lblTotal").text( nTotal );
+		
+		$("#pb").progressBar(0, {max:nTotal} );
+		dialog({
+			title: $("#dlgTranslate").attr("title"),
+			id: 'dialog',
+			padding: 8,
+			content: document.getElementById('dlgTranslate'),
+			ok: function () {
+				AddTranslateLog("开始翻译");
+				TranslateInit();
+				var arr = $("input[name='InfoID[]']:checked");
+				if( arr.length > 0 ){
+					gTotalCount = arr.length;
+					$("#lblTotal").text( gTotalCount );
+					var url = "{$Url}translate";
+					var data = { 
+						Number:0, 
+						ChannelID:$("#TargetChannel").val(), //目标频道
+						InfoID: $(arr[0]).val(), 
+						TargetLanguage: $("#TargetLanguage").val()  //目标语言
+					};
+					//console.log(data);
+					$.post(url, data, TranslateComplete, "json");
+				}
+				return false;
+			},
+			okValue: '开始翻译',
+			cancelValue: '取消',
+			cancel: function () {
+				gStartTranslate = false; 
+			}
+		}).show();
+		
+		return true;
+	});
+	
+	$('#attr').click(function(){
+		if(checkSafeQuestion()) return;
+		var arrChk = $("input[name='InfoID[]']");
+		var n = 0;
+		for(var i = 0; i < arrChk.length; i++){
+			if(arrChk[i].checked) n++;
+		}
+		
+		if( n == 0 ) {
+			WarnBox("请先选中记录!");
+			return false;
+		}
+		
+		dialog({
+			title: "批量设置属性",
+			id: 'dlgAttr',
+			padding: 8,
+			content: document.getElementById('dlgAttr'),
+			ok: function () {
+				$("#dlgAttr").appendTo("form#frmInfo");
+				$('#frmInfo').attr("action", "__URL__/batchLabel");
+				$('#frmInfo').submit();
+			},
+			okValue: '确定',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+		
+		return false;
+	});
+	
+	//移动
+	$('#move').click(function(){
+		if(checkSafeQuestion()) return;
+		var arrChk = $("input[name='InfoID[]']");
+		var n = 0;
+		for(var i = 0; i < arrChk.length; i++){
+			if(arrChk[i].checked) n++;
+		}
+		
+		if( n == 0 ) {
+			WarnBox("请先选中记录!");
+			return false;
+		}
+		
+		dialog({
+			title: "批量移动",
+			id: 'dialog',
+			padding: 8,
+			content: document.getElementById('dialog'),
+			ok: function () {
+				$("#dialog").appendTo("form#frmInfo");
+				$('#frmInfo').attr("action", "__URL__/batchMove");
+				$('#frmInfo').submit();
+			},
+			okValue: '确定',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+		
+		return false;
+	});
+});
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#t"+id+" .InfoTitle a").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		var para = "?IsEnable={$IsEnable}&Keywords={$Keywords}&MemberID={$MemberID}&IsCheck={$IsCheck}";
+		url = "{$Url}del/InfoID/"+id+"/ChannelID/{$ChannelID}/p/{$NowPage}"+para;
+		//$.get(url, {}, DelInfoComplete, "json"); //不使用无刷新技术
+		location.href = url;
+	});
+}
+
+function Edit(id){
+	var params = "?ChannelModelID={$ChannelModelID}&IsEnable={$IsEnable}&Keywords={$Keywords}&MemberID={$MemberID}";
+	params += "&IsCheck={$IsCheck}&p={$NowPage}&ChannelIDFrom={$ChannelID}";  //记录来源频道ID,方便返回
+	var url = "{$Url}modify/InfoID/"+id+params;
+	location.href = url;
+}
+
+//回调函数
+function DelInfoComplete(data, textStatus){
+	if (data.status == 1){
+		$(data.data).css("display","none");
+	}else{ 
+		//删除失败
+		ErrorBox(data.info);
+	}
+}
+
+//提示信息
+$(document).ready(function(){
+	$(".TagTip").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "alt"
+	});
+	
+	//选中操作
+	//$("#IsCheck").attr("value",'{$IsCheck}');
+	//$("#IsEnable").attr("value",'{$IsEnable}');
+	
+	$("#IsCheck").val('{$IsCheck}');
+	$("#IsEnable").val('{$IsEnable}');
+	
+	$("#Keywords").focus();
+	$("#nav dl").append("<dd  class='link' style='color:#000'>{$ChannelID|ChannelName|trim}</dd>");
+	
+});
+
+function changeTargetLanguage(){
+	var mark = $("#TargetLanguage").val();
+	if(!mark){
+		$("#TargetChannelTd").html("");
+	}
+	var url = "{$Url}getTargetChannel";
+	var params = { LanguageMark : mark };
+	$.post(url, params, function(res){
+		if (res.status==1){
+			var data = res.data;
+			var html = "";
+			if(data && data.length > 0){
+				html = "<select id='TargetChannel'>";
+				for(var i = 0; i<data.length; i++){
+					html += "<option value='"+data[i].ChannelID+"'>"+data[i].ChannelName+"</option>";
+				}
+				html += "</select>";
+			}else{
+				html = "<b class='red'>暂无频道数据！</b>";
+			}
+			$("#TargetChannelTd").html(html);
+		}else{
+			ErrorBox(res.info);
+		}
+	}, "json");
+}
+</script>
+<script>
+$('#btnWeixin').click (function(){
+	if(checkSafeQuestion()) return;
+	var arrChk = $("input[name='InfoID[]']");
+	var n = 0;
+	var InfoID = '';
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) {
+			n++;
+			InfoID += (arrChk[i].value.toString()+",");
+		}
+	}
+	if( n == 0 ) {
+		WarnBox("请先选中要群<span>发</span>的文章!");
+		return false;
+	}
+	var nTotal = $("input[name='InfoID[]']:checked").length;
+	if(nTotal > 8){
+		WarnBox("每次群<span>发</span>的文章数不能超过8！");
+		return false;
+	}
+	var  content = "<b style='line-height:1.5em;font-size:17px;'>";
+	content += "服务号每月最多群<span>发</span>4条，每条群<span>发</span>最多8篇文章<br/>";
+	content += "已选择<span style='color:red;padding:0 3px'>"+nTotal+"</span>篇文章，确定微信群<span>发</span>吗？";
+	content += "<b>";
+	var d = dialog({
+		title: '微信群发',
+		content: content,
+		ok: function () {
+			var url = "{$Url}sendWxMessage";
+			var IsPreview = $("#IsPreview").is(':checked') ? 1 : 0;
+			var data = {
+				"InfoID": InfoID,
+				"IsPreview": IsPreview
+			};
+			$.post(url, data, function(res){
+				if(1==res.status){
+					SucceedBox(res.info);
+				}else{
+					ErrorBox(res.info);
+				}
+			}, "json");
+		},
+		okValue:'发送',
+		cancel: function () {
+			d.remove().close();
+		},
+		cancelValue:"取消",
+		statusbar: '<label><input type="checkbox" id="wxPriview"> 发布前预览</label>'
+	});
+	d.show();
+});
+</script>

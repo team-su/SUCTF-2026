@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p" id="p" value="{$NowPage}" />
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="sortall" href="{$Url}smsLog" title="刷新">刷新</a></li>
+                <li class="toolbar toolbarform">
+                    <label>用户名</label>
+                    <input type="text" class='textinput' name="UserName" style="width:130px" value="{$UserName}" id="UserName"/>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                     <th width="170px" >用户名</th>
+                     <th width="220px" >手机号码</th>
+                     <th>短信内容</th>
+					 <th width="230px" >IP地址</th>
+					 <th width="125px" >操作时间</th> 
+					 <th width="70px" >语言</th>
+                </tr>  
+                <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td>{$d.UserName}</td>
+                        <td><span class="type{$d.LogType}">{$d.UserAction|htmlspecialchars}</span></td>
+                        <td style="text-align:left;padding-left:3px;">{$d.LogDescription|htmlspecialchars}</td>
+						<td>{$d.UserIP}&nbsp;&nbsp;<b style="color:#F30">{$d.UserCity|htmlspecialchars}</b>
+						<input type="hidden" name="UserIP[]" value="{$d.UserIP}" />
+						</td>
+						<td>{$d.LogTime|strtotime|yd_friend_date}</td>
+						<td><b>{$d.LanguageID|LanguageName}</b></td>
+                    </tr>
+                </volist>
+                <else/>
+                    <tr><td colspan="6" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                  <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	pageInit();
+});
+
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}smsLog");
+	$('#frm').submit();
+	return true;
+}	
+</script>

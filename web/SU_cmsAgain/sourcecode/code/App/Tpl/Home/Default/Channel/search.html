@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{$ChannelName}|{$Title}-{$WebName}</title>
+<include file="Public:meta" />
+</head>
+<body class="body_article">
+	<include file="Public:header" />
+    <!--区块5100 开始-->
+<div id="n5100" class="component floor_basic14_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5100">
+	<notempty name="TBasic14Show5100">
+		<style type="text/css">
+			#n5100{
+				padding-top:{$TBasic14PaddingTop5100}px;
+				padding-bottom:{$TBasic14PaddingBottom5100}px;
+				{$TBasic14Bg5100|ParseBG}
+			}
+			#n5100 .floor_basic14{
+				max-width: {$TBasic14MaxWidth5100}px;
+				animation-duration: {$TBasic14AnimationTime5100}s;
+				animation-fill-mode: both;
+			}
+			#n5100 .search_wrap{
+				{$TBasic14SearchBorder5100|ParseBorder}
+				{$TBasic14SearchBg5100|ParseBg}
+			}
+			#n5100 .submit_btn{
+				{$TBasic14BtnBg5100|ParseBg}
+				{$TBasic14Btn5100|ParseButton}
+				line-height: {$TBasic14InputHeight5100}px;
+				height: {$TBasic14InputHeight5100}px;
+			}
+			#n5100 .submit_btn span{
+				{$TBasic14BtnFont5100|ParseFont}
+			}
+			#n5100 .submit_btn:hover{
+				{$TBasic14Btn5100|ParseButtonHover}
+			}
+			#n5100 .submit_btn img{
+				width: {$TBasic14IconWidth5100}px;
+			}
+			#n5100 .input input{
+				height: {$TBasic14InputHeight5100}px;
+			}
+			#n5100 .hot_keywords a{
+				{$TBasic14KeywordsFont5100|ParseFont}
+			}
+		</style>
+		<div class="floor_basic14 display{$TBasic14Show5100} full-width{$TBasic14FullWidth5100}" yd-animation="{$TBasic14AnimationType5100}">
+			<div class="component_body">
+				<form class="search_wrap" action="{$TBasic14SearchChannel5100|InfoSearchAction}" method="post">
+					<div class="submit_btn" yd-group="5100" yd-tab="按钮设置"><img src="{$TBasic14IconUrl5100}" /><span>{$TBasic14Btn5100|ParseButtonName}</span><input type="submit" value=""/></div>
+					<div class="input"><input name="Keywords" type="text" value="{$SearchWord}" placeholder="{$TBasic14Placeholder5100}" /></div>
+				</form>
+				<div class="hot_keywords" yd-group="5100" yd-tab="热词设置">
+					<datalist id="d" value="$TBasic14Keywords5100">
+						<a href="javascript:;" style="color: {$d.Value}">{$d.Name}</a>
+					</datalist>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(function(){
+				$('#n5100 .hot_keywords a').click(function(){
+					$('#n5100 input[name=Keywords]').val($(this).text());
+					$('#n5100 .search_wrap').submit();
+				})
+			})
+		</script>
+	</notempty>
+</div>
+<!--区块5100 结束--><!--区块5107 开始-->
+<div id="n5107" class="component floor_channel14_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5107">
+    <style type="text/css">
+        #n5107{
+            {$TChannel14Bg5107|ParseBg}
+            padding-top:{$TChannel14PaddingTop5107}px;
+            padding-bottom:{$TChannel14PaddingBottom5107}px;
+        }
+        #n5107 li{
+            animation-duration: {$TChannel14AnimationTime5107}s;
+            animation-fill-mode: both;
+        }
+
+        #n5107 .sidebar_comtainer{
+            width: {$TChannel14SideBarWidth5107}px;
+            {$TChannel14SideBarBg5107|ParseBg}
+            yd-previewable-class: float_ float_{$TChannel14HasSideBar5107};
+        }
+        #n5107 .sidelist{
+            yd-previewable-class: -sidelist {$TChannel14SideBarStyle5107}-sidelist;
+            border-color: {$TChannel14SideBarBorderColor5107};
+        }
+        #n5107 .sidelist a{
+            border-color: {$TChannel14SideBarBorderColor5107};
+        }
+        #n5107 .sidebar_title h2{
+            {$TChannel14SideBarTitle5107|ParseFont}
+        }
+        #n5107 .sidelist .InfoTitle{
+            {$TChannel14SideBarInfoTitle5107|ParseFont}
+        }
+        #n5107 .sidelist .InfoPrice{
+            {$TChannel14SideBarInfoPrice5107|ParseFont}
+        }
+
+        #n5107 .content_container{
+            {$TChannel14InfoBg5107|ParseBg}
+        }
+        #n5107 .content_container .InfoTitle{
+            {$TChannel14InfoTitleFont5107|ParseFont}
+        }
+        #n5107 .content_container .TitleIcon{
+            width: {$TChannel14TitleIconSize5107}px;
+        }
+        #n5107 .content_container .InfoSContent{
+            {$TChannel14InfoSContentFont5107|ParseFont}
+        }
+        #n5107 .content_container .InfoTime{
+            {$TChannel14InfoTimeFont5107|ParseFont}
+        }
+        #n5107 .content_container li{
+            yd-previewable-class: column column{$TChannel14ColumnCount5107};
+        }
+        #n5107 .content_title h2{
+            {$TChannel14TitleFont5107|ParseFont}
+        }
+        #n5107  .article0{
+            yd-previewable-class: -article0 {$TChannel14Style5107}-article0;
+        }
+        #n5107 .article0 li a{
+            {$TChannel14InfoListBg5107|ParseBg}
+            {$TChannel14InfoListBorder5107|ParseBorder}
+            padding: {$TChannel14InfoListPadding5107};
+            margin: {$TChannel14InfoListMargin5107};
+        }
+    </style>
+    <div class="floor_channel14 full-width{$TChannel14FullWidth5107} floor_channel">
+        <neq name="TChannel14HasSideBar5107" value="0">
+            <div class="component_title sidebar_comtainer float_{$TChannel14HasSideBar5107}">
+                <div yd-slot="5107A"></div>
+                <notempty name="TChannel14SideBarChannel5107">
+                    <div class="sidebar" yd-group="5107" yd-tab="侧边栏设置">
+                        <div class="sidebar_title"><h2>{$TChannel14SideBarChannel5107|ChannelName}</h2></div>  
+                        <div class="sidebar_body">  
+                            <ul class="sidelist {$TChannel14SideBarStyle5107}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$TChannel14SideBarChannel5107" top="$TChannel14SideBarCount5107" timeformat="Y-m-d" labelid="$TChannel14SideBarLabel5107" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel14AnimationType5107}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </div>
+                </notempty>
+                <div yd-slot="5107B"></div>
+            </div>
+        </neq>
+
+        <div class="component_body content_container">
+            <div class="content_title">
+                <include file="Public:location" />
+                <h2>{$TChannel14TitleText5107}</h2>
+            </div>
+            <div class="content_body" yd-content="info,{$ChannelID}" yd-group="5107" yd-tab="列表设置">
+                <ul class="article0 {$TChannel14Style5107}-article0">
+                    <infolist id="f" channelid="0" keywords="$SearchWord" timeformat="m-d" NowPage="$NowPage" empty="$Think.lang.NoInformation">
+                        <li class="n{$mod} column{$TChannel14ColumnCount5107}" yd-animation="{$TChannel14AnimationType5107}">
+                            <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" class="{$TRoundCorner}-round-corner ThemeColorParent" yd-content="_info,{$f.InfoID}">
+                                <div class="InfoPicture">
+                                    <img src="{$f.InfoPicture|DefaultPicture}" title="{$f.InfoTitle}" alt="{$f.InfoTitle}" />
+                                </div>
+                                <div class="InfoWrap">
+                                    <div class="InfoTitle ThemeColorChild">
+                                        <eq name="TChannel14Style5107" value="text"><img class="TitleIcon" src="{$TChannel14TitleIcon5107}"/></eq>
+                                        {$f.InfoTitle|str_ireplace=$SearchWord,"<b class='red'>$SearchWord</b>",###}
+                                    </div>
+                                    <div class="InfoSContent">{$f.InfoContent|strip_tags|Left=80}</div>
+                                    <div class="InfoTime ThemeColorChild ThemeColorBgChildAfter">{$f.InfoTime}</div>
+                                </div>
+                            </a>
+                        </li>
+                    </infolist>
+                </ul>
+                <div class="page_main"><div class="page">{$Page}</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--区块5107 结束--><include file="Public:footer" />
+</body>
+</html>

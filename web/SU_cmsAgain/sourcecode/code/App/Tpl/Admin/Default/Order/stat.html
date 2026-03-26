@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>.TimeSpanWrap, .TimeWrap{ display: none; }</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+            	<form enctype="multipart/form-data" method="post" id="frm" action="{$Url}stat">
+                <input type="hidden" name="p"  value="{$NowPage}" />
+                <div class="table">
+                    <div class="toolbars">
+                    <li class="toolbar toolbarform" id="toolbarleft">
+                        <label class="first">统计项目</label>
+                        <select name="StatType" id="StatType">
+                            <option value="4" selected="selected">按天统计销售额</option>
+                            <option value="3">按月统计销售额</option>
+                            <option value="1">销售排行榜</option>
+                            <option value="2">销售明细</option>
+                        </select>
+                        <span class="TimeWrap">
+                            <label><input type="radio" name="TimeSpan"  value="1" checked="checked" />本年</label>&nbsp;&nbsp;
+                            <label><input type="radio" name="TimeSpan"  value="2" />本季</label>&nbsp;&nbsp;
+                            <label><input type="radio" name="TimeSpan"  value="3"  />本月</label>&nbsp;&nbsp;
+                            <label><input type="radio" name="TimeSpan"  value="4"  />本周</label>&nbsp;&nbsp;
+                            <label><input type="radio" name="TimeSpan"  value="5"  />今天</label>&nbsp;&nbsp;
+                            <label><input type="radio" name="TimeSpan"  value="10"  />指定时间段</label>&nbsp;&nbsp;
+                            <span class="TimeSpanWrap">
+                            <input name='StartTime' type='text' class='Wdate' id='StartTime'  class='textinput' style="width:135px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value="{$StartTime}" /><span style="padding:0px 3px">到</span><input name='EndTime' type='text' class='Wdate' id='EndTime'  class='textinput' style="width:135px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value="{$EndTime}" />
+                            </span>
+                        </span>
+                        <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                    </li>
+                    </div>
+	<switch name="StatType">
+    	<case value="1">
+        	<table class="datatable" id="datatable">
+                <tr>
+                    <th width="50px" >序号</th>
+                    <th>商品名称</th>
+                    <th  width="100px">销量数量</th>
+                    <th  width="130px">销售金额</th>
+                    <th width="130px" >均价</th>
+                </tr>
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr>
+                            <td style="color:blue;">{$i}</td>
+                            <td><a target="_blank" href="{$d.ProductID|InfoUrl}">{$d.ProductName}</a></td>
+                            <td>{$d.TotalQuantity}</td>
+                            <td style="text-align:right; padding-right:10px;">{$d.TotalMoney}</td>
+                            <td style="text-align:right; padding-right:10px;">{$d.AveragePrice}</td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="5" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>
+            </table>
+        </case>
+        <case value="2">
+        	<table class="datatable" id="datatable">
+            <tr>
+                <th width="50px" >序号</th>
+                <th>商品名称</th>
+                <th  width="180px">订单号</th>
+                
+                <th  width="100px">数量</th>
+                <th width="130px" >售价</th>
+                <th width="150px" >售出时间</th>
+            </tr>  
+            <notempty name="Data">
+                <volist name="Data" id="d">
+                    <tr>
+                        <td style="color:blue;">{$i}</td>
+                        <td><a target="_blank" href="{$d.ProductID|InfoUrl}">{$d.ProductName}</a></td>
+                        <td>{$d.OrderNumber}</td>
+                        
+                        <td>{$d.ProductQuantity}</td>
+                        <td>{$d.ProductPrice}</td>
+                        <td>{$d.OrderTime|strtotime|yd_friend_date}</td>
+                    </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="6" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>
+            </table>
+        </case>
+        <case value="3">
+        	<table class="datatable" id="datatable">
+                <tr>
+                    <th width="300px" >年月</th>
+                    <th  width="500px">销售金额</th>
+					<th></th>
+                </tr>
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr>
+                            <td>{$d.YearMonth}</td>
+                            <td>{$CurrencySymbol}{$d.TotalMoney}</td>
+							<td></td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="3" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>
+            </table>
+        </case>
+        <case value="4">
+        	<table class="datatable" id="datatable">
+                <tr>
+                    <th width="300px" >日期</th>
+                    <th  width="500px">销售金额</th>
+					<th></th>
+                </tr>
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr>
+                            <td>{$d.Day}</td>
+                            <td>{$CurrencySymbol}{$d.TotalMoney}</td>
+							<td></td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="3" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>
+            </notempty>
+        </case>
+    </switch>
+    <notin name="StatType" value="3,4">
+        <div class="tfoot">
+            <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+    </notin>
+</div>
+			</form>
+</div>
+</body>
+</html>
+<script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+<script type="text/javascript">
+	//提示信息
+	$(document).ready(function(){
+		$("input[name=TimeSpan]").click(function(){
+			changeTimeSpan($(this).val());
+		});
+		
+		$("#StatType").change(function(){
+			changeType($(this).val());
+		});
+		
+		pageInit();
+		function pageInit(){
+			$("#StatType").val("{$StatType}");
+			$("input[name='TimeSpan'][value={$TimeSpan}]").attr("checked",'checked');
+			changeTimeSpan("{$TimeSpan}");
+			changeType("{$StatType}");
+		}
+		
+		function changeTimeSpan(value){
+			if(value == 10){
+				$(".TimeSpanWrap").show();
+			}else{
+				$(".TimeSpanWrap").hide();
+			}
+		}
+		
+		function changeType(value){
+			if(value == 3 || value==4){
+				$(".TimeWrap").hide();
+			}else{
+				$(".TimeWrap").show();
+			}
+		}
+		
+		function Search(){
+			$('#frm').attr("action", "{$Url}stat");
+			$('#frm').submit();
+			return true;
+		}
+	});
+</script>

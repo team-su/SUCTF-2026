@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'TypeAttributeID', 1 => 'TypeID', 2 => 'TypeGroupID', 3 => 'TypeAttributeName', 4 => 'TypeAttributeOrder', 5 => 'ValueType', 6 => 'InputType', 7 => 'InputValue', 8 => 'IsSearch', 9 => 'IsEnable', '_autoinc' => true, '_pk' => 'TypeAttributeID', ); ?>

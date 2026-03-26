@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title><?php echo $CMSName ?>安装程序</title>
+<link href="<?php echo $Css ?>/table.css" rel="stylesheet" />
+</head>
+<script type="text/javascript">
+function DisableNext(){
+	var obj = document.getElementById("btnSubmit");
+	obj.disabled = true;
+}
+</script>
+<body>
+<div class="login_center">
+	<table id="table1" border="0" cellpadding="0" width="100%">
+		<tr>
+			<td align="center">
+			<table id="table1" border="0" cellpadding="0">
+				<tr>
+					<td align="center" bgcolor="#007253"><img border="0" height="53" src="<?php echo $Images ?>/top_bg.jpg" /></td>
+				</tr>
+				<tr>
+					<td align="center" bgcolor="#ffffff" valign="top" class="centerbg">
+					<table border="0" cellpadding="0" style="width: 90%;" class="style1">
+						<tr>
+							<td class="left"><img alt="" src="<?php echo $Logo ?>" /></td>
+						</tr>
+						<tr>
+							<td class="left line"><img alt="" height="8" src="<?php echo $Images ?>/line.jpg" width="782" /></td>
+						</tr>
+						<tr>
+							<td>
+							<table style="width: 100%">
+								<tr>
+									<td class="left_botton">
+										<ul>
+											<li class="bottonli02">查看授权条款</li>
+											<li class="bottonli01">环境检查</li>
+											<li class="bottonli02">设置基本参数</li>
+											<li class="bottonli02">安装数据库</li>
+											<li class="bottonli02">安装成功</li>
+										</ul>
+									</td>
+									<td class="right_botton left">
+																<div class="centerblock">
+										<table style="width: 100%">
+											<tr>
+												<td class="td01 left"><h2>环境检查</h2></td>
+											</tr>
+											<tr>
+												<td>
+												<table width="100%">
+													<tr>
+														<td class="td01 left font01 strong">项目</td>
+														<td class="td01 left font01 strong">系统所需配置</td>
+														<td class="td01 left font01 strong">最佳配置</td>
+														<td class="td01 left font01 strong">当前配置</td>
+													</tr>
+                                                    
+                                                    <?php foreach($SystemInfo as $s){ ?>
+													<tr>
+														<td class="td01 left"><?php echo $s['name']; ?></td>
+														<td class="td01 left"><?php echo $s['r']; ?></td>
+														<td class="td01 left"><?php echo $s['b']; ?></td>
+														<td class="td01 left"><?php echo $s['current']; ?></td>
+													</tr>
+                                                    <?php } ?>
+													
+												</table>
+												</td>
+											</tr>
+											<tr>
+												<td class="td01 left"><h2>目录、文件权限检查</h2></td>
+											</tr>
+											<tr>
+												<td>
+												<table width="100%">
+													<tr>
+														<td class="td01 left font01 strong">目录或文件</td>
+														<td class="td01 left font01 strong">所需状态</td>
+														<td class="td01 left font01 strong">是否支持</td>
+													</tr>
+                                                    <?php 
+                                                    $count = 0;
+                                                    foreach($DirInfo as $d){ ?>
+													<tr>
+														<td class="td01 left"><?php echo $d['path']; ?></td>
+														<td class="td01 left">可写</td>
+														<td class="td01 left">
+                                                        <?php 
+                                                        if($d['status'] != 1){ 
+                                                        	$count++;
+                                                        ?>
+                                                        <span style="color:red;font-weight:bold">不支持</span>
+                                                        <?php }else{ ?>
+                                                        <span style="color:#4D9726;">支持</span>
+                                                        <?php } ?>
+                                                        </td>
+													</tr>
+                                                    <?php } 
+                                                    if($count > 0){
+                                                    	echo '<script type="text/javascript">DisableNext();</script>';
+                                                        ob_flush();
+                                                        flush();
+                                                    }
+                                                    ?>
+												</table>
+												</td>
+											</tr>
+											<tr>
+												<td class="td01 left"><h2>函数依赖性检查</h2></td>
+											</tr>
+											<tr>
+												<td>
+												<table width="100%">
+													<tr>
+														<td class="td01 left font01 strong">函数名称</td>
+														<td class="td01 left font01 strong">检查结果</td>
+														<td class="td01 left font01 strong">建议</td>
+													</tr>
+                                                    <?php foreach($FunctionInfo as $f){ ?>
+													<tr>
+														<td class="td01 left"><?php echo $f['name']; ?></td>
+														<td class="td01 left">
+                                                        <?php if($f['status'] != 1){ ?>
+                                                        <span style="color:red;font-weight:bold">不支持</span>
+                                                        <?php }else{ ?>
+                                                        <span style="color:#4D9726;">支持</span>
+                                                        <?php } ?>
+                                                        </td>
+														<td class="td01 left">开启</td>
+													</tr>
+                                                    <?php } ?>
+												</table>
+												</td>
+											</tr>
+										</table>
+									</div>
+									<div class="btnbox marginbot">
+									<form enctype="multipart/form-data" method="post" action="index.php?InstallStep=2"/>
+										<input type="hidden" name="InstallStep" value="2"/>
+										<input type="button" onclick="history.back();" value="上一步" class="inputsubmit01"/>
+										<input type="submit" id="btnSubmit" name="btnSubmit" value="下一步" class="inputsubmit01"/>&nbsp;
+									</form>
+									</div>
+								</td>
+								</tr>
+							</table>
+							</td>
+						</tr>
+					</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center"><img alt="" src="<?php echo $Images ?>/bottom_bg.jpg"/></td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+</div>
+</body>
+
+</html>

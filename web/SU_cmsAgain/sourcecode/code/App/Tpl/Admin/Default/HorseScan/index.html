@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta name="version" content="1.0">
+	<include file="Public:meta" />
+	<style>
+		.box-header h4 a{ font-size:12px; font-weight:normal;color:red; margin-left:20px;}
+		.content-wrapper, .result-wrapper{ display: none; }
+		.check-item{ font-size:15px; border-bottom: 1px solid #ddd; padding: 5px 0;}
+		#ScanResult{ text-align:left; line-height:1.8em; font-size:16px; max-height:350px; overflow-y:auto; padding-left:10px;}
+		#stat{ margin-left: 5em; font-size:16px;}
+		#stat span{ margin-right:1em; }
+		#main_page #btnSubmit.btnScanStart{ padding: 8px 35px; background: #5cb85c; color:#fff; border: 0px solid #5cb85c;}
+		#main_page #btnSubmit.btnScanStop{ padding: 8px 35px; background: #FF5722; color:#fff; border: 0px solid #FF5722;}
+		#main_page .box-footer-inner input[disabled=disabled]{ cursor: not-allowed; opacity: 0.5; }
+		.margin-right{ margin-right:20px;}
+		#CurrentFile{ font-size:14px; font-weight:normal; margin-left: 10px; color:blue;}
+		.wordsinfo{ padding-left:20px; color:blue;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header" id="c1">
+                <h4>病毒木马扫描</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+					<tr>
+                        <th>扫描文件类型</th>
+                        <td>
+							<label class="margin-right"><input type="radio" value="1" name="FileType" checked />全部文件</label>
+							<label class="margin-right"><input type="radio" value="2" name="FileType" />PHP脚本</label>
+							<label><input type="radio" value="3" name="FileType" />HTML/JS静态文件</label>
+						</td>
+                    </tr>
+					<tr>
+                        <th>自定义病毒特征字符</th>
+                        <td><textarea style="height:160px;width:100%;" id="HorseWords">{$HorseWords}</textarea></td>
+                    </tr>
+					<tr>
+                        <th></th>
+                        <td><div class='Caution'>格式：一行设置一个词！</div></td>
+                    </tr>
+                </table>
+            </div> 
+			
+			<div class="result-wrapper">
+				<div class="box-header" id="c2">
+					<h4>扫描结果
+						<span id="stat">
+							待扫描文件总数：<span id="stat-wait">0</span>
+							已扫描：<span id="stat-finish" style="color:green;">0</span>
+							疑似被黑：<span id="stat-hack" style="color:red;">0</span>
+						</span>
+						<span id="CurrentFile"></span>
+					</h4>
+				</div>
+				<div class="box-content">
+					<div id="ScanResult"></div>
+				</div>
+			</div>
+             
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" class="btnScanStart marginright" type="button" onclick="initScan()" value="立即扫描" />
+					<input id="btnSubmit" class="btnScanStop marginright" type="button" onclick="stopScan()" disabled="disabled" value="停止扫描"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+var gFiles = null;
+var gIndex = 0;
+var gHack = 0;
+var gStartTime = 0;
+var gIsStop = true;
+
+//初始化扫描
+function initScan(){
+	if(checkSafeQuestion()) return;
+	startScan();
+	var url = "{$Url}initScan";
+	var params = {};
+	params["HorseWords"] = $("#HorseWords").val();
+	params["FileType"] = $("input[name='FileType']:checked").val(),
+	$.ajax({url: url,  type: "POST", timeout: 30000, data: params, dataType:"json", success: function(res){
+			if (res.status == 1){
+				gFiles = res.data;
+				gIndex = 0;
+				gHack = 0;
+				$("#stat-wait").text(gFiles.length);
+				$("#stat-finish").text(gIndex);
+				$("#stat-hack").text(gHack);
+				scanFile();
+			}else{
+				showResult(res.info);
+				endScan();
+			}
+		}, error:function errorCallback(obj, textStatus, errorThrown){
+			var errmsg = (textStatus == "timeout") ? "初始化扫描操作超时" :"初始化扫描发生错误 "+obj.statusText;
+			showResult(errmsg);
+			endScan();
+		}
+	});
+}
+
+//开始扫码文件
+function scanFile(){
+	if(gIsStop) return;
+	var url = "{$Url}scanFile";
+	var params = {};
+	var msg = "";
+	params["FileName"] = gFiles[gIndex];
+	var CurrentFile = params["FileName"].substr(2);
+	$("#CurrentFile").text(CurrentFile);
+	$.ajax({
+		url: url,  type: "POST", timeout: 60*1000, data: params, dataType:"json", 
+		success: function(res){
+			if(gIsStop) return;
+			if(res.info){
+				msg = CurrentFile+"<span class='wordsinfo'>"+res.info+"</span>";
+			}
+			if (res.status == 1){
+				if(res.info){ //不为空表示，检测成功，可能被黑
+					gHack++;
+					$("#stat-hack").text(gHack);
+					showResult(msg);
+				}
+			}else{  //就算发生错误，也继续检测
+				showResult(msg);
+			}
+			gIndex++;
+			$("#stat-finish").text(gIndex);
+			if(gIndex >= gFiles.length){ //检测完成
+				endScan();
+				return;
+			}
+			scanFile();
+		}, 
+		error:function errorCallback(obj, textStatus, errorThrown){
+			var errmsg = (textStatus == "timeout") ? "操作超时" :"发生错误 "+obj.statusText;
+			showResult(errmsg);
+			gIndex++; //超时继续检测
+			scanFile();
+		}
+	});
+}
+
+//开始扫描
+function startScan(){
+	$(".result-wrapper").show();
+	gIsStop = false;
+	gIndex = 0;
+	gStartTime = new Date().getTime(); //精确到毫秒
+	$("#stat-wait").text(0);
+	$("#stat-finish").text(0);
+	$("#stat-hack").text(0);
+	clearResult();
+	showResult("开始扫描中，请稍后...", "blue");
+	$(".box-footer-inner input").attr("disabled", "disabled");
+	$(".btnScanStop").removeAttr("disabled");
+}
+
+//停止扫描
+function stopScan(){
+	gIsStop = true;
+	$(".box-footer-inner input").removeAttr("disabled");
+	$(".btnScanStop").attr("disabled", "disabled");
+	showResult("停止扫描！", 'red');
+}
+
+//结束扫描
+function endScan(){
+	var endTime = new Date().getTime(); //精确到毫秒
+	var totalTime = parseInt( (endTime-gStartTime)/1000 );
+	$(".box-footer-inner input").removeAttr("disabled");
+	$(".btnScanStop").attr("disabled", "disabled");
+	var msg = "<span><span style='color:blue'>扫描完成！</span>";
+	if(gHack == 0){
+		msg +="未发现病毒木马，";
+	}else{
+		msg +="共发现<span style='color:red'>"+gHack+"个</span>疑似被黑文件，";
+	}
+	totalTime = friendTime(totalTime);
+	msg += "本次扫描耗时：<span style='color:blue'>"+totalTime+"</span>（结果仅供参考，请人工排查核对）</span>";
+	$("#CurrentFile").text("");
+	showResult(msg);
+}
+
+function friendTime(second){
+	var str = "";
+	if(second >= 60){
+		var min = Math.floor(second/60);
+		str = min+"分"+(second%60)+"秒";
+	}else{
+		str = second+"秒";
+	}
+	return str;
+}
+
+//显示扫描结果
+function showResult(msg, color){
+	if(!msg) return;
+	var html = "<div class='scan-item'>";
+	if(color){
+		html += "<span style='color:"+color+"'>"+msg+"</span>";
+	}else{
+		html += msg;
+	}
+	html += "</div>";
+	$("#ScanResult").append(html);
+	$('#ScanResult').scrollTop( $('#ScanResult')[0].scrollHeight );
+}
+
+//清空结果
+function clearResult(){
+	$("#ScanResult").html("");
+}
+
+$(document).ready(function(){
+	function pageInit(){
+		
+	}
+	pageInit();
+});
+</script>

@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frmSave"  enctype="multipart/form-data">
+        <input type="hidden" name="{$HiddenName}" value="{$HiddenValue}" />
+        <div class="box-header"><h4>基本信息</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+                <tr>
+                    <th>客户名称</th>
+                    <td>
+                        <select name="CustomerID">
+                            <option value="0" selected="selected">====暂不指定客户====</option>
+                            <volist name="CustomerData" id="c">
+                                <option value="{$c.MemberID}" <eq name="c.MemberID" value="$Data.CustomerID">selected="selected"</eq> >
+                                    {$c.MemberID}&nbsp;&nbsp;{$c.MemberName|htmlspecialchars}&nbsp;&nbsp;{$c.MemberRealName|htmlspecialchars}
+                                    <neq name="c.MemberGroupID" value="101">&nbsp;&nbsp;{$c.MemberGroupName|htmlspecialchars}</neq>
+                                </option>
+                            </volist>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>授权域名</th>
+                    <td><input type="text" class="textinput" style="width:250px" name="Host" value="{$Data.Host}"  />
+                    <span class='Caution'>如：www.baidu.com，不要以http://开头</span>
+                    </td>
+                </tr>
+               <tr>
+                    <th>操作系统</th>
+                    <td><input type="text" class="textinput" style="width:150px" name="OS" value="{$Data.OS}"  />
+                    <span class='Caution'>如：WINNT、Linux</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>软件版本</th>
+                    <td><input type="text" class="textinput" style="width:150px" name="Version" value="{$Data.Version}" />
+                    <span class='Caution'>表示当前客户使用的软件版本，如：6.6、6.7.2</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>OEM名称</th>
+                    <td><input type="text" class="textinput" style="width:150px" name="OEM" value="{$Data.OEM}" />
+                    <span class='Caution'>如果客户不是OEM，请留空</span>
+                    </td>
+                </tr>
+                 <tr>
+                    <th>授权时间</th>
+                    <td><input type="text" class="textinput Wdate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})"  style="width:150px" name="AuthorizeTime" value="{$Data.AuthorizeTime}"  /></td>
+                </tr>
+                <tr>
+                    <th>是否授权</th>
+                    <td>
+                    <label><input type="radio" name="IsAuthorize" value="1" <eq name="Data.IsAuthorize" value="1">checked="checked"</eq> />是</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" name="IsAuthorize" value="0" <eq name="Data.IsAuthorize" value="0">checked="checked"</eq> />否</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>备注</th>
+                    <td><textarea class="w450" style="height:85px; width:100%;" name="Remark">{$Data.Remark}</textarea></td>
+                </tr>
+            </table>
+        </div>
+        <div class="box-footer">
+            <div class="box-footer-inner">
+                <input id="btnSubmit" class="marginright" type="submit" value="保存" />
+                <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="{$WebPublic}My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frmSave').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+            }else if(data.status==0){
+				ErrorBox(data.info);
+			}else if(data.status==2){
+				ErrorBox(data.info); //上传失败
+			}else if(data.status==3){
+				$('#'+data.data.ImageField).val(data.data.Path);
+				SucceedBox(data.info); //上传成功
+			}
+		};
+		 
+		 $('#btnSubmit').click(function(){
+			$('#frmSave').attr('action','{$Action}');
+		 });
+		 
+		 $('#frmSave').submit(function(){
+			LoadBox();
+			return false;  
+		 });
+	});
+</script>

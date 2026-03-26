@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		label{	color:#00F; 	line-height:21px; 	font-weight:bold; 	height:21px; 	vertical-align:middle;	font-size:12px;}
+		.CouponType1{ font-weight:bold; color:#0000FF}
+		.CouponType2{ font-weight:bold; color:#F0F;}
+		.v0{ visibility:hidden;}
+		#datatable .CouponName{ text-indent:3px; text-align:left; }
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+   <form enctype="multipart/form-data"  method="post" id="frm">
+            <input type="hidden" name="p" value="{$NowPage}" />
+            <div class="table">
+            <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}add"  title="添加优惠卷" target="_self">添加优惠卷</a></li>
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+                <li class="toolbar toolbarform">
+                    <label>优惠卷类型</label>
+                    <select id="CouponType" name="CouponType">
+                        <option value="-1">全部</option>
+                        <volist name="CouponTypeList" id="c">
+                                <option value="{$c.CouponTypeID}">{$c.CouponTypeName}</option>
+                        </volist>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+                <table class="datatable" id="datatable">
+                    <tr>
+                    	<th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                        <th width="65px" nowrap="nowrap">优惠卷ID</th>
+                        <th>优惠卷名称</th>
+                        <th  width="75px">优惠卷面额</th>
+                        <th  width="85px">最低消费金额</th>
+                        
+                        <th width="65px">发放总数</th>
+                        <th width="65px">已发放数</th>
+                        <th width="65px">已使用数</th>
+                        <th width="80px">发放类型</th>
+                        <th width="250px" >使用有效期</th>
+                        
+                        <th width="125px" >时间</th>
+                        <th width="300px">操作</th>
+                    </tr>  
+                    <notempty name="Data">                
+                        <volist name="Data" id="d">
+                            <tr id="row{$d.CouponID}">
+                                <td><eq name="d.CouponSended" value="0"><input class="checkrow" type="checkbox" name="id[]" value="{$d.CouponID}" /></eq></td>
+                                <td>{$d.CouponID}</td>
+                                <td class="CouponName">{$d.CouponName|htmlspecialchars}</td>
+                                <td class="CouponMoney">{$d.CouponMoney}</td>
+                                <td style="color:#F30">{$d.ConsumeMoney}</td>
+                                <td>
+                                    <eq name="d.CouponQuantity" value="0">
+                                        <span style="color:#000">不限</span>
+                                    <else/>
+                                        <span style="color:#000">{$d.CouponQuantity}</span>
+                                    </eq>
+                                </td>
+                                <td style="color:#090">{$d.CouponSended}</td>
+                                <td style="color:#F30">{$d.CouponUsed}</td>
+                                <td><span class="CouponType{$d.CouponType}">{$d.CouponTypeName}</span></td>
+                                <td>{$d.StartTime} - {$d.EndTime}</td>
+                                <td>{$d.CouponTime|strtotime|yd_friend_date}</td>
+                                
+                                <td class="operator">
+                                    <a style="float:left" class="v{$d.HasLeft}" onclick="OpenSendDlg('{$d.CouponID}', '{$d.CouponType}','{$d.CouponMoney}','{$d.CouponQuantity}','{$d.CouponSended}')" id="btnCheckDb">&nbsp;发放</a>
+                                    <div class="btn-sep"></div>
+                                    <a style="float:left" onclick="View({$d.CouponID})" id="btnSearch">查看</a>
+                                    <div class="btn-sep"></div>
+                                    <a style="float:left" onclick="Edit({$d.CouponID})" id="btnEdit">修改</a>
+                                    <eq name="d.CouponSended" value="0">
+                                    	<div class="btn-sep"></div>
+                                        <a style="float:left" onclick="Del({$d.CouponID})" class="btnDel">删除</a>
+                                    </eq>
+                                </td>
+                            </tr>
+                        </volist>
+                    <else/>
+                        <tr><td colspan="12" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                    </notempty>                                
+                </table>
+                 <div class="tfoot">
+                      <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+                 </div>
+            </div>
+	</form>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgOffline">
+    <table cellpadding="3" cellspacing="3" border="0">
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>优惠券名称&nbsp;</b></th>
+       <th align="left"><b id="dlgCouponName" style="color:#0000FF"></b></th>
+    </tr>
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>优惠券面额&nbsp;</b></th>
+       <th align="left"><b id="dlgCouponMoney" style="color:#0000FF"></b></th>
+    </tr>
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>发放数量&nbsp;</b></th>
+       <th align="left">
+       		<input type="text" id = "dlgCouponNumber" name="dlgCouponNumber"  maxlength="8" class="textinput" style="width:50px" value="100" />
+       		<b style="color:blue; padding-left:5px;" id="dlgNumberTip"></b>
+       </th>
+    </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/index");
+	$('#frm').submit();
+	return true;
+}	
+
+function Edit(id){
+	url = "{$Url}modify/id/"+id;
+	location.href = url;
+}
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#row"+id+" .CouponName").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}del/id/"+id+"/p/{$NowPage}/CouponType/{$CouponType}";
+		location.href = url;
+	});
+}
+
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/del");
+		$('#frm').submit();
+	});
+}
+
+$(document).ready(function(){
+		pageInit();
+		function pageInit(){
+			$("#CouponType").val("{$CouponType}");
+		}
+});
+
+//查看
+function View(id){
+	var content = '<div id="dlgView"><iframe src="{$Url}couponSend/CouponID/'+id+'" name="frmView" id="frmView"  ';
+	content += 'scrolling="no" frameborder="0"  height="540px" width="850px;"></iframe></div>';
+	dialog({
+		title: "查看优惠券",
+		id: 'viewcoupon',
+		padding: 0,
+		content: content
+	}).show();
+}
+
+//发放优惠券
+function OpenSendDlg(id, type, money, quantity, sendedQuantity){
+	if(type==1){
+		var CouponName = $("#row"+id+" .CouponName").text();
+		var title = "指定会员发放优惠券（"+CouponName+"）同一张优惠券只能发放同一个会员一次";
+		var content = '<div id="dlgSend"><iframe src="{$Url}send?CouponID='+id+'" name="frmSend" id="frmSend"  ';
+		content += 'scrolling="no" frameborder="0"  height="540px" width="880px;"></iframe></div>';
+		dialog({title: title, id: 'send', padding: 0, content: content}).show();
+	}else{ //线下发放
+		var CouponName = $("#row"+id+" .CouponName").html();
+		$('#dlgCouponName').html(CouponName);
+		$('#dlgCouponMoney').html(money);
+		if( quantity == 0 ){
+			$('#dlgNumberTip').html("不限数量发放");
+			$("#dlgCouponNumber").val(80);
+		}else{
+			var LeftQuantity = quantity-sendedQuantity;
+			$("#dlgCouponNumber").val(LeftQuantity);
+			$('#dlgNumberTip').html("剩余<b style='color:red;'>"+LeftQuantity+"</b>张优惠券未发放");
+		}
+		var d = dialog({
+			title: "线下发放优惠券",
+			id: 'offline',
+			padding: 8,
+			content: document.getElementById('dlgOffline'),
+			ok: function () {
+				var CouponNumber = $('#dlgCouponNumber').val();
+				if( isNaN(CouponNumber) ){
+					ErrorBox("发放数量必须为数字！");
+					return false;
+				}
+				var params = {CouponType:2, CouponNumber: CouponNumber, CouponID: id}
+				$.get("{$Url}startSend", params, function(data, textStatus){
+					if (data.status == 1){
+						SucceedBox(data.info);
+						location.href = "{$Url}index/p/{$NowPage}/CouponType/{$CouponType}";;
+					}else if(data.status == 0){
+						ErrorBox(data.info);
+					}
+				}, 'json');
+				return false;
+			},
+			okValue: '发放线下优惠券',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+	}
+}
+</script>

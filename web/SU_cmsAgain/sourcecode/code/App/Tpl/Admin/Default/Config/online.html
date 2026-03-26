@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+		<style>
+		.cwidth{ width: 92px; }
+		.colorbox{ width:33px; border:1px solid #ccc; cursor:pointer;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container box-footer-fixed">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header"  id="c9"><h4>在线客服设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>显示样式</th>
+                        <td>
+                            <select name="ONLINE_STYLE" id="ONLINE_STYLE">
+                                <option value="1">传统样式</option>
+                                <option value="2">简约图标</option>
+                                <option value="3">简约图标+标题</option>
+                            </select>
+                        </td>
+                    </tr>
+					<tr>
+                        <th>标题</th>
+                        <td><input type="text" class="textinput" style="width:131px;" name="ONLINE_TITLE" value="{$OnlineTitle}"  /></td>
+                    </tr>
+					<tr>
+                        <th>主题颜色</th>
+                        <td>
+							<input type="text" class="textinput cwidth" id="OnlineColor" name="ONLINE_COLOR" value="{$OnlineColor}"  />
+							<input type='text' class='textinput colorbox' style='background:{$OnlineColor}' id='OnlineColorBox' readonly='readonly'/>
+						</td>
+                    </tr>
+					<tr id="icon_wrap">
+                        <th>图标颜色</th>
+                        <td>
+							<input type="text" class="textinput cwidth" id="OnlineIconColor" name="ONLINE_ICON_COLOR" value="{$OnlineIconColor}"  />
+							<input type='text' class='textinput colorbox' style='background:{$OnlineIconColor}' id='OnlineIconColorBox' readonly='readonly'/>
+						</td>
+                    </tr>
+
+                    
+                    <tr>
+                        <th>页脚信息</th>
+                        <td>
+                            <!-- 编辑器调用开始 -->
+                            <textarea id="ONLINE_FOOTER_TEXT" name="ONLINE_FOOTER_TEXT">{$OnlineFooterText}</textarea>
+							{:CkEditor('ONLINE_FOOTER_TEXT', 270)}
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th>上边距</th>
+                        <td><input type="number" class="textinput" style="width:92px;" name="ONLINE_TOP" value="{$OnlineTop}"  /></td>
+                    </tr>
+                    
+                    <tr>
+                    	<th>宽度</th>
+                    	<td><input type="number" class="textinput"  style="width:92px;" name="ONLINE_WIDTH" value="{$OnlineWidth}"  /></td>
+                    </tr>
+                    
+                    <tr style="display:none">
+                    	<th>电话</th>
+                    	<td><input type="text" class="textinput w270" name="ONLINE_TELEPHONE" value="{$OnlineTelephone}"  /></td>
+                    </tr>
+                    
+                    <tr>
+                    	<th  style="vertical-align:top;">是否展开</th>
+                    	<td><label><input type="radio" name="ONLINE_OPEN" value="0" <eq name="OnlineOpen" value="0">checked="checked"</eq> />收缩</label>
+                   		 &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="ONLINE_OPEN" value="1" <eq name="OnlineOpen" value="1">checked="checked"</eq> />展开</label></td>
+                    </tr>
+                    
+                    <tr>
+                    	<th  style="vertical-align:top;">显示位置</th>
+                    	<td><label><input type="radio" name="ONLINE_POSITION" value="0" <eq name="OnlinePosition" value="0">checked="checked"</eq> />左侧</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="ONLINE_POSITION" value="1" <eq name="OnlinePosition" value="1">checked="checked"</eq> />右侧</label></td>
+                    </tr>
+                    
+                    <tr>
+                    	<th  style="vertical-align:top;">特效形式</th>
+                    	<td><label><input type="radio" name="ONLINE_EFFECT" value="1" <eq name="OnlineEffect" value="1">checked="checked"</eq> />滚动</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="ONLINE_EFFECT" value="0" <eq name="OnlineEffect" value="0">checked="checked"</eq> />固定</label></td>
+                    </tr>
+                    
+                    <tr>
+                    	<th>是否启用</th>
+                    <td>
+                    	<label><input type="radio" name="ONLINE_ENABLE" value="1" <eq name="OnlineEnable" value="1">checked="checked"</eq> />启用</label>
+                   		&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="ONLINE_ENABLE" value="0" <eq name="OnlineEnable" value="0">checked="checked"</eq> />关闭</label>
+                    </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright" type="submit" value="保存设置" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function GoBack(){
+	window.location.href = "{$Group}/support/index";
+}
+
+function changeStyle(style){
+	if(1==style){
+		$("#icon_wrap").hide();
+	}else{
+		$("#icon_wrap").show();
+	}
+}
+
+$(document).ready(function(){
+	 $('#frmConfig').submit(function(){
+		try{
+			LoadBox();
+			for ( s in CKEDITOR.instances ) {
+			   CKEDITOR.instances[s].updateElement();
+			}
+		}catch(e){
+			;
+		}finally{
+			$(this).ajaxSubmit( {success: complete,dataType: 'json'} );
+			return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+		}
+	 });
+	 
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	$("#OnlineColor,#OnlineColorBox").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#OnlineColor").val(color);
+			$("#OnlineColor").css("color", "#000");
+			$("#OnlineColorBox").css({"background":color, "color":color});
+		}
+	});
+	
+	$("#OnlineIconColor,#OnlineIconColorBox").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#OnlineIconColor").val(color);
+			$("#OnlineIconColor").css("color", "#000");
+			$("#OnlineIconColorBox").css({"background":color, "color":color});
+		}
+	});
+	
+	$("#ONLINE_STYLE").change(function(){
+		changeStyle( $("#ONLINE_STYLE").val() );
+	});
+	
+	$("#ONLINE_STYLE").val("{$OnlineStyle}");
+	changeStyle("{$OnlineStyle}");
+});
+</script>

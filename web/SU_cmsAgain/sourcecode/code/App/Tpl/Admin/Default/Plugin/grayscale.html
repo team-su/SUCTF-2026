@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header" id="c1">
+                <h4>网站一键变灰
+                    <span class="extra">适合哀悼日等特殊的日子，将网站一键变灰<span>
+                </h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+					<tr>
+                        <th>是否启用</th>
+                        <td>
+                            <label><input type="radio" name="EnableGray" onclick="changeStatus(1)"  value="1"  />启用</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="EnableGray" onclick="changeStatus(0)"  value="0"  />禁用</label>
+                        </td>
+                    </tr>
+					<tr class="trTime">
+                        <th>生效时间</th>
+                        <td>
+                            	<script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+                                <input name='GrayStartTime' type='text' class='Wdate' id='GrayStartTime'   style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly' value="{$GrayStartTime}"   />
+                                <span style="padding:0px 5px">到</span>
+                                <input name='GrayEndTime' type='text' class='Wdate' id='GrayEndTime'  style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly' value="{$GrayEndTime}"    />      
+                        </td>
+                    </tr>
+                </table>
+            </div> 
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" class="marginright" type="submit" value="保存" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function changeStatus(status){
+	if( status == 1){
+		$(".trTime").show();
+	}else{
+		$(".trTime").hide();
+	}
+}
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	function pageInit(){
+		$("input[name='EnableGray'][value={$EnableGray}]").attr("checked",'checked');
+		changeStatus("{$EnableGray}");
+	}
+	pageInit();
+});
+</script>

@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+   <form enctype="multipart/form-data" id="frm"  method="post">
+          <div class="table">
+            <div class="toolbars">
+				<notempty name="ReturnUrl">
+                <li class="toolbar"><a id="btnBack" href="{$ReturnUrl}" target="_self" title="返回">返回</a></li>
+				</notempty>
+                <li class="toolbar"><a id="sortall" onclick="BatchSort()" title="批量排序">排序</a></li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="60"  nowrap="nowrap">字段ID</th>
+                    <th width="100" nowrap="nowrap">字段名称</th>
+                    <th width="80" nowrap="nowrap">字段类型</th>
+                    <th width="130" >显示名称</th>
+                    <th width="105" >显示类型</th>
+                    
+                    <th width="70" >字段排序</th>
+                    <th>验证正则表达式</th>
+                    <th width="150" >属性</th>
+                    <th width="70">操作</th>
+                </tr>
+                <notempty name="Attribute">  
+                    <volist name="Attribute" id="c">
+                        <tr>
+                            <eq name="c.GroupID" value="0">
+                                <td colspan="5" style="text-align:left;padding-left:20px">
+                                <span style="color:blue;font-weight:bold">{$c.DisplayName}</span>
+                                <input type="hidden" name="AttributeID[]" value="{$c.AttributeID}" />
+                                </td>
+                                <td><input type="number" class='textinput'  onclick="this.select()" style="width:65px" name="DisplayOrder[]" value="{$c.DisplayOrder}" /></td>
+                                <td style="text-align:right"></td>
+                            <else/>
+                                <td>{$c.AttributeID}<input type="hidden" name="AttributeID[]" value="{$c.AttributeID}" /></td>
+                                <td>{$c.FieldName}</td>
+                                <td>{$c.FieldType}</td>
+                                <td>{$c.DisplayName}</td>
+                                <td><b>{$c.DisplayTypeName}</b></td>  
+                                <td><input type="number" class='textinput'  onclick="this.select()" style="width:65px" name="DisplayOrder[]" value="{$c.DisplayOrder}" /></td>
+                                <td style="text-align:left;">{$c.ValidateRule}</td>
+                            </eq>
+                            <td>
+                                <eq name="c.IsValidate" value="1"><span style="color:green">正则验证</span></eq>&nbsp;
+                                <eq name="c.IsRequire" value="1"><span style="color:#00F">必填</span></eq>&nbsp;
+                                <eq name="c.IsSystem" value="1"><span style="color:#000">系统</span></eq>&nbsp;
+                                <eq name="c.IsEnable" value="1"><span style="color:#000">启用</span>
+                                <else/><span style="color:#F00">禁用</span></eq>
+                            </td>
+                            <td class="operator">
+                                <a style="float:left" href="{$Url}ModifyField/ChannelModelID/{$c.ChannelModelID}/AttributeID/{$c.AttributeID}" id="btnEdit">修改</a>
+                            </td>
+                    	</tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="9" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                  <div id="notice">
+                        <b>说明：</b>
+                        <span class="notice-item"><i>[1]</i><span style="color:blue">蓝色</span>标题表示分组名称，最好不要修改属性为系统的字段！</span>
+                        <span class="notice-item"><i>[2]</i>优先使用f1-f5扩展字段</span>
+                  </div>
+             </div>
+            </div>
+      </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//排序
+function BatchSort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		var url = "{$Url}batchSortField/ChannelModelID/{$ChannelModelID}";
+		var ChannelID = "{$ChannelID}";
+		if(ChannelID > 0){
+			url += "/ChannelID/{$ChannelID}";
+		}
+		$('#frm').attr("action", url);
+		$('#frm').submit();
+	});
+}
+</script>

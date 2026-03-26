@@ -1,0 +1,7 @@
+/* =================================================
+// jQuery Tabs Plugins 1.0
+// author:chenyg@5173.com
+// URL:http://stylechen.com/jquery-tabs.html
+// 4th Dec 2010
+// =================================================*/
+(function(a){a.fn.extend({Tabs:function(j){j=a.extend({event:"mouseover",timeout:0,auto:0,highlight:"current",hide:"hide",callback:null},j);var i=a(this),d=a("div",i).children("div"),e=i.children("ul"),h=e.find("li");h.bind(j.event,function(){c(this,j.timeout);if(j.callback){j.callback(i)}});var c=function(l,k){k>0?setTimeout(function(){b(l)},k):b(l)},b=function(k){a(k).siblings("li").removeClass(j.highlight).end().addClass(j.highlight);d.siblings("div").addClass(j.hide).end().eq(a(k).index()).removeClass(j.hide)};if(j.auto>0){g()}i.hover(function(){clearInterval(i.timer)},function(){g()});function g(){if(j.auto===0){return}i.timer=setInterval(f,j.auto)}function f(){var l=e.find("."+j.highlight),o=h.eq(0),k=h.length,m=l.index()+1;l.removeClass(j.highlight);m===k?n(o,0):n(a(l.next("li").eq(0)),m);function n(p,q){p.addClass(j.highlight);d.siblings("div").addClass(j.hide).end().eq(q).removeClass(j.hide)}}return this}})})(jQuery);

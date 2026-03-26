@@ -1,0 +1,146 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>个人资料</title>
+<include file="./Public/tpl/wx/meta.html" />
+<link href="{$AppCss}card.css" rel="stylesheet" type="text/css">
+<script src="{$AppJs}jquery.js" type="text/javascript"></script>
+<style> .themeStyle{ background-color: !important; }</style>
+</head>
+<body id="fans">
+<div class="qiandaobanner"> <a href="{:WxCardUrl()}"><img src="{$AppImages}fans.jpg"></a> </div>
+<div class="cardexplain">
+<!--个人头像，昵称等-->
+<ul class="round" style="display:none">
+    <li class="dandanb">
+    	<a href="#"><span class="none"><img src="{$AppImages}logo100x100.jpg">
+        <h2></h2>
+        <p>0</p>
+        </span>
+        </a>
+    </li>
+</ul>
+<!--会员积分信息-->
+<div class="jifen-box" style="display:none">
+    <ul class="zongjifen">
+            <li><div class="fengexian"><p>会员总积分</p><span>0</span></div></li>
+            <li><a href="{:WxCardScoreUrl()}"><div class="fengexian"><p>签到积分</p><span>0</span></div></a></li>
+            <li><a href="javascript:void(0)"><p>消费积分</p><span>0</span></a></li>
+    </ul>
+    <div class="clr"></div>
+</div>
+
+<ul class="round">
+<li class="title mb"><span class="none">会员资料</span></li>
+<li class="nob"><div class="beizhu">请认真填写！</div></li>
+<li class="nob">
+    <table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tbody>
+            <tr>
+                <th>真实姓名</th>
+                <td>
+                    <input name="MemberRealName" class="px" id="MemberRealName" value="{$m.MemberRealName}" placeholder="请输入真实姓名" type="text">
+                </td>
+            </tr>
+            <tr>
+                <th>性别</th>
+                <td>
+                    <input name="MemberGender"   value="0"  type="radio" <eq name="m.MemberGender" value="0">checked="checked"</eq> >男
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="MemberGender"   value="1"  type="radio" <eq name="m.MemberGender" value="1">checked="checked"</eq>>女
+                </td>
+            </tr>
+            <tr>
+                <th>手机号码</th>
+                <td><input name="MemberMobile" class="px"  id="MemberMobile" value="{$m.MemberMobile}" placeholder="请输入手机号码" type="tel"></td>
+            </tr>
+            <tr>
+                <th>微信号</th>
+                <td><input name="WxID" class="px" id="WxID" value="{$m.WxID}" placeholder="请输入微信号" type="text"></td>
+            </tr>
+            <tr>
+                <th>QQ</th>
+                <td><input name="MemberQQ" class="px" id="MemberQQ" value="{$m.MemberQQ}" placeholder="请输入QQ" type="text"></td>
+            </tr>
+            <tr>
+                <th>电子邮件</th>
+                <td><input name="MemberEmail" class="px" id="MemberEmail" value="{$m.MemberEmail}" placeholder="请输入电子邮件" type="text"></td>
+            </tr>
+            <tr>
+                <th>联系地址</th>
+                <td><input name="MemberAddress" class="px" id="MemberAddress" value="{$m.MemberAddress}" placeholder="请输入联系地址" type="text"></td>
+            </tr>
+        </tbody>
+    </table>
+</li>                                                                                                  
+</ul>
+<div class="footReturn">
+    <a id="showcard" class="submit"  href="javascript:void(0)">保 存</a>
+    <div class="window" id="windowcenter">
+    <div id="title" class="wtitle">友情提示<span class="close" id="alertclose"></span></div>
+    <div class="content"><div id="txt"></div></div>
+    </div>
+</div>
+ 
+<script type="text/javascript"> 
+var oLay = document.getElementById("overlay");	
+$(document).ready(function () {
+	$("#showcard").click(function (){
+	var submitData = {
+		MemberRealName: $("#MemberRealName").val(),
+		MemberGender: $("input[name='MemberGender']:checked").val(),
+		MemberMobile: $("#MemberMobile").val(),
+		WxID: $("#WxID").val(),
+		MemberQQ: $("#MemberQQ").val(),
+		MemberEmail: $("#MemberEmail").val(),
+		MemberAddress: $("#MemberAddress").val()
+	};
+	$.post('{$Url}saveCardmember', submitData,
+	function(data) {
+		if (data.staus == 1) {
+			alert(data.info);
+			setTimeout("gourl('"+data.url+"')",1200);
+			return
+		} else {
+			alert(data.info);
+		}
+	}, "json")
+	oLay.style.display = "block";
+	}); 
+}); 
+
+$("#windowclosebutton").click(function () { 
+	$("#windowcenter").slideUp(500);
+	oLay.style.display = "none";
+}); 
+
+$("#alertclose").click(function () { 
+	$("#windowcenter").slideUp(500);
+	oLay.style.display = "none";
+}); 
+
+function gourl(url){
+ 	window.location.href =url ;
+}
+
+function alert(title){ 
+	//var windowHeight; 
+	//var windowWidth; 
+	//var popWidth;  
+	//var popHeight; 
+	//windowHeight=$(window).height(); 
+	//windowWidth=$(window).width(); 
+	//popHeight=$(".window").height(); 
+	//popWidth=$(".window").width(); 
+	//var popY=(windowHeight-popHeight)/2; 
+	//var popX=(windowWidth-popWidth)/2; 
+	//$("#windowcenter").css("top",popY).css("left",popX).slideToggle("slow"); 
+	$("#windowcenter").slideToggle("slow"); 
+	$("#txt").html(title);
+	//$("#windowcenter").hide("slow"); 
+	setTimeout('$("#windowcenter").slideUp(500)',4000);
+} 
+</script>
+</div>
+<include file="./Public/tpl/wx/cardfooter.html" />
+</body>
+</html>

@@ -1,0 +1,265 @@
+<script type="text/javascript" src="{$WebPublic}jquery/emotions.js"></script>
+<style>
+/*emotions*/
+.emotions{position:absolute;top:30px;left:20px;border:1px solid #AAA;padding:5px;background-color:#FFF;z-index:9999999;display:none}
+.emotions table td{padding:1px;}
+.emotions table td div{background: url("https://res.mail.qq.com/zh_CN//images/mo/DEFAULT2/default.gif") no-repeat 0 0 scroll transparent;width:24px;height:24px;cursor:pointer; border:1px solid #dfe6f6;}
+.emotions table div:hover{border:1px solid blue;}
+.emotions .emotionsGif{position:absolute;top:-1px;left:430px;border:1px solid #AAA;padding:20px;background-color:#FFF;text-align:center;width:24px;height:24px}
+.iconEmotion{font-size:12px; color:#0000FF; font-weight:bold}
+</style>
+<script>
+	function SelectType(TypeID){
+		var n = 8;
+		for(i = 1; i <= n; i++){
+			var v = ".g"+i;
+			if(i==TypeID){
+				$(v).show();
+			}else{
+				$(v).hide();
+			}
+		}
+		//显示应用帮助
+		if(TypeID==5){
+			var obj = document.getElementById("wxapp");
+			var i = obj.selectedIndex;
+			var des = obj.options[i].getAttribute("des");
+			if(des=="") des = "没有帮助";
+			$('#appdes').text(des);
+		}
+		
+		//显示素材
+		if(TypeID==7){
+			ShowMaterial("{$Reply.p3}", "{$Reply.p4}");
+		}
+	}
+
+	function BrowserServer(){
+		if(checkSafeQuestion()) return;
+		FileManager.selectActionFunction = SetFileField;
+		FileManager.popup(); 
+	}
+	
+	function SetFileField(fileUrl){
+		document.getElementById('musicfileImage').value = fileUrl;
+	}
+	
+	//选择素材
+	function BrowserMaterialServer(){
+		FileManager.selectActionFunction = function(fileUrl){
+			LoadBox("上传素材中，请稍后...");
+			var url = "{$Url}uploadMaterial";
+			var params = {
+				filename:	fileUrl
+			};
+			$.post(url, params, function(data){
+				CloseLoadBox();
+				if(data.status==1){
+					$("#MaterialMediaID").val(data.data["media_id"]);
+					$("#MaterialUrl").val(data.data["url"]);
+					$("#MaterialFileUrl").val(fileUrl);
+					$("#MaterialType").val(data.data["type"]);
+					ShowMaterial(fileUrl, data.data["type"]);
+					SucceedBox("上传素材成功");
+				}else{
+					ErrorBox("上传素材失败 "+data.info);
+				}
+			},"json");
+		};
+		FileManager.popup(); 
+	}
+	
+	function ShowMaterial(fileUrl, type){
+		var html='';
+		if(type=='image'){
+			html='<img id="imageMaterial" src="'+fileUrl+'" align="absmiddle" style="height:100px; margin-right:8px;" />';
+		}else if(type=='voice'){
+			html='<audio  src="'+fileUrl+'" controls="controls"  style="vertical-align:middle; margin-right:8px;">不支持音频</audio>';
+		}else if(type=='video'){
+			html='<video src="'+fileUrl+'" height="200" width="auto" controls="controls"  style="vertical-align:middle; margin-right:8px;">不支持视频</video>';
+		}
+		$("#MaterialContainer").html(html);
+	}
+	
+	function wxAppChannge(obj){
+		var i = obj.selectedIndex;
+		var des = obj.options[i].getAttribute("des");
+		if(des=="") des = "没有帮助";
+		$('#appdes').text(des);
+	}
+
+	function InsertLink(){
+		 $('#insertlink').toggle();
+	}
+	
+	function LinkOk(){
+		 var url = "<a href='"+$('#linkurl').val()+"'>"+$('#linkname').val()+"</a>";
+		 $('#a1').setCaret();
+		 $('#a1').insertAtCaret(url);
+		 $('#insertlink').toggle();
+	}
+	
+	$(document).ready(function(){
+		 $('#musicfile').change(function(){  
+			if( !$(this).val() ) return;
+			var url = $("#musicfile").val();
+			if(url == ""){
+				ErrorBox("请先选择要上传的mp3文件！");
+				return false;
+			}
+			var pos = url.lastIndexOf(".")+1;
+			var ext = url.substring(pos);
+			if( ext.toLowerCase() != "mp3"){
+				ErrorBox("图像格式必须为mp3格式！");
+				return false;
+			}
+			$('#frmSave').attr('action','__GROUP__/public/upload/addwater/no/currentfile/musicfile');
+			$('#frmSave').submit();
+		 });
+	});
+</script>
+<tr class="g1">
+    <th class="w120">微信文本消息</th>
+    <td>
+    <textarea style='width:100%; height:120px' class='textinput'  name = 'a1'  id="a1" >{$Reply.p1}</textarea>
+    </td>
+</tr>
+<tr  class="g1">
+    <th class="w120"></th>
+    <td align="left" style="height:24px; overflow:hidden; " valign="middle">
+    <a class="iconEmotion" href="javascript:;" inputid="a1">[插入表情]</a>&nbsp;&nbsp;
+    <a  href="#" onclick="InsertLink()"  style="color:#0000FF"><b>[插入链接]</b></a>&nbsp;&nbsp;
+    <span  id="insertlink" style="display:none">
+    链接名称<input type='text' style='width:120px; ' class='textinput' id = 'linkname'   value=''  />&nbsp;
+    链接地址<input type='text' style='width:180px; ' class='textinput' id = 'linkurl'   value='http://'  />&nbsp;
+    <input type='button' style="cursor:pointer; "   onclick = 'LinkOk()'  value="&nbsp;确定&nbsp;" />&nbsp;
+    <input type='button' style="cursor:pointer; "  onclick = 'InsertLink()'  value="&nbsp;取消&nbsp;" />
+    </span>
+    </td>
+</tr>
+ <tr  class="g2">
+    <th class="w120">图文消息频道</th>
+    <td>
+    <select name="a2">
+    <volist name="Channel" id="c">
+        <eq name="c.ChannelID" value="$Reply.p1">
+            <option value="{$c.ChannelID}" selected="selected">
+         <else/>
+            <option value="{$c.ChannelID}">
+         </eq>
+         {$c.ChannelName}</option>
+    </volist>
+    </select>
+    <span class='Caution'>输出指定频道前几条的图文消息！选择"<b>首页</b>"则显示网站首页导航！</span>
+    </td>
+</tr>
+<tr  class="g2">
+    <th class="w120">图文消息条数</th>
+    <td>
+        <input type='number' style='width:80px;' class='textinput' name = 'a3'   value="<empty name='Reply.p2'>10<else/>{$Reply.p2}</empty>"  />
+        <span class='Caution'>不填则默认为10，限制为小于等于10条</span>
+    </td>
+</tr>
+
+<tr  class="g3">
+    <th  class="w120">音乐标题</th>
+    <td><input type='text' style='width:280px;' class='textinput' name = 'a4'    value="{$Reply.p1}"  /></td>
+</tr>
+<tr  class="g3">
+    <th  class="w120">音乐描述</th>
+    <td><input type='text' style='width:100%;' class='textinput' name = 'a5'     value="{$Reply.p2}"  /></td>
+</tr>
+<tr  class="g3">
+    <th  class="w120">音乐文件</th>
+    <td>
+    <input type="text" id="musicfileImage" class="textinput w450" name="a6" value="{$Reply.p3}"  />
+     <span class='UploadWrapper'>
+        <input class='btnFileUpload' type='button' value='上传' />
+    	<input id='musicfile' name ='musicfile' type ='file'  size='70'   class='InputFile'  />
+    </span>
+    <input id='btnServer' onclick='BrowserServer()' name ='btnServer' class="btnPadding"  type ='button' value='选择音乐文件'   />
+    </td>
+</tr>
+
+
+<tr  class="g7">
+    <th  class="w120">选择素材</th>
+    <td valign="middle">
+     <input type="hidden" id="MaterialMediaID" class="textinput" style="width:400px; " name="a11" value="{$Reply.p1}"  />
+     <input type="hidden"  id="MaterialUrl" class="textinput"  name="a12" value="{$Reply.p2}"  />
+     <input type="hidden"  id="MaterialFileUrl" class="textinput"  name="a13" value="{$Reply.p3}"  />
+     <input type="hidden"  id="MaterialType" class="textinput"  name="a14" value="{$Reply.p4}"  />
+     <span id="MaterialContainer"></span>
+     <input id='btnServer' onclick='BrowserMaterialServer()' name ='btnServer' class="btnPadding"  type ='button' value='选择素材文件'   />
+     <div class='Caution' style="margin-left:0; margin-top:5px;">
+     	支持直接返回图片（最大2M，支持bmp/png/jpeg/jpg/gif格式）、语音（最大2M，播放长度不超过60s，mp3/wma/wav/amr格式）、视频（最大10MB，支持MP4格式）
+     </div>
+    </td>
+</tr>
+
+<tr  class="g8">
+      <th  class="w120">小程序的appid</th>
+      <td><input type='text' style='width:280px;' class='textinput' name = 'a15'   value="{$Reply.p1}"  />
+      <span class='Caution'>需要公众号和小程序绑定，只有认证公众号才能配置打开小程序</span>
+      </td>
+</tr>
+<tr  class="g8">
+      <th  class="w120">小程序的页面路径</th>
+      <td><input type='text' style='width:280px;' class='textinput' name = 'a16'   value="{$Reply.p2}"  />
+      <span class='Caution'>指定打开小程序哪个页面，如：pages/index/index</span>
+      </td>
+</tr>
+
+<!--自动回复无此项-->
+<tr  class="g4">
+    <th class="w120">指定打开的频道</th>
+    <td>
+    <select name="a7">
+    <volist name="Channel" id="c">
+             <eq name="c.ChannelID" value="$Reply.p1">
+                <option value="{$c.ChannelID}" selected="selected">
+             <else/>
+                <option value="{$c.ChannelID}">
+             </eq>
+             {$c.ChannelName}</option>
+    </volist>
+    </select>
+    <span class='Caution'>点击菜单后，将打开指定频道页面！</span>
+    </td>
+</tr>
+
+<tr  class="g5">
+    <th class="w120">微应用列表</th>
+    <td>
+    <select name='a8' onchange="wxAppChannge(this)" id="wxapp">
+    <volist name=":get_wx_app()" id="a">
+    	<option value="{$a.AppID},{$a.Keyword}" des="{$a.Description}"  <eq name="a.AppID" value="$Reply.p1">selected="selected"</eq> >[{$a.AppTypeName}]&nbsp;{$a.AppName}</option>
+    </volist>
+    </select>
+    </td>
+</tr>
+<tr  class="g5">
+      <th  class="w120">微应用指令绑定</th>
+      <td><input type='text' style='width:350px;' class='textinput' name = 'a10'   value="{$Reply.p4}"  />
+      <span class='Caution'>无参数指令无需填写</span>
+      </td>
+</tr>
+<tr  class="g5">
+      <th  class="w120">微应用指令绑定说明</th>
+      <td>[1]应用指令也就是在微信中录入的指令，指令格式详见应用帮助<br />
+      [2]如格式为"高(身高cm)重(体重kg)"，具体指令可以设置为：高175重60<br />
+      [3]备注：格式中的小括号"()"：表示必填参数，中括号"[]"：表示选填参数，若格式中没有小括号和中括号，表示无参指令
+      </td>
+</tr>
+<tr  class="g5">
+      <th  class="w120">微应用帮助</th>
+      <td id="appdes" style="color:blue"></td>
+</tr>
+
+<!--自动回复无此项-->
+<tr  class="g6">
+      <th  class="w120">外部链接</th>
+      <td><input type='text' style='width:280px;' class='textinput' name = 'a9'   value='<empty name='Reply.p1'>http://<else/>{$Reply.p1}</empty>'  />
+      <span class='Caution'>点击菜单后，将打开指定URL链接页面。外部链接必须以http://开头</span>
+      </td>
+</tr>

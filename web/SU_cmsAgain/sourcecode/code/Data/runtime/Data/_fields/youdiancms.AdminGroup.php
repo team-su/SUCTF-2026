@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'AdminGroupID', 1 => 'AdminGroupName', 2 => 'AdminGroupRemark', 3 => 'MenuPurview', 4 => 'MenuTopPurview', 5 => 'MenuGroupPurview', 6 => 'ChannelPurviewcn', 7 => 'ChannelPurviewen', 8 => 'IsSystem', '_autoinc' => true, '_pk' => 'AdminGroupID', ); ?>

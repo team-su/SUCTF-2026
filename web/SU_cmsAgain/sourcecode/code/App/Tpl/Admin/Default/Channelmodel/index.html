@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+   <form enctype="multipart/form-data" id="frm"  method="post">
+         <div class="table">
+                <div class="toolbars">
+                    <li class="toolbar"><a id="btnSaveAll" href="{$Url}Add" title="添加频道模型" target="_self">添加频道模型</a></li>
+                    <li class="toolbar" style="display:none"><a id="btnCache" onclick="clearModelCache()"  title="清除模型缓存">清除模型缓存</a></li>
+                    <li class="toolbar"><a id="sortall" onclick="BatchSort()" title="批量排序">排序</a></li>
+                </div>
+                <table class="datatable" id="datatable">
+                    <tr>
+                        <th width="80"  nowrap="nowrap">频道模型ID</th>
+                        <th width="130" nowrap="nowrap">频道模型名称</th>
+                        <th width="90" >频道模型排序</th>
+                        <th width="145" >默认首页模板</th>
+                        <th width="145" >默认阅读模板</th>
+                        <th>频道模型描述</th>
+                        <th width="80" >属性</th>
+                        <th width="70" >是否启用</th>
+                        <th  width="140"  style="padding-left:20px">操作</th>
+                    </tr>
+                    <notempty name="ChannelModel">
+                        <volist name="ChannelModel" id="c">
+                            <tr>
+                                <td>{$c.ChannelModelID}<input type="hidden" name="ChannelModelID[]" value="{$c.ChannelModelID}" /></td>
+                                <td><b style="color:{$c.ChannelModelID|ChannelModelColor}">{$c.ChannelModelName|htmlspecialchars}</b></td>
+                                <td>
+                                <input type="number" class='textinput'  onclick="this.select()" style="width:70px" name="ChannelModelOrder[]" value="{$c.ChannelModelOrder}" />
+                                </td>
+                                <td>{$c.IndexTemplate}</td>
+                                <td>{$c.ReadTemplate}</td>
+                                <td style="text-align:left">{$c.ChannelModelDescription|htmlspecialchars}</td>
+                                <td>
+                                <lt name="c.ChannelModelID" value="30">
+                                <span style="color:#000">内部模型</span>
+                                <else/>
+                                <span style="color:#F00">自定义</span>
+                                </lt>
+                                </td>
+                                <td>
+                                    <eq name="c.IsEnable" value="1">
+                                        <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$c.ChannelModelID},'channelmodel')">启用</span>
+                                    <else/>
+                                        <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$c.ChannelModelID},'channelmodel')">禁用</span>
+                                    </eq>
+                                </td>
+                                <td  class="operator">
+                                    <a style="float:left" href="{$Url}ViewField/ChannelModelID/{$c.ChannelModelID}" id="btnEdit">字段</a>
+                                    <div class="btn-sep"></div>
+                                    <a style="float:left" href="{$Url}Modify/ChannelModelID/{$c.ChannelModelID}" id="btnEdit">修改</a>
+                                    <div class="btn-sep"></div>
+                                    <eq name="c.IsSystem" value="0">
+                                        <eq name="c.CanDelete" value="1">
+                                            <gt name="c.ChannelModelID" value="39" >
+                                                <a style="float:left" onclick="DelChannelModel({$c.ChannelModelID})" class="btnDel">删除</a>
+                                            </gt>
+                                        </eq>
+                                    </eq>
+                                </td>
+                            </tr>
+                        </volist>
+                    <else/>
+                        <tr><td colspan="9" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                    </notempty>                                  
+                </table>
+                 <div class="tfoot">
+                      <div id="notice">
+                            <b>说明：</b><span class="notice-item">建议不要随意修改系统模型</span>
+                       </div>
+                 </div>
+          </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function DelChannelModel(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}del/ChannelModelID/"+id;
+		window.location.href = url;
+	});
+}	
+
+//排序
+function BatchSort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "{$Url}batchSort");
+		$('#frm').submit();
+	});
+}
+
+function clearModelCache(){
+	url = "{$Url}clearCache/t/{:time()}";
+	$.get(url, {}, ClearCacheComplete, "json");
+	return true;
+}
+
+//回调函数
+function ClearCacheComplete(data, textStatus){
+	if (data.status == 1){
+		SucceedBox(data.info);
+	}else{
+		ErrorBox(data.info);
+	}
+}
+</script>

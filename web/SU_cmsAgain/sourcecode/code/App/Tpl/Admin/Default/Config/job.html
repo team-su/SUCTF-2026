@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+        <div class="box-header"  id="c7"><h4>投递简历邮件通知设置</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+              <tr>
+                    <th nowrap="nowrap">投递简历是否邮件通知</th>
+                    <td>
+                    <label><input type="radio" name="JOB_SENDEMAIL" value="1"  onclick="ChangeMail(1)"  />是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" name="JOB_SENDEMAIL" value="0"   onclick="ChangeMail(0)" />否</label>
+                    </td>
+                </tr>
+               <tr class="mail">
+                     <th class="w120">接收邮件帐号</th>
+                    <td><input type="text" class="textinput" style="width:50%" name="JOB_EMAIL" value="{$c.JOB_EMAIL}" /></td>
+                </tr>
+               <tr class="mail">
+                     <th class="w120"></th>
+                    <td>
+						<span class='Caution'>
+							1、多个邮箱以英文逗号隔开，留空为[管理首页]->[联系方式]设置的电子邮件
+							<div style="text-indent:23px">2、如果岗位设置了单独的简历接收人邮箱，则全局的无效</div>
+						</span>
+                    </td>
+                </tr>
+                <tr class="mail">
+                     <th class="w120">通知邮件标题</th>
+                    <td><input type="text" class="textinput"  style="width:50%"  id="JOB_EMAIL_TITLE"  name="JOB_EMAIL_TITLE" value="{$c.JOB_EMAIL_TITLE}" /></td>
+                </tr>
+				 <tr class="mail">
+                        <th class="w120"></th>
+                        <td>
+                            <span class='Caution'>
+                                <literal>
+                                    标题模板举例：{$Name}投递了【{$JobName}】简历
+                                    <div style="text-indent:23px">
+                                        支持模板变量：
+                                        <b onclick="insertAtCursorByID('JOB_EMAIL_TITLE','{$Name}')"  class="tplvar">{$Name}</b>表示简历投递人&nbsp;&nbsp;
+                                        <b onclick="insertAtCursorByID('JOB_EMAIL_TITLE','{$JobName}')"  class="tplvar">{$JobName}</b>表示投递岗位&nbsp;&nbsp;
+                                    </div>
+                                </literal>
+                            </span>
+                        </td>
+                    </tr>
+            </table>
+        </div>
+        
+        <div class="box-footer">
+            <div class="box-footer-inner">
+                <input  id="btnSubmit" class="marginright"  type="submit" value="保存设置" />
+                <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	 
+	$('#frmConfig').submit(function(){
+		try{
+			LoadBox();
+			for ( s in CKEDITOR.instances ) {
+			   CKEDITOR.instances[s].updateElement();
+			}
+		}catch(e){
+			;
+		}finally{
+			return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+		}
+	 });
+	 
+	 pageInit();
+	 function pageInit(){
+		  $("input[name='JOB_SENDEMAIL'][value={$c.JOB_SENDEMAIL}]").attr("checked",'checked');
+		  ChangeMail("{$c.JOB_SENDEMAIL}"); 
+	 }
+});
+
+function GoBack(){
+	window.location.href = "{$Group}/Job/index";
+}
+
+
+function ChangeMail(type){
+	if( type == 1 ){
+		$(".mail").show();
+	}else{
+		$(".mail").hide();
+	}
+}
+</script>

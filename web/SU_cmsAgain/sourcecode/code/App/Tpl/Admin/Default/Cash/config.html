@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}"  enctype="multipart/form-data">              
+            <div class="box-header"><h4>提现设置</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th class="w120">满多少才能提现</th>
+                        <td><input type="text" class="textinput" style="width:130px" name="WithdrawThreshold" value="{$WithdrawThreshold}" />
+                        <span class='Caution'>需超过多少才能提现金额；设置为0，表示任意额度都可以提现</span></td>
+                    </tr>
+                    <tr>
+                        <th>最少提现额度</th>
+                        <td><input type="text" class="textinput" style="width:130px" name="MinWithdraw" value="{$MinWithdraw}"  />
+                        <span class='Caution'>设置为0，表示每次提现不限额度</span></td>
+                    </tr>
+               </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  class="marginright" type="submit" value="保存设置" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack('{$Url}index')" />
+                </div>
+            </div>
+        </form>
+    </div>            
+</div>
+</body>
+</html>
+
+<script>
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){ 
+		LoadBox();
+		return false;
+	 });
+});
+</script>

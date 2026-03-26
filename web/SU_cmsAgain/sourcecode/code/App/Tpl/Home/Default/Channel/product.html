@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$ChannelName}|{$Title}-{$WebName}</title>
+    <include file="Public:meta" />
+</head>
+<body  class="body_picture">
+	<include file="Public:header" />
+    
+	<!--区块5141 开始-->
+<div id="n5141" class="component floor_channel5_main" yd-add="1" yd-delete="1" yd-order="1" yd-group="5141">
+    <style type="text/css">
+        #n5141{
+            {$TChannel5Bg5141|ParseBg}
+            padding-top:{$TChannel5PaddingTop5141}px;
+            padding-bottom:{$TChannel5PaddingBottom5141}px;
+        }
+        #n5141 li{
+            animation-duration: {$TChannel5AnimationTime5141}s;
+            animation-fill-mode: both;
+        }
+
+        #n5141 .sidebar_comtainer{
+            {$TChannel5SideBarBg5141|ParseBg}
+            width: {$TChannel5SideBarWidth5141}px;
+            yd-previewable-class: float_ float_{$TChannel5HasSideBar5141};
+        }
+        #n5141 .sidelist{
+            yd-previewable-class: -sidelist {$TChannel5SideBarStyle5141}-sidelist;
+            border-color: {$TChannel5SideBarBorderColor5141};
+        }
+        #n5141 .sidelist a{
+            border-color: {$TChannel5SideBarBorderColor5141};
+        }
+        #n5141 .sidebar_title h2{
+            {$TChannel5SideBarTitle5141|ParseFont}
+        }
+        #n5141 .sidelist .InfoTitle{
+            {$TChannel5SideBarInfoTitle5141|ParseFont}
+        }
+        #n5141 .sidelist .InfoPrice{
+            {$TChannel5SideBarInfoPrice5141|ParseFont}
+        }
+
+        #n5141 .content_container{
+            {$TChannel5InfoBg5141|ParseBg}
+        }
+        #n5141 .content_container .InfoTitle{
+            {$TChannel5InfoTitleFont5141|ParseFont}
+        }
+        #n5141 .content_container .InfoSContent{
+            {$TChannel5InfoSContentFont5141|ParseFont}
+        }
+        #n5141 .content_container .InfoPrice{
+            {$TChannel5InfoPriceFont5141|ParseFont}
+        }
+        #n5141 .content_container li{
+            yd-previewable-class: column column{$TChannel5ColumnCount5141};
+        }
+        #n5141 .content_title h2{
+            {$TChannel5TitleFont5141|ParseFont}
+        }
+        #n5141 .thumb-product0 li .InfoPicture{
+            width: {$TChannel5InfoPictureSize5141}%;
+        }
+        #n5141 .product0{
+            yd-previewable-class: -product0 {$TChannel5Style5141}-product0;
+        }
+        #n5141 .product0 li a{
+            {$TChannel5InfoListBg5141|ParseBg}
+            {$TChannel5InfoListBorder5141|ParseBorder}
+            padding: {$TChannel5InfoListPadding5141};
+            margin: {$TChannel5InfoListMargin5141};
+        }
+    </style>
+    <div class="floor_channel5 full-width{$TChannel5FullWidth5141} floor_channel">
+        <neq name="TChannel5HasSideBar5141" value="0">
+            <div class="component_title sidebar_comtainer float_{$TChannel5HasSideBar5141}">
+                <div yd-slot="5141A"></div>
+                <div class="sidebar" yd-group="5141" yd-tab="侧边栏设置">
+                    <neq name="TChannel5SideBarLabel5141|strpos='1'" value="0">
+                        <div class="sidebar_title"><h2>{$Think.lang.Hot}{$ChannelSName}</h2></div>  
+                        <div class="sidebar_body">
+                            <ul class="sidelist {$TChannel5SideBarStyle5141}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$ChannelID" top="$TChannel5SideBarCount5141" timeformat="Y-m-d" labelid="hot" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel5AnimationType5141}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img class="{$TRoundCorner}-round-corner" src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </neq>
+                    <neq name="TChannel5SideBarLabel5141|strpos='2'" value="0">
+                        <div class="sidebar_title"><h2>{$Think.lang.Recommend}{$ChannelSName}</h2></div>  
+                        <div class="sidebar_body">  
+                            <ul class="sidelist {$TChannel5SideBarStyle5141}-sidelist {$TRoundCorner}-round-corner">
+                                <infolist id="f" channelid="$ChannelID" top="$TChannel5SideBarCount5141" timeformat="Y-m-d" labelid="recommend" empty="$Think.lang.NoInformation">
+                                    <li yd-animation="{$TChannel5AnimationType5141}">
+                                        <a href="{$f.InfoUrl}" target="_blank" title="{$f.InfoTitle}" yd-content="_info,{$f.InfoID}">
+                                            <div class="InfoPicture"><img class="{$TRoundCorner}-round-corner" src="{$f.InfoPicture}" alt="{$f.InfoTitle}" title="{$f.InfoTitle}"/></div>
+                                            <div class="InfoTitle">{$f.InfoTitle}</div>
+                                            <gt name="f.InfoPrice" value="0"><div class="InfoPrice">{$CurrencySymbol}{$f.InfoPrice}</div></gt>
+                                        </a>
+                                    </li>
+                                </infolist>
+                           </ul>
+                        </div>
+                        <div class="sidebar_bottom"></div>
+                    </neq>
+                </div>
+                <div yd-slot="5141B"></div>
+            </div>
+        </neq>
+        <div class="component_body content_container">
+            <div class="content_title">
+                <include file="Public:location" />
+                <h2 yd-content="_channel,{$ChannelID}">{$ChannelName}</h2>
+            </div>
+            <div class="content_body" yd-content="info,{$ChannelID}" yd-group="5141" yd-tab="列表设置">
+                <ul class="n{$i} product0 {$TChannel5Style5141}-product0">
+                    <infolist id="f" channelid="$ChannelID" keywords="$Think.request.keywords" timeformat="Y-m-d" NowPage="$NowPage" empty="$Think.lang.NoInformation" mod="4">
+                        <li class="n{$mod} column{$TChannel5ColumnCount5141}" yd-animation="{$TChannel5AnimationType5141}">
+                            <a href="{$f.InfoUrl}" target="_blank" class="{$TRoundCorner}-round-corner" yd-content="_info,{$f.InfoID}">
+                                <div class="InfoPicture {$TRoundCorner}-round-corner"><img src="{$f.InfoPicture|DefaultPicture}" title="{$f.InfoTitle}" alt="{$f.InfoTitle}"/></div>
+                                <div class="InfoWrap">
+                                    <div class="InfoTitle">{$f.InfoTitle}</div>
+                                    <div class="InfoSContent">
+                                        <notempty name="f.InfoSContent">{$f.InfoSContent}<else/>{$f.InfoContent|strip_tags|left=50}</notempty>
+                                    </div>
+                                </div>
+                                <notempty name="f.InfoPrice">
+                                    <div class="InfoPrice">
+                                        <span>{$CurrencySymbol}</span>{$f.InfoPrice}
+                                        <i class="ydicon-right3"></i>
+                                    </div>
+                                </notempty>
+                            </a>
+                        </li>
+                    </infolist>
+                </ul>
+                <div class="page_main"><div class="page">{$Page}</div></div>
+           </div>
+        </div>
+    </div>
+</div>
+<!--区块5141 结束--><include file="Public:footer" />
+</body>
+</html>

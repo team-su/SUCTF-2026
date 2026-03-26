@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+ 	<div class="box">
+        <form id="frmConfig" method="post" action="{$Action}" enctype="multipart/form-data" >
+            <div class="box-header" id="c1">
+                <h4>基本设置</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th>网站名称</th>
+                        <td><input type="text" class="textinput w450" name="WEB_NAME" value="{$WebName}" /></td>
+                    </tr>
+                    <tr>
+                        <th>网站域名</th>
+                        <td><input type="text" class="textinput w450" name="WEB_URL" value="{$WebUrl}"  />
+                            <span class='Caution'>域名以http://或https://开头。系统检测到你的域名是：<b style="color:#F30">{:get_web_url()}</b></span>
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>网站Logo</th>
+                        <td><input type="text" id="weblogofileImage" class="textinput w450" name="WEB_LOGO" value="{$WebLogo}"  />
+                            <span class='UploadWrapper'>
+                                <input class='btnFileUpload' type='button' value='上传' />
+                                <input id='weblogofile' name ='weblogofile' type ='file'  size='70'  class='InputFile'  accept="image/*"/>
+                            </span>
+                            <input id='btnServer' onclick='BrowserServer()' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'     class="btnPadding" />
+                            <span class='Caution'>鼠标移动到文本框可以预览Logo</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>网站地址栏图标</th>
+                        <td><input type="text" id="webiconfileImage" class="textinput w450" name="WEB_ICON"  value="{$WebIcon}"  />
+                            <span class='UploadWrapper'>
+                                <input class='btnFileUpload' type='button' value='上传' />
+                                <input id='webiconfile' name ='webiconfile' type ='file'  size='70'  class='InputFile' accept="	image/x-icon" />
+                            </span>
+                            <input id='btnIconServer' onclick='BrowserIconServer()' name ='btnIconServer'  type ='button' value='{$Think.lang.SelectPicture}'  class="btnPadding"  />
+                            <br/><span class='Caution' style="margin-left:0;"> 推荐上传32x32的ico图标，如无法看到新上传的图标，请清空浏览器缓存，并重启浏览器！
+                            在线制作ico网址：<a href="http://www.bitbug.net" target="_blank">http://www.bitbug.net</a>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>网站ICP备案信息</th>
+                        <td><input type="text" class="textinput w450" name="WEB_ICP" value="{$WebICP}" />
+						<span class='Caution'>格式：网站ICP备案信息 公安部备案信息。2个备案以空格分开，自动生成备案链接！</span>
+						</td>
+                    </tr>
+                    <tr>
+                        <th>网站状态</th>
+                        <td>
+                            <label><input type="radio" name="WEB_STATUS" onclick="changeWebStatus(1)"  value="1"  />打开</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="WEB_STATUS" onclick="changeWebStatus(0)"  value="0"  />关闭</label>
+                            <span class='Caution'>关闭网站不会关闭API的调用</span>
+                        </td>
+                    </tr>
+                     <tr class="trWebCloseReason">
+                        <th>关闭网站原因</th>
+                        <td><textarea class="w450" style="height:100px" name="WEB_CLOSE_REASON">{$WebCloseReason}</textarea></td>
+                    </tr>
+					<tr>
+                        <th>是否自动检查更新</th>
+                        <td>
+                            <label><input type="radio" name="CheckUpdate" value="1"  />是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="CheckUpdate" value="0"  />否</label>
+                            <span class='Caution'>启用后，登录后台会自动检测是否有新版本！</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>是否启用调试模式</th>
+                        <td>
+                            <label><input type="radio" name="APP_DEBUG" value="1"  />是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" name="APP_DEBUG" value="0"  />否</label>
+                            <span class='Caution'>启用调试模式后，系统将保存各种状态日志，同时禁止缓存数据，有利于调试，但会影响速度！网站正式上线后，请关闭调试模式！</span>
+                            </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner"><input id="btnSubmit" type="submit" value="保存设置" /></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type='text/javascript'>
+function BrowserServer(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SetFileField;
+	FileManager.popup();
+}
+
+function SetFileField(fileUrl){
+	document.getElementById('weblogofileImage').value = fileUrl;
+}
+
+function BrowserIconServer(){
+	if(checkSafeQuestion()) return;
+	FileManager.selectActionFunction = SetIconField;
+	FileManager.popup(); 
+}
+
+function SetIconField(fileUrl){
+	document.getElementById('webiconfileImage').value = fileUrl;
+}
+
+function changeWebStatus(status){
+	if( status == 0){
+		$(".trWebCloseReason").show();
+	}else{
+		$(".trWebCloseReason").hide();
+	}
+}
+
+$(document).ready(function(){			
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+		 
+	 //上传提交表单,注意：这里的上传地址不能实用$UploadAction因为和上传设置config/upload冲突
+	 $('#weblogofile').change(function(){
+		if( !$(this).val() ) return;
+		$('#frmConfig').attr('action','__GROUP__/public/upload/addwater/no/currentfile/weblogofile');
+		$('#frmConfig').submit();
+	 });
+	 
+	 $('#webiconfile').change(function(){  
+		if( !$(this).val() ) return;
+		var url = $("#webiconfile").val();
+		if(url == ""){
+			ErrorBox("请先选择要上传的ico图标文件！");
+			return false;
+		}
+		var pos = url.lastIndexOf(".")+1;
+		var ext = url.substring(pos);
+		if( ext.toLowerCase() != "ico"){
+			ErrorBox("图像格式必须为ico格式！");
+			return false;
+		}
+		$('#frmConfig').attr('action','__GROUP__/public/upload/addwater/no/currentfile/webiconfile');
+		$('#frmConfig').submit();
+	 });
+	 
+	 //保存提交
+	 $('#btnSubmit').click(function(){
+		$('#frmConfig').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	 function pageInit(){
+		$("input[name='WEB_STATUS'][value={$WebStatus}]").attr("checked",'checked');
+		$("input[name='APP_DEBUG'][value={$AppDebug}]").attr("checked",'checked');
+		$("input[name='CheckUpdate'][value={$CheckUpdate}]").attr("checked",'checked');
+		
+		$("#weblogofileImage").powerFloat({ targetMode: "ajax",	 targetAttr: "value", position: "5-7" });
+		$("#webiconfileImage").powerFloat({targetMode: "ajax",targetAttr: "value",position: "5-7"});
+		changeWebStatus("{$WebStatus}");
+	}
+	 
+	pageInit();
+});
+</script>

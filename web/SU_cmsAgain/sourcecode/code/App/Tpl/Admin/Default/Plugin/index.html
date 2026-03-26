@@ -1,0 +1,396 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		.pluginlist{ padding: 0; }
+		.pluginlist:after{ content: ""; display: block; clear: both; }
+		.pluginlist li{ float: left; width: 25%; height:155px; overflow:hidden;}
+		.pluginlist li .PluginWrapper{ position: relative; display: block; border: 1px solid #eee; margin: 5px;
+		 border-radius: 6px; box-shadow: 0 0 10px 0 rgba(0,0,0,.1); background:#fff;}
+		 
+		.pluginlist li a{ display:block;overflow: hidden; padding: 10px 10px; }
+		.pluginlist li a:hover{color:#222; opacity:0.8;}
+		.pluginlist li .PluginPicture{ float: left; width: 82px; height: 82px; background: #fcfcfc; margin-right: 10px; }
+		.pluginlist li .PluginPicture img{ width: 100%; }
+		.pluginlist li .PluginExtra .PluginName{ text-align: left; padding: 0 0 5px; line-height: 1; font-size:16px;}
+		.pluginlist li .PluginExtra .PluginDescription{ font-size: 13px; color:#a1a1a1; height: 2.8em; text-overflow:ellipsis;
+		line-height: 1.5em; margin-bottom: 3px; overflow: hidden; text-align:left;}
+		.pluginlist li .PluginExtra .PluginPrice{ color: red; text-align: left;}
+		
+		.pluginlist li .PluginBtn{ clear:both; overflow:hidden; padding: 10px 10px; background: #fafafa;
+		border-top: 1px solid #f0f0f0; font-size: 14px; text-align:center;}
+		.pluginlist li .PluginBtn:hover{ color: #ccc; }
+		
+		.box-header{ position:relative; }
+		.btnPlugin{ 
+			position:absolute; border-radius: 8px 8px 0 0; left:150px; top: 8px; color: #888;
+			padding: 11px 28px; background: #fff;  font-size:15px; cursor:pointer;
+		}
+		.btnPlugin.active{ background: #f2f2f6; color: #222; }
+		.btnPlugin:hover{ color: #000;}
+		.PluginVersion{ margin-left: 5px; color:#999; font-size:14px;}
+		.PluginPrice .cs{ font-size:12px;}
+		.PluginPrice b{ font-size:17px; }
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+		<div class="box-header" id="c1">
+			<h4><span ondblclick="showUcLogin()">应用插件</span><div class="login-wrapper"></div></h4>
+			<a href="{$Url}index/IsEnable/1" class='btnPlugin <eq name="IsEnable" value="1">active</eq>' target="_self">我的应用</a>
+			<a href="{$Url}index/IsEnable/0" class='btnPlugin <eq name="IsEnable" value="0">active</eq>' style="left:270px;" target="_self">应用市场</a>
+		</div>
+		<div class="box-content">
+		<div class="table">
+		<notempty name="Data">
+			<ul class="pluginlist">
+			<volist name="Data" id="d">
+				<li>
+					<div class="PluginWrapper">
+						<empty name="IsOem">
+							<a href="{$d.PluginUrl}" target="{$d.PluginTarget}" <eq name="d.PluginID" value="164">onclick="return checkPluginSafe({$d.PluginID})"</eq>>
+						<else/>
+							<eq name="IsEnable" value="1">
+								<a href="{$d.PluginUrl}" target="{$d.PluginTarget}"  <eq name="d.PluginID" value="164">onclick="return checkPluginSafe({$d.PluginID})"</eq>>
+							<else/>
+								<a href="javascript:void(0)">
+							</eq>
+						</empty>
+							<div class="PluginPicture"><img src="{$d.PluginPicture}" /></div>
+							<div class="PluginExtra">
+								<div class="PluginName">{$d.PluginName|htmlspecialchars}<span class="PluginVersion">v{$d.CurrentVersion}</span></div>
+								<div class="PluginDescription">{$d.PluginDescription|htmlspecialchars}</div>
+								<empty name="d.IsEnable">
+									<div class="PluginPrice">
+										<gt name="d.PluginPrice" value="0"><span class="cs">￥</span><b>{$d.PluginPrice}</b><else/>免费</gt>
+									</div>
+								</empty>
+							</div>
+						</a>
+						<div class="PluginBtn">
+							<input type="hidden" id="tip{$d.PluginID}" PluginName="{$d.PluginName}" IsSystem="{$d.IsSystem}" LatestVersion="{$d.LatestVersion}" CurrentVersion="{$d.CurrentVersion}" PluginAction="{$d.PluginAction}" FileList="{$d.FileList}" value="{$d.UpgradeTip}" PluginPrice="{$d.PluginPrice}" PluginUrl="{$d.PluginUrl}"/>
+							<eq name="d.IsEnable" value="1">
+								<eq name="d.CanUpgrade" value="1">
+									<span onclick="startUpgrade({$d.PluginID})" style="color:red;cursor:pointer;margin-right:2em;">升级</span>
+								</eq>
+								<span  onclick="uninstallPlugin(this,{$d.PluginID})" style="color:#888;cursor:pointer; ">卸载</span>
+							<else/>
+								<span  onclick="installPlugin(this, {$d.PluginID})"  style="color:#2589ff;cursor:pointer; ">安装</span>
+							</eq>
+						</div>
+					</div>
+				</li>
+			</volist>
+			</ul>
+		<else/>
+			<div id="NoData">{$Think.lang.NoDataTip}</div>
+		</notempty>
+    </div>
+		</div>
+  </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function startUpgrade(PluginID){
+	if(checkSafeQuestion()) return;
+	var obj = $("#tip"+PluginID);
+	var PluginName = obj.attr("PluginName");
+	var CurrentVersion = obj.attr("CurrentVersion");
+	var LatestVersion = obj.attr("LatestVersion");
+	var UpgradeTip = obj.val();
+	tip = "<div>";
+	tip += "<div style='font-size:14px;'>"+PluginName+" v"+LatestVersion+"更新日志：</div>";
+	tip += "<div style='font-size:15px; margin-bottom:8px;color:#666;'>"+UpgradeTip+"</div>";
+	tip += "<div style='font-size:18px;color:red; padding-top:8px;border-top:1px solid #ccc;'>确定升级当前应用插件吗？</div>";
+	tip += "</div>";
+	ConfirmBox(tip, function () {
+		var params = { 
+			PluginID : PluginID,
+			CurrentVersion : CurrentVersion,
+			Token:getToken(),
+			LatestVersion:LatestVersion 
+		};
+		upgadePlugin(params);
+	});
+}
+
+//升级插件
+function upgadePlugin(params){
+	var url = "{$Url}upgradePlugin";
+	LoadBox("升级中，请稍后...");
+	$.ajax({url: url,  type: "POST", timeout: 120*1000, data: params, dataType:"json",
+		success: function(data){
+			CloseLoadBox();
+			if (data.status == 1){
+				SucceedBox(data.info);
+				setTimeout(function(){ window.location.reload(); }, 1800);
+			}else{
+				ErrorBox(data.info);
+			}
+		},
+		error:function errorCallback(obj, textStatus, errorThrown){
+			CloseLoadBox();
+			var errmsg = (textStatus == "timeout") ? "升级超时" :"发生错误 "+obj.statusText;
+			ErrorBox(errmsg);
+		}
+	});
+}
+
+
+function checkUCLogin(PluginPrice){
+	var token = getToken();
+	if(token) return true;
+	var isOem = "{$IsOem}";
+	if(isOem==1) {
+		if(PluginPrice > 0){ //收费插件请联系业务购买
+			ErrorBox("请联系业务员购买！");
+			return false;
+		}else{  //对于OEM免费插件，可以直接安装
+			return true
+		}
+	}else{
+		var msg = "<p>请先登录友点用户中心，然后再安装！<br/>";
+		msg += "<span style='color:#333;'>点击右上角【登录】按钮登录！</span></p>";
+		ErrorBox(msg);
+		return false;
+	}
+}
+
+//安装插件
+function installPlugin(obj, PluginID){
+	if(checkSafeQuestion()) return;
+	var obj = $("#tip"+PluginID);
+	var PluginPrice = obj.attr("PluginPrice");
+	var PluginUrl = obj.attr("PluginUrl");
+	var b = checkUCLogin(PluginPrice);
+	if(!b) return;
+	var PluginName = obj.attr("PluginName");
+	var LatestVersion = obj.attr("LatestVersion");
+	var IsSystem = obj.attr("IsSystem");
+	var PluginAction = obj.attr("PluginAction");
+	var Host = "{$Think.server.HTTP_HOST}";
+	
+	tip = "<div id='icon_delete'>确定安装应用插件<b>【"+PluginName+"】</b>吗？</div>";
+	ConfirmBox(tip, function () {
+		var url = "{$Url}installPlugin";
+		var params = {
+			PluginID : PluginID,
+			PluginName:PluginName,
+			IsSystem:IsSystem,
+			PluginAction:PluginAction,
+			LatestVersion:LatestVersion,
+			Token:getToken(),
+			Host:Host
+		};
+		LoadBox("安装中，请稍后...");
+		$.ajax({url: url,  type: "POST", timeout: 120*1000, data: params, dataType:"json",
+			success: function(data){
+				CloseLoadBox();
+				if (data.status == 1){
+					SucceedBox(data.info);
+					//$(obj).parents("li").remove();
+					window.location.href = "{$Group}Plugin/index?IsEnable=1";
+				}else if(data.status== 3){ //3表示插件未购买
+					ConfirmBox(data.info, function(){
+							window.open(PluginUrl, "_blank");
+						}, null, {OkText:"去购买"}
+					);
+				}else{
+						ErrorBox(data.info);
+				}
+			},
+			error:function errorCallback(obj, textStatus, errorThrown){
+				CloseLoadBox();
+				var errmsg = (textStatus == "timeout") ? "安装超时" :"发生错误 "+obj.statusText;
+				ErrorBox(errmsg);
+			}
+		});
+	});
+}
+
+//卸载插件
+function uninstallPlugin(obj, PluginID){
+	if(checkSafeQuestion()) return;
+	var obj = $("#tip"+PluginID);
+	var PluginName = obj.attr("PluginName");
+	var IsSystem = obj.attr("IsSystem");
+	var InstallDir = obj.attr("InstallDir");
+	var FileList = obj.attr("FileList");
+	
+	tip = "确定卸载应用插件<b style='color:blue;'>【"+PluginName+"】</b>吗？";
+	if(0==IsSystem){
+		tip = "<p>"+tip+"<br/>卸载会清除应用插件所有数据，并且不可恢复！</p>";
+	}
+	ConfirmBox(tip, function () {
+		var url = "{$Url}uninstallPlugin";
+		var params = {
+			PluginID : PluginID,
+			IsSystem:IsSystem,
+			InstallDir:InstallDir,
+			FileList:FileList,
+			Token:getToken(),
+			PluginName:PluginName
+		};
+		LoadBox("安装中，请稍后...");
+		$.ajax({url: url,  type: "POST", timeout: 120*1000, data: params, dataType:"json",
+			success: function(data){
+				CloseLoadBox();
+				if (data.status == 1){
+					SucceedBox(data.info);
+					$(obj).parents("li").remove();
+				}else{
+					ErrorBox(data.info);
+				}
+			},
+			error:function errorCallback(obj, textStatus, errorThrown){
+				CloseLoadBox();
+				var errmsg = (textStatus == "timeout") ? "卸载超时" :"发生错误 "+obj.statusText;
+				ErrorBox(errmsg);
+			}
+		});
+	});
+}
+
+function checkPluginSafe(PluginID){
+	//打开多端小程序，必须先回答问题，否则在里面API调用会报错
+	//if(164 != PluginID) return true;
+	if(!checkSafeQuestion()) return true;
+	return false;
+}
+</script>
+<style>
+	/*用户中心*/
+	.login-wrapper{ float:right; font-size:15px; font-weight:normal; margin-top: -5px; width:200px;}
+	.login-wrapper .logininfo{ margin-top: 8px;}
+	.login-wrapper .logininfo a{ padding:6px 14px; border-radius:5px; }
+	.login-wrapper .logininfo a:hover{ opacity:.8;}
+	.login-wrapper .login{ background:#fff; color:#333; border:1px solid #ccc; margin-right:10px;}
+	.login-wrapper .reg{ 
+		color:#fff; border:1px solid {$AdminThemeColor};  
+		background:{$AdminThemeColor}
+	}
+	.login-wrapper .userinfo{ font-size:13px; width: 140px; float:left;}
+	.login-wrapper .userinfo:hover{ opacity:.8; }
+	.login-wrapper .userinfo img{ width:37px; border-radius:50%; float:left; margin-right:5px;}
+	.login-wrapper .userinfo .name{ white-space:nowrap; text-overflow:ellipsis; overflow: hidden;}
+	.login-wrapper .userinfo .mobile{}
+	.login-wrapper  .quit{ background:#FF5722; color:#fff; padding:6px 12px; border-radius:5px; float:right; font-size:13px; margin-top:3px; cursor:pointer;}
+	.login-wrapper  .quit:hover{ opacity:.8;}
+	.login-wrapper .oem1{ display:none; }
+	
+	.ui-popup-show .loginuc-dialog{ border-radius:3px;}
+	.loginuc-dialog .ui-dialog-header{ border-bottom:0;}
+	.loginuc-dialog .ui-dialog-title{ padding: 6px 0;}
+</style>
+<script>
+window.localStorage.setItem("AdminLoginName", "{$AdminLoginName}");
+function showUcLogin(){
+	$(".logininfo").show();
+}
+	$(document).keydown(function(e) {
+		if(e.ctrlKey && e.keyCode == 89){
+			showUcLogin();
+		}
+	});
+	checkLogin();
+	function checkLogin(){
+		var Token = getToken();
+		if(!Token){
+			showLogin(); //嵌入在框架中，无需重新跳转
+			return;
+		}
+		var params = {Token:Token};
+		var url = "{$UcUrl}/api/index.php/public/User/getUserInfo";
+		$.post(url, params, function(res){
+			console.log("res", res);
+			if(res.Status==1){
+				var mobile = res.Data.UserMobile;
+				var name = res.Data.UserName;
+				var avatar = res.Data.UserAvatar;
+				var html = '<div class="quit" onclick="signOut()">退出</div>';
+				html +='<a class="userinfo" href="{$UcUrl}" target="_blank" title="点击访问用户中心">';
+				html += "<img src='[0]'/><div class='name'>[1]</div><div class='mobile'>[2]</div>";
+				html += "</a>";
+				html = yd.format(html, avatar, name, mobile);
+				$(".login-wrapper").html(html);
+			}else{
+				window.localStorage.setItem("Token", '');
+				showLogin();
+			}
+		},"json");
+	}
+	
+	function signOut(){
+		var Token = getToken();
+		var params = {Token:Token};
+		var url = "{$UcUrl}/api/index.php/public/User/signOut";
+		$.post(url, params, function(res){
+			SucceedBox("退出成功！");
+			window.localStorage.setItem("Token", '');
+			showLogin();
+		},"json");
+	}
+	
+	function showLogin(){
+		var html = '<div class="logininfo oem{$IsOem}">';
+		html+='<a class="login" href="javascript:void(0)" onclick="loginUC()" target="_self" title="登录友点用户中心">登录</a>';
+		html+='<a class="reg" href="javascript:void(0)"  onclick="loginUC()" target="_self">免费注册</a>';
+		html+='</div>';
+		$(".login-wrapper").html(html);
+	}
+	
+	var gDlg = null;
+	var gTimer = 0;
+	function loginUC(){
+		var domain = "{:get_current_url()}";
+		var pageUrl = yd.format("[0]{$Group}/Public/uc/", domain);
+		var url = "{$UcUrl}?url="+pageUrl;
+		var content = '<iframe id="frmUC" src="'+url+'" scrolling="no" frameborder="0" width="800px" height="520px"></iframe>';
+		gDlg = dialog({
+			title: " ",
+			id: 'dlgLoginUC',
+			skin:'loginuc-dialog',
+			fixed: true,
+			padding: 5,
+			cancelDisplay:false,
+			content: content,
+			cancel: function () {
+				closeUcDlg();
+			}
+		}).show();
+		checkUcLogin();
+	}
+	
+	function closeUcDlg(){
+		if(gDlg){
+			gDlg.close().remove();
+			gDlg = null;
+		}
+		if(gTimer){
+			clearTimeout(gTimer);
+			gTimer = 0;
+		}
+	}
+	
+	function checkUcLogin(){
+		gTimer = setTimeout(function(){
+			console.log("checkUcLogin");
+			var Token = getToken();
+			if(Token){
+				closeUcDlg();
+				checkLogin();
+			}else{
+				checkUcLogin();
+			}
+		}, 500);
+	}
+	
+	function getToken(){
+		var token = window.localStorage.getItem("Token") || "";
+		return token;
+	}
+</script>

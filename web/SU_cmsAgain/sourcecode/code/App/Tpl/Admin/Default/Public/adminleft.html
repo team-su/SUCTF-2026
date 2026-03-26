@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    {$XUaCompatible}
+    <title></title>
+    <link href="{$Css}style.css" rel="stylesheet" type="text/css" />
+	<link href="{$Css}font.css" rel="stylesheet" type="text/css" />
+	<style>
+		body{ font-family: Microsoft Yahei; }
+		[class*='ydicon']{  }
+		.ydicon-right{ position: relative; }
+		.ydicon-right:before{ 
+			font-family: 'ydicon';
+			position: absolute; width: 1em; height: 1em; line-height: 1; 
+			right: 0; top: 0; bottom: 0; right: 3px; margin: auto; font-size: 17px; 
+		}
+        #topmenu{ text-align:left;padding:2px;}
+        #topmenu a.current{
+        	color:#fff; background:{$AdminThemeColor};
+        }
+        #topmenu a { color:#000; text-decoration: none; padding:2px 3px; border-radius: 3px; }
+        #topmenu a:hover {
+        	text-decoration: none; color:#fff; background: {$AdminThemeColor};
+        }
+        #topmenu a.addinfo{ background: none; text-decoration: none; padding: 1px 0 1px 3px;}
+        #topmenu a.addinfo:hover{ background: none; text-decoration: none;  }
+        #d1{ font-weight:bold }
+        #topmenu .single{color:#F30;}
+        #topmenu .link{color:#60F;}
+        #topmenu .feedback{
+        	color:{$AdminThemeColor};
+        }
+        .cc{ background-color:#9BB055; color:#FFFFFF;}
+        .tree{ cursor:pointer;}
+
+		#sidebar li a:hover,#sidebar li a.active{ 
+			color: #FFF; background: {$AdminThemeColor};
+		}
+		
+		<notempty name="ChannelTreeWidth">
+			#sidebar.sidebar3{
+				width:{$ChannelTreeWidth}px;
+			}
+		</notempty>
+    </style>
+</head>
+<body id="sidebar_page">
+<div class="wrap">
+    <div class="cotainer">
+        <div id="sidebar" class="sidebar{$Think.get.MenuTopID}">
+        <div class="con">
+            <volist name="MenuGroup" id="mg">
+                <div class="item">
+                <h2>{$mg.MenuGroupName}<span class='close' style="display: none;">收起</span></h2>
+                <ul  <eq name="mg.MenuGroupID" value="25">id="ScrollWx"</eq>>
+                <eq name="mg.MenuGroupID" value="3">
+                    <div id="ScrollChannel" style="text-align:left;overflow:hidden;">
+                    <volist name="Channel" id="c">
+                    <eq name="c.IsEnable" value="1">
+                        <notin name="c.ChannelID" value="6,7,10,11">
+                            <div id="topmenu" style="text-indent:{$c['ChannelDepth']*12-12}px; " class="parent{$c.Parent}"  flag="menu"  cid="{$c.ChannelID}" haschild="{$c.HasChild}">
+                                <eq name="c.HasChild" value="1">
+                                    <img src="{$Images}c{$c.HasChild}_open.gif" align="absmiddle" status="open" class="tree" onclick="ToggleTree(this, {$c.ChannelID})" title="展开" />
+                                <else/>
+                                    <img src="{$Images}c_line.gif" align="absmiddle" />
+                                </eq>
+                                <switch name="c.ChannelModelID">
+                                    <case value="32"><a href='{$Group}/Channel/modify/ChannelID/{$c.ChannelID}' cid="c{$c.ChannelID}"  id="d{$c.ChannelDepth}" target='main' class="single" >{$c.ChannelName}</a></case>
+                                    <case value="37"><a href='{$Group}/Info/Feedback/ChannelID/{$c.ChannelID}' cid="c{$c.ChannelID}"  id="d{$c.ChannelDepth}" target='main' class="feedback">{$c.ChannelName}</a></case>
+                                    <case value="33">
+                                        <if condition="($c.ChannelID eq 5) or ($c.ChannelID eq 9)">
+                                            <a href='{$Group}/GuestBook/index//ChannelID/{$c.ChannelID}' cid="c{$c.ChannelID}"  id="d{$c.ChannelDepth}" target='main' class="link">{$c.ChannelName}</a>
+                                        <elseif condition="($c.ChannelID eq 4) or ($c.ChannelID eq 8)" />
+                                            <a href='{$Group}/job/index/ChannelID/{$c.ChannelID}' cid="c{$c.ChannelID}"  id="d{$c.ChannelDepth}" target='main' class="link">{$c.ChannelName}</a>
+                                        <else/>
+                                            <a href='{$Group}/Channel/modify/ChannelID/{$c.ChannelID}' cid="c{$c.ChannelID}"  id="d{$c.ChannelDepth}" target='main' class="link">{$c.ChannelName}</a>
+                                        </if>
+                                    </case>
+                                    <default /><a href='{$Group}/Info/Index/ChannelID/{$c.ChannelID}'  cid="c{$c.ChannelID}" id="d{$c.ChannelDepth}" target='main'>{$c.ChannelName}</a>
+                                    <eq name="c.HasChild" value="0">
+                            <a href='{$Group}/Info/Add/ChannelID/{$c.ChannelID}' cid="c{$c.ChannelID}" target='main' class="addinfo"><img src="{$Images}addinfo.png" align="absmiddle" title="添加内容" alt="添加内容" /></a>
+                                    </eq>
+                                </switch>
+                            </div>
+                        </notin>
+                    </eq>
+                    </volist>
+                    </div>
+                </eq>
+                
+                <volist name="Menu" id="m">
+                    <eq name="m.MenuGroupID" value="$mg.MenuGroupID">
+                            <switch name="m.MenuType">
+                                <case value="1"></case>
+                                <case value="2"></case>
+                                <case value="3"></case>
+								<case value="4">
+									<li menuid="{$m.MenuID}"><a href="{$WebInstallDir}{$m.MenuContent}"  target="_blank">{$m.MenuName}</a></li>
+								</case>
+                                <case value="0" break="0"></case>
+                                <default/>
+									<li menuid="{$m.MenuID}"><a href="{$Group}/{$m.MenuContent}"  target="main">{$m.MenuName}</a></li>
+                            </switch>
+                    </eq>
+                </volist>
+                </ul>
+                </div>
+            </volist>
+        </div><!--/ .con-->
+        </div><!--/ sidebar-->
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.min.js"></script>
+<script type="text/javascript" src="{$Js}common.js"></script>
+<script type="text/javascript" src="{$WebPublic}jquery/jscroll.js"></script>
+<script type='text/javascript'>
+$(document).ready(function(){
+	$(document).keydown(function(e) {
+		window.parent.frames['main'].keyHandler(e);
+	});
+
+	$(window).resize(function() {
+		var h = $(window).height();
+		ScrollChannel(h);
+		ScrollWx(h);
+	});
+
+	$('#sidebar .con h2 span').bind("click",function(){
+		if(this.className == "close"){
+			this.className = "open";
+			$(this.parentNode.parentNode).find("ul").hide()
+		}else{
+			this.className = "close";
+			$(this.parentNode.parentNode).find("ul").show()
+		}
+	});
+	
+	//左侧菜单点击
+	$('ul li a').bind("click",function(){
+		$('ul  li  a').each(function(i){
+			$(this).removeClass("active ydicon-right");
+		});
+		//去除树形菜单选中
+		$("a[id^=d]").removeClass("current");
+		$(this).blur();
+		$(this).addClass("active ydicon-right");
+	});
+	
+	$(".addinfo").click(function(){
+			var cid = $(this).attr("cid");
+			$("a[id^=d]").removeClass("current");
+			$("a[cid="+cid+"]").addClass("current");
+	});
+	
+	$("a[id^=d]").click(function() {
+		$("a[id^=d]").removeClass("current");
+		$('ul li a').removeClass("active");
+		$(this).addClass("current");
+	});
+	
+	//页面初始化
+	pageInit();
+	function pageInit(){
+		updateStatus();
+		var h = $(window).height();
+		ScrollChannel(h);
+		ScrollWx(h);
+	}
+});
+
+ function ScrollChannel(h){
+			$('#ScrollChannel').css({height:h - 140});
+			$('#ScrollChannel').jscroll({
+				W:"3px",
+				BgUrl:"",//设置滚动条背景图片地址
+				Bg:"#e5e5e5",//设置滚动条背景图片position,颜色等
+				Bar:{  Pos:"up",//设置滚动条初始化位置在底部
+					   Bd:{Out:"#ccc",Hover:"#ccc"},//设置滚动滚轴边框颜色：鼠标离开(默认)，经过
+					   Bg:{Out:"#ccc",Hover:"#aaa",Focus:"#aaa"}
+				}, //设置滚动条滚轴背景：鼠标离开(默认)，经过，点击
+				Btn:{  btn: false, //是否显示上下按钮 false为不显示
+					   uBg:{Out:"#ccc",Hover:"#ccc",Focus:"#ccc"},//设置上按钮背景：鼠标离开(默认)，经过，点击
+					   dBg:{Out:"#ccc",Hover:"#ccc",Focus:"#ccc"}
+				}  //设置下按钮背景：鼠标离开(默认)，经过，点击
+			});
+	}
+	
+	function ScrollWx(h){
+		$("#ScrollWx").css({height:h - 326});
+		$("#ScrollWx").jscroll({
+				W:"3px",
+				BgUrl:"",//设置滚动条背景图片地址
+				Bg:"#e5e5e5",//设置滚动条背景图片position,颜色等
+				Bar:{  Pos:"up",//设置滚动条初始化位置在底部
+					   Bd:{Out:"#ccc",Hover:"#ccc"},//设置滚动滚轴边框颜色：鼠标离开(默认)，经过
+					   Bg:{Out:"#ccc",Hover:"#aaa",Focus:"#aaa"}
+				}, //设置滚动条滚轴背景：鼠标离开(默认)，经过，点击
+				Btn:{  btn: false, //是否显示上下按钮 false为不显示
+					   uBg:{Out:"#ccc",Hover:"#ccc",Focus:"#ccc"},//设置上按钮背景：鼠标离开(默认)，经过，点击
+					   dBg:{Out:"#ccc",Hover:"#ccc",Focus:"#ccc"}
+				}  //设置下按钮背景：鼠标离开(默认)，经过，点击
+		});
+  }
+
+//展开/收缩子频道
+function ToggleTree(obj, cid){
+	var status = $(obj).attr("status");
+	if(status == "open"){
+		$(obj).attr("src", "{$Images}c1_close.gif");
+		$(obj).attr("status", "close");
+		$(obj).attr("title", "展开");
+		closeChannel(cid);
+	}else{
+		$(obj).attr("src", "{$Images}c1_open.gif");
+		$(obj).attr("status", "open");
+		$(obj).attr("title", "收缩");
+		openChannel(cid);
+	}
+	saveStatus();
+	ScrollChannel( $(window).height() );
+}
+
+//收缩
+function closeChannel(cid){
+	$(".parent"+cid).each(function() {
+		$(this).hide();
+		if( $(this).attr("haschild") == 1 && $(this).find(".tree").attr("status") == "open"  ){
+			closeChannel( $(this).attr("cid") );
+		}
+	});
+}
+
+//展开
+function openChannel(cid){
+	$(".parent"+cid).each(function() {
+		$(this).show();
+		if( $(this).attr("haschild") == 1 && $(this).find(".tree").attr("status") == "open" ){
+			openChannel( $(this).attr("cid") );
+		}
+	});
+}
+
+//保存树形菜单状态
+function saveStatus(){
+	var list = [];
+	$("div[flag='menu']").each(function() {
+		if( $(this).attr("haschild") == 1 && $(this).find(".tree").attr("status") == "close"  ){
+			list.push( $(this).attr("cid") );
+		}
+	});
+	if( list.length > 0 ){
+		var all = list.join(",");
+		$.cookie("{$Think.config.COOKIE_PREFIX}TreeStatus", all, {path: '/', expiress:30} );　//expiress 有效日期，单位：天
+	}
+}
+
+//同步更新状态
+function updateStatus(){
+	var status = $.cookie("{$Think.config.COOKIE_PREFIX}TreeStatus");
+	if( status ){
+		status = status.split(",");
+		if( status.length > 0 ){
+			for(var i = 0; i < status.length; i++){
+				var obj = $("div[cid="+status[i]+"]").find(".tree");
+				if(obj.length > 0){
+					obj.attr("src", "{$Images}c1_close.gif");
+					obj.attr("status", "close");
+					obj.attr("title", "展开");
+					closeChannel( status[i] );
+				}
+			}
+		}
+	}
+}
+</script>

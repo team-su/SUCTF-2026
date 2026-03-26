@@ -1,0 +1,90 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>我的消费记录</title>
+<include file="./Public/tpl/wx/meta.html" />
+<link href="{$AppCss}card.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+.window {
+width:240px;
+position:absolute;
+display:none;
+margin:-50px auto 0 -120px;
+padding:2px;
+top:0;
+left:50%;
+border-radius:0.6em;
+-webkit-border-radius:0.6em;
+-moz-border-radius:0.6em;
+background-color: rgba(255, 0, 0, 0.5);
+-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+-o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+font:14px/1.5 Microsoft YaHei,Helvitica,Verdana,Arial,san-serif;
+z-index:10;
+bottom: auto;
+}
+.window .content {
+/*min-height:100px;*/
+overflow:auto;
+padding:10px;
+    color: #222222;
+    text-shadow: 0 1px 0 #FFFFFF;
+border-radius: 0 0 0.6em 0.6em;
+-webkit-border-radius: 0 0 0.6em 0.6em;
+-moz-border-radius: 0 0 0.6em 0.6em;
+}
+.window #txt {
+min-height:30px;font-size:20px; line-height:22px; color:#FFF; text-align:center;
+}
+
+.integral_table td {text-align:center}
+.integral_table td.c1{ font-weight:bold; color:#060}
+.integral_table td.c2{ font-weight:bold; color:#00F}
+.integral_table td.c3{ font-weight:bold; color:#C30}
+.integral_table td.c4{ font-weight:bold; color:red}
+</style>
+</head>
+<body id="cardintegral" class="mode_webapp2">
+<div class="qiandaobanner"></div>
+<div class="cardexplain">
+<div class="jifen-box header_highlight">
+<div class="tab month_sel">
+<span class="title"  style="font-size:20px; line-height:40px"><a href="{:WxCardMyConsumeUrl()}">我的消费记录</a></span>
+</div>
+<div class="accordion_child">
+<table class="integral_table" border="0" cellpadding="0" cellspacing="0" width="100%">
+<thead>
+    <tr><th>时间</th><th   style="width:25%">类型</th><th style="width:25%">金额</th></tr>
+</thead>
+<tbody>
+ <volist name="Consume" id="c">     
+    <tr>
+        <td>{$c.ConsumeTime}</td>
+<switch name="c.ConsumeType">
+    <case value="1">
+        <td class="c1">现金充值</td>
+        <td class="c1">+{$c.ConsumeMoney}</td>
+    </case>
+    <case value="2">
+        <td class="c2">额余消费</td>
+        <td class="c2">-{$c.ConsumeMoney}</td>
+    </case>
+    <case value="3">
+        <td class="c3">现金消费</td>
+        <td class="c3">-{$c.ConsumeMoney}</td>
+    </case>
+</switch>
+    </tr>
+</volist>
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
+</div>
+<include file="./Public/tpl/wx/cardfooter.html" />
+</body>
+</html>

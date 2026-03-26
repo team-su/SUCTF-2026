@@ -1,0 +1,131 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>绑定会员</title>
+<include file="./Public/tpl/wx/meta.html" />
+<link href="{$AppCss}card.css" rel="stylesheet" type="text/css">
+<script src="{$AppJs}jquery.js" type="text/javascript"></script>
+<style> 
+.trType2{ display:none;}
+.kuang th, .kuang td{font-size:14px;}
+</style>
+</head>
+<body id="fans">
+    <div class="cardexplain">
+    	<eq name="IsBind" value="0">
+            <ul class="round" style="margin-top:0.5em;">
+                    <li class="title mb"><span class="none">绑定会员</span></li>
+                    <li class="nob"><div class="beizhu">绑定后，可以在电脑端登陆</div></li>
+                    <li class="nob">
+                        <table class="kuang" border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tbody>
+                              <tr>
+                                    <td style="text-align:center" colspan="2">
+                                        <label><input name="Type"   value="1"  type="radio" checked="checked" onClick="ChangeType(1)">创建新的会员</label>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <label><input name="Type"   value="2"  type="radio" onClick="ChangeType(2)">绑定现有会员</label>
+                                    </td>
+                                </tr>
+                                <tr class="trType1">
+                                    <th>手机号码</th>
+                                    <td><input name="MemberMobile" class="px"  id="MemberMobile" value="" placeholder="请输入手机号码" type="tel"></td>
+                                </tr>
+                                <tr class="trType1">
+                                    <th>电子邮件</th>
+                                    <td><input name="MemberEmail" class="px" id="MemberEmail" value="" placeholder="请输入电子邮件" type="text"></td>
+                                </tr>
+                                <tr class="trType1">
+                                    <th>密码</th>
+                                    <td><input name="MemberPassword" class="px" id="MemberPassword" value="" placeholder="请输入密码" type="password"></td>
+                                </tr>
+                                <tr class="trType1">
+                                    <th>重复密码</th>
+                                    <td><input name="MemberPassword1" class="px" id="MemberPassword1" value="" placeholder="请输入重复密码" type="password"></td>
+                                </tr>
+                                <tr class="trType2">
+                                    <th>现有账号</th>
+                                    <td><input name="MemberAccount" class="px" id="MemberAccount" value="" placeholder="电子邮件/手机号码/昵称" type="text"></td>
+                                </tr>
+                                <tr class="trType2">
+                                    <th>密码</th>
+                                    <td><input name="MemberPassword2" class="px" id="MemberPassword2" value="" placeholder="请输入密码" type="password"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </li>                                                                      
+            </ul>
+            <div class="footReturn">
+                <a id="showcard" class="submit"  href="javascript:void(0)">立即绑定</a>
+                <div class="window" id="windowcenter">
+                    <div id="title" class="wtitle">友情提示<span class="close" id="alertclose"></span></div>
+                    <div class="content"><div id="txt"></div></div>
+                </div>
+            </div>
+        <else/>
+                <li class="nob"><div class="beizhu">已经绑定，不能重复绑定！</div></li>
+        </eq>
+    </div>
+</body>
+</html>
+<eq name="IsBind" value="0">
+<script type="text/javascript">
+$(document).ready(function () {
+	pageInit();
+	$("#showcard").click(function (){
+		var type = $("input[name='Type']:checked").val();
+		var submitData;
+		if(type == 1 ){
+			submitData = {
+				Type: type,
+				MemberMobile: $("#MemberMobile").val(),
+				MemberEmail: $("#MemberEmail").val(),
+				MemberPassword: $("#MemberPassword").val(),
+				MemberPassword1: $("#MemberPassword1").val(),
+			};
+		}else{
+			submitData = {Type: type,  MemberAccount: $("#MemberAccount").val(), MemberPassword: $("#MemberPassword2").val() };
+		}
+		var url = "{$Url}saveBindMember?fu={$FromUser}";
+		$.post(url, submitData, function(data) { 
+			alert( data.info );
+			if(data.status == 0 && data.data){
+				$("#"+data.data).focus();
+			}
+		}, "json");
+	}); 
+}); 
+
+	$("#windowclosebutton").click(function () { 
+		$("#windowcenter").slideUp(500);
+	}); 
+	
+	$("#alertclose").click(function () { 
+		$("#windowcenter").slideUp(500);
+	});
+
+	function gourl(url){
+		window.location.href =url ;
+	}
+	
+	function alert(title){ 
+		$("#windowcenter").slideToggle("slow"); 
+		$("#txt").html(title);
+		//$("#windowcenter").hide("slow"); 
+		setTimeout('$("#windowcenter").slideUp(500)',4000);
+	} 
+	
+	function pageInit(){
+		$("input[name='Type'][value=1]").attr("checked",'checked');
+		ChangeType(1);
+	}
+	
+	function ChangeType(type){
+		if(type==1){
+			$(".trType1").show();
+			$(".trType2").hide();
+		}else{
+			$(".trType1").hide();
+			$(".trType2").show();
+		}
+	}
+</script>
+</eq>

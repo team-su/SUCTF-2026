@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <div class="table">
+           <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}add"  title="添加一个类型" target="_self">添加类型</a></li>
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="batchDel()" title="批量删除">删除</a></li>
+                <li class="toolbar"><a id="sortall" onclick="sort()" title="批量排序">排序</a></li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                     <th width="45px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                     <th width="70px" >类型ID</th>
+                     <th>类型名称</th>
+                     <th width="90px" >分组个数</th>
+                     <th width="90px" >属性个数</th>
+                     <th width="70px" >排序</th>
+                     <th width="80px" >是否启用</th>
+                     <th width="390px">操作</th>
+                </tr>  
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr id="row{$d.TypeID}">
+                            <td><eq name="d.Count" value="0"><input class="checkrow" type="checkbox" name="id[]" value="{$d.TypeID}" /></eq></td>
+                            <td>{$d.TypeID}</td>
+                            <td class="TipKey">{$d.TypeName|htmlspecialchars}</td>
+                            <td style="color:red;">{$d.GroupCount}</td>
+                            <td style="color:blue;">{$d.AttributeCount}</td>
+                            <td><input type="number" class='textinput' onclick="this.select()" style="width:65px" name="OrderNumber[]" value="{$d.TypeOrder}" />
+                                <input type="hidden" class='textinput' name="OrderID[]" value="{$d.TypeID}" />
+                            </td>
+                            <td>
+                            <eq name="d.IsEnable" value="1">
+                                <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$d.TypeID},'type')">启用</span>
+                            <else/>
+                                <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$d.TypeID},'type')">禁用</span>
+                            </eq>
+                            </td>
+                            <td class="operator">
+                                <a id="btnSaveAll" style="float:left" href="{$Url}group/TypeID/{$d.TypeID}" title="属性分组管理" target="_self">属性分组管理</a>
+                                <div class="btn-sep"></div>
+                                <a id="btnSaveAll" style="float:left" href="{$Url}attribute/TypeID/{$d.TypeID}" title="属性列表管理" target="_self">属性列表管理</a>
+                                <div class="btn-sep"></div>
+                                <a style="float:left" href="{$Url}modify/id/{$d.TypeID}" id="btnEdit">修改</a>
+                                <eq name="d.Count" value="0">
+                                    <div class="btn-sep"></div>
+                                    <a style="float:left" onclick="del({$d.TypeID})" class="btnDel">删除</a>
+                                </eq>
+                            </td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="6" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                  
+            </table>
+             <div class="tfoot">
+                  <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+             </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#row"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}del?id="+id;
+		location.href = url;
+	});
+}
+
+function batchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='id[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/del");
+		$('#frm').submit();
+	});
+}
+
+function sort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "__URL__/sort");
+		$('#frm').submit();
+	});
+}
+</script>

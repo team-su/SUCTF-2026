@@ -1,0 +1,153 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>签到</title>
+<include file="./Public/tpl/wx/meta.html" />
+<link href="{$AppCss}card.css" rel="stylesheet" type="text/css">
+<script src="{$AppJs}jquery.js" type="text/javascript"></script>
+<script type="text/javascript" language="javascript"> 
+$(document).ready(function () {
+	$("#month").val('{$c.Month}'); 
+}); 
+</script>
+
+<eq name="c.HasCheckin" value="0" >
+<script type="text/javascript" language="javascript"> 
+$(document).ready(function () {
+	$("#qiandao").click(function () {
+			$.post('{$Url}cardcheckin', null, function(data) {
+				if (data.status == 1) {
+					$("#qiandao").html("今天你已经签到了!");
+					 alert("签到成功，明天继续！");
+					 setTimeout('dourl('+$("#month").val()+')',1500);
+					return;
+				}
+			}, "json");
+	}); 
+}); 
+</script>
+</eq>
+<style type="text/css">
+.window {
+width:240px;
+position:absolute;
+display:none;
+margin:-50px auto 0 -120px;
+padding:2px;
+top:0;
+left:50%;
+border-radius:0.6em;
+-webkit-border-radius:0.6em;
+-moz-border-radius:0.6em;
+background-color: rgba(255, 0, 0, 0.5);
+-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+-o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+font:14px/1.5 Microsoft YaHei,Helvitica,Verdana,Arial,san-serif;
+z-index:10;
+bottom: auto;
+}
+.window .content {
+/*min-height:100px;*/
+overflow:auto;
+padding:10px;
+    color: #222222;
+    text-shadow: 0 1px 0 #FFFFFF;
+border-radius: 0 0 0.6em 0.6em;
+-webkit-border-radius: 0 0 0.6em 0.6em;
+-moz-border-radius: 0 0 0.6em 0.6em;
+}
+.window #txt {
+min-height:30px;font-size:20px; line-height:22px; color:#FFF; text-align:center;
+}
+
+.integral_table td .qian1{color: #02ae02;}
+.integral_table td .qian0{color: #797979;}
+</style>
+</head>
+<body id="cardintegral" class="mode_webapp2">
+<div class="qiandaobanner"><a href="javascript:history.go(-1);"><img src="{$AppImages}qiandao.jpg"></a> </div>
+
+<notempty name="c.CardNumber">
+<div class="cardexplain">
+	<a class="receive" id="qiandao" href="javascript:void(0)">
+        <span class="red"><eq name="c.HasCheckin" value="0" >点击这里签到赚积分<else/>您今天已经签到了！</eq></span>
+        <span style=" display:none"></span>
+    </a>
+    <div class="jifen-box" style="margin-top:13px;">
+    <ul class="zongjifen">
+    <li><div class="fengexian"><p>会员总积分</p><span>{$c.TotalScore}</span></div></li>
+    <li><a href="#"><div class="fengexian"><p>签到总积分</p><span>{$c.CheckinScore}</span></div></a></li>
+    <li><a href="#"><p>已使用积分</p><span>{$c.UsedScore}</span></a></li>
+    </ul>
+    <div class="clr"></div>
+    </div>
+
+<div class="jifen-box header_highlight">
+<div class="tab month_sel"> <span class="title">查看每月签到及积分详情
+<p>点击这里选择其他月份</p>
+</span>
+</div>
+<select onChange="dourl(this.value)" class="month" id="month">
+    <for start="1" end="$c.CurrentMonth"  name="mt" comparison="elt">
+    	<option value="{$mt}">{$mt}月</option>
+    </for>
+</select>
+<div class="accordion_child">
+<table class="integral_table" border="0" cellpadding="0" cellspacing="0" width="100%">
+<thead>
+    <tr>
+        <th>日期</th>
+        <th>签到情况</th>
+        <th>积分</th>
+    </tr>
+</thead>
+<tbody>
+ <volist name="c.Score" id="s">     
+    <tr>
+        <td>{$s.Date}</td>
+        <td><span class="qian{$s.HasCheckin}">{$s.Description}</span></td>
+        <td>+{$s.Score}</td>
+    </tr>
+</volist>
+</tbody>
+<tfoot>
+    <tr>
+        <td></td>
+        <td class="right">本月合计：</td>
+        <td><span class="heji">+{$c.MonthTotal}</span></td>
+    </tr>
+</tfoot>
+</table>
+</div>
+</div>
+
+<div class="window" id="windowcenter">
+    <div class="content">
+    <div id="txt"></div>
+</div>
+
+</div>
+</div>
+<else/>
+<div class="cardexplain">
+	<a class="receive" id="qiandao" href="javascript:void(0)">
+        <span class="red" style="font-weight:bold">您的会员卡被冻结或还没有领取会员卡！</span>
+        <span style=" display:none"></span>
+    </a>
+ </div>
+</notempty>
+<script>
+function dourl(m){
+	location.href= '{:WxCardScoreUrl()}&month='+m;
+}
+
+function alert(title){ 
+	$("#windowcenter").slideToggle("slow"); 
+	$("#txt").html(title);
+	setTimeout('$("#windowcenter").slideUp(500)',2000);
+} 
+</script>
+<include file="./Public/tpl/wx/cardfooter.html" />
+</body>
+</html>

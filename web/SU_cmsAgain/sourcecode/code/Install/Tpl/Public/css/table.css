@@ -1,0 +1,182 @@
+body {
+	padding-right: 0px;
+	padding-left: 0px;
+	font-size: 9pt;
+	padding-bottom: 0px;
+	margin: 0px;
+	text-align: center;
+	padding-top: 0px;
+	background-color: #d7efbc;
+	font-family: Arial, Helvetica, sans-serif;
+}
+form {
+	margin: 0px;
+}
+td {
+	font-family: Arial, Helvetica, sans-serif;
+	FONT-SIZE: 9pt;
+	color: #595959;
+}
+.clear {
+	clear: both;
+}
+tr, td, img {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+input, textarea {
+	font-size: 9pt;
+}
+table {
+	border-collapse: collapse;
+}
+ul {
+	list-style: none;
+}
+/*linheight:分融线*/
+.linheight {
+	padding-top: 10px;
+}
+/*首页登陆样式*/
+.login_center {
+	width: 100%;
+	background: repeat-x top;
+	background-color: #d7efbc;
+	display: table;
+	clear: both;
+}
+.centerbg {
+	background: url('../images/bg.jpg') repeat-y top;
+}
+.line {
+	background: url('../images/line.jpg') repeat-y top;
+}
+input {
+	*padding-top: 3px; *;
+	border-top-width: 1px; *;
+	border-right-width: 1px; *;
+	border-bottom-width: 1px; *;
+	border-left-width: 1px;
+}
+.heightline {
+	height: 1px;
+}
+.left_botton {
+	width: 130px;
+	text-align: center;
+}
+.left_botton ul {
+	width: 115px;
+	list-style: none;
+	margin: 0 auto;
+	padding: 0;
+}
+.left_botton ul li {
+	margin: 10px 0px 10px 0px;
+	height: 30px;
+	line-height: 30px;
+	padding-left: 30px;
+	width: 85px;
+	text-align: left;
+	overflow: hidden;
+}
+.bottonli01 {
+	color: #ffffff;
+	background-image: url('../images/step_botton.gif');
+	background-position: -0px bottom;
+}
+.bottonli02 {
+	color: #77a1bb;
+	background-image: url('../images/step_botton.gif');
+	background-position: -0px top;
+}
+.right_botton {
+	padding: 10px 0px 0px 10px;
+	overflow: hidden;
+}
+.licenseblock {
+	width: 640px;
+	background: #FFFFFF none repeat scroll 0 0;
+	border: 0px solid #EEEEEE;
+	height: 300px;
+	line-height:1.6em;
+	text-align: left;
+	margin-bottom: 15px;
+	overflow-x: hidden;
+	padding: 8px;
+}
+.btnbox {
+	text-align: center;
+}
+.btnbox input {
+	margin: 0 2px;
+}
+.btnbox textarea {
+	margin-bottom: 10px;
+	height: 150px;
+}
+.inputsubmit01 {
+	border: 0;
+	height: 30px;
+	width: 126px;
+	font-size: 10pt;
+	font-weight: bold;
+	color: #103d64;
+	cursor:pointer;
+	background: url('../images/botton.gif') no-repeat;
+}
+.centerblock{
+	width: 640px;
+	padding: 8px;
+	text-align: left;
+	margin-bottom: 15px;
+	overflow: hidden;
+}
+.td01{
+	padding:5px;
+}
+h2{
+	font-size:13pt;
+	margin:0px;
+	padding:0px;
+	color:#D81818;
+	background: url('../images/bg.jpg') repeat-y top;
+}
+.left {
+	text-align: left;
+}
+.right {
+	text-align: right;
+}
+
+.color01 {
+	color: #C0C0C0;
+}
+
+.font01 {
+	font-size: 9pt; color: #31942E; font-weight: lighter;
+}
+
+.font14 {
+	font-size: 14px;
+}
+
+.strong {
+	font-weight: bold;
+}
+.logininput {
+	background: url('../images/input_bg.jpg') repeat-x top;
+	padding-top: 3px;
+	padding-left: 5px;
+	height: 18px;
+	clip: rect;
+	color: #1c8400;
+	width: 170px;
+	border-color: #d7d7d7 #d7d7d7;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	background-color: #FFFFFF;
+}

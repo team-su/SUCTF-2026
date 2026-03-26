@@ -1,0 +1,9 @@
+services:
+  website:
+    platform: linux/amd64
+    build:
+      context: ..
+      dockerfile: env/Dockerfile
+    image: website:2.0
+    ports:
+      - 19083:80

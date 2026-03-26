@@ -1,0 +1,23 @@
+
+/*灰色*/
+.SonlineBox{ width:162px; font-size:12px;overflow:hidden; top:-600px; z-index:9999;}
+.SonlineBox .openTrigger{ width:30px; height:110px; position:absolute; top:0px;  z-index:1; cursor:pointer;  background:#0176ba url(../images/grayOpen.jpg) no-repeat;}
+.SonlineBox .titleBox{ width:100%; height:35px; line-height:35px; background:#038bdc url(../images/grayTitleBg.gif) repeat-x; border-bottom:2px solid #7b7b7b; position:relative; z-index:1;}
+.SonlineBox .titleBox span{ margin-left:10px; color:#fff; font-size:14px; font-family:'微软雅黑','黑体';}
+.SonlineBox .contentBox{ display:block; width:100%; height:auto; border:2px solid #7b7b7b; overflow:hidden; background:#fff; position:absolute; z-index:2; }
+.SonlineBox .contentBox .closeTrigger{background:url(../images/closeBtnImg.gif) no-repeat; width:25px; height:25px; display:block; cursor:pointer;  position:absolute; top:5px;right:5px; z-index:2;}
+.SonlineBox .contentBox .listBox{overflow:hidden; margin:6px 0; position:relative;}
+.SonlineBox .contentBox .listBox .QQList{ display:block; width:100%; margin:5px auto 5px auto; padding:0px 0;}
+.SonlineBox .contentBox .listBox .QQList span{ display:block; width:47%; height:25px; overflow:hidden; text-align:right;float:left; line-height:26px; color:#444;}
+.SonlineBox .contentBox .listBox .QQList div.ico{ width:52%; height:25px; overflow:hidden; float:left;}
+.SonlineBox .contentBox .listBox .QQList div.ico a{}
+
+.SonlineBox .contentBox .tels{ width:90%; margin:0 auto; border-top:1px dotted #ccc; height:auto; padding-bottom:10px; line-height:200%; text-align:center;}
+.SonlineBox .contentBox .tels font{ display:block; line-height:35px; font-family:'微软雅黑','黑体'; font-size:16px; color:#555;}
+.SonlineBox .contentBox .tels span{ display:block; line-height:25px; font-family:"Palatino Linotype", "Book Antiqua"; font-size:20px; color:#555; font-weight:bold;}
+
+
+/*灰色*/
+
+
+

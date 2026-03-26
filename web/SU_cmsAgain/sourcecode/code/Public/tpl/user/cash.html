@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+	<style>
+		.cs1{ color: green; }
+		.cs2{ color: red;}
+		.ct1{ color: green; }
+		.ct2{ color: red;}
+		.ct3{ color:black;}
+		.ct4{ color:#FF00FF;}
+	</style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+    <div class="header">
+        <div class="weui-flex">
+        	<div class="weui-flex__item">
+            	<div class="button_sp_area">
+                	<a href="{$Url}recharge" class="weui-btn weui-btn_mini weui-btn_primary" >我要充值</a>
+					<span><a onclick="setPwd()" class="weui-btn weui-btn_mini weui-btn_primary">设置提现密码</a></span>
+                    <span><a onclick="withdraw()" class="weui-btn weui-btn_mini weui-btn_primary">提现</a></span>
+                    <input type="hidden" id="HasCashPassword" value="{$HasCashPassword}" />
+                </div>
+            </div>
+        </div>
+        <div class="weui-flex">
+        	<div class="weui-flex__item">
+                <span>
+                    <b>充值总金额：</b><span style="color:red; margin-right:1em;">{$CurrencySymbol}{$TotalQuantity}</span>
+                    <b>可用资金：</b><span style="color:red;">{$CurrencySymbol}{$AvailableQuantity}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <notempty name="Data">
+        <volist name="Data" id="d">
+            <div class='weui-form-preview'  id="row{$d.CashID}"  style='margin-bottom:10px;'>
+              <div class="weui-form-preview__hd">
+                  <label class="weui-form-preview__label CouponName">{$d.CashTime|strtotime|yd_friend_date}</label>
+                  <em class="weui-form-preview__value">
+                  		<gt name="d.CashQuantity" value="0">
+                              <span class="ct{$d.CashType}">{$CurrencySymbol}+{$d.CashQuantity}</span>
+                        <else/>
+                              <span class="ct{$d.CashType}">{$CurrencySymbol}{$d.CashQuantity}</span>
+                        </gt>
+                  </em>
+              </div>
+              <div class="weui-form-preview__bd">
+              		<notin name="d.CashType" value="4">
+              			<div class="weui-form-preview__item">支付方式：{$d.PayName}</div>
+                    </notin>
+              	    <div class="weui-form-preview__item">类型：<span class="ct{$d.CashType}">{$d.CashTypeName}</span></div>
+                    <div class="weui-form-preview__item">
+                    	状态：
+                        <switch name="d.CashType">
+                            <case value="1">
+                                <eq name="d.CashStatus" value="1"><span class="cs1">已支付</span><else/><span class="cs2">未支付</span></eq>
+                            </case>
+                            <case value="4" comment="提现">
+                                <eq name="d.CashStatus" value="1"><span class="cs1">已付款</span><else/><span class="cs2">待付款</span></eq>
+                            </case>
+                            <default/>
+                                <eq name="d.CashStatus" value="1"><span class="cs1">完成</span><else/><span class="cs2">取消</span></eq>
+                        </switch>
+                    </div>
+              </div>
+              <eq name="d.CashStatus" value="2">
+                  <div class="weui-form-preview__ft">
+                      <a class="weui-form-preview__btn weui-form-preview__btn_primary  color-danger"  onClick="del({$d.CashID})">删除</a>      
+                  </div>
+              </eq>
+            </div>
+        </volist>
+    <else/>
+        <div class="weui-msg">
+            <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+            <div class="weui-msg__text-area">
+                <p class="weui-msg__desc">{$Think.lang.NoInformation}</p>
+            </div>
+        </div>
+    </notempty>
+</body>
+</html>
+<script>
+function GoBack(){
+	location.href = "{$Url}index";
+}
+
+//提现申请
+function withdraw(){
+	var hasCashPassword = $("#HasCashPassword").val();
+	if(hasCashPassword==0){
+		ErrorBox("请先设置提现密码！");
+		return false;
+	}
+	
+	var CanWithdraw = parseInt("{$CanWithdraw}");
+	if(CanWithdraw==0){
+		var msg = "<span style='color:#333;'>";
+		msg += "满<span style='color:red; padding:0 3px;'>{$WithdrawThreshold}</span>才能提现！";
+		msg += "当前可用资金：<span style='color:red;'>{$AvailableQuantity}</span>";
+		msg += "</span>";
+		ErrorBox(msg);
+		return false;
+	}
+	
+	location.href = "{$Url}withdraw";
+}
+
+//设置提现密码
+function setPwd(){
+	var HasCashPassword = "{$HasCashPassword}";
+	var dlgText = '<div class="dialog" id="dlgPwd"><div class="weui-cells weui-cells_form">';
+	if(HasCashPassword==1){
+		dlgText +='<div class="weui-cell">';
+        dlgText +='    <div class="weui-cell__hd"><label class="weui-label">原密码</label></div>';
+        dlgText +='    <div class="weui-cell__bd"><input type="password" class="weui-input" name="pwd1" id="pwd1" value="" /></div>';
+        dlgText +='</div>';
+	}
+	dlgText +='<div class="weui-cell">';
+	dlgText +='    <div class="weui-cell__hd"><label class="weui-label">新密码</label></div>';
+	dlgText +='    <div class="weui-cell__bd"><input type="password" class="weui-input" name="pwd2" id="pwd2" value="" /></div>';
+	dlgText +='</div>';
+	dlgText +='<div class="weui-cell">';
+	dlgText +='    <div class="weui-cell__hd"><label class="weui-label">新密码确认</label></div>';
+	dlgText +='    <div class="weui-cell__bd"><input type="password" class="weui-input" name="pwd3" id="pwd3" value="" /></div>';
+	dlgText +='</div>';
+	dlgText +='<div class="weui-cell"><label class="tip"></label></div>';
+	dlgText +='</div></div>';
+		
+	$.modal({
+		  autoClose:false, 
+		  title: "设置提现密码",
+		  text: dlgText,
+		  buttons: [{ 
+				text: "确定", 
+				onClick: function(){
+					$("#dlgPwd .tip").text("");
+					LoadBox();
+					var url = "{$Url}setCashPwd";
+					var params = {
+						pwd1 : $("#pwd1").val(),	
+						pwd2 : $("#pwd2").val(),	
+						pwd3 : $("#pwd3").val()
+					};
+					$.post(url, params, function(data){
+							CloseLoadBox();
+							if(data.status == 1){
+								$("#HasCashPassword").val(1);
+								$.closeModal(); 
+								SucceedBox(data.info);
+							}else{
+								$("#dlgPwd .tip").text(data.info);
+								return false;
+							}
+					},"json");
+					return false;
+				}
+			 },
+			 { text: "取消", className: "default",  onClick: function(){  $.closeModal(); }
+			},
+		  ]
+	});
+
+}
+
+//删除
+function del(id){
+	$.confirm("确定删除吗?", function() {
+		LoadBox();
+		var url = "{$Url}delCash";
+		var p = {"id": id};
+		$.get(url, p,function(data){
+			CloseLoadBox();
+			if (data.status == 1){
+				$("#row"+id).remove();
+			}else{ 
+				ErrorBox(data.info);
+			}	
+		}, "json");
+	});
+}
+</script>

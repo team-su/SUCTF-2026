@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.ColorBox{ width:28px;height:28px; border:1px solid #ccc; cursor:pointer; }
+		#ColorBox{
+			background-color:{$AdminThemeColor};
+		}
+		#ColorBoxBg{
+			background-color:{$AdminLeftMenuBgColor};
+		}
+		#ColorBoxText{
+			background-color:{$AdminLeftMenuTextColor};
+		}
+		#ColorBoxSelected{
+			background-color:{$AdminLeftMenuSelectedColor};
+		}
+		.themeinput{ width:120px; }
+		#restoreDefault{ margin-right: 15px;}
+		.themelist{ overflow:hidden;}
+		.themelist li{ float:left; padding:5px 10px; border:1px solid #ccc; margin-right: 10px; cursor:pointer; border-radius: 5px; color: #fff;}
+		.themelist li:hover{ opacity:0.7; }
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}" enctype="multipart/form-data" >
+            <div class="box-header" id="c1">
+                <h4>后台主题设置</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+					<tr  class="texttype">
+                          <th></th>
+                          <td>
+							  <ul class="themelist">
+									<li onclick="setAdminThemeName('blue')" style="background-color:#2589ff">科技蓝</li>
+									<li onclick="setAdminThemeName('green')" style="background-color:#07c160">清新绿</li>
+									<li onclick="setAdminThemeName('red')" style="background-color:#f01414">玫瑰红</li>
+									
+									<li onclick="setAdminThemeName('orange')" style="background-color:#ff9f43">秋枫橘</li>
+									<li onclick="setAdminThemeName('cyan')" style="background-color:#01cfe8">墨玉青</li>
+									<li onclick="setAdminThemeName('purple')" style="background-color:#7b40f2">暮光紫</li>
+									
+									<li onclick="setAdminThemeName('black')" style="background-color:#333333;">静谧黑</li>
+									<li onclick="setAdminThemeName('white')" style="background-color:#fff;color:#000;">月光白</li>
+							  </ul>
+						  </td>
+                    </tr>
+                    <tr  class="texttype">
+                          <th>后台主题颜色</th>
+                          <td><input type="text" id="AdminThemeColor" class="textinput themeinput" name="AdminThemeColor" value="{$AdminThemeColor}"  />
+						  <input type="text" class="textinput ColorBox" id="ColorBox" readonly="readonly"/>
+                          <span class='Caution'>16进制表示，如黑色：#000000。默认为蓝色#2589ff</span></td>
+                    </tr>
+					<tr  class="texttype">
+                          <th>左侧菜单背景颜色</th>
+                          <td><input type="text" id="AdminLeftMenuBgColor" class="textinput themeinput" name="AdminLeftMenuBgColor" value="{$AdminLeftMenuBgColor}"  />
+						  <input type="text" class="textinput ColorBox" id="ColorBoxBg" readonly="readonly"/>
+                          <span class='Caution'>16进制表示，如黑色：#000000。默认为黑色#22242f</span></td>
+                    </tr>
+					<tr  class="texttype">
+                          <th>左侧菜单文本颜色</th>
+                          <td><input type="text" id="AdminLeftMenuTextColor" class="textinput themeinput" name="AdminLeftMenuTextColor" value="{$AdminLeftMenuTextColor}"  />
+						  <input type="text" class="textinput ColorBox" id="ColorBoxText" readonly="readonly"/>
+                          <span class='Caution'>16进制表示，如白色：#fff。默认为灰色#ddd</span></td>
+                    </tr>
+					<tr  class="texttype">
+                          <th>左侧菜单文本选中颜色</th>
+                          <td><input type="text" id="AdminLeftMenuSelectedColor" class="textinput themeinput" name="AdminLeftMenuSelectedColor" value="{$AdminLeftMenuSelectedColor}"  />
+						  <input type="text" class="textinput ColorBox" id="ColorBoxSelected" readonly="readonly"/>
+                          <span class='Caution'>16进制表示，如黑色：#000000。默认为蓝色#2589ff</span></td>
+                    </tr>
+                 </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+					<span id="restoreDefault" class="btnDefault">恢复参数默认值</span>
+					<input id="btnSubmit" type="submit" value="保存设置" />
+				</div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type='text/javascript'>
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			window.parent.location.reload();
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	 
+	 //主题色
+	 $("#ColorBox,#AdminThemeColor").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#AdminThemeColor").val(color);
+			$("#ColorBox").css("background-color",color);
+		}
+	 });
+	 
+	 //左侧菜单背景色 
+	$("#ColorBoxBg,#AdminLeftMenuBgColor").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#AdminLeftMenuBgColor").val(color);
+			$("#ColorBoxBg").css("background-color",color);
+		}
+	 });
+	 
+	//左侧菜单文本色 
+	$("#ColorBoxText,#AdminLeftMenuTextColor").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#AdminLeftMenuTextColor").val(color);
+			$("#ColorBoxText").css("background-color",color);
+		}
+	 });
+	 
+	 //左侧菜单选中色 
+	$("#ColorBoxSelected,#AdminLeftMenuSelectedColor").colorpicker({
+		fillcolor:true,
+		success:function(o,color){
+			$("#AdminLeftMenuSelectedColor").val(color);
+			$("#ColorBoxSelected").css("background-color",color);
+		}
+	 });
+	 
+	 //恢复默认值
+	 $("#restoreDefault").click(function(){
+		setAdminThemeName('blue');
+	 });
+	
+	 //保存提交
+	 $('#btnSubmit').click(function(){
+		$('#frmConfig').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	 function pageInit(){
+		
+	  }
+	  pageInit();
+});
+
+function setAdminThemeName(type){
+	switch(type){
+		case "blue": setAdminThemeColor("#2589ff", "#22242f", "#ddd", "#2589ff"); break;  //蓝色
+		case "green": setAdminThemeColor("#07c160", "#07c160", "#adfcc0", "#fff"); break;  //绿色
+		case "red": setAdminThemeColor("#f01414", "#f01414", "#f9ada2", "#fff"); break;  //红色
+		
+		case "orange": setAdminThemeColor("#ff9f43", "#ff9f43", "#ffe1c0", "#fff"); break;  //橘色
+		case "cyan": setAdminThemeColor("#01cfe8", "#01cfe8", "#c2f4ff", "#fff"); break;  //青色
+		case "purple": setAdminThemeColor("#7b40f2", "#7b40f2", "#ccb2ff", "#fff"); break;  //紫色
+		
+		case "black": setAdminThemeColor("#333333", "#222222", "#bbbbbb", "#ffffff"); break;
+		case "white": setAdminThemeColor("#bbb", "#f5f5f5", "#777", "#000"); break;
+	}
+}
+
+//设置主题颜色
+function setAdminThemeColor(ThemeColor, LeftMenuBgColor, LeftMenuTextColor, LeftMenuSelectedColor){
+		//主题色
+		$("#AdminThemeColor").val(ThemeColor);
+		$("#ColorBox").val("");
+		$("#ColorBox").css("background-color",ThemeColor);
+		//左侧菜单背景色
+		$("#AdminLeftMenuBgColor").val(LeftMenuBgColor);
+		$("#ColorBoxBg").val("");
+		$("#ColorBoxBg").css("background-color",LeftMenuBgColor);
+		//左侧菜单文本色
+		$("#AdminLeftMenuTextColor").val(LeftMenuTextColor);
+		$("#ColorBoxText").val("");
+		$("#ColorBoxText").css("background-color",LeftMenuTextColor);
+		//左侧菜单文本选中色
+		$("#AdminLeftMenuSelectedColor").val(LeftMenuSelectedColor);
+		$("#ColorBoxSelected").val("");
+		$("#ColorBoxSelected").css("background-color",LeftMenuSelectedColor);
+}
+</script>

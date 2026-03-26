@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+		#downcsv a{font-weight:bold; color:#F30}
+		#downcsv a:hover{font-weight:bold; color:#900; text-decoration:none}
+	</style>
+</head>
+<body id="main_page">
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frmSave">
+            <input type="hidden" name="{$HiddenName}" value="{$HiddenValue}" />
+            <div class="box-header"><h4>批量导入邮箱</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th class="w120">订阅分类名称</th>
+                        <td style="font-weight:bold; color:#00F">{$MailClassName}</td>
+                    </tr>
+                    <tr>
+                        <th class="w120">导入的CSV文件</th>
+                        <td><input type="file" value="1" style="width:550px" id="csv" name="csv"  class='textinput' /></td>
+                    </tr>
+                    <tr>
+                        <th class="w120">CSV模板文件下载</th>
+                        <td id="downcsv">
+                <a  href="{$Url}downloadTpl"  title="点击下载CSV模板文件" target="_self">点击下载CSV模板文件</a>
+                <span class='Caution'>请先下载CSV模板文件，编辑好后，再导入</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="w120">导入说明</th>
+                        <td>
+                                1、请在以上输入框中选择本地已经编辑好的邮箱CSV文件；<br />
+                                2、CSV文格式包括：电子邮箱、订阅者姓名、联系电话、地址；<br />
+                                3、请使用Excel软件编辑CSV模板文件；<br />
+                                4、由于CSV是以英文逗号隔开，所以在输入的信息中务必不要包含有<b style="color:#F00">"\,"</b> 
+                        </td>
+                    </tr>
+                </table>
+            </div>
+    
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright" type="submit" value="开始批量导入" />
+                    <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmSave').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#txtImageFile').val(data.data);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 
+	 $('#frmSave').submit(function(){
+		return false;  
+	 });
+});
+
+function GoBack(){
+	window.location.href = "{$Url}ClassIndex";
+}
+</script>

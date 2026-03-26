@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.cs1{ color: green; }
+		.cs2{ color: red;}
+		.ct1{ color: green; }
+		.ct2{ color: blue;}
+		.ct3{ color:black;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <input type="hidden" name="p"  value="{$NowPage}" />
+        <div class="table">
+            <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" onclick="Transfer()" class="ydicon-zhuanzhang" title="给会员转电子币" target="_self">给会员转电子币</a></li>
+                <li class="toolbar"><a id="btnConfig" href="{$Url}config"  title="设置">设置</a></li>
+                <li class="toolbar toolbarform">
+                    <label>会员名称/Email/手机</label>
+                    <input type="text" class='textinput' name="SearchWord" style="width:160px" value="{$SearchWord}" id="SearchWord"/>
+                    <label>类型</label>
+                    <select name="CashType" id="CashType">
+                        <option value="-1" selected="selected">全部</option>
+                        <cashtypelist id="ct">
+                        	<option value="{$ct.CashTypeID}">{$ct.CashTypeName}</option>
+                        </cashtypelist>
+                    </select>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="45px"  nowrap="nowrap">ID</th>
+                    <th width="120px" >会员名称</th>
+                    <th  width="90px">金额</th>
+                    <th  width="75px">类型</th>
+                    <th width="70px" >状态</th>
+                    
+                    <th width="110px" >支付方式</th>
+                    <th width="135px" >操作时间</th>
+                    <th>备注</th>
+                    <th width="150px">操作</th>
+                </tr>  
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr>
+                            <td>{$d.CashID}</td>
+                            <td>{$d.MemberName|htmlspecialchars}</td>
+                            <td>
+                                <gt name="d.CashQuantity" value="0">
+                                    <span class="ct{$d.CashType}">+{$d.CashQuantity}</span>
+                                <else/>
+                                    <span class="ct{$d.CashType}">{$d.CashQuantity}</span>
+                                </gt>
+                            </td>
+                            <td><span class="ct{$d.CashType}">{$d.CashTypeName}</span></td>
+                            <td>
+                             <switch name="d.CashType">
+                            	<case value="1">
+                                	<eq name="d.CashStatus" value="1"><span class="cs1">已支付</span><else/><span class="cs2">未支付</span></eq>
+                                </case>
+                                <case value="4" comment="提现">
+                                	<eq name="d.CashStatus" value="1"><span class="cs1">已付款</span><else/><span class="cs2">待付款</span></eq>
+                                </case>
+                                <default/>
+                                	<eq name="d.CashStatus" value="1"><span class="cs1">完成</span><else/><span class="cs2">取消</span></eq>
+                            </switch>
+                            </td>
+                            <td>{$d.PayName}</td>
+                            <td>{$d.CashTime|strtotime|yd_friend_date}</td>
+                            <td style="text-align:left;">
+                            	<eq name="d.CashType" value="4">
+                                    <span style="margin-right:8px;"><b>收款银行：</b>{$d.BankName|htmlspecialchars}</span>
+                                    <span style="margin-right:8px;"><b>收款账号：</b>{$d.BankAccount|htmlspecialchars}</span>
+                                    <span><b>开户人姓名：</b>{$d.OwnerName|htmlspecialchars}</span>
+                                <else/>
+                                 	{$d.CashRemark|htmlspecialchars}
+                                </eq>
+                            </td>
+                            <td class="operator">
+                                <a style="float:left" id="btnEdit" name="btnEdit" href="{$Url}modify/id/{$d.CashID}">修改</a>
+                                <eq name="d.CashStatus" value="2">
+                                    <div class="btn-sep"></div>
+                                    <a style="float:left" onclick="del({$d.CashID})" class="btnDel">删除</a>
+                                </eq>
+                            </td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr><td colspan="9" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>         
+                <tr style="background:#F2F4F6; font-weight:bold;">
+                <td></td>
+                <td style="text-align:right;padding-right:5px;">总计：</td>
+                <td><span style="color:red;">{$Total}</span></td>
+                <td colspan="6" style="text-align:left;padding-left:8px;">
+                    用户充值总金额：<span style="color:red; margin-right:20px;">{$TotalQuantity}</span>
+                    用户可用资金：<span style="color:red;">{$AvailableQuantity}</span>
+                </td>
+                </tr>                       
+            </table>
+            <div class="tfoot">
+                    <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+            </div>
+            </div>
+        </form>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgTransfer">
+    <table cellpadding="3" cellspacing="3" border="0">
+        <tr>
+           <th width="140px" nowrap="nowrap" align="right"><b>会员名称/Email/手机&nbsp;</b></th>
+           <th align="left"><input type="text" id = "dlgMember" name="dlgMember"  class="textinput" style="width:220px" /></th>
+        </tr>
+        <tr>
+           <th width="140px" nowrap="nowrap" align="right" style="padding:8px 0;"><b>金额&nbsp;</b></th>
+           <th align="left"  style="padding:5px 0;">
+		   <input type="text" id = "dlgCashQuantity" name="dlgCashQuantity"  maxlength="6" class="textinput" style="width:60px" value="0" />&nbsp;元
+           <span style="float:right;color:red;padding:5px 0;">填写负数表示扣款</span></th>
+        </tr>
+        <tr>
+            <td nowrap="nowrap" align="right"><b>备注&nbsp;</b></td>
+            <td align="left"><textarea  style="width:220px; height:65px;" name="dlgCashRemark" id="dlgCashRemark" /></textarea></td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	pageInit();
+});
+
+function pageInit(){
+	$("#CashType").val( "{$CashType}");
+}
+
+function Search(){
+	$('#frm').attr("action", "{$Url}index");
+	$('#frm').submit();
+	return true;
+}
+
+function del(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		var url = "{$Url}del?id="+id+"&p={$NowPage}&CashType={$CashType}&SearchWord={$SearchWord}";
+		location.href = url;
+	});
+}
+
+//给会员转电子币
+function Transfer(){
+		$('#dlgMember').text('');
+		$('#dlgCashQuantity').val('0');
+		$('#dlgCashRemark').val('');
+		dialog({
+			title: "给会员转电子币",
+			id: 'transfer',
+			padding: 8,
+			content: document.getElementById('dlgTransfer'),
+			ok: function () {
+				var CashQuantity = $('#dlgCashQuantity').val();
+				if( isNaN(CashQuantity) ){
+					ErrorBox("金额必须为数字！");
+					return false;
+				}
+				var url = "{$Url}transfer";
+				var data =  {
+					Member: $('#dlgMember').val(), 
+					CashQuantity: $('#dlgCashQuantity').val(), 
+					CashRemark: $('#dlgCashRemark').val(), 
+				};
+				$.get(url, data, function(data){
+					if (data.status == 1){
+						SucceedBox(data.info);
+						window.location.reload();
+					}else if(data.status == 0){
+						ErrorBox(data.info);
+					}
+				}, 'json');
+				return false;
+			},
+			okValue: '确定',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+}
+</script>

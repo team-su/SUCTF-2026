@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+    <style>
+    	.pay_table{ border-collapse:collapse; width:100%; margin:0 auto; text-align:center;}
+		.pay_table th, .pay_table td{ border:1px solid #E3E6EB; text-align:left; padding:6px 8px;}
+		.pay_table th{ background:#F2F4F6; text-align:center;}
+		
+		.btnPayNow{ background: #4caf50; border: 1px solid #4caf50;color: #eee;padding: 7px 30px;border-radius: 3px;CURSOR: pointer; min-width: 100px;outline: 0;}
+		.btnPayNow:hover, .btnPayNow:active{ color:#fff; outline:0; background:#43a047;}
+		.btnGoBack{background:#e0e0e0; border: 1px solid #e0e0e0;color: #333; padding:8px 30px;CURSOR: pointer; min-width:100px;  outline:0; border-radius:3px;}
+		.btnGoBack:hover, .btnGoBack:active{ color:#000;  outline:0; background:#ccc; border: 1px solid #ccc;}
+		.payqrcode{width:180px;height:180px;display:block;margin:0 20px;}
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <div class="box-header"><h4>基本信息</h4></div>
+        <div class="box-content">
+            <table class="boxtable">
+            <tr>
+                <th class="w120" style="color:red;">充值金额</th>
+                <td><input type="text" class="textinput"  style="width:110px;" maxlength="8"  name="CashQuantity" id="CashQuantity" value="0" />
+                <span class='Caution'>实际充值金额 = 充值金额 + 充值金额 x 支付手续费比例</span>
+                </td>
+            </tr>
+            <tr>
+                <th class="w120">备注</th>
+                <td><textarea type="text" class="textinput"  style="width:100%;height:80px;"  name="CashRemark" id="CashRemark" />{$Data.Remark}</textarea></td>
+            </tr>
+           <tr>
+                <th class="w120">支付方式</th>
+                <td>
+                    <table class="pay_table">
+                        <tr>
+                            <th style="width:20%;">支付方式</th>
+                            <th style="width:10%;">{$Think.lang.PayRate}</th>
+                            <th style="width:70%;">描述</th>
+                        </tr>
+                        <paylist id="p" isonline="1" sitetype="2">
+                            <tr>
+                                <td style="width:20%;">
+<label for="f{$p.PayID}"><input type="radio"  onclick="ChangePay()"  redirect="{$p.PayTypeID|IsRedirectPay}"  name="PayID" id="f{$p.PayID}" value="{$p.PayID}" />{$p.PayName}</label></td>
+                                <td style="width:10%;text-align:center;color:red;"><gt name="p.PayRate" value="0">{$p["PayRate"]*100}%<else/>0</gt></td>
+                                <td style="width:70%;">{$p.PayDescription|htmlspecialchars}</td>
+                            </tr>
+                        </paylist>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        </div>
+        <div class="box-footer">
+            <div class="box-footer-inner" style="margin-top:8px;">
+                <a class="btnPayNow marginright" onclick="PayNow(this)">充值</a>
+                <a class="btnGoBack marginright" onclick="GoBack()" />返回</a>
+                <a id="mylink" href="#" style="display:none;" target="_blank"></a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function GoBack(){
+	window.location.href = "{$Url}index";
+}
+
+//改变支付方式
+function ChangePay(){
+	var isRedirect = $("input[name='PayID']:checked").attr("redirect");
+	 if(isRedirect==0){
+		 $(".btnPayNow").attr("href","javascript:void(0)");
+	 }
+}
+
+//立即支付
+function PayNow(obj){
+	var PayID = $("input[name='PayID']:checked").val();
+	var CashQuantity = parseFloat($("#CashQuantity").val());
+	if(CashQuantity <= 0){
+		ErrorBox("充值金额必须大于0");
+		return;
+	}
+	var CashRemark = $("#CashRemark").val();
+	var isRedirect = $("input[name='PayID']:checked").attr("redirect");
+	var url = "{$Url}payNow?PayID="+PayID+"&CashQuantity="+CashQuantity+"&CashRemark="+CashRemark;
+	if(isRedirect==1){
+		obj.target = "_blank";
+		obj.href = url;
+	}else{
+		LoadBox();
+		$.get(url, null, function(data){
+				CloseLoadBox();
+				if (data.status == 1){
+					dialog({
+						title: data.data["PayTip"],
+						id: 'pay',
+						padding: 8,
+						content: data.data["PayContent"],
+						cancelValue: '关闭',
+						cancel: true
+					}).show();
+					checkCashStatus( data.data["CashID"] );
+				}else{
+					ErrorBox(data.info);
+				}
+		},"json");
+	}
+}
+
+function checkCashStatus(cashID){
+		//2秒后，检查充值状态
+		setTimeout( function(){
+			var p = {CashID:cashID, randomtime:new Date().getTime()};
+			$.get("{$Url}getCashStatus", p, function(data){
+				if(data.data == 1){ //已经支付
+					var d = dialog.get('pay');
+					if(d) d.close();
+					var msg = '<div id="icon_succeed" style="padding-left:50px; padding-right:8px;font-size:20px;">本次充值成功！</div>';
+					dialog({
+						title: "友情提示",
+						id: 'finish',
+						padding: 8,
+						content: msg,
+						cancelValue: '关闭',
+						cancel: true
+					}).show();
+				}else{ //如果没有支付，则继续检测
+					checkCashStatus(cashID);
+				}
+			}, "json");
+		}, 1500); 
+}
+
+function pageInit(){
+	//默认选中第一个支付方式
+	$("input[name='PayID']:first").attr("checked",'checked');	
+}
+
+$(document).ready(function(e) {
+	pageInit();
+});
+</script>

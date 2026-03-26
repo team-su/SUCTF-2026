@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form  enctype="multipart/form-data" id="frmConfig" method="post" action="{$Action}">
+            <div class="box-header"  id="c3">
+                <h4>短信设置
+					<span class="extra">可用于：手机注册、短信找回密码、订单提醒、留言提醒、反馈提醒。请在相应功能设置短信内容模板</span>
+				</h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th nowrap="nowrap" style="width:20%">短信接口服务商</th>
+                        <td style="width:80%">
+                            <select name="SMS_TYPE">
+                                <option value="Huyi">短接接口服务商一</option>
+                            </select>
+                            <span style="color:#F30; padding-left:3px;">请联系官方客服开通短信接口！</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap" style="width:20%">App ID</th>
+                        <td style="width:80%">
+                            <input type="text" class="textinput" style="width:270px;" name="SMS_ACCOUNT" value="{$SmsAccount}" />
+                            <span class='Caution'>请填写APPID，请登录短信服务商用户中心查看</span></td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap" style="width:20%">App Key</th>
+                        <td style="width:80%">
+                            <input type="text" class="textinput"  style="width:270px;" name="SMS_PASSWORD" value="{$SmsPassword}" />
+                            <span class='Caution'>请填写APIKEY，请登录短信服务商用户中心查看</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap" style="width:20%">每个IP每天最多能发送几条短信</th>
+                        <td style="width:80%">
+                            <input type="number" class="textinput"  style="width:60px;" maxlength="5" name="SMS_IP_MAX" value="{$SmsIpMax}" />
+                            <span class='Caution'>请根据实际情况设置，默认值为：20</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap" style="width:20%">每个手机每天最多能发送几条短信</th>
+                        <td style="width:80%">
+                            <input type="number" class="textinput"  style="width:60px;" maxlength="5" name="SMS_NUM_MAX" value="{$SmsNumMax}" />
+                            <span class='Caution'>请根据实际情况设置，默认值为：60</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th nowrap="nowrap" style="width:20%">剩余短信条数</th>
+                        <td style="width:80%; padding:8px 0;">
+                            <span id="leftnum" style="font-weight:bold;color:blue; margin-right:8px;"></span>
+                            <a class="btnSuccess btnSmall" onclick="getLeftNum()">点击查询</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>手机注册验证码短信发送测试</th>
+                        <td>
+                            <input type="text" class="textinput" style="width:120px; float:left; " maxlength="18" name="Mobile" id="Mobile" value="" placeholder="请输入手机号码"  />
+                            <span style="float:left; margin:7px 3px 7px 15px;">验证码</span>
+                            <input type="text" class="textinput" style="width:60px; float:left; " maxlength="4" name="CodeNum" id="CodeNum" value="{:rand_string(4,1)}" placeholder="验证码"  />
+                            <a class="btnSuccess btnSmall" style="float:left;margin:2px 8px;"  onclick="sendSmsTest()" id="btnPick" target="_blank">短信发送测试</a>
+                            <span style="float:left; margin-left:5px;" id="smstip"></span>
+                            <span class='Caution'>发送前，请先保存设置！</span></td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><span style="color:red;">备注：</span></th>
+                        <td><span style="color:red;">发送短信需要设置签名、短信模板，并且审核通过才能使用！</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit"  type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frmConfig').submit(function(){
+		 LoadBox();
+		return false;
+	 });
+	 
+	function pageInit(){
+
+	}
+	pageInit();
+});
+
+
+function getLeftNum(){
+	var url="{$Url}getLeftNum";
+	var html = "<img src='{$WebPublic}Images/loading/21.gif' border='0' align='absmiddle'/>";
+	html += " 查询中，请稍后...";
+	$("#leftnum").html(html);
+	$.get(url,null,function(data){
+		if(data.status == 1){
+			$("#leftnum").html(data.info);
+		}else{
+			$("#leftnum").html("<b style='color:red'>"+data.info+"</b>");
+		}
+	},"json");
+}
+
+function sendSmsTest(){
+	if(checkSafeQuestion()) return;
+	var mobile = $("#Mobile").val();
+	if( mobile.length < 10 ){
+		WarnBox("手机号码无效！");
+		$("#Mobile").focus();
+		return;
+	}
+	var code = $("#CodeNum").val();
+	if( code.length != 4 ){
+		WarnBox("请输入4位数的验证码！");
+		$("#CodeNum").focus();
+		return;
+	}
+	var url="{$Url}sendSmsTest/mobile/"+mobile+"/code/"+code;
+	var html = "<img src='{$WebPublic}Images/loading/21.gif' border='0' align='absmiddle'/>";
+	html += " 发送中，请稍后...";
+	$("#smstip").html(html);
+	$.get(url,null,function(data){
+		if(data.status == 1){
+			$("#smstip").html(data.info);
+		}else{
+			$("#smstip").html("<b style='color:red'>"+data.info+"</b>");
+		}
+	},"json");
+}
+</script>

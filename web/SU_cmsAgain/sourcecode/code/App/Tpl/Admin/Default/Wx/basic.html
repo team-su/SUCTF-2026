@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form id="frmConfig" method="post" action="{$Action}" enctype="multipart/form-data" >
+            <div class="box-header" id="c1">
+                <h4>基本设置&nbsp;&nbsp;
+						<span style="font-size:14px;">
+                        点击<a href="https://mp.weixin.qq.com/" target="_blank" style="color:#00F"><b>https://mp.weixin.qq.com</b></a>
+                        登录微信公众平台，进入<b style="color:#00F">“帐号信息”</b>页面，将对应信息填写到以下表单：
+						</span>
+                 </h4>
+            </div>
+            <div class="box-content">
+                <table class="boxtable">
+                 <tr>
+                        <th>公众帐号类型</th>
+                        <td>
+                            <select name="WX_TYPE" id="WxType">
+                                <option value="1">订阅号</option>
+                                <option value="2">认证订阅号</option>
+                                <option value="3">服务号</option>
+                                <option value="4">认证服务号</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>公众帐号</th>
+                        <td><input type="text" class="textinput w450" name="WX_ID" value="{$WxID}"  />
+                        <span class='Caution'>如：zsbank</span>
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>公众帐号头像</th>
+                        <td><input type="text" id="wxlogofileImage" class="textinput w450" name="WX_LOGO" value="{$WxLogo}"  />
+                        <span class='UploadWrapper'>
+                            <input class='btnFileUpload' type='button' value='上传' />
+                            <input id='wxlogofile' name ='wxlogofile' type ='file'  size='70'    class='InputFile'  accept="image/*" />
+                        </span>
+                        <input id='btnServer' onclick='BrowserServer(1)' name ='btnServer'  type ='button' value='{$Think.lang.SelectPicture}'  class='btnUpload' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>公众帐号名称</th>
+                        <td><input type="text" class="textinput w450" name="WX_NAME" value="{$WxName}" />
+                        <span class='Caution'>如：招商银行</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>公众帐号原始ID</th>
+                        <td><input type="text" class="textinput w450" name="WX_ORIGINAL_ID" value="{$WxOriginalID}"  />
+                        <span class='Caution'>登录微信公众平台，在帐号信息查看原始ID，如：gh_f2cb488a9658</span>
+                        </td>
+                    </tr>
+    
+                     <tr>
+                        <th>公众帐号简介</th>
+                        <td><textarea class="w450" style="height:40px" name="WX_DESCRIPTION">{$WxDescription}</textarea></td>
+                    </tr> 
+                    <tr>
+                        <th>公众帐号二维码</th>
+                        <td><input type="text" id="wxqrcodeImage" class="textinput w450" name="WX_QRCODE" value="{$WxQrcode}"  />
+                        <span class='UploadWrapper'>
+                            <input class='btnFileUpload' type='button' value='上传' />
+                            <input id='wxqrcode' name ='wxqrcode' type ='file'  size='70'    class='InputFile'  accept="image/*" />
+                        </span>
+                        <input id='btnQrServer' onclick='BrowserServer(2)' name ='btnQrServer'  type ='button' value='{$Think.lang.SelectPicture}'   class='btnUpload'/>
+                        <span class='Caution'>登录微信公众平台，上传帐号信息中的二维码</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>是否启用多客服功能</th>
+                        <td>
+    <label><input type="radio" name="WX_CUSTOMER_SERVICE" value="1" <eq name="WxCustomerService" value="1">checked="checked"</eq> />是</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <label><input type="radio" name="WX_CUSTOMER_SERVICE" value="0" <eq name="WxCustomerService" value="0">checked="checked"</eq> />否</label>
+    <span class='Caution'>启用后，用户发送的未匹配自动回复的消息，将转发到多客服端！只有认证的公众号才支持多客服功能</span>
+    </td>
+                    </tr>
+                    <tr>
+                        <th>是否保存用户消息</th>
+                        <td>
+    <label><input type="radio" name="WX_SAVE_MSG" value="1" <eq name="WxSaveMsg" value="1">checked="checked"</eq> />是</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="WX_SAVE_MSG" value="0" <eq name="WxSaveMsg" value="0">checked="checked"</eq> />否</label>
+    <span class='Caution'>若启用，则保存用户向公众帐号发送的消息！（在"微信应用->微消息"查看）若每天用户发送消息过多，建议关闭！</span>
+    </td>
+                    </tr>
+                </table>
+            </div> 
+                     
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input id="btnSubmit" type="submit" value="保存设置" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type='text/javascript'>
+function BrowserServer(type){
+	if(checkSafeQuestion()) return;
+	if( type==1){
+		FileManager.selectActionFunction = SetWebLogoField;
+	}else{
+		FileManager.selectActionFunction = SetQrCodeField;
+	}
+	FileManager.popup(); 
+}
+
+function SetWebLogoField(fileUrl){
+	document.getElementById('wxlogofileImage').value = fileUrl;
+}
+
+function SetQrCodeField(fileUrl){
+	document.getElementById('wxqrcodeImage').value = fileUrl;
+}
+
+$(document).ready(function(){
+	$('#frmConfig').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+		 
+	 //上传提交表单,注意：这里的上传地址不能实用$UploadAction因为和上传设置config/upload冲突
+	 $('#wxlogofile').change(function(){  
+		if( !$(this).val() ) return;
+		$('#frmConfig').attr('action','__GROUP__/public/upload/addwater/no/currentfile/wxlogofile');
+		$('#frmConfig').submit();
+	 });
+	 
+	$('#wxqrcode').change(function(){  
+		if( !$(this).val() ) return;
+		$('#frmConfig').attr('action','__GROUP__/public/upload/addwater/no/currentfile/wxqrcode');
+		$('#frmConfig').submit();
+	 });
+
+	 //保存提交
+	 $('#btnSubmit').click(function(){
+		$('#frmConfig').attr('action','{$Action}');
+	 });
+	 
+	 $('#frmConfig').submit(function(){
+		LoadBox();
+		return false;
+	 });
+	 
+	$("#wxlogofileImage").powerFloat({ targetMode: "ajax",	targetAttr: "value",	position: "5-7"	});
+	$("#wxqrcodeImage").powerFloat({ targetMode: "ajax",	targetAttr: "value", position: "5-7"});
+	
+	$("#WxType").val("{$WxType}");
+});
+</script>

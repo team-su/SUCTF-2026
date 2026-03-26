@@ -1,0 +1,458 @@
+/*界面链接样式*/
+a {
+	color: #2F2F2F;
+	text-decoration: none;
+}
+a:hover {
+	color: #FF8000;
+	text-decoration: underline;
+}
+/*附加功能按钮*/
+a.botton01 {
+	color: #ffffff;
+	font-size: 9pt;
+	text-decoration: none;
+}
+a:hover.botton01 {
+	color: #FD9500;
+	font-size: 9pt;
+	text-decoration: underline;
+}
+/*主按钮样式*/
+a.botton02 {
+	color: #ffffff;
+	font-size: 10.3pt;
+	font-weight: bold;
+	text-decoration: none;
+}
+a:hover.botton02 {
+	color: #F9F906;
+	font-size: 10.3pt;
+	font-weight: bold;
+	text-decoration: underline;
+}
+/*左边功能主按钮链接样式*/
+a.botton03 {
+	color: #2c8cc8;
+	font-size: 9pt;
+	text-decoration: none;
+}
+a:hover.botton03 {
+	color: #ff6600;
+	font-size: 9pt;
+	text-decoration: underline;
+}
+/*内容样式*/
+/*标题样式*/
+a.botton04 {
+	color: #3b3b3b;
+	font-size: 9pt;
+	font-weight: bold;
+	text-decoration: none;
+}
+a:hover.botton04 {
+	color: #0587f6;
+	font-size: 9pt;
+	font-weight: bold;
+	text-decoration: underline;
+}
+a.botton05 {
+	color: #138c03;
+	font-size: 9pt;
+	text-decoration: none;
+}
+a:hover.botton05 {
+	color: #f6a405;
+	font-size: 9pt;
+	text-decoration: underline;
+}
+/*下拉菜单按钮样式*/
+a.botton06 {
+	color: #138c03;
+	font-size: 9pt;
+	text-decoration: none;
+}
+a:hover.botton06 {
+	color: #f6a405;
+	font-size: 9pt;
+	text-decoration: underline;
+}
+a.botton07 {
+	color: #c70303;
+	font-size: 9pt;
+	font-weight: bold;
+	text-decoration: none;
+}
+a:hover.botton07 {
+	color: #f6a405;
+	font-size: 9pt;
+	font-weight: bold;
+	text-decoration: underline;
+}
+/*搜索样式*/
+a.botton08 {
+	color: #c70303;
+	font-size: 10.3pt;
+	font-weight: bold;
+	text-decoration: none;
+}
+a:hover.botton08 {
+	color: #f6a405;
+	font-size: 10.3pt;
+	font-weight: bold;
+	text-decoration: underline;
+}
+/*翻页样式*/
+/*p1当前页面数字样式*/
+.p1 {
+	border: 1px solid #CAD9EA;
+	background: #DDECFE;
+	font-weight: bold;
+	color: #FF2314;
+	overflow: hidden;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	margin-left: 5px;
+}
+/*未选择数字样式*/
+.p2 {
+	border: 1px solid #CAD9EA;
+	background: #F7F7F7;
+	font-weight: bold;
+	color: #Maroon;
+	overflow: hidden;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	margin-left: 5px;
+}
+.p2 a {
+	color: #000080;
+	text-decoration: none;
+}
+.p2 a:hover {
+	padding: 0;
+	color: #DD6F00;
+	text-decoration: underline;
+}
+/*输入框样式*/
+.p3 {
+	border: 0px solid #CAD9EA;
+	color: #808080;
+	overflow: hidden;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 0px;
+	padding-bottom: 4px;
+	margin-left: 2px;
+	vertical-align: middle;
+	/*font-weight: bold;
+	background-image: url('../skin/images/td06_class.jpg');*/
+}
+.p3 a {
+	color: #000080;
+	text-decoration: none;
+}
+.p3 a:hover {
+	padding: 0;
+	color: #DD6F00;
+	text-decoration: underline;
+}
+.p4 {
+	border: 1px solid #CAD9EA;
+	background: #ffffff;
+	color: #000080;
+	overflow: hidden;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	margin-left: 5px;
+}
+/*按钮样式子*/
+.topBottonstyle1 {
+	background: url('../skin/images/top_botton_03.jpg') repeat-x center;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.topBottonstyle1-1 {
+	background: url('../skin/images/top_botton_03.jpg') repeat-x center;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 0px;
+}
+.ontopBottonstyle1 {
+	background: url('../skin/images/onmouse02.jpg') repeat-x center;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.tdwidth {
+	width: 10px;
+}
+.topBottonstyle2 {
+	background: url('../skin/images/top_botton01_03.jpg') repeat-x top;
+	padding-top: 5px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+.ontopBottonstyle2 {
+	background: url('../skin/images/onmouse02.jpg') repeat-x top;
+	padding-top: 5px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+.topBottonstyle3 {
+	background: url('../skin/images/botton_02.jpg') repeat-x top;
+	padding-top: 8px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.ontopBottonstyle3_1 {
+	background: url('../skin/images/onmouse.jpg') repeat-x top;
+	padding-top: 8px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.topBottonstyleBG {
+	background: url('../skin/images/botton_01_1.jpg') repeat-x top;
+	width: 35px;
+}
+.topBottonstyleBG1 {
+	background: url('../skin/images/botton_02.jpg') repeat-x top;
+	width: 23px;
+}
+/*列表样式_表格类*/
+.tdstyle1 {
+	height: 35px;
+	background-color: #F3F3F3;
+	background-image: url('../skin/images/table_BG.jpg');
+	color: #2d8cbb;
+	font-weight: bold;
+	text-align: center;
+}
+.tdstyle2 {
+	text-align: center;
+	height: 30px;
+	background-image: url('../skin/images/td01_class.jpg');
+}
+.tdstyle2_1 {
+	text-align: center;
+	height: 30px;
+	background-image: url('../skin/images/td06_class.jpg');
+}
+.tdstyle3 {
+	text-align: center;
+	height: 30px;
+	background-image: url('../skin/images/td01_class.jpg');
+}
+.tdstyle4 {
+	text-align: center;
+	height: 35px;
+	background-image: url('../skin/images/td02_class.jpg');
+}
+.tdstyle4 td {
+	text-align: center;
+	padding-top: 3px;
+	height: 35px;
+	background-image: url('../skin/images/td02_class.jpg');
+}
+.tdstyle5 {
+	text-align: center;
+	height: 35px;
+	background-image: url('../skin/images/td03_class.jpg');
+}
+/*列表样式_输入窗口类*/
+/*标题区*/
+.trstyle1 {
+	text-align: left;
+	padding-left: 5px;
+	height: 30px;
+	font-weight: bold;
+	background-image: url('../skin/images/td11_class.jpg');
+}
+/*标题*/
+.trstyle2 {
+	padding-left: 5px;
+	height: 30px;
+	background-image: url('../skin/images/tr_04.jpg');
+}
+.trtitle01 {
+	text-align: right; /*font-weight: bold;*/;
+	padding-right: 2px;
+}
+.trtitle02 {
+	padding-left: 5px!important;
+	padding-left: 5px;
+}
+.trtitle03 {
+	padding-left: 5px!important;
+	padding-left: 5px;
+	font-size: 10.3pt;
+	font-weight: bold;
+}
+/*输入框口*/
+.trstyle2_1 {
+	text-align: left;
+	padding-left: 5px!important;
+	padding-left: 5px;
+	height: 30px;
+	background-image: url('../skin/images/tr_03.jpg');
+}
+/*输入框*/
+input.smallInput {
+	font-size: 9pt;
+	padding-top: 4px!important;
+	padding-top: 4px;
+	font-style: normal;
+	line-height: normal;
+	font-weight: normal;
+	font-variant: normal;
+	height: 15px;
+	clip: rect;
+	color: #000000;
+	border-color: black #CAD9EA #CAD9EA black;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	background-color: #FFFFFF;
+}
+input.smallInput2 {
+	font-size: 9pt;
+	font-style: normal;
+	line-height: normal;
+	font-weight: normal;
+	font-variant: normal;
+	height: 16px;
+	clip: rect;
+	color: #000000;
+	border-color: black #CAD9EA #CAD9EA black;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	background-color: #FFFFFF;
+}
+.select {
+	font-family: '宋体',Arial, Helvetica, sans-serif;
+}
+/* 下拉菜单的样式 */
+.otherson {
+	color: #ffffff;
+}
+.othersoff {
+	color: #ffffff;
+}
+.togglemenu {
+	position: absolute;
+	margin-top: 5px;
+	z-index: 1000;
+	width: 100px!important;
+	width: 100px;
+	text-align: left;
+	border: 1px solid #138C03;
+	border-top: none;
+	background: #ffffff;
+	opacity: 0.8;
+	filter: Alpha(opacity=100);
+}
+.togglemenu ul {
+	list-style: none;
+	padding-bottom: 10px;
+	background: url(../skin/bg_repx_hd.gif) repeat-x;
+}
+.togglemenu ul li {
+	display: block;
+	padding-top: 10px;
+	padding-left: 10px;
+}
+.attrlist {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+.attrlist01 {
+	float: left;
+	width: 154px;
+	padding-top: 4px;
+	padding-right: 10px;
+	text-align: right;
+}
+/*dialog窗口样式*/
+#floatBoxBg {
+	display: none;
+	width: 100%;
+	height: 100%;
+	background: #E6E6E6;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.floatBox {
+	border: #0d4d05 5px solid;
+	width: 300px;
+	position: absolute;
+	top: 40px;
+	left: 40%;
+}
+.floatBox .title {
+	height: 23px;
+	padding: 8px 5px 0;
+	background: #127c04;
+	color: #fff;
+}
+.floatBox .title h4 {
+	float: left;
+	padding: 0;
+	margin: 0;
+	font-size: 14px;
+    color: #fff;
+	line-height: 16px;
+}
+.floatBox .title span {
+	float: right;
+	cursor: pointer;
+}
+.floatBox .content {
+	padding: 10px 10px;
+	background: #fff;
+}
+.imgclasshand{
+	cursor: hand;
+}
+/*打印模板*/
+.jqDrag {
+  width: 100%;
+  height:100%;
+  cursor: move;
+}
+.jqResize {
+   width: 11px;
+   height:10px;
+   bottom:0px;
+   right:0px;
+   cursor: se-resize;
+   position: absolute;
+   background: url('../skin/icon/resize-btn.gif') no-repeat 0px 5px;
+}
+
+.jqDnR {
+	position: absolute;
+	width: 100px;
+	font-size:9pt;
+	margin: 0px;
+	padding: 0px;
+	border: 1px #A7A7A7 solid;
+}
+.jqDnR2 {
+	position: absolute;
+	width: 100px;
+	font-size: 9pt;
+	margin: 0px;
+	padding: 0px;
+	border: 1px dashed #A7A7A7;
+}

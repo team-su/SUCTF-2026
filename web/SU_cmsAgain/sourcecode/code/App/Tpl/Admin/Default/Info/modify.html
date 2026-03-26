@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<include file="common" />
+<div class="container box-footer-fixed">
+    <form action="{$Action}" method="post" id="frmSaveInfo"  enctype="multipart/form-data">
+    	<input type="hidden" name="InfoID" value="{$InfoID}" />
+                <div class="box1">
+                    <ul class="tab_menu">
+                        <volist name="Group" id="g">
+                            <li <eq name="i" value="$TabIndex">class="current"</eq> >{$g.DisplayName}</li>
+                        </volist>
+                    </ul>
+                    
+                    <div class="tab_box">          
+                         <volist name="Group" id="g" key="x">
+                            <div <neq name="x" value="$TabIndex">class="hide"</neq> >
+                            <table class="boxtable">     
+                            <volist name="Attribute" id="a">
+                                <eq name="a.GroupID" value="$g.AttributeID">
+                                        <tr>
+                                            <th class="w120">{$a.DisplayName}</th>
+                                            <td>{$a.html}</td>
+                                        </tr>
+                                </eq>
+                            </volist>
+                            </table>
+                            </div>
+                        </volist>
+                    </div>
+     
+                    <div class="box-footer">
+                        <div class="box-footer-inner">
+                            <input  id="btnSubmit" class="marginright"   type="submit" value="保存" />
+                            <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+							<label class="AutoSave"><input type="checkbox"  id="AutoSave" value="1" />自动保存<span class="savetip"></span></label>
+                        </div>
+                    </div>       
+                </div>         
+    </form>
+</div>  
+</body>
+</html>
+<script type="text/javascript">
+var gAutoSave = false;
+$(document).ready(function(){
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			replaceCkEditorContent(data);
+			replaceUeditorContent(data);
+			if(gAutoSave) {
+				var tip = yd.getCurrentTime(2)+" 自动保存";
+				$(".savetip").text(tip);
+			}else{
+				SucceedBox("修改成功!");
+			}
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}else if(data.status==2){
+			ErrorBox(data.info); //上传失败
+		}else if(data.status==3){
+			$('#'+data.data.ImageField).val(data.data.Path);
+			SucceedBox(data.info); //上传成功
+		}
+	};
+	
+	 $('#frmSaveInfo').submit(function(){
+		try{
+			if(!gAutoSave) LoadBox();
+			updateInfoAlbum();
+            UpdateUEditorData();
+			for ( s in CKEDITOR.instances ){
+			   CKEDITOR.instances[s].updateElement();
+			}
+		}catch(e){
+			;
+		}finally{
+			$(this).ajaxSubmit( {success: complete,dataType: 'json'} );
+			return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+		}
+	});
+	 
+	 $('#btnSubmit').click(function(){
+		gAutoSave = false;
+		$('#frmSaveInfo').attr('action','{$Action}');
+	 });
+	 
+	 $("#nav dl").append("<dd  class='link' style='color:#000'>{$ChannelID|ChannelName|trim}</dd>");
+	 $('.box1').Tabs({
+		 event:'click'
+	 });
+	 
+	 $('#InfoTitle').focus();
+});
+
+function GoBack(){
+	var channelModelID = "{$Think.get.ChannelModelID}";
+	var url = "";
+	if(channelModelID==37){ //反馈频道
+		url = "{$Url}feedback?ChannelID={$ChannelID}";
+	}else{  //ChannelID改为ChannelIDFrom，否则修改父级频道文章后，点击【返回】按钮，会返回当前文章所在频道
+		url = "{$Url}index?ChannelID={$ChannelIDFrom}";
+	}
+	var params = "&p={$Think.get.p}&IsEnable={$Think.get.IsEnable}";
+	params += "&Keywords={$Think.get.Keywords}&MemberID={$Think.get.MemberID}&IsCheck={$Think.get.IsCheck}";
+	url += params;
+	window.location.href = url;
+}
+</script>
+
+<script type="text/javascript">
+//自动保存实现
+$(document).ready(function(){
+	$("#AutoSave").click(function(){
+		var isAutoSave= $("#AutoSave").is(':checked');
+		window.localStorage.setItem("AutoSave", isAutoSave);
+		if(!isAutoSave){
+			$(".savetip").text("");
+		}
+	});
+	var isAutoSave = window.localStorage.getItem("AutoSave");
+	$("#AutoSave").attr("checked", isAutoSave=="true" ? true : false); 
+	
+	 function autoSave(){
+	 	 setTimeout(function(){
+			var isCheck = $("#AutoSave").is(':checked');
+			if(isCheck){
+				var IsSafeAnswer = window.localStorage.getItem("IsSafeAnswer") || 0;
+				var enable = "{$SafeAnswerEnable}";
+				if(enable==0 || (enable==1 && IsSafeAnswer==1)){
+					gAutoSave = true;
+					$('#btnSubmit').submit();
+				}
+			}else{
+				$(".savetip").text("");
+			}
+			autoSave();
+		 }, 10000);
+	 }
+	 autoSave();
+});
+</script>

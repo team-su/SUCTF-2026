@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		#InfoHit{	color:#00F;	font-weight:bold;}
+		label{	color:#00F; 	line-height:21px; 	font-weight:bold; 	height:21px; 	vertical-align:middle;	font-size:12px;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form enctype="multipart/form-data"  method="post" id="frm">
+    <input type="hidden" name="Keywords" id="Keywords" value="{$Keywords}" />
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+    <div class="table">
+        <div class="toolbars">
+            <li class="toolbar"><a id="btnSaveAll" href="{$Url}AddLottery"  title="添加活动项目" target="_self">添加活动项目</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar"><a id="sortall" onclick="BatchSort()" title="批量排序">排序</a></li>
+            <li class="toolbar toolbarform">
+                <label>活动标题</label><input type="text" class='textinput' name="Keywords" style="width:150px" value="{$Keywords}" id="Keywords"/>
+                <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+            </li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="40px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="40px" nowrap="nowrap">ID</th>
+                <th width="50px" nowrap="nowrap">排序</th>
+                <th width="70px" >活动形式</th>
+                <th>活动标题</th>
+                <th width="100px">触发关键词</th>
+                <th width="220px" >活动时间</th>
+                <th width="65px">查看人数</th>
+                <th width="65px">参与人数</th>
+                <th width="65px">中奖人数</th>
+                <th width="45px" >属性</th>
+                <th width="130px">操作</th>
+            </tr>  
+            <notempty name="App">                
+                <volist name="App" id="a">
+                    <tr id="row{$a.AppID}">
+                        <td><input class="checkrow" type="checkbox" name="AppID[]" value="{$a.AppID}" /></td>
+                        <td>{$a.AppID}</td>
+                        <td><input type="number" class='textinput' onclick="this.select()" style="width:45px" name="AppOrder[]" value="{$a.AppOrder}" />
+                        	<input type="hidden" class='textinput' style="width:50px" name="AppOrderID[]" value="{$a.AppID}" /></td>
+                        <td>
+                            <switch name="a.LotteryType">
+                                <case value="0" ><b style="color:#0000FF">大转盘</b></case>
+                                <case value="1" ><b style="color:#F00">刮刮卡</b></case>
+                            </switch>
+                        </td>
+                        <td style="text-align:left"><b class="TipKey">{$a.AppName|htmlspecialchars}</b><br/><b>链接地址：</b>{$a.AppID|WxLotteryUrl}</td>
+                        <td><b style="color:green">{$a.AppKeyword|htmlspecialchars}</b></td>
+                        <td><b>开始时间：</b>{$a.LotteryStartTime}<br /><b>结束时间：</b>{$a.LotteryEndTime}</td>
+                        <td><b class="num{$a.AppID}">{$a.ViewNumber}</b></td>
+                        <td style="color:#0000FF"><b class="num{$a.AppID}">{$a.JoinNumber}</b></td>
+                        <td style="color:#F00"><b class="num{$a.AppID}">{$a.WinNumber}</b>&nbsp;&nbsp;<a href="__URL__/award/AppID/{$a.AppID}">查看</a></td>
+                        <td>
+                            <eq name="a.IsEnable" value="1">
+                                <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$a.AppID},'wx_app')">启用</span>
+                            <else/>
+                                <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$a.AppID},'wx_app')">禁用</span>
+                            </eq>
+                        </td>
+                        <td class="operator">
+                            <a id="btnCache"  style="float:left" onclick="clearLottery({$a.AppID})"  title="清空活动数据" >清空活动数据</a>
+                            <br/>
+                            <a style="float:left" onclick="Edit({$a.AppID})" id="btnEdit">修改</a>
+                            <div class="btn-sep"></div>
+                            <a style="float:left" onclick="Del({$a.AppID})" class="btnDel">删除</a>
+                        </td>
+                    </tr>
+                </volist>
+            <else/>
+                <tr><td colspan="12" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                
+        </table>
+        <div class="tfoot">
+          <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+    </div>
+</form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//排序
+function BatchSort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "__URL__/batchSortLottery");
+		$('#frm').submit();
+	});  
+}	
+
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/lottery");
+	$('#frm').submit();
+	return true;
+}	
+
+function Edit(id){
+	url = "{$Url}modifyLottery/AppID/"+id;
+	location.href = url;
+}
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#row"+id+" .TipKey").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}delLottery/AppID/"+id+"/p/{$NowPage}/Keywords/{$Keywords}";
+		location.href = url;
+	});
+}
+
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='AppID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/batchDelLottery");
+		$('#frm').submit();
+	});
+}
+
+//清空投票记录
+function clearLottery(appid){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("确定清空活动所有用户数据吗?", function () {
+		var url = "{$Url}clearLottery/appid/"+appid;
+		$.get(url, {}, ClearComplete, "json");
+	});
+}
+//回调函数
+function ClearComplete(data, textStatus){
+	if (data.status == 1){
+		$(".num"+data.data).text("0");
+		SucceedBox(data.info); 
+	}else{ //删除失败
+		ErrorBox(data.info);
+	}
+}
+
+//提示信息
+$(document).ready(function(){
+	$(".TagTip").powerFloat({
+		targetMode: "ajax",
+		targetAttr: "alt"
+	});
+	
+	//选中操作
+	$("#Keywords").focus();
+});
+</script>

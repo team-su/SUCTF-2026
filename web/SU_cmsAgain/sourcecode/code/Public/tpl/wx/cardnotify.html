@@ -1,0 +1,23 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>会员卡</title>
+<include file="./Public/tpl/wx/meta.html" />
+<link href="{$AppCss}card.css" rel="stylesheet" type="text/css">
+<script src="{$AppJs}accordian.js" type="text/javascript"></script>
+</head>
+<body id="cardnews" onLoad="new Accordian('basic-accordian',5,'header_highlight');" class="mode_webapp2">
+<div class="qiandaobanner"><a href="javascript:history.go(-1);"><img src="{$AppImages}notification.jpg"> </a></div>
+<div id="basic-accordian">
+	<volist name="Notify" id="n">
+        <div id="test{$i}-header" class="accordion_headings  <eq name="i" value="1">header_highlight</eq>">
+            <div class="tab  {$n.Flag}"><span class="title">{$n.NotifyName}<p>{$n.NotifyTime}</p></span></div>
+            <div id="test{$i}-content" style="display: block; overflow: hidden; opacity: 1; ">
+                <div class="accordion_child"><p class="xiangqing">{$n.NotifyContent}</p></div>
+            </div>
+        </div>
+    </volist>
+</div>
+<include file="./Public/tpl/wx/cardfooter.html" />
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <include file="Public:meta"/>
+</head>
+<body id="main_page">
+<include file="Public:position"/>
+<div class="container">
+    <form enctype="multipart/form-data" method="post" id="frm">
+        <div class="table">
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="45px" nowrap="nowrap" onclick="CheckAll()"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a>
+                        <input type="checkbox"/></th>
+                    <th width="55px">编号</th>
+                    <th>分站名称</th>
+                    <th>分站域名</th>
+                </tr>
+                <notempty name="Data">
+                    <volist name="Data" id="d">
+                        <tr id="row{$d.SiteID}" name="{$d.SiteName}">
+                            <td><input class="checkrow" type="checkbox" name="id[]" sitename="{$d.SiteName}" value="{$d.SiteID}"/></td>
+                            <td>{$d.SiteID}</td>
+                            <td>{$d.SiteName}</td>
+                            <td>{$d.SiteDomain}</td>
+                        </tr>
+                    </volist>
+                <else/>
+                    <tr>
+                        <td colspan="3" id="NoData">{$Think.lang.NoDataTip}</td>
+                    </tr>
+                </notempty>
+            </table>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    $("input[name='{$Think.request.SiteFieldName}[]']", parent.document).each(function () {
+        $ ("input[name='id[]'][value="+$(this).val()+"]").attr("checked",'checked');//将父级页面已有的选项，在这里勾选上
+    });
+</script>

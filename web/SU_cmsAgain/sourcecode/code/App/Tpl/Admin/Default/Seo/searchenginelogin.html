@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <form  enctype="multipart/form-data" method="post" id="frm">
+      <div class="table">    
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="55px">序号</th>
+                <th width="170px" >搜索引擎Logo</th> 
+                <th width="110px" >搜索引擎名称</th> 
+                <th width="220px" >搜索引擎网址</th>
+                <th style="text-align:left;padding-left:30px">操作</th>       	
+            </tr>
+            <volist name="Seo" id="s">
+                <tr>
+                    <td>{$i}</td>
+                    <td><a href="{$s.Url}" target="_blank"><img src="{$s.LogoUrl}" height="35px" /></a></td>
+                    <td><b>{$s.Name}</b></td>
+                    <td style="text-align:left;padding-left:5px"><a href="{$s.Url}" target="_blank">{$s.Url}</a></td>
+                    <td class="operator">
+                        <a style="float:left" href="{$s.LoginUrl}" id="btnPick" target="_blank">搜索引擎提交</a>
+                    </td>
+                </tr>
+            </volist>                                
+        </table>
+        <div class="tfoot">
+              <div id="notice">
+                    <b>说明：</b><span class="notice-item">为了让网站更快被搜索引擎收录，请将网站提交到各大主流搜索引擎</span>
+               </div>
+        </div>
+       </div>
+   </form>
+</div>
+</body>
+</html>

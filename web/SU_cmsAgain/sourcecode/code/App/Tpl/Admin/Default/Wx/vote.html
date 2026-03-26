@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+        #InfoHit{color:#00F;font-weight:bold;}
+        label{color:#00F; line-height:21px; font-weight:bold; height:21px; vertical-align:middle;font-size:12px;}
+        .AppName{ cursor:pointer}
+        .VoteItem{display:none; background-color:#FFF;padding:8px; line-height:22px;text-align:left;border:1px solid #87A34D;}
+    </style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+    <form enctype="multipart/form-data"  method="post" id="frm">
+        <input type="hidden" name="Keywords" id="Keywords" value="{$Keywords}" />
+        <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+        <div class="table">
+            <div class="toolbars">
+                <li class="toolbar"><a id="btnSaveAll" href="{$Url}AddVote"  title="添加投票项目" target="_self">添加投票项目</a></li>
+                <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+                <li class="toolbar toolbarform">
+                    <label>投票标题</label><input type="text" class='textinput' name="Keywords" style="width:150px" value="{$Keywords}" id="Keywords"/>
+                    <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+                </li>
+            </div>
+            <table class="datatable" id="datatable">
+                <tr>
+                    <th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                    <th width="40px" nowrap="nowrap">ID</th>
+                    <th>投票标题&nbsp;&nbsp;<span style="color:#0000FF">鼠标移动到标题查看投票结果</span></th>
+                    <th width="100px">触发关键词</th>
+                    <th  width="70px">多选/单选</th>
+                    <th   width="200px">简介</th>
+                    <th width="220px" >起止时间</th>
+                    <th width="85px">投票人数</th>
+                    <th width="40px" >属性</th>
+                    <th  width="150px">操作</th>
+                </tr>  
+                <notempty name="App">                
+                    <volist name="App" id="a" key="j">
+                        <tr id="row{$a.AppID}">
+                            <td><input class="checkrow" type="checkbox" name="AppID[]" value="{$a.AppID}" /></td>
+                            <td>{$a.AppID}</td>
+                            <td style="text-align:left">
+                                <b class="AppName" rel="a{$j}">{$a.AppName|htmlspecialchars}</b><br />
+                                <b>链接地址：</b>{$a.AppID|WxVoteUrl}
+                                <div class="VoteItem" id="a{$j}">
+                                总投票人数：<b style="color:blue">{$a.PeopleNumber}</b><br/>
+                                    <volist id="it" name="a.Item" key="x">
+                                        {$x}.&nbsp;{$it.ItemName}（<b style="color:blue">{$it.VoteCount}</b>票
+                                        &nbsp;&nbsp;&nbsp;占<b style="color:red">{$it.VotePercent}%</b>）<br/>
+                                    </volist>
+                                </div>
+                            </td>
+                            <td><b style="color:green">{$a.AppKeyword|htmlspecialchars}</b></td>
+                            <td><eq name="a.IsMultiple" value="1"><b style="color:#900">多选</b><else/><b  style="color:#00F">单选</b></eq></td>
+                            <td style="text-align:left">{$a.AppDescription|htmlspecialchars}</td>
+                            <td><b>开始时间：</b>{$a.StartTime}<br /><b>结束时间：</b>{$a.EndTime}</td>
+                            <td style="color:#00F"><b id="num{$a.AppID}">{$a.PeopleNumber}</b>
+                                <neq name="a.Number" value="0">
+                                <br /><a onclick="clearVote({$a.AppID})">[清空投票记录]</a>
+                                </neq>
+                            </td>
+                            <td>
+                                <eq name="a.IsEnable" value="1">
+                                    <span style="color:#000;cursor:pointer;"  onclick="toggleStatus(this,{$a.AppID},'wx_app')">启用</span>
+                                <else/>
+                                    <span style="color:#F00;cursor:pointer;"  onclick="toggleStatus(this,{$a.AppID},'wx_app')">禁用</span>
+                                </eq>
+                            </td>
+                            <td class="operator">
+                                <a style="float:left" onclick="Edit({$a.AppID})" id="btnEdit">修改</a>
+                                <div class="btn-sep"></div>
+                                <a style="float:left" onclick="Del({$a.AppID})" class="btnDel">删除</a>
+                            </td>
+                        </tr>
+                    </volist>
+                <else/>
+                	<tr><td colspan="10" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+                </notempty>                                
+            </table>
+            <div class="tfoot">
+              <div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+            </div>
+        </div>
+   </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+//排序
+function BatchSort(){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.SortTip}", function () {
+		$('#frm').attr("action", "__URL__/batchSortVote");
+		$('#frm').submit();
+	});    
+}	
+
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/vote");
+	$('#frm').submit();
+	return true;
+}	
+
+function Edit(id){
+	url = "{$Url}modifyVote/AppID/"+id;
+	location.href = url;
+}
+
+function Del(id){
+	if(checkSafeQuestion()) return;
+	var key = $("#row"+id+" .AppName").text();
+	var tip = DeleteTip(key);
+	ConfirmBox(tip, function () {
+		url = "{$Url}delVote/AppID/"+id+"/p/{$NowPage}/Keywords/{$Keywords}";
+		location.href = url;
+	});
+}
+
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='AppID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/batchDelVote");
+		$('#frm').submit();
+	});
+}
+
+//清空投票记录
+function clearVote(appid){
+	ConfirmBox("确定清空投票记录吗？", function () {
+		var url = "{$Url}clearVote/appid/"+appid;
+		$.get(url, {}, ClearComplete, "json");
+	});
+}
+
+//回调函数
+function ClearComplete(data, textStatus){
+	if (data.status == 1){
+		$("#num"+data.data).text("0");
+		SucceedBox(data.info); 
+	}else{ //删除失败
+		ErrorBox(data.info);
+	}
+}
+
+//提示信息
+$(document).ready(function(){
+	$(".AppName").powerFloat({
+		reverseSharp:true,
+		position:"4-5"
+	});
+	
+	//选中操作
+	$("#Keywords").focus();
+});
+</script>

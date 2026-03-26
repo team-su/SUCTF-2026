@@ -1,0 +1,89 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+				<empty name="HiddenName">
+					$('#frm').resetForm();
+					focusFirstItem();
+				</empty>
+            }else{ //添加频道失败
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 var idName = "#{$Think.const.MODULE_NAME}Name";
+			 $(idName).focus();
+		 }
+		 
+		  //设置默认值
+		 function setDefault(){
+			 $("input[name='IsEnable'][value={$Data.IsEnable}]").attr("checked",'checked');
+			 $("input[name='IsCod'][value={$Data.IsCod}]").attr("checked",'checked');
+		 }
+		 
+		  //页面初始化
+		 function pageInit(){
+			focusFirstItem();
+			setDefault();
+		 }
+		 pageInit();
+	});
+</script>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+<table class="boxtable">
+	<tr>
+		<th class="w120">配送方式名称</th>
+		<td><input type='text' style='width:200px;' class='textinput' name = 'ShippingName'  id='ShippingName'   value="{$Data.ShippingName}"  />
+		<span class='Caution'>如：申通快递、货到付款等</span></td>
+	</tr>
+	<tr>
+		<th class="w120">配送方式排序</th>
+		<td><input type='text' style='width:80px;' class='textinput' name = 'ShippingOrder'  id='ShippingOrder'   value="{$Data.ShippingOrder}"  />
+		<span class='Caution'>请输入数字，值越小排名越靠前！</span></td>
+	</tr>
+	<tr>
+		<th class="w120">配送价格</th>
+		<td><input type='text' style='width:80px;' class='textinput' name = 'ShippingPrice'  id='ShippingPrice'   value="{$Data.ShippingPrice}"  />
+		<span class='Caution'>如果无需配送费用，请填写0</span></td>
+	</tr>
+	<tr>
+		<th class="w120">配送保价比例</th>
+		<td><input type='text' style='width:80px;' class='textinput' name = 'ShippingInsureRate'  id='ShippingInsureRate'   value="{$Data.ShippingInsureRate}"  />
+		<span class='Caution'>单位：百分比，如果启用保价，则会增加订购付款费用</span>
+		</td>
+	</tr>
+	<tr>
+		<th class="w120">配送方式描述</th>
+		<td><textarea style='width:100%;height:100px;'  class='textinput' name='ShippingDescription'  id='ShippingDescription' >{$Data.ShippingDescription}</textarea></td>
+	</tr>
+	<tr>
+		<th class="w120">是否货到付款</th>
+		<td><input type='radio'  id='IsCod'  name='IsCod'    value='1'   />是&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type='radio'  id='IsCod'  name='IsCod'    value='0'  checked />否&nbsp;&nbsp;&nbsp;&nbsp;
+				<span class='Caution'>如果启用，则该送货方式将不会启用在线支付</span>
+		</td>
+	</tr>
+	<tr>
+		<th class="w120">是否启用</th>
+		<td>
+			<input type='radio'  id='IsEnable'  name='IsEnable'    value='1'  checked />启用&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type='radio'  id='IsEnable'  name='IsEnable'    value='0'   />禁用&nbsp;&nbsp;&nbsp;&nbsp;
+		</td>
+	</tr>
+</table>
+</div>

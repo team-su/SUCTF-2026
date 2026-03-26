@@ -1,0 +1,8 @@
+<!--当前位置 开始-->
+<div id="location"><b>{$Think.lang.CurrentPosition}：</b>
+<volist name="SitePath" id="p">
+    <a href="{$p.PathUrl}" target="_self">{$p.PathName}</a>
+    <eq name="p.HasNext" value="1">&nbsp;>>&nbsp;</eq>
+</volist>
+</div>
+<!--当前位置 结束-->

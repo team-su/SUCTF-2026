@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+	    /*分店样式*/
+		.tpl{ width:100%}
+		.tpl .textinput{ height:20px;}
+		.tpl .xh, .tpl .pc, .tpl .wap, .tpl .time, .tpl .op{ padding:5px; float:left; padding:3px 8px; text-align:center}
+		.tpl .xh{ width:45px; color:blue;}
+		.tpl .pc{ width:100px; }
+		.tpl .wap{ width:100px; }
+		.tpl .time{ width:140px; }
+		.tpl .op{ width:55px; }
+		.tplbody{ }
+		.tplitem{ clear:both;}
+		.tplfooter{ clear:both;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form enctype="multipart/form-data" action="{$Action}" method="post" id="frm">
+            <div class="box-header"><h4>基本信息</h4></div>
+            <div class="box-content">
+                <table class="boxtable">
+                    <tr>
+                        <th class="w120" style="color:red;">登记名称</th>
+                        <td><input type="text" class="textinput"  style="width:400px;"  name="ProjectName" id="ProjectName" value="{$Data.ProjectName}" /></td>
+                    </tr>
+                    <tr>
+                        <th class="w120">所属客户</th>
+                        <td>				
+                            <select name="CustomerID" id="CustomerID">
+                                <option value="0" selected="selected">====暂不指定客户====</option>
+                                <volist name="CustomerData" id="c">
+                                    <option value="{$c.MemberID}">
+                                        {$c.MemberID}&nbsp;&nbsp;{$c.MemberName|htmlspecialchars}&nbsp;&nbsp;{$c.MemberRealName|htmlspecialchars}
+                                        <neq name="c.MemberGroupID" value="101">&nbsp;&nbsp;{$c.MemberGroupName|htmlspecialchars}</neq>
+                                    </option>
+                                </volist>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr id="TplNumber">
+                        <th class="w120">模板信息</th>
+                        <td class="tpl">
+                               <div class="tplheader">
+                                    <div class="op"><b>序号</b></div>
+                                    <div class="pc"><b>电脑模板编号</b></div>
+                                    <div class="wap"><b>手机模板编号</b></div>
+                                    <div class="time"><b>添加时间</b></div>
+                                    <div class="op"><b>操作</b></div>
+                                </div>
+                                <div  class="tplbody">
+                                      <for start="1" end="11">
+                                          <div class="tplitem">
+                                              <div class="xh">{$i}</div>
+                                              <div class="pc"><input type="text" onkeyup="ChangePcNumber(this)" maxlength="4" class="textinput" style="width:100%" name="PcNumber[]" value="{$Data.PcNumber}" /></div>
+                                              <div class="wap"><input type="text" maxlength="4" class="textinput" style="width:100%" name="WapNumber[]" value="{$Data.WapNumber}" /></div>
+                                              <div class="time"><input type="text" class="textinput Wdate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})"  style="width:100%" name="AddTime[]" value="{$Data.AddTime}"  /></div>
+                                              <div class="op"><a  onclick="delItem(this)"   class="btnDel">删除</a></div>
+                                          </div>
+                                      </for>
+                                </div>
+                                <div  class="tplfooter"><a onclick="addItem()"   id="btnSaveAll">添加一套模板</a></div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="box-footer">
+                <div class="box-footer-inner">
+                    <input  id="btnSubmit" class="marginright"  type="submit" value="保存并继续添加" />
+                    <input  id="btnSubmitBack"  type="button" value="返回" class="GoBack" onclick="GoBack()" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="{$WebPublic}My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frm').ajaxForm({
+		success: complete,
+		dataType: 'json'
+	});
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			<empty name="HiddenName">
+				$('#frm').resetForm();
+				pageInit();
+			</empty>
+		}else{
+			ErrorBox(data.info);
+		}
+	};
+	
+	 $('#frm').submit(function(){
+		LoadBox();
+		return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	 });
+	 
+	 //选中表单第一项
+	 function focusFirstItem(){
+		 $("#ProjectName").focus();
+	 }
+	 
+	 //设置默认值
+	 function setDefault(){
+		 $("#CustomerID").val( "{$Data.CustomerID}" );
+	 }
+	 
+	 function pageInit(){
+		 focusFirstItem();
+		 setDefault();
+	 }
+	 pageInit();
+});
+
+function GoBack(){
+	window.history.go(-1);
+}
+
+//添加一个项目
+function addItem(){
+	var obj = $(".tpl .tplitem");
+	var xh = obj.length+1;
+	var item="<div class='tplitem'>";
+	item += "<div class='xh'>"+xh+"</div>";
+	item += "<div class='pc'><input type='text' onkeyup='ChangePcNumber(this)' maxlength='4' class='textinput' style='width:100%' name='PcNumber[]' value='' /></div>";
+	item += "<div class='wap'><input type='text' maxlength='4' class='textinput' style='width:100%' name='WapNumber[]' value='' /></div>";
+	item += "<div class='time'>";
+	item += "<input type='text' class='textinput Wdate' onclick=\"WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})\"";
+	item += "  style='width:100%' name='AddTime[]' value='{$Data.AddTime}'  /></div>";
+	item += "<div class='op'><a  onclick='delItem(this)'   class='btnDel'>删除</a></div>";
+	item += "</div>";
+	$(".tplbody").append(item);
+	$(".tplbody input[name='PcNumber[]']").last().focus();
+}
+
+function delItem(obj){
+		if( $(".tpl .tplitem").length <= 1){
+			SucceedBox("最后一个不能删除！");
+			return;
+		}
+		$(obj).parent().parent().remove();
+		var objTr = $(".tpl .tplitem");
+		for(var i=0; i< objTr.length; i++){
+			objTr.eq(i).find(".xh").html(i+1);
+		}
+}
+
+function  ChangePcNumber(obj){
+	var pcNumber = $(obj).val();
+	var objWap = $(obj).parent().parent().find(".wap input");
+	var wapNumber = parseInt(pcNumber) + 2000;
+	if( !isNaN(wapNumber) ){
+		objWap.val( wapNumber );
+	}
+}
+</script>

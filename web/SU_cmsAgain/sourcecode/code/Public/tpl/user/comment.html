@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+	<style>
+		.weui-badge{ color:#fff;  margin-left:3px; }
+		.rank1{  border: 1px solid red;  background:red; }
+	    .rank2{ border: 1px solid blue;   background:blue; }
+		.rank3{ border: 1px solid green;    background:green;}
+		
+		.InfoTitle{ text-align:left; color:#333;}
+		.CommentContent{ text-align:left; }
+
+		.AnswerContent{ color:#666; border-top:1px dotted #C6C6C6; text-align:left; padding-top:8px;}
+		.AnswerContent b{ font-weight:normal; color:#555;}
+		
+		.check0{ /*未审核*/
+			 background:url("{$Images}unchecked.png") #fff no-repeat right 3px;
+			 background-size: 80px; 
+	    }
+	</style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+    <notempty name="Data">
+        <volist name="Data" id="d">
+            <div class="weui-form-preview check{$d.IsCheck}" id="row{$d.CommentID}" style="margin-bottom:10px;">
+              <div class="weui-form-preview__hd">
+                  <label class="weui-form-preview__label">
+                  		{$d.CommentTime|strtotime|yd_friend_date}
+                  		<span class="weui-badge rank{$d.CommentRank}"><switch name="d.CommentRank">
+                                <case value="1">差评</case>
+                                <case value="2">中评</case>
+                                <case value="3">好评</case>
+                            </switch></span>
+                  		</label>
+                  <em class="weui-form-preview__value">&nbsp;</em>
+              </div>
+              <div class="weui-form-preview__bd">
+              	  <div class="weui-form-preview__item InfoTitle">评论主题：{$d.InfoID|InfoTitle}</div>
+                  <div class="weui-form-preview__item CommentContent">评论内容：{$d.CommentContent}</div>
+              	  <notempty name="d.ReplyCount">
+                        <div class="weui-form-preview__item AnswerContent">
+                               <b>回复内容：</b>
+                                <volist id="rc" name="d.ReplyComments">
+                                        <div class="ReplyComments">
+                                            [<notempty name="rc.GuestName">{$rc.GuestName}<else/>匿名</notempty> 
+                                            {$rc.CommentTime|strtotime|yd_friend_date}]：{$rc.CommentContent}
+                                        </div>
+                                </volist>
+                        </div>
+				  </notempty>
+              </div>
+              <div class="weui-form-preview__ft">
+                  <a class="weui-form-preview__btn weui-form-preview__btn_primary  color-danger" href="javascript:" onClick="delComment({$d.CommentID})">删除</a>
+              </div>
+            </div>
+        </volist>
+    <else/>
+        <div class="weui-msg">
+            <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+            <div class="weui-msg__text-area">
+                <p class="weui-msg__desc">{$Think.lang.NoInformation}</p>
+            </div>
+        </div>
+    </notempty>
+</body>
+</html>
+<script>
+	function delComment(id){
+		$.confirm("确定删除吗?", function() {
+			LoadBox();
+			var url = "{$Url}delComment";
+			var p = {"CommentID": id};
+			$.get(url, p, function(data){
+				CloseLoadBox();
+				if (data.status==1){
+					$("#row"+id).remove();
+				}else{
+					ErrorBox(data.info);
+				}	
+			}, "json");
+		});
+	}
+	
+	function GoBack(){
+		location.href = "{$Url}index";	
+	}
+</script>

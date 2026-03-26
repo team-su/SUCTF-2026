@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container"> 
+    <form enctype="multipart/form-data" method="post" id="frm">
+    <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+      <div class="table">
+       <div class="toolbars">
+            <li class="toolbar"><a id="btnBack" href="{$Url}/index/JobClassID/{$Think.get.JobClassID}/p/{$Think.get.NowPage}" target="_self" title="返回">返回</a></li>
+            <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+            <li class="toolbar"><a id="del" onclick="BatchDel()" title="批量删除">删除</a></li>
+            <li class="toolbar toolbarform">
+				<label>关键词</label>
+                <input type="text" class='textinput' name="Keywords" style="width:150px" value="{$Keywords}" id="Keywords" placeholder="按姓名/手机查询"/>
+                <label>应聘职位</label>
+                <select name="JobID" id="JobID">
+                <option value="-1">全部</option>
+                <joblist id="j">
+                    <eq name="j.JobID" value="$JobID">
+                        <option value="{$j.JobID}" selected="selected"> {$j.JobName}</option>
+                    <else/>
+                        <option value="{$j.JobID}"> {$j.JobName}</option>
+                    </eq>
+                </joblist>
+                </select>
+                <input id="btnSeek" class="btnToolbarForm" type="submit" value="查询" onclick="Search()">
+            </li>
+        </div>
+        <table class="datatable" id="datatable">
+            <tr>
+                <th width="35px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                <th width="65px" >简历编号</th>
+                <th width="75px" >姓名</th>
+                <th width="50px" >性别</th>
+                <th width="70px" >出生年月</th>
+                <th width="70px" >民族</th>
+                <th width="65px" >最高学历</th>
+                <th width="110px" >联系电话</th>
+                <th width="120px" >电子邮件</th>
+                <th width="125px" >应聘职位</th>
+                <th width="120px" >时间</th>
+                <th style="text-align:left;padding-left:20px">操作</th>
+            </tr>  
+            <notempty name="Resume">
+                <volist name="Resume" id="m">
+                    <tr id="tr{$m.ResumeID}">
+                        <td><input class="checkrow" type="checkbox" name="ResumeID[]" value="{$m.ResumeID}" /></td>
+                        <td><span id="ResumeID{$m.ResumeID}">{$m.ResumeID}</span></td>
+                        <td>
+							<neq name="m.GuestID" value="0">
+							{$m.MemberName|htmlspecialchars}<b style="color:red">[会员]</b><else/>{$m.GuestName|htmlspecialchars}
+							</neq>
+						</td>
+                        <td>{$m.Gender|htmlspecialchars}</td>
+                        <td>{$m.Birthday|htmlspecialchars}</td>
+                        <td>{$m.Ethnic|htmlspecialchars}</td>
+                        
+                        <td>{$m.Education|htmlspecialchars}</td>
+                        <td>{$m.Telephone|htmlspecialchars}</td>
+                        <td>{$m.Email|htmlspecialchars}</td>
+                        <td><b>{$m.JobName|htmlspecialchars}</b></td> 
+                        <td>{$m.Time|strtotime|yd_friend_date}</td> 
+                        <td class="operator">
+                            <a style="float:left" id="btnAnswer" name="btnAnswer" href="{$Url}ViewResume/ResumeID/{$m.ResumeID}">详情</a>
+                            <div class="btn-sep"></div>
+                            <a style="float:left" onclick="Del({$m.ResumeID})" class="btnDel">删除</a>
+                        </td>
+                    </tr>
+                </volist> 
+            <else/>
+            	<tr><td colspan="13" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+            </notempty>                                
+        </table>
+        <div class="tfoot">
+        	<div class="page" ><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+        </div>
+    </div>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function Del(id){
+	if(checkSafeQuestion()) return;
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		url = "{$Url}delResume?ResumeID="+id+"&JobID={$JobID}&p={$NowPage}&Keywords={$Keywords}";
+		location.href = url;
+	});
+}
+
+//批量删除
+function BatchDel(){
+	if(checkSafeQuestion()) return;
+	//var arrChk = $("input[name='InfoID[]'][checked]"); //在高速浏览器长度总是返回0
+	var arrChk = $("input[name='ResumeID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	
+	if( n == 0 ) {
+		WarnBox("{$Think.lang.CheckDeleteTip}");
+		return;
+	}
+	
+	ConfirmBox("{$Think.lang.DeleteTip}", function () {
+		$('#frm').attr("action", "__URL__/batchDelResume");
+		$('#frm').submit();
+	});
+}
+
+//查询
+function Search(){
+	$('#frm').attr("action", "{$Url}resume");
+	$('#frm').submit();
+	return true;
+}	
+</script>

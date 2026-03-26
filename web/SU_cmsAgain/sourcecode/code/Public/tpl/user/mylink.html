@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>{$MenuName}</title>
+	<include file="./Public/tpl/user/meta.html" />
+    <style>
+		.CashQuantity{text-align:left;color:red;text-align-last:left;}
+		.InviteQrcode{ width:200px; height:200px;}
+    </style>
+</head>
+<body id="index" class="webapp notabbar">
+	<include file="./Public/tpl/user/header.html" />
+    <div class="weui-msg">
+        <div class="weui-msg__icon-area">
+        	<img src="{:InviteQrcode()}" class="InviteQrcode" />
+            <p>我的邀请注册二维码</p>
+        </div>
+        <div class="weui-text-area">
+            我的邀请注册链接：<p>{:WapInviteUrl()}</p>
+        </div>
+        <div class="weui-msg__opr-area">
+            <p class="weui-btn-area">
+              	<a href="javascript:;" class="weui-btn weui-btn_primary CopyUrl" onClick="CopyUrl()" data-clipboard-text="{:WapInviteUrl()}">复制邀请注册链接</a>
+            </p>
+      </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="{$WebPublic}jquery/clipboard.min.js"></script>
+<script>
+function GoBack(){
+	location.href = "{$Url}index";
+}
+
+function CopyUrl(){
+	var b = Clipboard.isSupported();
+	if(b){
+		var clipboard = new Clipboard('.CopyUrl');
+		clipboard.on('success', function(e) {
+			$.toast("复制成功");
+		});
+		
+		clipboard.on('error', function(e) {
+			$.toast("复制失败", "forbidden");
+		});
+	}else{
+		$.toast("您的浏览器不支持复制", "forbidden");
+	}
+}
+</script>

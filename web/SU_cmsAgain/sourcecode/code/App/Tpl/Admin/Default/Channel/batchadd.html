@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+	<style>
+		.table-channel{ text-align:left; margin:0 auto;}
+		.table-channel th,.table-channel td{ padding:3px 5px;}
+		.table-channel th{ text-align:center; font-weight:bold; }
+		.table-channel td{ text-align:center; }
+		.table-channel .textinput{ width:92%;}
+		.table-channel .num{ color:#0000FF; font-weight:normal;}
+		
+		.table-channel .Parent{ width: 92%;}
+		.table-channel .ChannelModelID{ width: 92%;}
+		
+		.table-channel .add{ text-align:left; padding:8px 15px;}
+		.table-channel .btnDel{ text-align:left; color:red;}
+	</style>
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+    <div class="box">
+        <form action="{$Action}" method="post" id="frmAdd" enctype="multipart/form-data">
+            <div class="box-header"><h4>批量添加频道</h4></div>
+            <div class="box-content">
+                <table class="table-channel" border="0">
+                    <thead>
+                        <tr>
+                            <th style="width:45px">序号</th>
+                            <th style="width:210px;">所属频道</th>
+                            <th style="width:180px;">频道名称</th>
+                            <th style="width:110px;">频道模型</th>
+                            <th style="width:90px;">简短名称</th>
+                            <th style="width:60px;">频道排序</th>
+                            <th style="width:60px;">分页条数</th>
+                            <th style="width:65px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="num">1</td>
+                            <td>                           
+                                <select class="Parent" name='Parent[]'>
+                                    <option value='0'>作为主频道</option>
+                                    <volist name="Channel" id="c">
+                                        <neq name="c.Html" value="index">
+											<option value="{$c.ChannelID}">{$c.ChannelName}</option>
+                                        </neq>
+                                    </volist>
+                                </select>
+                            </td>
+                            <td><input type="text" class="textinput" name="ChannelName[]" value="" /></td>
+                            <td>
+                                <select onchange="modelChanged(this)" class="ChannelModelID" name='ChannelModelID[]'>
+                                    <volist name="ChannelModel" id="c">
+                                    <option it="{$c.IndexTemplate}" rt="{$c.ReadTemplate}" value="{$c.ChannelModelID}">{$c.ChannelModelName}</option>
+                                    </volist>
+                                </select>
+                                <volist name="ChannelModel" id="c" offset="0" length="1">
+                                    <input type="hidden" class="textinput" name="IndexTemplate[]" value="{$c.IndexTemplate}" />
+                                    <input type="hidden" class="textinput" name="ReadTemplate[]" value="{$c.ReadTemplate}" />
+                                </volist>
+                            </td>
+                            <td><input type="text" class="textinput" name="ChannelSName[]" value="" /></td>
+                            <td><input type="number" class="textinput" name="ChannelOrder[]" value="0" /></td>
+                            <td><input type="number" class="textinput" name="PageSize[]" value="20" /></td>
+                            <td class="del"><a onclick="delItem(this)"  class="btnDanger btnSmall">删除</a></td>
+                        </tr>
+                	</tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td class="add">
+								<a onclick="addItem()" class="btnWarning btnSmall"  id="btnSaveAll">+ 添加频道<a>
+							</td>
+                            <td colspan="6"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+           </div>
+
+        <div class="box-footer">
+            <div class="box-footer-inner">
+                <input  id="btnSubmit" class="marginright" type="submit"  value="保存并继续添加" />
+                <input  id="btnSubmit"  type="button" value="返回" class="GoBack"  onclick="GoBack()" />
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#frmAdd').ajaxForm({
+		success: complete,
+		dataType: 'json',
+		beforeSubmit: checkData
+	});
+	
+	function checkData(){
+		var obj = $(".table-channel tbody tr");
+		var len = obj.length;
+		for(var i=0; i < len; i++){
+			var objChannelName = obj.eq(i).find(".textinput:first");
+			if( objChannelName.val() == ""){
+				 alert("频道名称不能为空！");
+				 objChannelName.focus();
+				 return false;
+			}
+		}
+		LoadBox();
+		return true;
+	};
+	
+	function complete(data){
+		CloseLoadBox();
+		if (data.status==1){
+			SucceedBox(data.info);
+			//重置表单，只显示一行
+			$(".table-channel tbody tr:gt(0)").remove(); 
+			$('#frmAdd').resetForm();
+		}else if(data.status==0){
+			ErrorBox(data.info);
+		}
+	};
+	
+	/*  加上会造成checkData里的return false无效
+	 $('#frmAdd').submit(function(){
+		 LoadBox();
+		 return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返）返回false  
+	 });
+	 */
+	 
+	 //初始化
+	 var objFirst = $(".table-channel tbody tr").first();
+	 var nCloneCount = 1;
+	 for(i=1; i < nCloneCount; i++){
+		 var objClone = objFirst.clone();
+		 var len = $(".table-channel tbody tr").length;
+		 objClone.find(".num").html(  len+1);
+		 objClone.appendTo(".table-channel tbody");
+	 }
+});
+
+//添加一个项目
+function addItem(){
+	var obj = $(".table-channel tbody tr");
+	var objTemp  = obj.last();
+	var nSelectedParentID = objTemp.find(".Parent").val();
+	var nSelectedModelID = objTemp.find(".ChannelModelID").val();
+	
+	var objNew= obj.last().clone();
+	objNew.find(".num").html( obj.length+1 );
+	objNew.find(".textinput:eq(0)").val('');
+	objNew.appendTo(".table-channel tbody");
+	
+	var objLast = $(".table-channel tbody tr").last();
+	objLast.find(".Parent").val( nSelectedParentID );
+	objLast.find(".ChannelModelID").val( nSelectedModelID );
+	objLast.find(".textinput:eq(0)").focus();
+}
+
+function delItem(obj){
+	if( $(".table-channel tbody tr").length <= 1){
+		SucceedBox("最后一个不能删除！");
+		return;
+	}
+	$(obj).parent().parent().remove();
+	var objTr = $(".table-channel tbody tr");
+	for(var i=0; i< objTr.length; i++){
+		objTr.eq(i).find(".num").html(i+1);
+	}
+}
+
+function modelChanged(obj){
+	var it = $(obj).children('option:selected').attr('it');
+	var rt = $(obj).children('option:selected').attr('rt');
+	$(obj).parent().find(".textinput:eq(0)").val(it);
+	$(obj).parent().find(".textinput:eq(1)").val(rt);
+ }
+</script>

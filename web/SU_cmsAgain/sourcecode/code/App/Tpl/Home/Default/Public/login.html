@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{$Title}-{$WebName}</title>
+<include file="Public:meta" />
+<script type="text/javascript" src="{$WebPublic}jquery/jquery.form.js"></script>
+<script type=text/javascript>
+	$(document).ready(function(){
+		$("#MemberCode").click( ChangeVerify );
+		
+		function ChangeVerify(){
+			var timenow = new Date().getTime();
+		    $("#MemberCode").attr("src", "{$Url}memberCode/d/" + timenow);
+		};
+		
+		$('#frmLogin').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			if (data.status==0){ //登录失败
+				ChangeVerify();
+				alert(data.info);
+            }else{
+				window.location = "{:HomeUrl()}";
+			}
+		};
+		
+		 $('#frmLogin').submit(function(){
+	     	return false; 
+	     });
+	});
+</script>
+</head>
+<body  class="body_login">
+	<include file="Public:header" />
+    <!--主体内容 开始-->
+    <div id="login">
+        <!--右侧区域 开始-->
+        <div id="right">
+        	<div class="right_title">
+            	<include file="Public:location" />
+                <h2><img src="{$Images}titleleftbg.png" align="absmiddle"  />{$Think.lang.UserLogin}<img src="{$Images}titlerightbg.png"   align="absmiddle" /></h2>
+            </div>
+            <div class="right_body">
+            	<form enctype="multipart/form-data" id="frmLogin" method="post" action="{:CheckMemberUrl()}" >
+                <table class="login_table">
+                    <tr>
+                        <th>{$Think.lang.UserName}</th>
+                        <td><input name="MemberName" type="text" class="form_text" placeholder="{$Think.lang.UserName} / {$Think.lang.REmail} / {$Think.lang.Mobile}"/></td>
+                    </tr>
+                    <tr>
+                        <th>{$Think.lang.Password}</th>
+                        <td><input class="form_text" name="MemberPassword" autocomplete="off"   type="password" /></td>
+                    </tr>
+                    <eq name="MemberLoginVerifyCode" value="1">
+                    <tr>
+                        <th><b>{$Think.lang.Verifycode}</b></th>
+                        <td><input name="MemberCode" type="text" class="form_text_verifycode" maxlength="4" /><img  class="code_image" id="MemberCode" title="{$Think.lang.ChangeVerifycode}" src="{$Url}memberCode/" align="absMiddle" />
+                        </td>
+                    </tr>
+                    </eq>
+                    <tr>
+                        <td colspan="2" class="operation">
+                             <input class="form_button btn btn-large" type="submit" name="submit8" value="{$Think.lang.Login}" />
+                             &nbsp;<a href="{:MemberRegUrl()}" target="_self">{$Think.lang.WantReg}</a>&nbsp;
+                             <a href="{:MemberForgetUrl()}" target="_self">{$Think.lang.ForgetPassword}</a>
+                        </td>
+                    </tr>
+                    <tr class="quick_login">
+                        <th>{$Think.lang.QuickLogin}：</th>
+                        <td>
+                            <oauthlist id="o" empty="[style].quick_login{display:none;}[/style]">
+                                <a href="{$o.OauthRequestUrl}" target="_self"><img src="{$WebPublic}Images/oauth/{$o.OauthMark}.png" /></a>
+                            </oauthlist>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            </div>
+            <div class="right_bottom"></div>
+        </div>
+        <!--右侧区域 结束-->
+        <div class="clear"></div>
+    </div>
+    <!--主体内容 结束-->
+    <include file="Public:footer" />
+</body>
+</html>

@@ -1,0 +1,92 @@
+<script type='text/javascript' src='{$WebPublic}My97DatePicker/WdatePicker.js'></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#frm').ajaxForm({
+			success: complete,
+			dataType: 'json'
+		});
+		
+		function complete(data){
+			CloseLoadBox();
+			if (data.status==1){
+				SucceedBox(data.info);
+            }else{
+				ErrorBox(data.info);
+			}
+		};
+		
+		 $('#frm').submit(function(){
+			 LoadBox();
+	     	return false;  //为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false  
+	     });
+		 
+		 
+		 //选中表单第一项
+		 function focusFirstItem(){
+			 var idName = "#{$Think.const.MODULE_NAME}Name";
+			 $(idName).focus();
+		 }
+		 
+		 //设置默认值
+		 function setDefault(){
+			 $("input[name='CouponType'][value={$Data.CouponType}]").attr("checked",'checked');
+		 }
+		 
+		 //页面初始化
+		 function pageInit(){
+			focusFirstItem();
+			setDefault();
+		 }
+		 
+		 pageInit();
+	});
+</script>
+<div class="box-header"><h4>基本信息</h4></div>
+<div class="box-content">
+	<table class="boxtable">
+        <tr>
+            <th>优惠卷名称</th>
+            <td><input type="text" class="textinput" style="width:300px;"  id="CouponName" name="CouponName" value="{$Data.CouponName}" />
+            <span class="Caution">如：50元线下券、满200送50代金券</span>
+            </td>
+        </tr>
+        <tr>
+            <th>优惠卷面额</th>
+            <td><input type="text" class="textinput" style="width:80px"  id="CouponMoney" name="CouponMoney" value="{$Data.CouponMoney}" /></td>
+        </tr>
+        <tr>
+            <th>最低消费金额</th>
+            <td><input type="text" class="textinput" style="width:80px"  id="ConsumeMoney" name="ConsumeMoney" value="{$Data.ConsumeMoney}" />
+            <span class="Caution">订单金额必须大于等于最低消费金额，才能使用此优惠券</span></td>
+        </tr>
+        <tr>
+            <th nowrap="nowrap">发放数量</th>
+            <td><input type="text" class="textinput" style="width:80px"  id="CouponQuantity" name="CouponQuantity" value="{$Data.CouponQuantity}" />
+            <span class="Caution">0：表示不限数量</span></td>
+        </tr>
+        <tr>
+            <th nowrap="nowrap">发放类型</th>
+            <td>
+            	<volist name="CouponTypeList" id="c">
+                	<label><input type="radio" name="CouponType" value="{$c.CouponTypeID}" <eq name="i" value="1">checked="checked"</eq>  />{$c.CouponTypeName}</label>
+                    &nbsp;&nbsp;&nbsp;
+                </volist>
+                <span class="Caution">指定发放：指定发给会员；线下发放：在后台生成优惠券代码，线下发放优惠券</span>
+            </td>
+        </tr>
+       <tr>
+            <th>使用有效期</th>
+            <td>
+            <input name='StartTime' type='text' class='Wdate' id='StartTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value="{$Data.StartTime}" />
+            <span style="padding:0px 5px">到</span>
+            <input name='EndTime' type='text' class='Wdate' id='EndTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" readonly='readonly'   value="{$Data.EndTime}" />
+            </td>
+      </tr>
+      <tr>
+            <th nowrap="nowrap">添加时间</th>
+            <td>
+                <input name='CouponTime' type='text' class='Wdate' id='CouponTime'  class='textinput' style="width:155px"  onClick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})"      readonly='readonly'   value="{$Data.CouponTime}" />
+            </td>
+        </tr>
+      </table>
+</div>

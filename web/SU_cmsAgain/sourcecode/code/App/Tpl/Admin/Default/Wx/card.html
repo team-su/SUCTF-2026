@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<include file="Public:meta" />
+</head>
+<body id="main_page">
+<include file="Public:position" />
+<div class="container">
+            	<form enctype="multipart/form-data" method="post" id="frm">
+                <input type="hidden" name="NowPage" id="NowPage" value="{$NowPage}" />
+                  <div class="table">
+                   <div class="toolbars">
+                        <li class="toolbar"><a id="btnSave" onclick="exportCard()" class="ydicon-daochu" title="导出所有会员为CSV" target="_self">导出所有会员</a></li>
+                        <li class="toolbar"><a id="btnSaveAll" href="{$Url}cardConfig" class="ydicon-vip" title="会员卡设置" target="_self">会员卡设置</a></li>
+                        <li class="toolbar"><a id="btnSaveAll" href="{$Url}gift" class="ydicon-setup" title="礼品券管理" target="_self">礼品券管理</a></li>
+                        <li class="toolbar"><a id="btnSaveAll" href="{$Url}coupon" class="ydicon-setup" title="优惠卷管理" target="_self">优惠卷管理</a></li>
+                        <li class="toolbar"><a id="btnSaveAll" href="{$Url}notify" class="ydicon-setup" title="会员通知管理" target="_self">会员通知管理</a></li>
+                        <li class="toolbar"><a id="selectall" onclick="CheckAll()"  title="全选" style="display: none;">全选</a></li>
+                        <li class="toolbar"><a id="btnLock" onclick="BatchLock(1)" title="批量冻结">冻结</a></li>
+                        <li class="toolbar"><a id="btnUnlock" onclick="BatchLock(0)" title="批量取消冻结">取消冻结</a></li>
+                        <li class="toolbar toolbarform">
+                            <label>卡号/姓名/手机</label>
+                            <input type="text" class='textinput' name="Keywords" style="width:120px" value="{$Keywords}" id="Keywords" placeholder="卡号/姓名/手机"/>
+                            <a id="btnSeek" class="btnToolbarForm" onclick="Search()">查询</a>
+                        </li>
+                    </div>
+                    <table class="datatable" id="datatable">
+                    <tr><th colspan="12" style="text-align:left">&nbsp;&nbsp;微会员卡链接地址：{:WxCardUrl()} </td></tr>
+                    <tr>
+                		<th width="40px" nowrap="nowrap" onclick="CheckAll()"><input type="checkbox" /></th>
+                        <th width="96px" >会员卡号</th>
+                        <th width="85px" >姓名</th>
+                        <th width="45px" >性别</th>
+                        <th width="100px">手机号码</th>
+                        
+                        <th width="120px">领卡时间</th>
+                        <th width="55px" >余额</th>
+                        <th width="75px" >总充值金额</th>
+                        <th width="85px" >剩余积分</th>
+                        <th width="55px" >总积分</th>
+                        <th width="55px" >状态</th>
+                        <th style="text-align:left;padding-left:20px">操作</th>
+                    </tr> 
+    <notempty name="Member">
+    <volist name="Member" id="m">
+    <tr id="tr{$m.MemberID}">
+    	<td><input class="checkrow" type="checkbox" name="MemberID[]" value="{$m.MemberID}" /></td>
+    	<td><b>{$m.CardNumber|htmlspecialchars}</b></td>
+        <td>{$m.MemberRealName|htmlspecialchars}</td>
+        <td><eq name="m.MemberGender" value="0">男<else/>女</eq></td>
+        <td>{$m.MemberMobile|htmlspecialchars}</td>
+        
+        <td>{$m.CardTime|strtotime|yd_friend_date}</td>
+        <td><b style="color:#060">{$m.UnUsedMoney}</b></td>
+        <td><b>{$m.TotalMoney}</b></td>
+        <td><b style="color:#060">{$m.UnUsedScore}</b></td>
+        <td><b>{$m.TotalScore}</b></td>
+        <td>
+        <eq name="m.IsLock" value="1">
+        	<b style="color:#F00">冻结&nbsp;</b>
+        <else/>
+        	<b style="color:#000">正常&nbsp;</b>
+        </eq>
+        </td>
+        
+        <td class="operator">
+            <a style="float:left" onclick="Consume({$m.MemberID},'{$m.CardNumber}','{$m.MemberRealName|htmlspecialchars}',{$m.UnUsedMoney})" id="btnEdit">消费</a>
+            <div class="btn-sep"></div>
+            <a style="float:left" id="btnEdit" name="btnPay" onclick="Pay({$m.MemberID},'{$m.CardNumber}','{$m.MemberRealName|htmlspecialchars}')" >充值</a>
+            <div class="btn-sep"></div>
+            <a style="float:left" onclick="GiveScore({$m.MemberID},'{$m.CardNumber}','{$m.MemberRealName|htmlspecialchars}')" id="sortall">送积分</a>
+            <div class="btn-sep"></div>
+            <a style="float:left; padding-left:24px; width:51px" id="btnEdit" name="btnConsume" onclick="ViewConsume('{$m.CardNumber}')" >消费记录</a>
+            <div class="btn-sep"></div>
+            <a style="float:left; padding-left:24px; width:51px" id="btnEdit" name="btnScore" onclick="ViewScore('{$m.CardNumber}')" >积分记录</a>
+            <div class="btn-sep"></div>
+        </td>
+    </tr>
+    </volist>
+    <else/>
+    	<tr><td colspan="12" id="NoData">{$Think.lang.NoDataTip}</td></tr>
+    </notempty>     
+    </table>
+         <div class="tfoot">
+			<div class="page"><span class="pagesize">每页<span class="pz">{$AdminPageSize}</span>条</span>{$Page}</div>
+            
+         </div>
+                </div>
+				</form>
+</div>
+</body>
+</html>
+
+<div class="dialog" id="dlgXf">
+    <table cellpadding="3" cellspacing="3" border="0">
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>姓名&nbsp;</b></th>
+       <th align="left"><b id="dlgMemberRealName2" style="color:#0000FF"></b></th>
+    </tr>
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>会员卡号&nbsp;</b></th>
+       <th align="left"><b id="dlgCardNumber2" style="color:#0000FF"></b></th>
+    </tr>
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>支付方式&nbsp;</b></th>
+       <th align="left">
+       		  <label><input id="zf" name="zf"   value="2"  type="radio" checked="checked" >余额支付</label>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <label><input id="zf" name="zf"   value="3"  type="radio" >现金支付</label>
+       </th>
+    </tr>
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>消费金额&nbsp;</b></th>
+       <th align="left"><input type="text" id = "ConsumeMoney2" name="ConsumeMoney2"  maxlength="6" class="textinput" style="width:50px" value="100" />元
+       &nbsp;&nbsp;&nbsp;&nbsp;<b style="color:blue">可用余额：</b><b style="color:red" id="ye2"></b>
+       </th>
+    </tr>
+    <tr>
+        <td nowrap="nowrap" align="right"><b>备注&nbsp;</b></td>
+        <td align="left"><input type="text"  id = "Remark2"  maxlength="20" name="Remark2" class="textinput" style="width:200px" /></td>
+    </tr>
+    </table>
+</div>
+
+<div class="dialog" id="dlgConsume">
+    <table cellpadding="3" cellspacing="3" border="0">
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>姓名&nbsp;</b></th>
+       <th align="left"><b id="dlgMemberRealName" style="color:#0000FF"></b></th>
+    </tr>
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>会员卡号&nbsp;</b></th>
+       <th align="left"><b id="dlgCardNumber" style="color:#0000FF"></b></th>
+    </tr>
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>充值金额&nbsp;</b></th>
+       <th align="left"><input type="text" id = "ConsumeMoney" name="ConsumeMoney"  maxlength="6" class="textinput" style="width:60px" value="100" />元</th>
+    </tr>
+    <tr>
+        <td nowrap="nowrap" align="right"><b>充值备注&nbsp;</b></td>
+        <td align="left"><input type="text"  id = "Remark"  maxlength="20" name="Remark" class="textinput" style="width:160px" /></td>
+    </tr>
+    </table>
+</div>
+
+<div class="dialog" id="dlgScore">
+    <table cellpadding="3" cellspacing="3" border="0">
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>姓名&nbsp;</b></th>
+       <th align="left"><b id="dlgMemberRealName1" style="color:#0000FF"></b></th>
+    </tr>
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>会员卡号&nbsp;</b></th>
+       <th align="left"><b id="dlgCardNumber1" style="color:#0000FF"></b></th>
+    </tr>
+    <tr>
+       <th width="80px" nowrap="nowrap" align="right"><b>赠送积分&nbsp;</b></th>
+       <th align="left"><input type="text" id = "ScoreNumber" name="ScoreNumber"  maxlength="6" class="textinput" style="width:60px" value="50" /></th>
+    </tr>
+    <tr>
+        <td nowrap="nowrap" align="right"><b>备注&nbsp;</b></td>
+        <td align="left"><input type="text"  id = "Remark1"  maxlength="20" name="Remark1" class="textinput" style="width:160px" /></td>
+    </tr>
+    </table>
+</div>
+<script type="text/javascript">
+function exportCard(){
+	if(checkSafeQuestion()) return;
+	location.href = "{$Url}Export";
+}
+
+//查询
+function Search(){
+	$('#frm').attr("action", "__URL__/card");
+	$('#frm').submit();
+	return true;
+}	
+
+//充值
+function Pay(mid, num, name){
+		$('#dlgCardNumber').text(num);
+		$('#dlgMemberRealName').text(name);
+		
+		$('#ConsumeMoney').val('100');
+		$('#Remark').val('');
+		dialog({
+			title: "会员充值",
+			id: 'consume',
+			padding: 8,
+			content: document.getElementById('dlgConsume'),
+			ok: function () {
+				var ConsumeMoney = $('#ConsumeMoney').val();
+				if( isNaN(ConsumeMoney) ){
+					ErrorBox("充值金额必须为数字！");
+					return false;
+				}
+				var url = "{$Url}pay";
+				var data =  {
+					MemberID: mid, 
+					ConsumeMoney: $('#ConsumeMoney').val(), 
+					Remark: $('#Remark').val(), 
+				};
+				$.get(url, data, function(data, textStatus){
+					if (data.status == 1){
+						SucceedBox(data.info);
+						window.location.reload();
+					}else if(data.status == 0){
+						ErrorBox(data.info);
+					}
+				}, 'json');
+				return false;
+			},
+			okValue: '充值',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+}
+
+//赠送积分
+function GiveScore(mid, num, name){
+		$('#dlgCardNumber1').text(num);
+		$('#dlgMemberRealName1').text(name);
+		
+		$('#ScoreNumber').val('50');
+		$('#Remark1').val('');
+		dialog({
+			title: "赠送积分",
+			id: 'score',
+			padding: 8,
+			content: document.getElementById('dlgScore'),
+			ok: function () {
+				var ScoreNumber = $('#ScoreNumber').val();
+				if( isNaN(ScoreNumber) ){
+					ErrorBox("积分必须为数字！");
+					return false;
+				}
+				var url = "{$Url}giveScore";
+				var data =  {
+					MemberID: mid, 
+					ScoreNumber: $('#ScoreNumber').val(), 
+					Remark: $('#Remark1').val(), 
+				};
+				$.get(url, data, function(data, textStatus){
+					if (data.status == 1){
+						SucceedBox(data.info);
+						window.location.reload();
+					}else if(data.status == 0){
+						ErrorBox(data.info);
+					}
+				}, 'json');
+				return false;
+			},
+			okValue: '赠送',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+}
+
+//会员消费: ye:余额
+function Consume(mid, num, name, ye){
+		$('#dlgCardNumber2').text(num);
+		$('#dlgMemberRealName2').text(name);
+		$('#ye2').text(ye);
+		$('#ConsumeMoney2').val('100');
+		$('#Remark2').val('');
+		dialog({
+			title: "会员消费",
+			id: 'xf',
+			padding: 8,
+			content: document.getElementById('dlgXf'),
+			ok: function () {
+				var ConsumeMoney2 = $('#ConsumeMoney2').val();
+				if( isNaN(ConsumeMoney2) ){
+					ErrorBox("消费金额必须为数字！");
+					return false;
+				}
+				
+				if( ConsumeMoney2 <= 0){
+					ErrorBox("消费金额必须大于0！");
+					return false;
+				}
+				
+				var zf = $("input[name='zf']:checked").val();
+				if( zf == 2 && ye < ConsumeMoney2 ){
+					ErrorBox("会员卡余额不足！");
+					return false;
+				}
+				
+				var url = "{$Url}expense";
+				var data =  {
+					MemberID: mid, 
+					ConsumeMoney: $('#ConsumeMoney2').val(), 
+					Remark: $('#Remark2').val(), 
+					ConsumeType: $("input[name='zf']:checked").val()
+				};
+				$.get(url, data, function(data, textStatus){
+					if (data.status == 1){
+						SucceedBox(data.info);
+						window.location.reload();
+					}else if(data.status == 0){
+						ErrorBox(data.info);
+					}else if(data.status == 3){
+						ErrorBox("会员卡余额不足！");
+					}
+				}, 'json');
+				return false;
+			},
+			okValue: '消费',
+			cancelValue: '关闭',
+			cancel: true
+		}).show();
+}
+
+function BatchLock(bLock){
+	//先必须选中记录==============================================
+	var arrChk = $("input[name='MemberID[]']");
+	var n = 0;
+	for(var i = 0; i < arrChk.length; i++){
+		if(arrChk[i].checked) n++;
+	}
+	if( n == 0 ) {
+		WarnBox("请先选中记录!");
+		return;
+	}
+	//=========================================================
+	if( bLock == 1 ){
+		ConfirmBox("确定冻结吗?", function () {
+			$('#frm').attr("action", "{$Url}batchLock/Lock/1");
+			$('#frm').submit();
+		});
+	}else{
+		ConfirmBox("确定取消冻结吗?", function () {
+			$('#frm').attr("action", "{$Url}batchLock/Lock/0");
+			$('#frm').submit();
+		});
+	}
+}
+
+//查看充值记录
+function ViewConsume(cardNumber){
+	window.location.href="{$Url}consume/Keywords/"+cardNumber;
+}
+
+//查看积分记录
+function ViewScore(cardNumber){
+	window.location.href="{$Url}score/Keywords/"+cardNumber;
+}
+</script>
