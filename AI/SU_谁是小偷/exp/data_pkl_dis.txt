@@ -1,0 +1,258 @@
+    0: \x80 PROTO      2
+    2: c    GLOBAL     'collections OrderedDict'
+   27: q    BINPUT     0
+   29: )    EMPTY_TUPLE
+   30: R    REDUCE
+   31: q    BINPUT     1
+   33: (    MARK
+   34: X        BINUNICODE 'linear.weight'
+   52: q        BINPUT     2
+   54: c        GLOBAL     'torch._utils _rebuild_tensor_v2'
+   87: q        BINPUT     3
+   89: (        MARK
+   90: (            MARK
+   91: X                BINUNICODE 'storage'
+  103: q                BINPUT     4
+  105: c                GLOBAL     'torch FloatStorage'
+  125: q                BINPUT     5
+  127: X                BINUNICODE '0'
+  133: q                BINPUT     6
+  135: X                BINUNICODE 'cuda:0'
+  146: q                BINPUT     7
+  148: J                BININT     65536
+  153: t                TUPLE      (MARK at 90)
+  154: q            BINPUT     8
+  156: Q            BINPERSID
+  157: K            BININT1    0
+  159: M            BININT2    256
+  162: M            BININT2    256
+  165: \x86         TUPLE2
+  166: q            BINPUT     9
+  168: M            BININT2    256
+  171: K            BININT1    1
+  173: \x86         TUPLE2
+  174: q            BINPUT     10
+  176: \x89         NEWFALSE
+  177: h            BINGET     0
+  179: )            EMPTY_TUPLE
+  180: R            REDUCE
+  181: q            BINPUT     11
+  183: t            TUPLE      (MARK at 89)
+  184: q        BINPUT     12
+  186: R        REDUCE
+  187: q        BINPUT     13
+  189: X        BINUNICODE 'linear.bias'
+  205: q        BINPUT     14
+  207: h        BINGET     3
+  209: (        MARK
+  210: (            MARK
+  211: h                BINGET     4
+  213: h                BINGET     5
+  215: X                BINUNICODE '1'
+  221: q                BINPUT     15
+  223: X                BINUNICODE 'cuda:0'
+  234: q                BINPUT     16
+  236: M                BININT2    256
+  239: t                TUPLE      (MARK at 210)
+  240: q            BINPUT     17
+  242: Q            BINPERSID
+  243: K            BININT1    0
+  245: M            BININT2    256
+  248: \x85         TUPLE1
+  249: q            BINPUT     18
+  251: K            BININT1    1
+  253: \x85         TUPLE1
+  254: q            BINPUT     19
+  256: \x89         NEWFALSE
+  257: h            BINGET     0
+  259: )            EMPTY_TUPLE
+  260: R            REDUCE
+  261: q            BINPUT     20
+  263: t            TUPLE      (MARK at 209)
+  264: q        BINPUT     21
+  266: R        REDUCE
+  267: q        BINPUT     22
+  269: X        BINUNICODE 'conv.weight'
+  285: q        BINPUT     23
+  287: h        BINGET     3
+  289: (        MARK
+  290: (            MARK
+  291: h                BINGET     4
+  293: h                BINGET     5
+  295: X                BINUNICODE '2'
+  301: q                BINPUT     24
+  303: X                BINUNICODE 'cuda:0'
+  314: q                BINPUT     25
+  316: K                BININT1    9
+  318: t                TUPLE      (MARK at 290)
+  319: q            BINPUT     26
+  321: Q            BINPERSID
+  322: K            BININT1    0
+  324: (            MARK
+  325: K                BININT1    1
+  327: K                BININT1    1
+  329: K                BININT1    3
+  331: K                BININT1    3
+  333: t                TUPLE      (MARK at 324)
+  334: q            BINPUT     27
+  336: (            MARK
+  337: K                BININT1    9
+  339: K                BININT1    9
+  341: K                BININT1    3
+  343: K                BININT1    1
+  345: t                TUPLE      (MARK at 336)
+  346: q            BINPUT     28
+  348: \x89         NEWFALSE
+  349: h            BINGET     0
+  351: )            EMPTY_TUPLE
+  352: R            REDUCE
+  353: q            BINPUT     29
+  355: t            TUPLE      (MARK at 289)
+  356: q        BINPUT     30
+  358: R        REDUCE
+  359: q        BINPUT     31
+  361: X        BINUNICODE 'conv.bias'
+  375: q        BINPUT     32
+  377: h        BINGET     3
+  379: (        MARK
+  380: (            MARK
+  381: h                BINGET     4
+  383: h                BINGET     5
+  385: X                BINUNICODE '3'
+  391: q                BINPUT     33
+  393: X                BINUNICODE 'cuda:0'
+  404: q                BINPUT     34
+  406: K                BININT1    1
+  408: t                TUPLE      (MARK at 380)
+  409: q            BINPUT     35
+  411: Q            BINPERSID
+  412: K            BININT1    0
+  414: K            BININT1    1
+  416: \x85         TUPLE1
+  417: q            BINPUT     36
+  419: K            BININT1    1
+  421: \x85         TUPLE1
+  422: q            BINPUT     37
+  424: \x89         NEWFALSE
+  425: h            BINGET     0
+  427: )            EMPTY_TUPLE
+  428: R            REDUCE
+  429: q            BINPUT     38
+  431: t            TUPLE      (MARK at 379)
+  432: q        BINPUT     39
+  434: R        REDUCE
+  435: q        BINPUT     40
+  437: X        BINUNICODE 'conv1.weight'
+  454: q        BINPUT     41
+  456: h        BINGET     3
+  458: (        MARK
+  459: (            MARK
+  460: h                BINGET     4
+  462: h                BINGET     5
+  464: X                BINUNICODE '4'
+  470: q                BINPUT     42
+  472: X                BINUNICODE 'cuda:0'
+  483: q                BINPUT     43
+  485: K                BININT1    4
+  487: t                TUPLE      (MARK at 459)
+  488: q            BINPUT     44
+  490: Q            BINPERSID
+  491: K            BININT1    0
+  493: (            MARK
+  494: K                BININT1    1
+  496: K                BININT1    1
+  498: K                BININT1    2
+  500: K                BININT1    2
+  502: t                TUPLE      (MARK at 493)
+  503: q            BINPUT     45
+  505: (            MARK
+  506: K                BININT1    4
+  508: K                BININT1    4
+  510: K                BININT1    2
+  512: K                BININT1    1
+  514: t                TUPLE      (MARK at 505)
+  515: q            BINPUT     46
+  517: \x89         NEWFALSE
+  518: h            BINGET     0
+  520: )            EMPTY_TUPLE
+  521: R            REDUCE
+  522: q            BINPUT     47
+  524: t            TUPLE      (MARK at 458)
+  525: q        BINPUT     48
+  527: R        REDUCE
+  528: q        BINPUT     49
+  530: X        BINUNICODE 'conv1.bias'
+  545: q        BINPUT     50
+  547: h        BINGET     3
+  549: (        MARK
+  550: (            MARK
+  551: h                BINGET     4
+  553: h                BINGET     5
+  555: X                BINUNICODE '5'
+  561: q                BINPUT     51
+  563: X                BINUNICODE 'cuda:0'
+  574: q                BINPUT     52
+  576: K                BININT1    1
+  578: t                TUPLE      (MARK at 550)
+  579: q            BINPUT     53
+  581: Q            BINPERSID
+  582: K            BININT1    0
+  584: K            BININT1    1
+  586: \x85         TUPLE1
+  587: q            BINPUT     54
+  589: K            BININT1    1
+  591: \x85         TUPLE1
+  592: q            BINPUT     55
+  594: \x89         NEWFALSE
+  595: h            BINGET     0
+  597: )            EMPTY_TUPLE
+  598: R            REDUCE
+  599: q            BINPUT     56
+  601: t            TUPLE      (MARK at 549)
+  602: q        BINPUT     57
+  604: R        REDUCE
+  605: q        BINPUT     58
+  607: u        SETITEMS   (MARK at 33)
+  608: }    EMPTY_DICT
+  609: q    BINPUT     59
+  611: X    BINUNICODE '_metadata'
+  625: q    BINPUT     60
+  627: h    BINGET     0
+  629: )    EMPTY_TUPLE
+  630: R    REDUCE
+  631: q    BINPUT     61
+  633: (    MARK
+  634: X        BINUNICODE ''
+  639: q        BINPUT     62
+  641: }        EMPTY_DICT
+  642: q        BINPUT     63
+  644: X        BINUNICODE 'version'
+  656: q        BINPUT     64
+  658: K        BININT1    1
+  660: s        SETITEM
+  661: X        BINUNICODE 'linear'
+  672: q        BINPUT     65
+  674: }        EMPTY_DICT
+  675: q        BINPUT     66
+  677: h        BINGET     64
+  679: K        BININT1    1
+  681: s        SETITEM
+  682: X        BINUNICODE 'conv'
+  691: q        BINPUT     67
+  693: }        EMPTY_DICT
+  694: q        BINPUT     68
+  696: h        BINGET     64
+  698: K        BININT1    1
+  700: s        SETITEM
+  701: X        BINUNICODE 'conv1'
+  711: q        BINPUT     69
+  713: }        EMPTY_DICT
+  714: q        BINPUT     70
+  716: h        BINGET     64
+  718: K        BININT1    1
+  720: s        SETITEM
+  721: u        SETITEMS   (MARK at 633)
+  722: s    SETITEM
+  723: b    BUILD
+  724: .    STOP
+highest protocol among opcodes = 2
