@@ -1,0 +1,11 @@
+{
+  "name": "su-eznote-xss-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CTF XSS bot for SU-ezNote",
+  "main": "bot.js",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "puppeteer-core": "^24.6.0"
+  }
+}

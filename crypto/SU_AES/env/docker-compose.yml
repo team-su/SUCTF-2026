@@ -3,8 +3,8 @@ name: su_block_gamma
 services:
   su_block_gamma:
     build:
-      context: ..
-      dockerfile: env/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     container_name: su_block_gamma
     environment:
       - PORT=9999

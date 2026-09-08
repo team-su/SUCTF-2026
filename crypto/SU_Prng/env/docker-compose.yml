@@ -1,8 +1,8 @@
 services:
   su_prng:
     build:
-      context: ..
-      dockerfile: env/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     container_name: su_prng
     environment:
       - PORT=9999

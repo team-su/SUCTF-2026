@@ -1,0 +1,12 @@
+services:
+  easyllm:
+    build: ../
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - FLAG=SUCTF{LLM_w1ll_ch4nge_ev3rything}
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY:?ZHIPU_API_KEY is required}
+      - ZHIPU_BASE_URL=${ZHIPU_BASE_URL:-https://api.z.ai/api/paas/v4/chat/completions}
+      - ZHIPU_MODEL=${ZHIPU_MODEL:-GLM-4-Flash}
+    restart: unless-stopped

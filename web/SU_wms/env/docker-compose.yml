@@ -1,5 +1,6 @@
 services:
   mysql:
+    platform: linux/amd64
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
@@ -14,6 +15,7 @@ services:
       retries: 10
 
   app:
+    platform: linux/amd64
     build:
       context: .
       args:

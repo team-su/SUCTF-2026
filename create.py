@@ -14,8 +14,8 @@ def find_writeup_path(base_path):
             return p
     return None
 
-print("| 分类 | 题目名称 | Writeup 链接 |")
-print("| :--- | :--- | :--- |")
+print("| catalog | **Game Name** | Writeup Link |")
+print("| ------- | ------------- | ------------ |")
 
 results = []
 for cat in CATEGORIES:

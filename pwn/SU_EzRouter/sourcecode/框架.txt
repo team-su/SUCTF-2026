@@ -1,0 +1,20 @@
+/sourcecode/
+├── cgi/                   # CGI 程序的源码目录，负责协议翻译、参数解析和发送IPC请求
+│   ├── download.c         # 备用的固件下载相关功能
+│   ├── list.c             # 黑白名单管理。分配 0x450 堆块进入 Unsorted Bin，用于堆布局与基址泄漏
+│   ├── ping.c             # Ping 网络连通性诊断测试
+│   ├── vpn.c              # VPN 高级设置功能。处理表单提交并对应触发 mainproc 中的 Set_VPN 与 Edit_VPN_Custom
+│   └── wifi.c             # WiFi 基础参数配置模块
+├── lib/                   # 核心共享静态库/代码
+│   ├── libutils.c         # 封装了完整的基于 System V 机制的 CFG_SET/GET IPC 进程间通信原语与安全系统调用
+│   └── libutils.h         # MsgBuf 结构信封定义以及公用函数的原型
+├── www/                   # 前端资源、服务器守护进程和管理守护进程
+│   ├── index.html         # 后台登录页面
+│   ├── control.html       # 后台管理主控面板 (已剔除外部依赖并换用内联SVG维持极客风格)
+│   ├── css/               # 前端样式面板
+│   ├── js/dashboard.js    # 前端面板交互控制逻辑，构造 Payload 与对应的 action 发送给 CGI 进行处理
+│   ├── http.c & http.h    # 全自研的底层 Web Server。接管端口并负责处理纯前端静态路由和 Session (生成包含认证逻辑绕过漏洞)
+│   ├── login.c            # 处理登录并校验硬编码密码，如果正确重定向让 HTTP Server 下发 auth=1 的 Cookie (Auth Bypass漏洞点)
+│   ├── auth.h             # 请求的公共 Cookie session_id 存在校验头
+│   └── mainproc.c         # 【极重点】后端的核心系统服务大循环，直接从消息队列接收指令操作。这里埋设了精心构造的 VPN 配置 Off-By-Null (单字节 \x00 溢出) 漏洞以及对应的任意地址写和控制流劫持。
+└── 框架.txt                # 当前项目的整体架构说明文档

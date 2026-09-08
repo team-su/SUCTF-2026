@@ -1,0 +1,6 @@
+services: 
+  taskdemo: 
+    build: .
+    image: web_taskdemo:latest
+    ports: 
+      - "80"

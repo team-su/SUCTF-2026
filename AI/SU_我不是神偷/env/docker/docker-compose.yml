@@ -1,0 +1,8 @@
+version: '3'
+services:
+  test:
+    build: ../
+    ports:
+      # 设置了暴露端口
+      - 8080:8080
+    restart: unless-stopped

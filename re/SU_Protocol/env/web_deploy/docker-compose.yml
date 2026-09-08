@@ -1,6 +1,7 @@
 version: "3"
 services: 
   taskdemo: 
+    platform: linux/amd64
     build: .
     image: web_taskdemo:latest
     ports: 

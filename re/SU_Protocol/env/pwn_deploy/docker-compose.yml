@@ -1,6 +1,7 @@
 version: "3"
 services: 
   pwn_taskdemo: 
+    platform: linux/amd64
     build: .
     image: pwn_taskdemo:latest
     ports: 

@@ -1,7 +1,0 @@
-version: "3"
-services: 
-  pwn_taskdemo: 
-    build: .
-    image: pwn_taskdemo:latest
-    ports: 
-      - "8888"

@@ -12,7 +12,7 @@ RUN useradd -m -u 1000 ctf
 WORKDIR /home/ctf
 COPY chal.py /home/ctf/chal.py
 COPY secret.py /home/ctf/secret.py
-COPY env/start.sh /start.sh
+COPY start.sh /start.sh
 
 RUN sed -i 's/\r$//' /start.sh \
     && chmod 755 /start.sh /home/ctf/chal.py \
